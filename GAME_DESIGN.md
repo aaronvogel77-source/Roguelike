@@ -407,7 +407,15 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 *Profil:* Ein starker Spar-Build (Goldgepanzerter + Midas) steht gegen das Kaufen. Schild kommt nur vom Buben. Die Waage bringt Multiplikatoren für Opfer-Builds und verbindet sich mit Kelchen (Opfer).
 
 ### Stäbe (Feuer) – Thema Brennen, Aggression
-_Offen._
+| Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
+|---|---|---|---|
+| Bube | **Funkenträger** | 2/2 | *Bei Angriff:* Ziel erhält Brennen 1 / 2 / 3 |
+| Ritter | **Wutentbrannter** | 4/3 | *Bei Treffer (wird getroffen):* +1 / 2 / 3 Angriff (stapelt) |
+| Königin | **Herrin der Glut** | 3/5 | *Aura (dauerhaft):* Brennen-Schaden an Gegnern ×1,5 / ×2 / ×2,5 (Mult) |
+| König | **Aschekönig** | 6/4 | *Bei Tod eines Gegners:* dessen Brennen springt auf den nächsten Gegner, König erhält ×1,1 / ×1,2 / ×1,3 Angriff (Mult, stapelt) |
+
+*Profil:* Brennen-Motor (Bube → Königin → König) plus ein eskalierender Frontkämpfer.
+*Technik-Hinweis:* „Aura“ ist ein Dauer-Modifikator (keiner der vier Auslöser). Der Baukasten bekommt dafür den Typ `aura`.
 
 ### Kelche (Wasser) – Thema Fluch, Heilung, Opfer
 _Offen._
@@ -426,7 +434,7 @@ _Offen._
 ---
 
 ## Offene Fragen
-- Inhaltsrunden 2–4: Stäbe, Kelche, Schwerter
+- Inhaltsrunden 3–4: Kelche, Schwerter
 - Inhaltsrunde 5: Münzen-Gegner
 - Danach: Start M0
 
@@ -481,3 +489,4 @@ _Offen._
 | 2026-11-16 | JSON-Inhalte, Architektur-Paket (FSM, Commands, Event-Bus, Komposition, RNG-Ströme, GUT), Code komplett Englisch, GitHub Pages | Robust, testbar, Builds per Link spielbar | Tabellen, Godot-Ressourcen; deutsche Kommentare; itch.io |
 | 2026-11-16 | Meilensteinplan M0–M9 bestätigt, Figuren vor dem Start entwerfen | Mechanik vor Inhalt vor Optik | Fusion früher, Grafik früher; Figuren parallel oder vor M4 |
 | 2026-11-16 | Münzen: Münzknecht, Goldgepanzerter, Goldene Waage, König Midas | Spar-Build vs. Kaufen, Mult über Opfer | Pfandleiher, Zinseintreiber; Schildträger, Söldner; Schatzmeisterin, Herrin der Zinsen; Bankier, Goldener Koloss |
+| 2026-11-16 | Stäbe: Funkenträger, Wutentbrannter, Herrin der Glut, Aschekönig | Brennen-Motor + Eskalation | Fackelknecht, Aschejunge; Brandreiter, Flammenwächter; Phönixin, Feuerpredigerin; Brandstifter, Flammenkönig |
