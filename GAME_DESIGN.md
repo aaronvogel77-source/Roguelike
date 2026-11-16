@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 13 abgeschlossen, Phase 14 Runde 1 läuft
+**Status:** Planung – Phase 14, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -349,7 +349,12 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - Rekorde (höchster Treffer, längster Run, meiste Seelen …)
 
 ## Phase 14 – Architektur und Code-Struktur
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Inhalts-Format:** Nutzer: „Ich ändere nur in Zusammenarbeit mit dir, also was für dich am besten ist.“ → Claude schlägt **JSON** vor, Bestätigung in Runde 2.
+- **Effekt-System:** **Baukasten + Sonderskripte.** Normale Fähigkeiten bestehen aus Bausteinen (Auslöser + Ziel + Wirkung [+ Bedingung]). Meisterfähigkeiten, Regel-Bosse und geheime Rezepte dürfen eigenen Code haben.
+- **Kampf-Simulation:** **Ja.** Spiellogik ist strikt von der Darstellung getrennt (headless lauffähig), damit sich tausende Kämpfe für das Balancing simulieren lassen.
+- **Debug-Menü (versteckt, nur im Test-Build):** Gold/Seelen geben, Figur/Objekt spawnen, zu Akt/Boss springen, Seed anzeigen/setzen.
 
 ## Phase 15 – Umsetzungsplan und Meilensteine
 _Noch nicht behandelt._
@@ -357,7 +362,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 14, Runde 1: Architektur (Entitäten-Modell, Datenformat für Inhalte, Logik/Darstellung, Tests)
+- Phase 14, Runde 2: JSON bestätigen, Code-Sprache, Test-Builds/Hosting, Architektur-Gesamtpaket bestätigen
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -407,3 +412,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Gedeckte Basis + Neon nach Seltenheit/Macht, freie SFX + KI-Musik, ernst mit trockenem Humor, Deutsch + Englisch vorbereitet | Stärke auf einen Blick lesbar, solo machbar | Reine Paletten; alles KI/Audio später; poetisch/humorvoll; nur DE/EN |
 | 2026-11-16 | Seltenheits-Leuchtsystem bestätigt, Musik pro Gebiet + Boss, statische Bilder + Code-Effekte, Name später | Stärke sofort lesbar, KI-Grafik-tauglich | Adaptive Musik, Hauptthema; Frame-Animationen |
 | 2026-11-16 | Lokal + Export-Code, versioniertes JSON, deterministisch mit getrennten RNG-Strömen, 3 Statistik-Bereiche | Kein Server nötig, Bugs reproduzierbar | Nur lokal, Cloud; binär; einfacher Zufall; Run-Verlauf |
+| 2026-11-16 | Baukasten-Effekte + Sonderskripte, headless Kampf-Simulation, Debug-Menü mit 4 Werkzeugen | Fusionen kombinieren sauber, Balancing per Simulation | Ein Skript pro Fähigkeit, reiner Baukasten; Simulation später |
