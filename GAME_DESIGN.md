@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 3 abgeschlossen, Phase 4 Runde 1 läuft
+**Status:** Planung – Phase 4 abgeschlossen, Phase 5 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -127,12 +127,17 @@ Weil der Kampf automatisch läuft, kann eine einzelne Niederlage als unfair empf
   - **Stäbe** (Feuer), **Kelche** (Wasser), **Schwerter** (Luft), **Münzen** (Erde)
   - Reihenfolge und Mechaniken pro Farbe → Phase 7/9
 
-### Ideen zur Bestätigung (noch nicht entschieden)
-- Der **Endboss (Akt 8)** könnte aus den **Großen Arkana** stammen (z. B. Der Tod, Der Teufel, Der Turm) und damit besonders sein.
-- Ein Ereignis-Pity-Timer, damit es nie 6 Kämpfe ohne Ereignis gibt.
+### Bestätigt in Phase 4.1
+- **Endboss (Akt 8) aus den Großen Arkana** (z. B. Der Tod, Der Teufel, Der Turm). Besonders stark, wechselt pro Run.
+- **Pity-Timer für Ereignisse:** Nach 4 Kämpfen ohne Ereignis kommt garantiert eines.
 
 ## Phase 4 – Sicht, Erkundung und Information
-_Noch nicht behandelt._
+*Sichtfeld und Nebel des Krieges entfallen (Auto-Battler). Es geht um den Informationsgrad.*
+
+### Runde 1 (beantwortet)
+- **Werte:** Alles **exakt**. Angriff, Leben und alle Effekttexte mit genauen Zahlen, keine versteckten Effekte.
+- **Kampfprognose:** **Keine.** Selbst einzuschätzen, ob das Team gewinnt, ist die Kern-Herausforderung. Die volle Gegner-Vorschau gleicht das aus.
+- **Nach dem Kampf:** **Schaden-Statistik** (Schaden und Heilung pro Figur). Kein Kampf-Log und kein Replay gewählt.
 
 ## Phase 5 – Spielercharakter
 _Noch nicht behandelt._
@@ -170,8 +175,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 4, Runde 1: Informationsgrad, Kampfprognose, Kampf-Log/Replay, Shop-Transparenz
-- Bestätigung: Endboss aus den Großen Arkana? Pity-Timer für Ereignisse?
+- Phase 5, Runde 1: Startwahl, Spieler-Ressourcen, Figuren leveln, Figuren kombinieren
 
 ## Später entscheiden
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
@@ -196,3 +200,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Volle Vorschau + Wahl aus 2–3 Gegnern, 8 Akte à 3 Kämpfe, 3→6 Plätze, Zuglimit mit Verderben | Fairness trotz Permadeath, Balatro-Rhythmus, Kurve knapp → explosiv | Nur Boss-Vorschau, Leben-System; 3×5, 4×4; feste Teamgröße; Unentschieden = Niederlage/weiter |
 | 2026-11-16 | Gegner prozedural nach Budget, Bosse handgemacht, 4 Gebiete à 2 Akte, Ereignisse/Pakte, Überspringen, interner Seed | Viel Abwechslung bei wenig Handarbeit, Risiko-Tausch passt zum Thema | Handgebaute Teams, Vorlagen; 8 Gebiete, ein Thema; Daily von Anfang an |
 | 2026-11-16 | Regel-Bosse, Ereignisse mit ~30 % Chance, Überspringen bis auf den Endboss, Gebiete = 4 Tarot-Farben | Build-Anpassung erzwingen, Risiko-Tausch, Tarot-Thema durchziehen | Boss-Figuren, Kombination; 1× pro Akt, als Option; nur Kampf 1+2 überspringbar; klassischer Abstieg |
+| 2026-11-16 | Exakte Werte, keine Prognose, Schaden-Statistik; Endboss aus den Großen Arkana; Pity-Timer nach 4 Kämpfen | Fairness durch Transparenz, Einschätzen als Skill | Versteckte Effekte; grobe/genaue Prognose; Kampf-Log, Replay |
