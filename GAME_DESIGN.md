@@ -429,7 +429,15 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ⚠️ *Lücke:* Keine Spieler-Figur nutzt den Kelch-Status **Fluch**. Fluch kommt vorerst über Gegner, Ausrüstung und Relikte (prüfen in Inhaltsrunde 5 / M5).
 
 ### Schwerter (Luft) – Thema Blutung, Präzision
-_Offen._
+| Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
+|---|---|---|---|
+| Bube | **Klingenlehrling** | 2/2 | *Bei Angriff:* Ziel erhält Blutung 1 / 2 / 3 |
+| Ritter | **Henker** | 4/3 | *Bei Angriff:* Ziel mit ≤ 3 / 4 / 5 Leben (nach dem Treffer) stirbt sofort |
+| Königin | **Klare Klinge** | 4/4 | *Kampfbeginn:* entfernt alle Schilde der Gegner, pro entferntem Schild-Stapel Blutung 1 / 2 / 3 auf diese Figur |
+| König | **Der Richter** | 5/5 | *Bei Angriff:* löst die Blutung des Ziels sofort als Schaden aus, ×2 / ×3 / ×4 |
+
+*Profil:* Blutung aufbauen (Bube, Königin) und mit dem Richter auslösen. Der Henker räumt Reste ab. Die Klare Klinge kontert Münzen-Schild-Teams (gut gegen Gebiet 1).
+*Offen für den Prototyp:* Die genaue Richter-Formel. Vorschlag: Sofortschaden = Blutung-Stapel × 2 / 3 / 4, die Blutung bleibt bestehen.
 
 ### Münzen-Gegner (Gebiet 1)
 _Offen._
@@ -442,7 +450,6 @@ _Offen._
 ---
 
 ## Offene Fragen
-- Inhaltsrunde 4: Schwerter
 - Inhaltsrunde 5: Münzen-Gegner
 - Danach: Start M0
 
@@ -499,3 +506,4 @@ _Offen._
 | 2026-11-16 | Münzen: Münzknecht, Goldgepanzerter, Goldene Waage, König Midas | Spar-Build vs. Kaufen, Mult über Opfer | Pfandleiher, Zinseintreiber; Schildträger, Söldner; Schatzmeisterin, Herrin der Zinsen; Bankier, Goldener Koloss |
 | 2026-11-16 | Stäbe: Funkenträger, Wutentbrannter, Herrin der Glut, Aschekönig | Brennen-Motor + Eskalation | Fackelknecht, Aschejunge; Brandreiter, Flammenwächter; Phönixin, Feuerpredigerin; Brandstifter, Flammenkönig |
 | 2026-11-16 | Kelche: Messdiener, Bluttrinker, Kelch der Wiederkehr, Ertrunkener König | Sustain- und Opfer-Synergien | Fluchjunge, Opferlamm; Verfluchter Ritter, Seelenfänger; Hohepriesterin, Fluchweberin; Opferkönig, König der Flüche |
+| 2026-11-16 | Schwerter: Klingenlehrling, Henker, Klare Klinge, Der Richter – alle 16 Spieler-Figuren stehen | Blutung aufbauen/auslösen, Konter gegen Schild | Messerwerfer, Duellant; Schattenklinge, Sturmklinge; Witwe der Klingen, Windtochter; Tausend Schnitte, Schwertkönig |
