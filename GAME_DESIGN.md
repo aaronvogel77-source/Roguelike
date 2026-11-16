@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0 (Grundgerüst) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0 abgeschlossen. M1 (Kampf-Kern) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -480,7 +480,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- M0-Feedback einholen (Test-Link: https://aaronvogel77-source.github.io/Roguelike/)
+- M1-Feedback einholen (Test-Link: https://aaronvogel77-source.github.io/Roguelike/)
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
 ## Später entscheiden
@@ -542,3 +542,4 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | Bosse: Steuereintreiber (Akt 1), Goldene Mauer (Akt 2). Okkultisten: Wucherer, Fechtmeisterin | Wirtschaft vs. Tempo, Konter gegen Spar-Builds | Geblendeter, Stummer; Eiserner Tresor, Umkehrer, Gleichgewicht; Aschenhexe, Totengräber |
 | 2026-11-16 | M0: Godot 4.6.3, GL Compatibility, Web-Export ohne Threads, Pages-Workflow | Stabile Version, läuft in jedem Mobile-Browser | Godot 4.7 (sehr neu) |
 | 2026-11-16 | Repo öffentlich, GitHub Pages über Actions aktiv | Kostenlose Test-Links per Handy | GitHub Pro, itch.io |
+| 2026-11-16 | M0 abgenommen (läuft auf dem Handy). M1: deterministischer Kampf-Simulator, Kampfbildschirm mit 1×/2×/4×, 15 GUT-Tests (GUT 9.6.1 passend zu Godot 4.6), Simulationswerkzeug `tools/simulate.gd` | Logik headless testbar, Balancing per Simulation | GUT 9.7.1 (benötigt Godot 4.7) |

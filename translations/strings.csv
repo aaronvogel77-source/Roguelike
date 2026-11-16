@@ -1,7 +1,35 @@
 keys,de,en
-M0_TITLE,Arcana (Arbeitstitel),Arcana (working title)
-M0_SUBTITLE,Meilenstein 0 – Grundgerüst,Milestone 0 – Skeleton
-M0_TAP_BUTTON,Tippe mich an,Tap me
-M0_TAP_RESULT,Eingabe funktioniert – %d× getippt,Input works – tapped %d×
-M0_INFO,Viewport: %s · Bildschirm: %s · System: %s,Viewport: %s · Screen: %s · OS: %s
-M0_HINT,Bitte im Querformat testen. Funktioniert Tippen? Ist alles scharf und vollständig sichtbar?,Please test in landscape. Does tapping work? Is everything sharp and fully visible?
+FIG_COIN_SQUIRE,Münzknecht,Coin Squire
+FIG_GOLD_ARMORED,Goldgepanzerter,Gold-Armored
+FIG_GOLDEN_SCALES,Goldene Waage,Golden Scales
+FIG_KING_MIDAS,König Midas,King Midas
+FIG_SPARK_BEARER,Funkenträger,Spark Bearer
+FIG_ENRAGED_ONE,Wutentbrannter,Enraged One
+FIG_MISTRESS_OF_EMBERS,Herrin der Glut,Mistress of Embers
+FIG_ASH_KING,Aschekönig,Ash King
+FIG_ALTAR_SERVER,Messdiener,Altar Server
+FIG_BLOOD_DRINKER,Bluttrinker,Blood Drinker
+FIG_CHALICE_OF_RETURN,Kelch der Wiederkehr,Chalice of Return
+FIG_DROWNED_KING,Der Ertrunkene König,The Drowned King
+FIG_BLADE_APPRENTICE,Klingenlehrling,Blade Apprentice
+FIG_EXECUTIONER,Henker,Executioner
+FIG_CLEAR_BLADE,Klare Klinge,Clear Blade
+FIG_THE_JUDGE,Der Richter,The Judge
+ENEMY_BEGGAR_GHOST,Bettlergeist,Beggar Ghost
+ENEMY_DEBT_COLLECTOR,Schuldeneintreiber,Debt Collector
+ENEMY_THE_CHANGER,Der Wechsler,The Changer
+ENEMY_GREEDMAW,Gierschlund,Greedmaw
+ENEMY_VAULT_WARDEN,Tresorwächter,Vault Warden
+ENEMY_COIN_THROWER,Münzwerfer,Coin Thrower
+ENEMY_GREEDY_DRAGON,Gieriger Drache,Greedy Dragon
+ENEMY_MIRROR_COIN,Spiegelmünze,Mirror Coin
+UI_START_BATTLE,Kampf starten,Start battle
+UI_NEW_BATTLE,Neuer Kampf,New battle
+UI_TURN,Zug %d,Turn %d
+UI_SEED,Seed %d,Seed %d
+UI_DECAY,Die Dunkelheit frisst: %d Schaden,The darkness devours: %d damage
+UI_VICTORY,Sieg!,Victory!
+UI_DEFEAT,Niederlage – der Run wäre vorbei,Defeat – the run would be over
+UI_DRAW,Gleichstand – zählt als Sieg,Draw – counts as victory
+UI_YOUR_TEAM,Dein Team,Your team
+UI_ENEMIES,Gegner,Enemies

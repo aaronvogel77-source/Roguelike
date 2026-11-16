@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "figures": [
+    {"id": "coin_squire",      "suit": "coins",  "rank": "page",   "attack": 1, "health": 4},
+    {"id": "gold_armored",     "suit": "coins",  "rank": "knight", "attack": 3, "health": 4},
+    {"id": "golden_scales",    "suit": "coins",  "rank": "queen",  "attack": 3, "health": 4},
+    {"id": "king_midas",       "suit": "coins",  "rank": "king",   "attack": 4, "health": 6},
+    {"id": "spark_bearer",     "suit": "wands",  "rank": "page",   "attack": 2, "health": 2},
+    {"id": "enraged_one",      "suit": "wands",  "rank": "knight", "attack": 4, "health": 3},
+    {"id": "mistress_of_embers","suit": "wands", "rank": "queen",  "attack": 3, "health": 5},
+    {"id": "ash_king",         "suit": "wands",  "rank": "king",   "attack": 6, "health": 4},
+    {"id": "altar_server",     "suit": "cups",   "rank": "page",   "attack": 1, "health": 3},
+    {"id": "blood_drinker",    "suit": "cups",   "rank": "knight", "attack": 3, "health": 4},
+    {"id": "chalice_of_return","suit": "cups",   "rank": "queen",  "attack": 1, "health": 5},
+    {"id": "drowned_king",     "suit": "cups",   "rank": "king",   "attack": 4, "health": 8},
+    {"id": "blade_apprentice", "suit": "swords", "rank": "page",   "attack": 2, "health": 2},
+    {"id": "executioner",      "suit": "swords", "rank": "knight", "attack": 4, "health": 3},
+    {"id": "clear_blade",      "suit": "swords", "rank": "queen",  "attack": 4, "health": 4},
+    {"id": "the_judge",        "suit": "swords", "rank": "king",   "attack": 5, "health": 5}
+  ]
+}

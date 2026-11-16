@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "enemies": [
+    {"id": "beggar_ghost",     "region": "coins", "cost": 1, "attack": 1, "health": 3},
+    {"id": "debt_collector",   "region": "coins", "cost": 1, "attack": 2, "health": 3},
+    {"id": "the_changer",      "region": "coins", "cost": 2, "attack": 3, "health": 4},
+    {"id": "greedmaw",         "region": "coins", "cost": 2, "attack": 4, "health": 4},
+    {"id": "vault_warden",     "region": "coins", "cost": 2, "attack": 2, "health": 8},
+    {"id": "coin_thrower",     "region": "coins", "cost": 2, "attack": 2, "health": 3},
+    {"id": "greedy_dragon",    "region": "coins", "cost": 3, "attack": 6, "health": 6},
+    {"id": "mirror_coin",      "region": "coins", "cost": 3, "attack": 3, "health": 5}
+  ]
+}

@@ -46,9 +46,16 @@ jobs:
           unzip -qj templates.tpz 'templates/web_nothreads_*' 'templates/version.txt' -d "$dest"
           rm godot.zip templates.tpz
 
+      - name: Import project
+        run: ~/godot/godot --headless --import
+
+      - name: Run tests
+        run: |
+          ~/godot/godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit 2>&1 | tee test.log
+          grep -q "All tests passed" test.log
+
       - name: Export web build
         run: |
-          ~/godot/godot --headless --import
           mkdir -p build/web
           ~/godot/godot --headless --export-release "Web" build/web/index.html
           test -f build/web/index.wasm
