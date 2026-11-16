@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 12, Runde 2 läuft
+**Status:** Planung – Phase 12 abgeschlossen, Phase 13 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -315,10 +315,26 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 
 ### Runde 1 (beantwortet)
 - **Farbpalette (Nutzer-Wunsch):** Eine **Mischung** aus dunkel/gold, Vintage-Tarot und Neon. Klar erkennbare **Details und Verzierungen**. **Neonfarben heben Mächtigkeit und Seltenheit hervor**, damit Stärke und Seltenheit sofort erkennbar sind.
-  - Interpretation (Bestätigung in Runde 2): Die Basis ist gedeckt (dunkler Grund, Pergament, Gold-Ornamente). **Neon-Leuchten** steigt mit Seltenheit, Stufe und Fusionsstufe.
+  - Umsetzung (bestätigt in Runde 2): Die Basis ist gedeckt (dunkler Grund, Pergament, Gold-Ornamente). **Neon-Leuchten** steigt mit Seltenheit, Stufe und Fusionsstufe.
 - **Audio:** Soundeffekte aus lizenzfreien Bibliotheken (z. B. Kenney, freesound CC0), **Musik per KI-Generator**. Lizenzen dokumentieren.
 - **Textton:** **Ernst mit trockenem Humor** (Darkest Dungeon mit Augenzwinkern)
 - **Sprachen:** **Deutsch** zuerst. Alle Texte von Anfang an in einer Übersetzungsdatei (Godot-Lokalisierung), Englisch später ohne Umbau.
+
+### Runde 2 (beantwortet)
+- **Seltenheits-Optik (bestätigt):**
+
+  | Rang | Rahmen | Leuchten |
+  |------|--------|----------|
+  | Bube (häufig) | schlichter Holzschnitt | keines |
+  | Ritter (ungewöhnlich) | Silber | dezenter Neon-Rand in der Farbfarbe |
+  | Königin (selten) | Gold mit Ornamenten | kräftiges Neon |
+  | König (episch) | verziertes Gold | pulsierendes Neon + Partikel |
+
+  - Jede **Fusionsstufe (F1–F3)** fügt einen Ornament-Ring hinzu. **F3** leuchtet mehrfarbig nach den beteiligten Farben.
+  - Das System gilt analog für Ausrüstung und Relikte (Gewöhnlich → Magisch → Selten → Verflucht/Legendär).
+- **Spielname:** später entscheiden (Kandidaten: *Arcana Profana*, *Hofstaat der Asche*, *Die Verfluchte Hand*)
+- **Musik:** Ein Thema pro Gebiet (4) + Boss-Thema + Shop- und Menümusik
+- **Animation:** **Statische Bilder + Code-Effekte** (Wackeln, Stoßen, Aufblitzen, Zerfallen). Keine Frame-Animationen.
 
 ## Phase 13 – Speichern, Daten und Persistenz
 _Noch nicht behandelt._
@@ -332,10 +348,11 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 12, Runde 2: Seltenheits-Optik bestätigen, Spielname, Musik-Verhalten, Animationsumfang
+- Phase 13, Runde 1: Speicher-Umfang, Format/Ort, Determinismus, Statistiken
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
+- **Spielname** (Kandidaten: Arcana Profana, Hofstaat der Asche, Die Verfluchte Hand)
 - **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
 - **Verderben-Zahlen** → Prototyp (Startpunkt: ab Zug 15, verdoppelnd)
 - **Die 10 Meisterfähigkeiten** inhaltlich → Inhaltsrunden
@@ -379,3 +396,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Links vs. rechts, Tippen → Detail-Panel, Drag & Drop + Tippen, Hinweise beim ersten Mal | Querformat nutzen, ein Bedienkonzept für Touch und Maus | Oben/unten; Long-Press; nur D&D/nur Tippen; geführter Run, kein Tutorial |
 | 2026-11-16 | Rückgängig für den Shop + Abfragen bei unumkehrbaren Aktionen, saftiges Kampf-Feedback, 3 Barrierefreiheits-Optionen, minimales Menü | Permadeath ohne Fehlklick-Frust, explosive Power-Fantasy | Abfrage beim Kampfstart; schlichtes Feedback; Hub-Menü |
 | 2026-11-16 | Gedeckte Basis + Neon nach Seltenheit/Macht, freie SFX + KI-Musik, ernst mit trockenem Humor, Deutsch + Englisch vorbereitet | Stärke auf einen Blick lesbar, solo machbar | Reine Paletten; alles KI/Audio später; poetisch/humorvoll; nur DE/EN |
+| 2026-11-16 | Seltenheits-Leuchtsystem bestätigt, Musik pro Gebiet + Boss, statische Bilder + Code-Effekte, Name später | Stärke sofort lesbar, KI-Grafik-tauglich | Adaptive Musik, Hauptthema; Frame-Animationen |
