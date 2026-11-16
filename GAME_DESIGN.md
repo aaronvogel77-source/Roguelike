@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 5, Runde 2 läuft
+**Status:** Planung – Phase 5, Runde 3 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -154,6 +154,14 @@ Weil der Kampf automatisch läuft, kann eine einzelne Niederlage als unfair empf
 ### ⚠️ Umfangs-Hinweis Fusion
 Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Handgemachte Ergebnisse für alle Paare sind unrealistisch. Die Fusionsregel wird in Runde 2 entschieden.
 
+### Runde 2 (beantwortet)
+- **Figuren-Werte:** Nur **Angriff + Leben** (Super-Auto-Pets-Prinzip). Alles Weitere, z. B. Rüstung, kommt über Fähigkeiten.
+- **Fusionsregel:** **Erbt beide Fähigkeiten.** Die Fusion behält beide Fähigkeiten und addiert die Werte mit Bonus. Name und Bild entstehen aus Bausteinen („Feuer-“ + „Ritter“).
+  - Jedes Paar funktioniert ohne Handarbeit → kein Umfangsproblem
+  - Bild: Für KI-Grafik ist eine Kombination aus Rahmen/Farbe und Kernfigur nötig (→ Phase 12)
+- **Seelen-Quellen:** Figuren opfern, Akt-Bosse besiegen, Ereignisse, sterbende Figuren im Kampf (kleine Chance)
+- **Okkultisten im Vertical Slice:** 2
+
 ## Phase 6 – Kampfsystem
 _Noch nicht behandelt._
 
@@ -187,7 +195,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 5, Runde 2: Figuren-Werte, Fusionsregel, Seelen (Quellen/Verwendung), Anzahl Okkultisten im Vertical Slice
+- Phase 5, Runde 3: Heilung/Tod nach Kampf, Fusionsgrenzen und -kosten, Seelen-Verwendung, Level-Zahlen
 
 ## Später entscheiden
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
@@ -214,3 +222,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Regel-Bosse, Ereignisse mit ~30 % Chance, Überspringen bis auf den Endboss, Gebiete = 4 Tarot-Farben | Build-Anpassung erzwingen, Risiko-Tausch, Tarot-Thema durchziehen | Boss-Figuren, Kombination; 1× pro Akt, als Option; nur Kampf 1+2 überspringbar; klassischer Abstieg |
 | 2026-11-16 | Exakte Werte, keine Prognose, Schaden-Statistik; Endboss aus den Großen Arkana; Pity-Timer nach 4 Kämpfen | Fairness durch Transparenz, Einschätzen als Skill | Versteckte Effekte; grobe/genaue Prognose; Kampf-Log, Replay |
 | 2026-11-16 | Okkultisten-Wahl, Gold + Seelen, Leveln durch Verschmelzen + Kampf-Erfahrung, Fusion zu neuen Figuren | Build-Vielfalt ab Start, Pakt-Thema, Kombinieren als Kernfantasie | Fester/zufälliger Start; Zinsen, nur Gold; Traits, Positions-Kombos als Hauptsystem |
+| 2026-11-16 | Angriff + Leben, Fusion erbt beide Fähigkeiten, Seelen aus 4 Quellen, 2 Okkultisten im Slice | Lesbarkeit auf Mobile, Fusion ohne Content-Explosion | Tempo/Rüstung als Grundwert; Farbe×Klasse-Tabelle, feste Rezepte |
