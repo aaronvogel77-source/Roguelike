@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 2, Runde 3 läuft
+**Status:** Planung – Phase 2, Runde 4 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -86,6 +86,15 @@ Ein kommerzieller Release ohne Programmiererfahrung ist ein sehr großes Vorhabe
 - „Kompaktes Spielfeld (Raster ~7×9)“ wird zu einem **kompakten, vollständig sichtbaren Kampffeld**. Die genaue Aufstellungsform wird in Phase 2, Runde 3 entschieden.
 - Touch passt sehr gut: Drag & Drop in der Planungsphase, Zuschauen im Kampf.
 
+### Runde 3 (beantwortet)
+- **Aufstellung:** **Eine Reihe** mit 5–6 Plätzen. Vorne kämpft zuerst. Positions-Synergien sind möglich, z. B. Nachbar-Buffs oder „wenn die vordere Figur stirbt…“ (Super Auto Pets).
+- **Kampfdarstellung:** **Schritt für Schritt.** Angriffe und Effekte laufen nacheinander mit kurzer Animation, jede Synergie-Auslösung ist sichtbar. Tempo-Taste 1×/2×/4×.
+- **Niederlage:** **Eine verlorene Schlacht = Tod des Runs** (harter Permadeath).
+- **Run-Ziel:** Feste Akte mit je einem Boss. Nach dem finalen Boss ist der Run gewonnen, optional folgt ein Endlos-Modus für die Power-Fantasy.
+
+### ⚠️ Risiko: Permadeath im Auto-Battler
+Weil der Kampf automatisch läuft, kann eine einzelne Niederlage als unfair empfunden werden („Ich konnte nichts tun“). Gegenmaßnahmen werden in Runde 4 entschieden, z. B. Gegner-Vorschau.
+
 ## Phase 3 – Welt und prozedurale Generierung
 _Noch nicht behandelt._
 
@@ -128,7 +137,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 2, Runde 3: Aufstellung, Kampfdarstellung, Niederlage-Regel/Druck, Run-Ziel
+- Phase 2, Runde 4: Fairness bei Permadeath (Gegner-Vorschau), Akt-/Kampfanzahl, Teamgröße, Kampfende-Regeln
 
 ## Später entscheiden
 - **Art der Synergie-Objekte** (Karten/Joker/Pakte sind Platzhalter) → Phase 8/9
@@ -148,3 +157,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Querformat, Tarot-Illustrationsstil, KI-Tool per Vergleichstest, kompaktes Spielfeld | Lesbarkeit auf Mobile, passt zu Dark Fantasy und Touch-Taktik | Hochformat, responsiv; Pixel-Art, gemalter Stil; scrollende Karte, abstrakte Szene |
 | 2026-11-16 | 1280×720, KI-Test nach der Planung, Claude committet, Claude baut und Nutzer testet | Nutzer will testen statt programmieren lernen | 1080p, 360p; sofortiger KI-Test; Lernen am Projekt |
 | 2026-11-16 | Auto-Battler mit Team aus levelbaren, kombinierbaren Figuren; Loop Kampf → Belohnung → Shop → Boss | Synergien und Build sind der Kern, Angriffe laufen automatisch | Survivors-Echtzeit, Züge mit freier Position, Raster mit Auto-Angriff; Einzelheld |
+| 2026-11-16 | Eine Reihe, Schritt-für-Schritt-Kampf, eine Niederlage = Tod, Akte mit Bossen | Lesbarkeit, Synergien nachvollziehbar, maximaler Druck | Zwei Reihen, freies Feld; Echtzeit-Simulation; Leben-System, übertragene HP |
