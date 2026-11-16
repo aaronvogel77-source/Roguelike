@@ -68,7 +68,15 @@ Ein kommerzieller Release ohne Programmiererfahrung ist ein sehr großes Vorhabe
   - *Konsequenz:* Jeder Meilenstein muss als **direkt spielbarer Browser-Build** ausgeliefert werden (Godot-Web-Export, z. B. über GitHub Pages), damit ohne Installation getestet werden kann. Details folgen in Phase 15.
 
 ## Phase 2 – Kern-Spielschleife und Zeitmodell
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet, teilweise widersprüchlich → Klärung in Runde 2)
+- **Kern-Loop:** Kampf → Belohnung (1 aus 3 Synergie-Teilen) → regelmäßig Shop → Boss am Ende jeder Stufe
+- **Kampftempo:** „Rundenbasiert auf Raster“ gewählt
+- **Zeitsystem:** Einfache Züge (eine Aktion pro Zug)
+- **Bewegung/Kampf:** „Figuren bewegen sich frei, ohne Raster. Am wichtigsten sind Synergien und Build, Angriffe laufen meist automatisch.“
+
+### ⚠️ Widerspruch
+„Rundenbasiert auf Raster“ passt nicht zu „frei ohne Raster, Angriffe automatisch“. Das betrifft auch Phase 1 (kompaktes Spielfeld als Raster). Klärung folgt in Runde 2.
 
 ## Phase 3 – Welt und prozedurale Generierung
 _Noch nicht behandelt._
@@ -112,7 +120,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 2, Runde 1: Kampftempo, Zeitsystem, Bewegung, Kern-Loop
+- Phase 2, Runde 2: Widerspruch Raster/rundenbasiert vs. frei/automatisch klären; ein Held oder Team aus Figuren?
 
 ## Später entscheiden
 - **Art der Synergie-Objekte** (Karten/Joker/Pakte sind Platzhalter) → Phase 8/9
