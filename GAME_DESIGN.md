@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 0, Runde 3 läuft
+**Status:** Planung – Phase 0, Runde 4 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -24,6 +24,14 @@
 - **Spannungsbogen:** Kurve „knapp → explosiv“. Früh im Run fehlt es an allem, ein gelungener Build eskaliert wie bei Balatro.
 - **Setting:** Dark Fantasy / Okkult (Tarot, Flüche, Pakte)
 - **Run-Länge:** 30–45 Minuten für einen erfolgreichen Run
+### Runde 3 (beantwortet)
+- **„Mehrere Runden“ bedeutet beides:** Der eigentliche Build entsteht im Run und wächst über Stufen wie die Antes in Balatro. Zwischen den Runs werden neue Karten, Joker und Figuren für den Pool freigeschaltet.
+- **Zielgruppe:** Roguelite-Fans, die Tiefe mögen. Ein kurzes Onboarding genügt.
+- **Projektrahmen:** Kommerzieller Release
+- **Programmiererfahrung:** Keine bzw. sehr wenig. Konzepte werden ausführlich erklärt, der Stack muss einsteigerfreundlich sein.
+
+### Machbarkeits-Hinweis
+Ein kommerzieller Release ohne Programmiererfahrung ist ein sehr großes Vorhaben. Grob geschätzt sind es 1.500–3.000+ Arbeitsstunden bis zum Release, dazu kommen Art, Sound und Marketing. Gegenmaßnahmen: zuerst ein kleiner, spielbarer **Vertical Slice** (Kern-Synergie-Loop), Umfang hart begrenzen und früh testen.
 
 ## Phase 1 – Plattform und Technik
 _Noch nicht behandelt._
@@ -73,7 +81,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 0, Runde 3: Bedeutung „mehrere Runden“, Zielgruppe, Projektrahmen, Programmiererfahrung, finaler Pitch-Satz
+- Phase 0, Runde 4: Zeitbudget, Team, Umgang mit dem Umfang, finaler Pitch-Satz
 
 ## Später entscheiden
 - **Kampftempo** (Echtzeit, rundenbasiert, Auto-Kampf oder kartenbasiert) → Phase 2. Leitlinie: Das Tempo muss komplexes Synergie-Kombinieren unterstützen.
@@ -87,3 +95,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Projekt gestartet, Design-Dokument angelegt | Strukturierter Frageprozess vor dem ersten Code | – |
 | 2026-11-16 | Action-Roguelite mit Balatro-artigem Synergie-System, Roguelite-Meta, Zielgefühl Knappheit + Power-Fantasy | Wunsch nach Hades/Isaac-Feeling plus Kombinier-Tiefe à la Balatro | Klassisches Roguelike, Roguelike mit leichten Freischaltungen |
 | 2026-11-16 | Dark-Fantasy/Okkult, Runs 30–45 Min., Kurve knapp → explosiv, Synergien als Kern, Kampftempo vertagt | Synergie- und Build-Tiefe hat Vorrang vor Reflex-Action | Sci-Fi, Postapokalypse, Mythologie; getrennte Ressourcen; Risiko-Tausch |
+| 2026-11-16 | Build im Run + Pool-Freischaltungen zwischen Runs; Zielgruppe Roguelite-Fans; kommerzieller Release; Einsteiger in der Programmierung | Vision Balatro/Hades-artig | Nur im Run, nur Meta; Veteranen/Einsteiger als Zielgruppe |
