@@ -39,7 +39,7 @@ func test_events_appear_and_pity_guarantees_one() -> void:
 func test_altar_sacrifice_gives_souls() -> void:
 	var run := _event_run("altar")
 	assert_true(run.resolve_event("sacrifice_one", [0]))
-	assert_eq(run.souls, (4 + 2) * 2, "king level 2")
+	assert_eq(run.souls, 4 + 2, "king level 2")
 	assert_null(run.row[0])
 
 

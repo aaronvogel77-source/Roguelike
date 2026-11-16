@@ -10,9 +10,9 @@ const RARITY_COMMON := 0
 const RARITY_MAGIC := 1
 const RARITY_RARE := 2
 const RARITY_CURSED := 3
-const AFFIX_COUNT := [0, 1, 2, 3]
-## Equipment rarity odds by act (common, magic, rare, cursed).
-const RARITY_ODDS := [[1, [70, 22, 7, 1]], [2, [55, 30, 12, 3]], [3, [45, 32, 17, 6]]]
+const AFFIX_COUNT := [0, 1, 2, 2]
+## Equipment rarity odds by act (common, magic, rare, cursed) - good items are rare.
+const RARITY_ODDS := [[1, [85, 13, 2, 0]], [2, [75, 19, 5, 1]], [3, [65, 24, 8, 3]]]
 
 
 # --- Equipment --------------------------------------------------------------------
@@ -117,7 +117,7 @@ static func pack_choice_count(db: ContentDb, pack: Dictionary) -> int:
 static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: RandomNumberGenerator,
 		owned_relics: Array = [], force_legend: bool = false) -> Array:
 	var count := pack_choice_count(db, pack)
-	var rarity_bonus := 0 if pack["size"] == "normal" else 1
+	var rarity_bonus := 0  # bigger packs give more choice, not better items
 	var result: Array = []
 	match pack["type"]:
 		"equipment":

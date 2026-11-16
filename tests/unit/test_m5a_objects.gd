@@ -265,3 +265,33 @@ func test_team_entries_list_what_modifies_a_figure() -> void:
 	assert_does_not_have(team[0]["sources"], "eternal_ember")
 	assert_has(team[1]["sources"], "eternal_ember", "spark bearer applies burn")
 	assert_does_not_have(team[1]["sources"], "beggars_bowl", "gold relics affect no figure")
+
+
+func test_max_two_objects_per_figure() -> void:
+	var run := _planning_run()
+	run.row[0] = _fig("coin_squire")
+	run.tarots = ["strength", "strength"]
+	assert_true(run.use_tarot(0, 0))
+	assert_true(run.use_tarot(0, 0))
+	run.tarots = ["sun"]
+	assert_false(run.use_tarot(0, 0), "third object blocked")
+	var blade := {"base": "blade", "rarity": 0, "affixes": [], "drawback": {}}
+	run.open_pack = {"pack": {"type": "equipment", "size": "normal"}, "picks_left": 1, "items": [{"kind": "equipment", "item": blade}]}
+	assert_false(run.can_take_pack_item(0, 0))
+
+
+func test_reroll_keeps_the_packs() -> void:
+	var run := _planning_run()
+	run.gold = 20
+	var packs_before := run.packs.duplicate(true)
+	run.reroll()
+	assert_eq(run.packs, packs_before)
+
+
+func test_enemy_options_use_different_enemies() -> void:
+	for seed_value in range(1, 30):
+		var run := RunState.new_run(_db, seed_value)
+		var first: Array = run.enemy_options[0]["team"].map(func(u): return u["def_id"])
+		var second: Array = run.enemy_options[1]["team"].map(func(u): return u["def_id"])
+		for id in second:
+			assert_does_not_have(first, id)

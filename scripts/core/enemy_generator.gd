@@ -44,18 +44,21 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		return [{"kind": "boss", "difficulty": 2, "bonus": BOSS_BONUS, "theme": theme,
 			"boss_id": boss.get("id", ""), "rule": boss.get("rule", ""), "team": team}]
 	var result: Array = []
+	var used: Array = []  # enemy ids of earlier options: avoided where possible
 	for difficulty in 3:
 		var theme := _pick_theme(db, region, rng)
+		var team := generate(db, budget(act, fight, difficulty), rng, theme, MAX_TEAM, used)
+		for unit in team:
+			used.append(unit["def_id"])
 		result.append({"kind": "normal", "difficulty": difficulty, "theme": theme,
-			"bonus": DIFFICULTY_BONUS[difficulty],
-			"team": generate(db, budget(act, fight, difficulty), rng, theme)})
+			"bonus": DIFFICULTY_BONUS[difficulty], "team": team})
 	return result
 
 
 ## Spends the budget on enemies (cost = their "cost"), then on level-ups.
 ## Returns entries {"def_id": String, "level": int}, front first.
 static func generate(db: ContentDb, team_budget: int, rng: RandomNumberGenerator,
-		theme: String = "", max_team: int = MAX_TEAM) -> Array:
+		theme: String = "", max_team: int = MAX_TEAM, avoid: Array = []) -> Array:
 	var pool: Array = db.regular_enemies()
 	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	var team: Array = []
@@ -64,6 +67,10 @@ static func generate(db: ContentDb, team_budget: int, rng: RandomNumberGenerator
 		var affordable := pool.filter(func(e: Dictionary) -> bool: return int(e["cost"]) <= remaining)
 		if affordable.is_empty():
 			break
+		# Prefer enemies the other options do not use, so the choices differ.
+		var fresh := affordable.filter(func(e: Dictionary) -> bool: return not e["id"] in avoid)
+		if not fresh.is_empty():
+			affordable = fresh
 		var pick := _weighted_pick(affordable, theme, rng)
 		team.append({"def_id": pick["id"], "level": 1})
 		remaining -= int(pick["cost"])

@@ -18,12 +18,18 @@ static func equipment_lines(db: ContentDb, item: Dictionary) -> Array:
 	var lines: Array = []
 	var base: Dictionary = _find(db.items["equipment"], item["base"])["base"]
 	var base_value: Variant = base.get("value", base.get("ability", {}).get("values", [0])[0])
-	lines.append(_fill("EQUIP_%s_DESC" % String(item["base"]).to_upper(), base_value))
+	var t := TranslationServer
+	lines.append(t.translate("UI_BASE_EFFECT") + ": " + _fill("EQUIP_%s_DESC" % String(item["base"]).to_upper(), base_value))
 	for affix in item["affixes"]:
-		lines.append(_fill("AFFIX_" + String(affix["id"]).to_upper(), affix["value"]))
+		lines.append(t.translate("UI_EXTRA_EFFECT") + ": " + _fill("AFFIX_" + String(affix["id"]).to_upper(), affix["value"]))
 	if not item.get("drawback", {}).is_empty():
-		lines.append("– " + _fill("AFFIX_" + String(item["drawback"]["id"]).to_upper(), item["drawback"]["value"]))
+		lines.append(t.translate("UI_DRAWBACK") + ": " + _fill("AFFIX_" + String(item["drawback"]["id"]).to_upper(), item["drawback"]["value"]))
 	return lines
+
+
+## "Magisch – +1 Zusatzeffekt".
+static func rarity_line(rarity: int) -> String:
+	return "%s – %s" % [rarity_name(rarity), TranslationServer.translate("RARITY_%d_DESC" % rarity)]
 
 
 static func relic_name(relic_id: String) -> String:

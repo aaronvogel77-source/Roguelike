@@ -23,10 +23,12 @@ const SHOP_PACK_SLOTS := 2
 const MAX_RELICS := 3
 const MAX_TAROTS := 2
 const MAX_PACTS := 3
-const BOSS_SOULS := 3
-const DEATH_SOUL_CHANCE := 0.1
+const BOSS_SOULS := 2
+const DEATH_SOUL_CHANCE := 0.05
+## Objects per figure (equipment, blessing, each Strength card).
+const MAX_OBJECTS := 2
 const KILL_SOUL_CHANCE := 0.25  # Soul Hunger pact
-## Soul value of a sacrificed figure: (rank value + level) × 2.
+## Soul value of a sacrificed figure: rank value + level.
 const RANK_SOUL_VALUE := {"page": 1, "knight": 2, "queen": 3, "king": 4, "legend": 5}
 const REWARD_CHOICES := 3
 const REWARD_SKIP_GOLD := 2
@@ -113,6 +115,24 @@ func figure_level(figure: Dictionary) -> int:
 
 func reroll_price() -> int:
 	return 1 + reroll_count + (1 if "golden_oath" in pacts else 0)
+
+
+## Objects on a figure: equipment, blessing and every Strength card.
+func figure_objects(figure: Dictionary) -> int:
+	return (1 if figure.has("equipment") else 0) + (1 if figure.has("blessing") else 0) + int(figure.get("strength", 0))
+
+
+func object_limit(figure: Dictionary) -> int:
+	return MAX_OBJECTS + int(figure.get("extra_object_slots", 0))
+
+
+## Whether a new object fits (replacing equipment/blessing does not count).
+func can_add_object(figure: Dictionary, kind: String) -> bool:
+	if kind == "equipment" and figure.has("equipment"):
+		return true
+	if kind == "blessing" and figure.has("blessing"):
+		return true
+	return figure_objects(figure) < object_limit(figure)
 
 
 ## Tarot suit of a figure (the Wheel of Fortune can change it).
@@ -244,12 +264,15 @@ func insert_between(from_index: int, after_index: int) -> bool:
 	return true
 
 
+## Rerolls the figure offers only; packs stay until the next shop.
 func reroll() -> bool:
 	if stage != Stage.PLANNING or gold < reroll_price():
 		return false
 	gold -= reroll_price()
 	reroll_count += 1
-	_roll_shop()
+	shop.clear()
+	for i in SHOP_FIGURE_SLOTS:
+		shop.append(_random_figure_id(rng.stream("shop")))
 	return true
 
 
@@ -309,7 +332,7 @@ func skip_fight() -> bool:
 		return false
 	match enemy_options[0].get("skip_mark", ""):
 		"souls":
-			souls += 4
+			souls += 2
 		"experience":
 			for figure in row:
 				if figure != null:
@@ -409,7 +432,9 @@ func event_option_block(option: String, targets: Array = []) -> String:
 		"mega_arcana":
 			return "" if souls >= 1 else "cost"
 		"duplicate":
-			return "" if figures.size() == 1 and souls >= 2 and row.has(null) else "cost"
+			if souls < 2 or not row.has(null):
+				return "cost"
+			return "" if figures.size() == 1 else "target"
 		"soul_to_gold":
 			return "" if souls >= 1 else "cost"
 		"gold_to_soul":
@@ -432,7 +457,7 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 			return true
 		"sacrifice_one":
 			var figure: Dictionary = row[targets[0]]
-			souls += (RANK_SOUL_VALUE[db.figures[figure["def_id"]]["rank"]] + figure_level(figure)) * 2
+			souls += RANK_SOUL_VALUE[db.figures[figure["def_id"]]["rank"]] + figure_level(figure)
 			row[targets[0]] = null
 		"sacrifice_two":
 			row[targets[0]] = null
@@ -588,7 +613,8 @@ func can_take_pack_item(item_index: int, target_index: int = -1) -> bool:
 		return false
 	match entry["kind"]:
 		"equipment":
-			return target_index >= 0 and target_index < row.size() and row[target_index] != null
+			return target_index >= 0 and target_index < row.size() and row[target_index] != null \
+				and can_add_object(row[target_index], "equipment")
 		"tarot":
 			return tarots.size() < MAX_TAROTS
 		"relic":
@@ -651,10 +677,16 @@ func use_tarot(tarot_index: int, row_index: int) -> bool:
 	if row_index < 0 or row_index >= row.size() or row[row_index] == null:
 		return false
 	var figure: Dictionary = row[row_index]
-	match tarots[tarot_index]:
+	var card: String = tarots[tarot_index]
+	if card == "strength" and not can_add_object(figure, "strength"):
+		return false
+	if card in ["star", "sun"] and not can_add_object(figure, "blessing"):
+		return false
+	match card:
 		"strength":
 			figure["bonus_attack"] = int(figure.get("bonus_attack", 0)) + 2
 			figure["bonus_health"] = int(figure.get("bonus_health", 0)) + 2
+			figure["strength"] = int(figure.get("strength", 0)) + 1
 		"magician":
 			figure["xp"] = mini(int(figure["xp"]) + XP_PER_DUPLICATE, XP_FOR_LEVEL[2])
 		"star":

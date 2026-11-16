@@ -34,7 +34,7 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 			emblem_kind = Emblem.EQUIPMENT_KINDS.get(item["base"], "sword")
 			title = ItemText.equipment_name(item)
 			border = ItemText.RARITY_COLORS[int(item["rarity"])]
-			subtitle = ItemText.rarity_name(int(item["rarity"]))
+			subtitle = ItemText.rarity_line(int(item["rarity"]))
 			lines = ItemText.equipment_lines(db, item)
 		"tarot":
 			emblem_kind = "tarot"
@@ -86,8 +86,17 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text.add_theme_font_size_override("normal_font_size", 13)
 	text.add_theme_color_override("default_color", Palette.PARCHMENT)
-	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return Keywords.colorize(l))) + "[/center]"
+	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return _highlight_label(Keywords.colorize(l)))) + "[/center]"
 	column.add_child(text)
+
+
+## "Grundwirkung:" / "Zusatz:" / "Nachteil:" labels in their own colors.
+func _highlight_label(line: String) -> String:
+	for pair in [["UI_BASE_EFFECT", Palette.PARCHMENT], ["UI_EXTRA_EFFECT", Color(0.5, 0.75, 1.0)], ["UI_DRAWBACK", Palette.HEALTH]]:
+		var label := TranslationServer.translate(pair[0]) + ":"
+		if line.begins_with(label):
+			return "[color=#%s][b]%s[/b][/color]%s" % [(pair[1] as Color).to_html(false), label, line.substr(label.length())]
+	return line
 
 
 func set_selected(selected: bool) -> void:

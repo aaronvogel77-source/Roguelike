@@ -498,7 +498,10 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | Dolch | Nach dem Angriff: Ziel erhält Blutung 1 |
 | Geldkatze | Kampfbeginn: +1 Angriff je 10 Gold |
 
-- Seltenheit: Gewöhnlich (nur Grundwirkung) · Magisch (+1 Zusatz) · Selten (+2) · Verflucht (+3 und 1 Nachteil)
+- Seltenheit: Gewöhnlich (nur Grundwirkung) · Magisch (+1 Zusatz) · Selten (+2) · Verflucht (~~+3~~ **+2** und 1 Nachteil)
+- **Nach M5b-Feedback abgeschwächt:** Seltenheits-Quoten Akt 1 85/13/2/0 %, Akt 2 75/19/5/1 %, Akt 3+ 65/24/8/3 %; kleinere Zusatzwerte (+1 Angriff, +1–2 Leben, Schild 1, ×1,1); größere Packs verbessern die Seltenheit nicht
+- **Max. 2 Objekte pro Figur** (Ausrüstung, Segen, jede Kraft-Karte). Später: besondere Gegenstände/Relikte wie „negative Joker“ erlauben einen 3. Platz.
+- Neue Ausrüstung auf eine ausgerüstete Figur → Vergleichsfenster (Tauschen / Altes behalten)
 - Zusatz-Pool: +1–2 Angriff · +2–3 Leben · Kampfbeginn Schild 1–2 · Zugbeginn Heilung 1 · Wenn getroffen +1 Angriff · Bei Tod +2 Gold · ×1,1–1,2 Angriff (ab Selten) · Ziel Brennen 1 · Ziel Blutung 1
 - Nachteil-Pool: −2 Leben · Kampfbeginn Fluch 1 auf sich · Kampfbeginn Brennen 1 auf sich · −1 Gold nach jedem Kampf
 
@@ -518,13 +521,13 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 |---|---|---|---|
 | Münzen | **Goldene Quelle** | 4/10 | Kampfbeginn: Alle Figuren erhalten Schild = Zinsen × 2 |
 | Stäbe | **Flammenkrone** | 7/7 | Nach dem Angriff: Alle Gegner erhalten Brennen 1 |
-| Kelche | **Tränenquelle** | 4/12 | Stirbt eine eigene Figur: Sie kehrt mit halbem Leben zurück (max. 2× pro Kampf) |
+| Kelche | **Tränenquelle** | 4/12 | Stirbt eine eigene Figur: Sie kehrt mit halbem Leben zurück (**1×** pro Kampf, nach Feedback von 2× gesenkt) |
 | Schwerter | **Klinge der Wahrheit** | 7/7 | Angriffe ignorieren Schild; nach dem Angriff verdoppelt sie die Blutung des Ziels |
 
 **Wirtschaft (v0.4.2-Feedback):** Grundeinkommen 5 → **4**. Plätze nicht mehr kaufbar.
 
 ### M5b – Seelen, Pakte, Ereignisse, Überspringen (Set von Claude, mit Nutzer-Änderungen bestätigt)
-**Seelen:** Boss besiegt +3 · Figur opfern (Opferaltar) (Rangwert + Stufe) × 2 · eigene Figur stirbt im Kampf: 10 % Chance +1. Verwendung: Pakte (Seelen-Pack), Ereignisse, ab M6 Fusion.
+**Seelen (nach M5b-Feedback knapper):** Boss besiegt +2 · Figur opfern (Opferaltar) Rangwert + Stufe · eigene Figur stirbt im Kampf: 5 % Chance +1 · Seelen-Marke +2. Verwendung **nur** Pakte (Seelen-Pack **4 Seelen**) und ab M6 Fusion (plus einzelne Ereignisse). Pakte sind nicht verkaufbar.
 
 **Pakte** (max. 3; **Seelen-Pack** 3 Seelen, 2 Pakte, wähle 1) – stark und run-prägend, Nachteile nach Feedback abgeschwächt:
 
@@ -672,3 +675,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | v0.5.2: Goldene Waage → hinterste Figur, Relikt-/Tarot-Einflüsse als Symbole auf der Karte + goldene Werte bei Bonus + Liste im Detail-Panel, Brennen zählt sichtbar herunter („Brennen 3 -> 2“), Kampf-Tempo ×0,8. Brennen-Regel und Tarot-Stapeln bleiben | Nachvollziehbarkeit | Brennen dauerhaft; nichts/alles stapelt |
 | 2026-11-16 | M5b-Inhalte: 8 starke Pakte mit milden Nachteilen, 8 Ereignisse (~40 %, Pity 3), stärkere Überspringen-Marken; Seelen-Quellen bestätigt | Pakte und Ereignisse sollen run-prägend sein | 4 schwächere Pakte, 6 schwächere Ereignisse, „2× gratis würfeln“ |
 | 2026-11-16 | M5b gebaut (v0.6.0): Seelen (Boss, Opfer, Tod, Seelenhunger), 8 Pakte inkl. Seelen-Pack im Shop, Pakt-Leiste, 8 Ereignisse (40 %, Pity 3, eigener Bildschirm, Duell-Kampf), Überspringen mit Marken, Boss-Überspringen per Opfer, Debug „Ereignis“/„+5 Seelen“; 129 Tests | – | – |
+| 2026-11-16 | M5b-Feedback (v0.6.1): Gegneroptionen mit unterschiedlichen Gegnern, Magier-Erfahrungsbildschirm, Schwarzmarkt als Händler-Mantel mit Fächern, Ausrüstung schwächer und klarer beschriftet (Grundwirkung/Zusatz/Nachteil), Vergleich beim Ausrüsten, Tarot rückgängig, Neu würfeln nur Figuren, Tränenquelle 1×, Relikt-Symbole auf Karten entfernt, Kampf-Tempo ruhiger, Drag & Drop aus Packs/Markt, Spiegelkammer repariert, max. 2 Objekte pro Figur, Seelen knapper, Rad bleibt, Pakte nicht verkaufbar, keine weiteren Seelen-Käufe | Lesbarkeit, Balance gegen Stapeln | Seelen-Ritual, Seelen-Würfeln, Pakte auflösen |

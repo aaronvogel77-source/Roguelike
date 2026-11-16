@@ -337,7 +337,7 @@ func _make_card(snapshot: Dictionary, is_enemy: bool) -> UnitCard:
 
 
 ## Animations run a bit slower than the nominal speed so each step is readable.
-const PACE := 1.25
+const PACE := 1.35
 
 
 func _set_speed(speed: float) -> void:
@@ -419,14 +419,14 @@ func _show_trigger(event: Dictionary) -> void:
 		# Ability on itself: halo pulse plus the emblem rising out of the card.
 		card.pulse_glow(color, 0.45 / _speed)
 		_rise_emblem(kind, card.center_position())
-		await _wait(0.35)
+		await _wait(0.5)
 		return
 	# Ability on others: the emblem flies from the source to every target.
 	for uid in other_targets:
 		var target: UnitCard = _cards.get(uid)
 		if target != null:
 			_fly_emblem(kind, card.center_position(), target)
-	await _wait(0.4)
+	await _wait(0.55)
 
 
 func _rise_emblem(kind: String, at: Vector2) -> void:

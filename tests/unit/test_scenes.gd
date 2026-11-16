@@ -111,3 +111,36 @@ func test_event_screens_skip_and_soul_pack() -> void:
 	view._on_pack_take(0)
 	await wait_frames(2)
 	assert_eq(view._run.pacts.size(), 1)
+
+
+func test_market_mirror_and_equipment_compare() -> void:
+	var view: Node = load("res://scenes/run.tscn").instantiate()
+	add_child_autofree(view)
+	await wait_frames(3)
+	view._run.gold = 30
+	view._run.souls = 3
+	view._run.row = [{"uid": 1, "def_id": "coin_squire", "xp": 0}, null, null]
+	view._run.start_event("black_market")
+	view._show_stage()
+	await wait_frames(2)
+	view._on_slot_dropped({"kind": "market_figure"}, view._slot_for("row", 1))
+	await wait_frames(2)
+	assert_not_null(view._run.row[1], "figure bought by dragging")
+	view._run.start_event("mirror")
+	view._show_stage()
+	view._on_event_option("duplicate", 1)
+	view._on_event_row_tapped(view._slot_for("row", 0))
+	await wait_frames(2)
+	assert_eq(view._run.row.filter(func(f): return f != null and f["def_id"] == "coin_squire").size(), 2, "duplicated")
+	# Equipment compare when the figure already wears something.
+	view._run.event = {}
+	view._run.stage = RunState.Stage.PLANNING
+	view._run.chosen_enemy = view._run.enemy_options[0]
+	view._run.row[0]["equipment"] = {"base": "amulet", "rarity": 0, "affixes": [], "drawback": {}}
+	view._run.open_pack = {"pack": {"type": "equipment", "size": "normal"}, "picks_left": 1,
+		"items": [{"kind": "equipment", "item": {"base": "blade", "rarity": 0, "affixes": [], "drawback": {}}}]}
+	view._show_stage()
+	await wait_frames(2)
+	view._on_slot_dropped({"kind": "pack", "index": 0}, view._slot_for("row", 0))
+	await wait_frames(2)
+	assert_eq(view._run.row[0]["equipment"]["base"], "amulet", "nothing swapped before confirming")

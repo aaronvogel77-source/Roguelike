@@ -18,7 +18,7 @@ func _planning_run(seed_value := 3) -> RunState:
 	return run
 
 
-func test_boss_win_gives_three_souls() -> void:
+func test_boss_win_gives_two_souls() -> void:
 	var run := RunState.new_run(_db, 5)
 	while not run.is_boss_fight():
 		if run.stage == RunState.Stage.ENEMY_CHOICE:
@@ -29,7 +29,7 @@ func test_boss_win_gives_three_souls() -> void:
 			run.resolve_event("leave")
 	var before := run.souls
 	run.apply_battle_result({"victory": true})
-	assert_gte(run.souls, before + 3)
+	assert_gte(run.souls, before + 2)
 
 
 func test_soul_pack_offers_unowned_pacts() -> void:
@@ -37,7 +37,7 @@ func test_soul_pack_offers_unowned_pacts() -> void:
 	run.souls = 5
 	run.pacts = ["blood_pact"]
 	assert_true(run.buy_soul_pack())
-	assert_eq(run.souls, 2)
+	assert_eq(run.souls, 1, "soul packs cost 4")
 	for item in run.open_pack["items"]:
 		assert_eq(item["kind"], "pact")
 		assert_ne(item["id"], "blood_pact")
@@ -48,7 +48,7 @@ func test_soul_pack_offers_unowned_pacts() -> void:
 func test_soul_hunger_makes_soul_packs_pricier() -> void:
 	var run := _planning_run()
 	run.pacts = ["soul_hunger"]
-	assert_eq(run.soul_pack_price(), 4)
+	assert_eq(run.soul_pack_price(), 5)
 
 
 func test_blood_pact_multiplies_and_drains() -> void:

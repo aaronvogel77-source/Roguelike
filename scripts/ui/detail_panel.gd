@@ -107,7 +107,7 @@ func show_card(card: UnitCard) -> void:
 			var item: Dictionary = figure["equipment"]
 			var color: Color = ItemText.RARITY_COLORS[int(item["rarity"])]
 			lines.append("[color=#%s]%s[/color]" % [color.to_html(false),
-				tr("UI_EQUIPMENT") % ("%s (%s)" % [ItemText.equipment_name(item), ItemText.rarity_name(int(item["rarity"]))])])
+				tr("UI_EQUIPMENT") % ("%s (%s)" % [ItemText.equipment_name(item), ItemText.rarity_line(int(item["rarity"]))])])
 			for line in ItemText.equipment_lines(card.extras["db"], item):
 				lines.append("   " + Keywords.colorize(line))
 		var names: Array = []

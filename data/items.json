@@ -93,19 +93,19 @@
       "id": "plus_attack",
       "stat": "attack",
       "min": 1,
-      "max": 2
+      "max": 1
     },
     {
       "id": "plus_health",
       "stat": "health",
-      "min": 2,
-      "max": 3
+      "min": 1,
+      "max": 2
     },
     {
       "id": "start_shield",
       "ability": "battle_start|self|gain_shield",
       "min": 1,
-      "max": 2
+      "max": 1
     },
     {
       "id": "regen",
@@ -122,14 +122,14 @@
     {
       "id": "death_gold",
       "ability": "on_death|self|gain_gold",
-      "min": 2,
-      "max": 2
+      "min": 1,
+      "max": 1
     },
     {
       "id": "multiplier",
       "mult": true,
       "min": 1.1,
-      "max": 1.2,
+      "max": 1.1,
       "min_rarity": 2
     },
     {
@@ -257,7 +257,7 @@
       "mega": 0.02
     },
     "soul_pack": {
-      "price_souls": 3,
+      "price_souls": 4,
       "choices": 2
     }
   },

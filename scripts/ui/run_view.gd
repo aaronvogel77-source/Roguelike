@@ -662,11 +662,18 @@ func _on_slot_tapped(slot: SlotView) -> void:
 	# Row slot: use a selected tarot card, complete a pending buy or move, otherwise select.
 	if _selected.get("kind") == "tarot":
 		var tarot_index: int = _selected["index"]
+		var card_id: String = _run.tarots[tarot_index]
+		var before_xp := int(_run.row[slot.index]["xp"]) if _run.row[slot.index] != null else 0
+		var snapshot := _run.to_dict()
 		if _run.use_tarot(tarot_index, slot.index):
-			_undo.clear()  # tarot use is final (some cards are random)
+			_undo.append(snapshot)  # tarot use can be undone (the RNG state is restored too)
 			_show_stage()
+			if card_id == "magician" and _run.row[slot.index] != null:
+				_show_merge(_run.row[slot.index]["def_id"], before_xp, int(_run.row[slot.index]["xp"]))
 		else:
 			_clear_selection()
+			if slot.card != null:
+				_detail_panel.show_message(ItemText.tarot_name(card_id), tr("UI_OBJECT_LIMIT") % RunState.MAX_OBJECTS)
 		return
 	if _selected.get("kind") == "shop":
 		_buy(_selected["index"], slot.index)
@@ -683,6 +690,12 @@ func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 		_buy(data["index"], slot.index)
 	elif data["kind"] == "row":
 		_move(data["index"], slot.index)
+	elif data["kind"] == "pack":
+		_pack_pick = data["index"]
+		_on_pack_target(slot)
+	elif data["kind"] == "market_figure":
+		if _run.resolve_event("buy_figure", [slot.index]):
+			_show_stage()
 
 
 ## Dropped between two cards: the figure is inserted there. Visually the
@@ -1001,6 +1014,8 @@ func _pack_item_box(i: int) -> Control:
 		visual = object_card
 	if entry.get("taken", false):
 		visual.modulate.a = 0.3
+	elif _run.pack_item_target(i) != "":
+		_make_draggable(visual, {"kind": "pack", "index": i})
 	box.add_child(visual)
 	var text := tr("UI_PICK")
 	var enabled: bool = not entry.get("taken", false)
@@ -1041,9 +1056,76 @@ func _on_pack_row_tapped(slot: SlotView) -> void:
 
 
 func _on_pack_target(slot: SlotView) -> void:
-	if _pack_pick >= 0 and _run.take_pack_item(_pack_pick, slot.index):
+	if _pack_pick < 0:
+		return
+	var entry: Dictionary = _run.open_pack["items"][_pack_pick]
+	var figure: Variant = _run.row[slot.index] if slot.index < _run.row.size() else null
+	# Equipment onto an equipped figure: compare first, then swap or keep.
+	if entry["kind"] == "equipment" and figure != null and figure.has("equipment"):
+		_show_equipment_compare(figure, entry["item"], _pack_pick, slot.index)
+		return
+	if _run.take_pack_item(_pack_pick, slot.index):
 		_pack_pick = -1
 		_show_stage()
+	elif entry["kind"] == "equipment" and figure != null:
+		_detail_panel.show_message(ItemText.equipment_name(entry["item"]), tr("UI_OBJECT_LIMIT") % RunState.MAX_OBJECTS)
+	elif entry["kind"] == "figure":
+		_detail_panel.show_message(tr(ContentDb.name_key(_db.figures[entry["def_id"]])), tr("UI_NEEDS_FREE_SLOT"))
+
+
+## Old and new equipment side by side: swap or keep the old one.
+func _show_equipment_compare(figure: Dictionary, new_item: Dictionary, item_index: int, row_index: int) -> void:
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.85)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+	var column := VBoxContainer.new()
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 16)
+	overlay.add_child(column)
+	var title := _label(tr("UI_COMPARE_TITLE") % tr(ContentDb.name_key(_db.figures[figure["def_id"]])), 28, Palette.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+	var pair := HBoxContainer.new()
+	pair.alignment = BoxContainer.ALIGNMENT_CENTER
+	pair.add_theme_constant_override("separation", 40)
+	for side in [[tr("UI_COMPARE_OLD"), figure["equipment"]], [tr("UI_COMPARE_NEW"), new_item]]:
+		var box := VBoxContainer.new()
+		box.add_theme_constant_override("separation", 6)
+		var label := _label(side[0], 20, Palette.PARCHMENT)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		box.add_child(label)
+		box.add_child(ObjectCard.create(_db, {"kind": "equipment", "item": side[1]}, Vector2(220, 280)))
+		pair.add_child(box)
+	var center := CenterContainer.new()
+	center.add_child(pair)
+	column.add_child(center)
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_theme_constant_override("separation", 24)
+	buttons.add_child(_button(tr("UI_COMPARE_SWAP"), Vector2(240, 64), func() -> void:
+		overlay.queue_free()
+		if _run.take_pack_item(item_index, row_index):
+			_pack_pick = -1
+		_show_stage()))
+	buttons.add_child(_button(tr("UI_COMPARE_KEEP"), Vector2(240, 64), func() -> void:
+		overlay.queue_free()
+		_pack_pick = -1
+		_show_stage()))
+	column.add_child(buttons)
+
+
+## Lets a control be dragged onto row slots (pack items, market figures).
+func _make_draggable(control: Control, data: Dictionary) -> void:
+	control.set_drag_forwarding(func(_at: Vector2) -> Variant:
+		var preview := Emblem.create("pack", 60)
+		preview.position = -Vector2(30, 30)
+		var holder := Control.new()
+		holder.add_child(preview)
+		control.set_drag_preview(holder)
+		return data, Callable(), Callable())
 
 
 func _on_close_pack() -> void:
@@ -1088,7 +1170,10 @@ func _build_event() -> void:
 
 	var options := VBoxContainer.new()
 	options.add_theme_constant_override("separation", 8)
-	if event["resolved"]:
+	if id == "black_market" and not event["resolved"]:
+		options.add_child(_market_coat())
+		options.add_child(_button(tr("OPT_LEAVE"), Vector2(400, 56), _on_event_option.bind("leave", 0)))
+	elif event["resolved"]:
 		var result_key: String = event.get("result", "")
 		var result := _label(tr("RESULT_" + result_key.to_upper()) if result_key != "" else tr("UI_EVENT_DONE"), 24, Palette.GOLD)
 		result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1110,7 +1195,12 @@ func _build_event() -> void:
 
 	if _event_option != "":
 		var needed: int = _needed_targets(_event_option)
-		var hint := _label(tr("UI_PICK_PACT") if _event_option == "return_pact" else tr("UI_PICK_FIGURES") % needed, 20, Palette.GOLD)
+		var hint_text := tr("UI_PICK_FIGURES") % needed
+		if _event_option == "return_pact":
+			hint_text = tr("UI_PICK_PACT")
+		elif _event_option == "buy_figure":
+			hint_text = tr("UI_MARKET_FIGURE_HINT")
+		var hint := _label(hint_text, 20, Palette.GOLD)
 		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(hint)
 	var row_box := HBoxContainer.new()
@@ -1126,6 +1216,87 @@ func _build_event() -> void:
 		if slot.index in _event_targets:
 			slot.set_selected(true)
 	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+
+
+## The trader's coat: three compartments (relics, packs, figures) with cards,
+## descriptions, prices and a buy button each.
+func _market_coat() -> Control:
+	var coat := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.13, 0.08, 0.06)
+	style.border_color = Palette.GOLD.darkened(0.3)
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(18)
+	style.set_content_margin_all(14)
+	coat.add_theme_stylebox_override("panel", style)
+	var compartments := HBoxContainer.new()
+	compartments.add_theme_constant_override("separation", 14)
+	coat.add_child(compartments)
+	var event: Dictionary = _run.event
+	# Relic
+	if event.get("relic", "") != "":
+		var relic_card := ObjectCard.create(_db, {"kind": "relic", "id": event["relic"]}, Vector2(170, 210))
+		relic_card.tapped.connect(_detail_panel.show_object)
+		compartments.add_child(_compartment(tr("UI_MARKET_RELICS"), relic_card, 4, "buy_relic"))
+	# Pack
+	var pack := {"type": event["pack_type"], "size": "mega"}
+	var pack_box := VBoxContainer.new()
+	pack_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	pack_box.custom_minimum_size = Vector2(170, 210)
+	var emblem_center := CenterContainer.new()
+	emblem_center.add_child(Emblem.create("pack", 80))
+	pack_box.add_child(emblem_center)
+	var pack_name := _label(ItemText.pack_name(pack), 17, Palette.PARCHMENT)
+	pack_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pack_name.autowrap_mode = TextServer.AUTOWRAP_WORD
+	pack_box.add_child(pack_name)
+	var pack_info := _label(tr("UI_PACK_CONTENT") % [Items.pack_choice_count(_db, pack), Items.pack_picks(_db, pack)], 14, Palette.MUTED)
+	pack_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pack_box.add_child(pack_info)
+	compartments.add_child(_compartment(tr("UI_MARKET_PACKS"), pack_box, 6, "buy_pack"))
+	# Figure (half price): drag onto a free slot or buy + tap a slot.
+	var def_id: String = event["figure"]
+	var figure_card := UnitCard.for_definition(_db.figures[def_id], 1, false)
+	figure_card.tapped.connect(_detail_panel.show_card)
+	var figure_visual := _scaled(_with_rarity(figure_card, def_id), 1.3)
+	if not "buy_figure" in event["used"]:
+		_make_draggable(figure_visual, {"kind": "market_figure"})
+	compartments.add_child(_compartment(tr("UI_MARKET_FIGURES"), figure_visual, _run.price_of(def_id) / 2, "buy_figure"))
+	return coat
+
+
+func _compartment(title: String, visual: Control, price: int, option: String) -> Control:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.05, 0.04)
+	style.border_color = Color(0.45, 0.32, 0.18)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(10)
+	panel.add_theme_stylebox_override("panel", style)
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 8)
+	panel.add_child(box)
+	var heading := _label(title, 20, Palette.GOLD)
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(heading)
+	var center := CenterContainer.new()
+	center.add_child(visual)
+	box.add_child(center)
+	var sold: bool = option in _run.event["used"]
+	if sold:
+		visual.modulate.a = 0.3
+	var price_label := _label(tr("UI_SOLD") if sold else tr("UI_PRICE") % price, 20, Palette.GOLD)
+	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(price_label)
+	var buy := _button(tr("UI_BUY"), Vector2(150, 50), _on_event_option.bind(option, 1 if option == "buy_figure" else 0))
+	var block := _run.event_option_block(option, [])
+	buy.disabled = sold or block == "cost" or block == "done"
+	if _event_option == option:
+		buy.add_theme_color_override("font_color", Palette.GOLD)
+	box.add_child(buy)
+	return panel
 
 
 func _event_option_text(option: String) -> String:
@@ -1176,9 +1347,13 @@ func _on_event_row_tapped(slot: SlotView) -> void:
 	if _event_targets.size() >= _needed_targets(_event_option):
 		var targets := _event_targets.duplicate()
 		var option := _event_option
-		_event_option = ""
 		_event_targets.clear()
-		_run.resolve_event(option, targets)
+		if _run.resolve_event(option, targets):
+			_event_option = ""
+		elif option == "buy_figure":
+			_show_stage()
+			_detail_panel.show_message(tr("UI_MARKET_FIGURES"), tr("UI_NEEDS_FREE_SLOT"))
+			return
 	_show_stage()
 
 

@@ -274,8 +274,7 @@ func _rebuild_identity(level: int) -> void:
 	var sources: Array = extras.get("sources", [])
 	if "tarot_strength" in sources:
 		_identity.add_child(Emblem.create("tarot", 16))
-	if sources.any(func(s: String) -> bool: return s != "tarot_strength"):
-		_identity.add_child(Emblem.create("relic", 16))
+
 
 
 static func identity_kinds(unit_definition: Dictionary, enemy: bool, suit: String = "") -> Array:

@@ -19,7 +19,7 @@
     {"id": "the_judge", "suit": "swords", "rank": "king", "attack": 5, "health": 5, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "detonate_bleed", "values": [2, 3, 4]}},
     {"id": "ace_of_coins", "suit": "coins", "rank": "legend", "attack": 4, "health": 10, "pack_only": true, "ability": {"trigger": "battle_start", "target": "all_allies", "effect": "shield_from_interest", "values": [2, 2, 2]}},
     {"id": "ace_of_wands", "suit": "wands", "rank": "legend", "attack": 7, "health": 7, "pack_only": true, "ability": {"trigger": "on_attack", "target": "all_enemies", "effect": "apply_burn", "values": [1, 1, 1]}},
-    {"id": "ace_of_cups", "suit": "cups", "rank": "legend", "attack": 4, "health": 12, "pack_only": true, "ability": {"trigger": "on_ally_death", "target": "dying_unit", "effect": "revive_half", "values": [2, 2, 2]}},
+    {"id": "ace_of_cups", "suit": "cups", "rank": "legend", "attack": 4, "health": 12, "pack_only": true, "ability": {"trigger": "on_ally_death", "target": "dying_unit", "effect": "revive_half", "values": [1, 1, 1]}},
     {"id": "ace_of_swords", "suit": "swords", "rank": "legend", "attack": 7, "health": 7, "pack_only": true, "pierce": true, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "double_bleed", "values": [2, 2, 2]}}
   ]
 }
