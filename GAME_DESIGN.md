@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 9 abgeschlossen, Phase 10 Runde 1 läuft
+**Status:** Planung – Phase 10, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -270,13 +270,20 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 ### Runde 1 (beantwortet)
 - **Okkultist:** Nur eine **passive Grundregel** pro Okkultist, keine aktive Fähigkeit (Balatro-Deck-Prinzip).
 - **Meisterfähigkeit (F3):** **Nach Farbkombination** der fusionierten Figuren.
-  - Regelvorschlag (Bestätigung in Phase 10.1): Die **zwei häufigsten Farben** der 4 enthaltenen Figuren bestimmen die Kombination. 4 reine (z. B. Münzen + Münzen) + 6 gemischte (z. B. Stäbe + Kelche = „Dampf“) = **10 Meisterfähigkeiten**.
+  - Regel (bestätigt in Phase 10.1): Die **zwei häufigsten Farben** der 4 enthaltenen Figuren bestimmen die Kombination. 4 reine (z. B. Münzen + Münzen) + 6 gemischte (z. B. Stäbe + Kelche = „Dampf“) = **10 Meisterfähigkeiten**.
   - Gleichstand bei der Häufigkeit: Die Farbe der zuerst fusionierten Figur zählt.
 - **Gebiets-Segen:** Im Gebiet einer Farbe erhalten Figuren derselben Farbe einen kleinen Bonus (z. B. Münz-Gebiet: Münz-Figuren +1 Schild zu Kampfbeginn).
 - **Pakte:** Max. **3 gleichzeitig**.
 
 ## Phase 10 – Progression, Schwierigkeit und Meta
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Meta-Progression:** **Freischaltungen + kleine Upgrades.**
+  - Hauptsächlich werden neue Okkultisten, Figuren, Relikte und Fusionsmöglichkeiten für den Pool freigeschaltet (inkl. geheimer Freischaltungen, Phase 5)
+  - Dazu wenige kleine permanente Upgrades (z. B. +2 Startgold), gekauft mit übrigen Seelen
+- **Schwierigkeit:** **Stufen nach Sieg** (Balatro-Stakes / Slay-the-Spire-Ascension). Jeder Sieg schaltet die nächste Stufe mit einer zusätzlichen Erschwernis frei.
+- **Gegner-Skalierung:** **Exponentiell.** Startformel: `Budget(Akt) = Basis × 1,5^(Akt − 1)`, innerhalb eines Akts klein < groß < Boss. Feinschliff im Prototyp.
+- **Meisterfähigkeit-Regel** aus Phase 9 bestätigt.
 
 ## Phase 11 – Benutzeroberfläche und Bedienung
 _Noch nicht behandelt._
@@ -296,7 +303,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 10, Runde 1: Meta-Progression, Schwierigkeitsstufen, Gegner-Skalierung, Bestätigung der Meisterfähigkeit-Regel
+- Phase 10, Runde 2: Meta-Währung, Score/Highscore, Erfolge, Save-Scumming
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -338,3 +345,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | 4 Objekt-Kategorien (Relikte, Ausrüstung, Tarot-Verbrauch, Pakte), 4 Seltenheitsstufen mit Nachteil, 1 Ausrüstung + 1 Segen-Slot pro Figur, keine Reserve | Balatro-Synergien plus Diablo-Würfelreiz, Knappheit | Nur Wertespannen, freie Affixe; 2 Slots; Reserve 3/6+ |
 | 2026-11-16 | 3 globale Relikt-Slots + Segen-Slot pro Figur, Shop 3+2 mit Reroll, Gold mit Zinsen, 2 Tarot-Plätze | Balatro-Spar-Dilemma, Knappheit ohne Hortung | Nur an Figuren/nur global; getrennte/wachsende Shops; ohne Zinsen; sofort einsetzen |
 | 2026-11-16 | Passive Okkultisten-Regel, Meisterfähigkeit nach Farbkombination, Gebiets-Segen, max. 3 Pakte | Entdeckerfreude bei Fusion, Anpassung an Gebiete | Aktive Rituale; dominante Farbe/Zufall; Umweltregel/nur Thema; unbegrenzte Pakte, 1 pro Gebiet |
+| 2026-11-16 | Freischaltungen + kleine Upgrades, Schwierigkeitsstufen nach Sieg, exponentielle Gegner-Kurve, Meisterfähigkeit-Regel bestätigt | Langzeitmotivation ohne Balance-Bruch, Kurve knapp → explosiv | Nur Freischaltungen, großer Upgrade-Baum; wählbare/feste Schwierigkeit; lineare Kurve |
