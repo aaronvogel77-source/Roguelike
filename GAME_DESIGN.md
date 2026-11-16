@@ -440,7 +440,17 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 *Offen für den Prototyp:* Die genaue Richter-Formel. Vorschlag: Sofortschaden = Blutung-Stapel × 2 / 3 / 4, die Blutung bleibt bestehen.
 
 ### Münzen-Gegner (Gebiet 1)
-_Offen._
+*Budget-Kosten = Wert für den Gegner-Generator. Gegner leveln über das Budget (höhere Akte → Stufe 2/3).*
+
+| Kosten | Name | A/L | Fähigkeit |
+|---|---|---|---|
+| 1 | **Bettlergeist** | 1/3 | *Bei Treffer (wird getroffen):* stiehlt dem Spieler 1 Gold (max. 3 pro Kampf) |
+| 1 | **Schuldeneintreiber** | 2/3 | *Zugbeginn:* wenn der Spieler ≥ 10 Gold besitzt, +1 Angriff (stapelt) |
+| 2 | **Der Wechsler** | 3/4 | *Kampfbeginn:* tauscht Angriff und Leben der vordersten Spieler-Figur |
+| 2 | **Gierschlund** | 4/4 | *Bei Angriff:* hat das Ziel Schild, frisst er ihn und heilt sich um dessen Wert |
+| 3 | _Runde 2_ | | |
+
+*Profil:* Diese Gegner greifen Gold und Schild an, also genau die Stärken der Münz-Figuren.
 
 ---
 
@@ -450,7 +460,9 @@ _Offen._
 ---
 
 ## Offene Fragen
-- Inhaltsrunde 5: Münzen-Gegner
+- Inhaltsrunde 5b: Münzen-Gegner 5–8 (Kosten 2–3)
+- Inhaltsrunde 6: 2 Regel-Bosse
+- Inhaltsrunde 7: 2 Okkultisten
 - Danach: Start M0
 
 ## Später entscheiden
@@ -507,3 +519,4 @@ _Offen._
 | 2026-11-16 | Stäbe: Funkenträger, Wutentbrannter, Herrin der Glut, Aschekönig | Brennen-Motor + Eskalation | Fackelknecht, Aschejunge; Brandreiter, Flammenwächter; Phönixin, Feuerpredigerin; Brandstifter, Flammenkönig |
 | 2026-11-16 | Kelche: Messdiener, Bluttrinker, Kelch der Wiederkehr, Ertrunkener König | Sustain- und Opfer-Synergien | Fluchjunge, Opferlamm; Verfluchter Ritter, Seelenfänger; Hohepriesterin, Fluchweberin; Opferkönig, König der Flüche |
 | 2026-11-16 | Schwerter: Klingenlehrling, Henker, Klare Klinge, Der Richter – alle 16 Spieler-Figuren stehen | Blutung aufbauen/auslösen, Konter gegen Schild | Messerwerfer, Duellant; Schattenklinge, Sturmklinge; Witwe der Klingen, Windtochter; Tausend Schnitte, Schwertkönig |
+| 2026-11-16 | Gegner, Bosse und Okkultisten werden vor M0 gemeinsam einzeln entworfen. Gegner 1–4: Bettlergeist, Schuldeneintreiber, Wechsler, Gierschlund | Maximale Mitsprache | Set-Vorschlag durch Claude; Inhalte erst vor dem jeweiligen Meilenstein |
