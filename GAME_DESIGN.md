@@ -401,7 +401,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 - **Zusammenfassung:** Vom Nutzer übersprungen („direkt starten“). Sie steht unten im Dokument.
 
 ### Detailentscheidungen vor M3
-- **Plätze:** +1 Platz gratis nach jedem besiegten Akt-Boss. Zusätzlich im Shop kaufbar für 6 → 8 → 10 Gold. Maximum 6.
+- **Plätze:** +1 Platz gratis nach jedem besiegten Akt-Boss. ~~Zusätzlich im Shop kaufbar für 6 → 8 → 10 Gold.~~ **Nach v0.4.2-Feedback: nur noch durch Boss-Siege (Umsetzung mit M5).** Maximum 6.
 - **Belohnung nach Sieg:** Gratis **1 aus 3** wählen (bis M5 nur Figuren, danach auch Objekte). Wer überspringt oder keinen Platz hat, bekommt **+2 Gold**.
 - **Ränge im Shop (Bube / Ritter / Königin / König):** Akt 1: 68 / 25 / 5 / 2 % · Akt 2: 50 / 32 / 14 / 4 % · Akt 3–4: 40 / 33 / 20 / 7 % · Akt 5+: 30 / 33 / 25 / 12 %
 - **Start bis M7 (ohne Okkultisten):** ein zufälliger Bube + **8 Gold** (nach M3-Feedback von 10 gesenkt)
@@ -515,7 +515,10 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 ---
 
 ## Offene Fragen
-- Feedback zur v0.4.2 einholen, dann M5 (Objekte) mit Inhaltsrunden
+- M5 (Objekte) mit Inhaltsrunden. **Zusammen mit M5 umsetzen (Feedback zu v0.4.2):**
+  - Umordnen: Wird eine Figur **zwischen** zwei Karten gezogen, wird sie dort eingeschoben (die anderen rücken). Nur wenn sie klar **auf** eine Karte gezogen wird, tauschen die beiden.
+  - Plätze **nur noch durch Boss-Siege**, nicht mehr kaufbar
+  - **Weniger Gold** (Art der Kürzung wird in M5-Runde 1 entschieden)
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -589,3 +592,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | M4: thematische Gegner-Teams (3 Themen, Rollen-Aufstellung), Regel-Bosse Steuereintreiber (Gold im Kampf = 0, echtes Gold bleibt) und Goldene Mauer (7 Gegner-Plätze), Gebiets-Segen Münzen (+1 Schild für Münz-Figuren), Anzeige in Gegnerwahl/Planung/Kampf, Debug-Werkzeuge per `?debug=1` | Slice-Inhalte vollständig spielbar | – |
 | 2026-11-16 | M4-Feedback: Boss ohne Gegnerwahl direkt nach dem Shop, Ankündigungs-Streifen zu Kampfbeginn, echte Boss-Figuren (2–3 Plätze breit), kein Verschmelzen auf Max. Stufe; Boss-Werte per Simulation stark abgeschwächt (Nutzerwahl war zu stark) | Bosse spürbar, aber schaffbar | Reine Regel-Bosse; Boss-Karte nur als Darstellung; Ankündigung beim Shop |
 | 2026-11-16 | M4-Feedback 2: größere Karten/Schriften (Spielfeld skaliert nach Inhalt bis ×1,7), Gebiets-Einführung vor Gebietsbeginn, Glanz-Effekt für Königinnen/Könige ("Selten!"/"Episch!"), Verkaufen auf dem Belohnungsbildschirm, nachträgliches Verschmelzen durch Ziehen, Rangpreise 3/4/6/8, Verkauf = halber Preis + Stufe, Ertrunkener König 30/60/100 %, Steuereintreiber 12 Leben, fehlende Glyphen ersetzt, Schlüsselwörter nur als ganze Wörter. Boss-Grafik folgt in M8 | Lesbarkeit, Belohnungsgefühl, Balance | – |
+| 2026-11-16 | v0.4.2-Feedback (Umsetzung mit M5): Einschieben zwischen Karten statt nur Tauschen, Plätze nur durch Bosse, weniger Gold. Rest bestätigt | Run war noch zu leicht, zu viel Gold für Verkaufen und Verschmelzen | Plätze kaufbar |
