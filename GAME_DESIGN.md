@@ -397,7 +397,14 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 *Basislinie: Kaufpreis 3 Gold für alle. Stufen geben +1/+1 und verstärken die Fähigkeit (Stufe 1/2/3). Ränge bestimmen, wie oft eine Figur im Shop erscheint.*
 
 ### Münzen (Erde) – Thema Schild, Gold, Wirtschaft
-_In Arbeit (Inhaltsrunde 1)._
+| Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
+|---|---|---|---|
+| Bube | **Münzknecht** | 1/4 | *Kampfbeginn:* erhält Schild 2 / 4 / 6 |
+| Ritter | **Goldgepanzerter** | 3/4 | *Kampfbeginn:* erhält +1 Leben pro 4 / 3 / 2 Gold im Besitz |
+| Königin | **Goldene Waage** | 3/4 | *Bei Tod einer eigenen Figur:* vorderste eigene Figur erhält ×1,2 / ×1,35 / ×1,5 Angriff (Mult, stapelt) |
+| König | **König Midas** | 4/6 | *Kampfbeginn:* erhält ×(1 + Gold/20) / ×(1 + Gold/15) / ×(1 + Gold/10) Angriff (Mult) |
+
+*Profil:* Ein starker Spar-Build (Goldgepanzerter + Midas) steht gegen das Kaufen. Schild kommt nur vom Buben. Die Waage bringt Multiplikatoren für Opfer-Builds und verbindet sich mit Kelchen (Opfer).
 
 ### Stäbe (Feuer) – Thema Brennen, Aggression
 _Offen._
@@ -419,7 +426,6 @@ _Offen._
 ---
 
 ## Offene Fragen
-- Inhaltsrunde 1: Münzen-Figuren (Bube, Ritter, Königin, König)
 - Inhaltsrunden 2–4: Stäbe, Kelche, Schwerter
 - Inhaltsrunde 5: Münzen-Gegner
 - Danach: Start M0
@@ -474,3 +480,4 @@ _Offen._
 | 2026-11-16 | Baukasten-Effekte + Sonderskripte, headless Kampf-Simulation, Debug-Menü mit 4 Werkzeugen | Fusionen kombinieren sauber, Balancing per Simulation | Ein Skript pro Fähigkeit, reiner Baukasten; Simulation später |
 | 2026-11-16 | JSON-Inhalte, Architektur-Paket (FSM, Commands, Event-Bus, Komposition, RNG-Ströme, GUT), Code komplett Englisch, GitHub Pages | Robust, testbar, Builds per Link spielbar | Tabellen, Godot-Ressourcen; deutsche Kommentare; itch.io |
 | 2026-11-16 | Meilensteinplan M0–M9 bestätigt, Figuren vor dem Start entwerfen | Mechanik vor Inhalt vor Optik | Fusion früher, Grafik früher; Figuren parallel oder vor M4 |
+| 2026-11-16 | Münzen: Münzknecht, Goldgepanzerter, Goldene Waage, König Midas | Spar-Build vs. Kaufen, Mult über Opfer | Pfandleiher, Zinseintreiber; Schildträger, Söldner; Schatzmeisterin, Herrin der Zinsen; Bankier, Goldener Koloss |
