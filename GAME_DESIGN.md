@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 11 abgeschlossen, Phase 12 Runde 1 läuft
+**Status:** Planung – Phase 12, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -312,7 +312,13 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Hauptmenü:** Minimal: Fortsetzen / Neuer Run (Okkultisten-Wahl + Stufe) / Grimoire / Bestwerte / Optionen
 
 ## Phase 12 – Präsentation: Grafik, Audio, Atmosphäre
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Farbpalette (Nutzer-Wunsch):** Eine **Mischung** aus dunkel/gold, Vintage-Tarot und Neon. Klar erkennbare **Details und Verzierungen**. **Neonfarben heben Mächtigkeit und Seltenheit hervor**, damit Stärke und Seltenheit sofort erkennbar sind.
+  - Interpretation (Bestätigung in Runde 2): Die Basis ist gedeckt (dunkler Grund, Pergament, Gold-Ornamente). **Neon-Leuchten** steigt mit Seltenheit, Stufe und Fusionsstufe.
+- **Audio:** Soundeffekte aus lizenzfreien Bibliotheken (z. B. Kenney, freesound CC0), **Musik per KI-Generator**. Lizenzen dokumentieren.
+- **Textton:** **Ernst mit trockenem Humor** (Darkest Dungeon mit Augenzwinkern)
+- **Sprachen:** **Deutsch** zuerst. Alle Texte von Anfang an in einer Übersetzungsdatei (Godot-Lokalisierung), Englisch später ohne Umbau.
 
 ## Phase 13 – Speichern, Daten und Persistenz
 _Noch nicht behandelt._
@@ -326,7 +332,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 12, Runde 1: Farbpalette, Sound/Musik, Textton, Sprachen, Spielname
+- Phase 12, Runde 2: Seltenheits-Optik bestätigen, Spielname, Musik-Verhalten, Animationsumfang
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -372,3 +378,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Freischaltung durch Herausforderungen, lokale Bestwerte, Grimoire mit Fusionen, Save-Scum verhindert | Ziele über Runs hinweg, Permadeath mit Gewicht | Erfahrungs-Freischaltung; Online-Rangliste; kein/einfaches Sammelbuch |
 | 2026-11-16 | Links vs. rechts, Tippen → Detail-Panel, Drag & Drop + Tippen, Hinweise beim ersten Mal | Querformat nutzen, ein Bedienkonzept für Touch und Maus | Oben/unten; Long-Press; nur D&D/nur Tippen; geführter Run, kein Tutorial |
 | 2026-11-16 | Rückgängig für den Shop + Abfragen bei unumkehrbaren Aktionen, saftiges Kampf-Feedback, 3 Barrierefreiheits-Optionen, minimales Menü | Permadeath ohne Fehlklick-Frust, explosive Power-Fantasy | Abfrage beim Kampfstart; schlichtes Feedback; Hub-Menü |
+| 2026-11-16 | Gedeckte Basis + Neon nach Seltenheit/Macht, freie SFX + KI-Musik, ernst mit trockenem Humor, Deutsch + Englisch vorbereitet | Stärke auf einen Blick lesbar, solo machbar | Reine Paletten; alles KI/Audio später; poetisch/humorvoll; nur DE/EN |
