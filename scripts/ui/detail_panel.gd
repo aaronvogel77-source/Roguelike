@@ -4,7 +4,7 @@ extends PanelContainer
 ## ability text with the value for the current level, and active statuses.
 
 var _title: Label
-var _subtitle: Label
+var _subtitle: HBoxContainer
 var _body: RichTextLabel
 
 
@@ -37,9 +37,8 @@ func _init() -> void:
 	close.pressed.connect(hide)
 	header.add_child(close)
 
-	_subtitle = Label.new()
-	_subtitle.add_theme_font_size_override("font_size", 18)
-	_subtitle.add_theme_color_override("font_color", Palette.MUTED)
+	_subtitle = HBoxContainer.new()
+	_subtitle.add_theme_constant_override("separation", 6)
 	column.add_child(_subtitle)
 
 	_body = RichTextLabel.new()
@@ -62,14 +61,24 @@ func show_card(card: UnitCard) -> void:
 	var snapshot := card.snapshot
 	_title.text = tr(ContentDb.name_key(definition))
 	var level: int = snapshot.get("level", 1)
-	if card.is_enemy:
-		_subtitle.text = "%s · %s" % [tr("UI_ENEMY"), tr("UI_LEVEL") % level]
-	else:
-		_subtitle.text = "%s · %s · %s" % [
-			tr("RANK_" + String(definition["rank"]).to_upper()),
-			tr("SUIT_" + String(definition["suit"]).to_upper()),
-			tr("UI_LEVEL") % level,
-		]
+	# Rank · suit · level, each with its emblem.
+	for child in _subtitle.get_children():
+		child.queue_free()
+	var kinds := UnitCard.identity_kinds(definition, card.is_enemy)
+	var texts: Array = [tr("UI_ENEMY")] if card.is_enemy else [
+		tr("RANK_" + String(definition["rank"]).to_upper()),
+		tr("SUIT_" + String(definition["suit"]).to_upper()),
+	]
+	kinds.append("level")
+	texts.append(tr("UI_LEVEL") % level)
+	for i in kinds.size():
+		if i > 0:
+			_subtitle.add_child(_subtitle_text("·"))
+		var emblem := Emblem.create(kinds[i], 22)
+		if kinds[i] == "level":
+			emblem.count = level
+		_subtitle.add_child(emblem)
+		_subtitle.add_child(_subtitle_text(texts[i]))
 
 	var lines: Array[String] = []
 	lines.append(Keywords.colorize(tr("UI_STATS") % [snapshot["effective_attack"], maxi(snapshot["health"], 0), snapshot["max_health"]]))
@@ -92,3 +101,12 @@ func show_card(card: UnitCard) -> void:
 			])
 	_body.text = "\n".join(lines)
 	show()
+
+
+func _subtitle_text(text: String) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_color_override("font_color", Palette.MUTED)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label

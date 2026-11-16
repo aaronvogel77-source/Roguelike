@@ -14,6 +14,18 @@ const COLORS := {
 	"coin": Color(0.95, 0.78, 0.3),
 	"star": Color(1.0, 0.85, 0.35),
 	"skull": Color(0.92, 0.9, 0.85),
+	"attack": Color(0.85, 0.2, 0.22),
+	"life": Color(0.25, 0.68, 0.3),
+	"suit_coins": Color(0.45, 0.78, 0.4),
+	"suit_wands": Color(0.95, 0.45, 0.2),
+	"suit_cups": Color(0.3, 0.75, 0.85),
+	"suit_swords": Color(0.7, 0.6, 0.95),
+	"rank_page": Color(0.75, 0.7, 0.6),
+	"rank_knight": Color(0.75, 0.78, 0.85),
+	"rank_queen": Color(0.95, 0.78, 0.35),
+	"rank_king": Color(1.0, 0.85, 0.3),
+	"level": Color(0.95, 0.78, 0.35),
+	"enemy": Color(0.75, 0.25, 0.28),
 }
 
 ## Which emblem represents an ability effect.
@@ -30,6 +42,8 @@ const EFFECT_KINDS := {
 
 var kind := "star"
 var color := Color.WHITE
+## For "level": number of chevrons.
+var count := 1
 
 
 static func create(emblem_kind: String, emblem_size: float) -> Emblem:
@@ -99,6 +113,69 @@ func _draw() -> void:
 			draw_rect(Rect2(c + Vector2(-0.2, 0.1) * s, Vector2(0.4, 0.3) * s), color)
 			draw_circle(c + Vector2(-0.15, -0.08) * s, s * 0.1, Color(0.1, 0.05, 0.05))
 			draw_circle(c + Vector2(0.15, -0.08) * s, s * 0.1, Color(0.1, 0.05, 0.05))
+		"attack":
+			# Spiky burst: the attack value is printed in its middle.
+			var burst := PackedVector2Array()
+			for i in 24:
+				var r := 0.5 if i % 2 == 0 else 0.4
+				var a := -PI / 2 + TAU * i / 24.0
+				burst.append(c + Vector2(cos(a), sin(a)) * r * s)
+			_filled(burst, color, outline, s)
+		"life":
+			var life := PackedVector2Array()
+			for i in 32:
+				var t := TAU * i / 32.0
+				var x := 16.0 * pow(sin(t), 3)
+				var y := -(13.0 * cos(t) - 5.0 * cos(2 * t) - 2.0 * cos(3 * t) - cos(4 * t))
+				life.append(c + Vector2(x, y + 1.5) * s / 33.0)
+			_filled(life, color, outline, s)
+		"suit_coins":
+			draw_circle(c, s * 0.44, outline)
+			draw_circle(c, s * 0.4, color)
+			_filled(_pts(s, [Vector2(0.5, 0.25), Vector2(0.75, 0.5), Vector2(0.5, 0.75), Vector2(0.25, 0.5)]), color.darkened(0.3), outline, s)
+		"suit_wands":
+			draw_line(c + Vector2(-0.3, 0.38) * s, c + Vector2(0.28, -0.32) * s, outline, maxf(3.0, s * 0.2))
+			draw_line(c + Vector2(-0.3, 0.38) * s, c + Vector2(0.28, -0.32) * s, Color(0.6, 0.38, 0.2), maxf(2.0, s * 0.13))
+			draw_circle(c + Vector2(0.3, -0.36) * s, s * 0.13, color)
+			draw_circle(c + Vector2(0.12, -0.38) * s, s * 0.08, color.lightened(0.2))
+		"suit_cups":
+			var bowl := _pts(s, [Vector2(0.18, 0.12), Vector2(0.82, 0.12), Vector2(0.74, 0.4), Vector2(0.5, 0.55), Vector2(0.26, 0.4)])
+			_filled(bowl, color, outline, s)
+			draw_rect(Rect2(c + Vector2(-0.06, 0.04) * s, Vector2(0.12, 0.3) * s), color)
+			_filled(_pts(s, [Vector2(0.28, 0.82), Vector2(0.72, 0.82), Vector2(0.66, 0.92), Vector2(0.34, 0.92)]), color, outline, s)
+		"suit_swords":
+			_filled(_pts(s, [Vector2(0.45, 0.04), Vector2(0.55, 0.04), Vector2(0.55, 0.66), Vector2(0.45, 0.66)]), color, outline, s)
+			draw_line(c + Vector2(-0.24, 0.17) * s, c + Vector2(0.24, 0.17) * s, Color(0.8, 0.6, 0.3), maxf(2.0, s * 0.1))
+			draw_line(c + Vector2(0, 0.2) * s, c + Vector2(0, 0.44) * s, Color(0.55, 0.35, 0.2), maxf(2.0, s * 0.1))
+		"rank_page":
+			draw_circle(c + Vector2(0, -0.2) * s, s * 0.17, color)
+			_filled(_pts(s, [Vector2(0.32, 0.52), Vector2(0.68, 0.52), Vector2(0.78, 0.92), Vector2(0.22, 0.92)]), color, outline, s)
+		"rank_knight":
+			var helm := _pts(s, [Vector2(0.24, 0.9), Vector2(0.24, 0.35), Vector2(0.38, 0.12), Vector2(0.62, 0.12),
+				Vector2(0.76, 0.35), Vector2(0.76, 0.9)])
+			_filled(helm, color, outline, s)
+			draw_line(c + Vector2(-0.18, 0.0) * s, c + Vector2(0.18, 0.0) * s, Color(0.1, 0.1, 0.12), maxf(2.0, s * 0.08))
+		"rank_queen", "rank_king":
+			var points := 3 if kind == "rank_queen" else 5
+			var crown := PackedVector2Array()
+			crown.append(Vector2(0.12, 0.8))
+			for i in points * 2 + 1:
+				var x := 0.12 + 0.76 * i / float(points * 2)
+				crown.append(Vector2(x, 0.22 if i % 2 == 0 else 0.5))
+			crown.append(Vector2(0.88, 0.8))
+			_filled(_pts(s, crown), color, outline, s)
+			if kind == "rank_king":
+				draw_circle(c + Vector2(0, -0.3) * s, s * 0.07, Color(0.85, 0.2, 0.25))
+		"level":
+			# Stacked chevrons, one per level.
+			for i in count:
+				var y := 0.62 - i * 0.24
+				var chevron := _pts(s, [Vector2(0.2, y + 0.16), Vector2(0.5, y - 0.06), Vector2(0.8, y + 0.16),
+					Vector2(0.8, y + 0.28), Vector2(0.5, y + 0.06), Vector2(0.2, y + 0.28)])
+				_filled(chevron, color, outline, s)
+		"enemy":
+			_filled(_pts(s, [Vector2(0.15, 0.2), Vector2(0.35, 0.35), Vector2(0.5, 0.15), Vector2(0.65, 0.35),
+				Vector2(0.85, 0.2), Vector2(0.75, 0.85), Vector2(0.25, 0.85)]), color, outline, s)
 		_:  # star
 			var star := PackedVector2Array()
 			for i in 10:
@@ -108,7 +185,7 @@ func _draw() -> void:
 			_filled(star, color, outline, s)
 
 
-func _pts(s: float, normalized: Array) -> PackedVector2Array:
+func _pts(s: float, normalized: Variant) -> PackedVector2Array:
 	var result := PackedVector2Array()
 	var origin := (size - Vector2(s, s)) / 2
 	for p: Vector2 in normalized:

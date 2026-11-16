@@ -16,7 +16,7 @@ var snapshot: Dictionary = {}
 var body: PanelContainer
 
 var _style: StyleBoxFlat
-var _level_label: Label
+var _identity: HBoxContainer
 var _chips: HFlowContainer
 var _attack_label: Label
 var _health_label: Label
@@ -68,9 +68,12 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	name_label.max_lines_visible = 2
 	column.add_child(name_label)
 
-	_level_label = _small_label(Palette.GOLD)
-	_level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	column.add_child(_level_label)
+	# Rank, suit and level as small emblems (placeholders for the M8 art).
+	_identity = HBoxContainer.new()
+	_identity.alignment = BoxContainer.ALIGNMENT_CENTER
+	_identity.add_theme_constant_override("separation", 2)
+	_identity.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_identity)
 
 	_chips = HFlowContainer.new()
 	_chips.alignment = FlowContainer.ALIGNMENT_CENTER
@@ -82,13 +85,11 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 
 	var stats := HBoxContainer.new()
 	column.add_child(stats)
-	_attack_label = _make_badge(Palette.ATTACK)
-	stats.add_child(_attack_label)
+	_attack_label = _add_stat_badge(stats, "attack")
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	stats.add_child(spacer)
-	_health_label = _make_badge(Palette.LIFE)
-	stats.add_child(_health_label)
+	_health_label = _add_stat_badge(stats, "life")
 
 	apply_snapshot(initial)
 
@@ -103,8 +104,7 @@ func apply_snapshot(new_snapshot: Dictionary) -> void:
 	snapshot = new_snapshot
 	_attack_label.text = str(snapshot["effective_attack"])
 	_health_label.text = str(maxi(snapshot["health"], 0))
-	var level: int = snapshot.get("level", 1)
-	_level_label.text = tr("UI_LEVEL_SHORT") % level if level > 1 else ""
+	_rebuild_identity(snapshot.get("level", 1))
 	_rebuild_chips()
 
 
@@ -225,15 +225,37 @@ func _wrapped_line_count(words: PackedStringArray, font: Font, font_size: int, a
 	return lines
 
 
-func _make_badge(color: Color) -> Label:
-	var badge := Label.new()
-	badge.custom_minimum_size = Vector2(34, 34)
-	badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	badge.add_theme_font_size_override("font_size", 20)
-	badge.add_theme_color_override("font_color", Color.WHITE)
-	var style := StyleBoxFlat.new()
-	style.bg_color = color
-	style.set_corner_radius_all(17)
-	badge.add_theme_stylebox_override("normal", style)
-	return badge
+## Rank + suit + level emblems for the card (enemies: enemy mark + level).
+func _rebuild_identity(level: int) -> void:
+	for child in _identity.get_children():
+		child.queue_free()
+	for kind in identity_kinds(definition, is_enemy):
+		_identity.add_child(Emblem.create(kind, 16))
+	var chevrons := Emblem.create("level", 16)
+	chevrons.count = level
+	_identity.add_child(chevrons)
+
+
+static func identity_kinds(unit_definition: Dictionary, enemy: bool) -> Array:
+	if enemy:
+		return ["enemy"]
+	return ["rank_" + String(unit_definition.get("rank", "page")), "suit_" + String(unit_definition.get("suit", "coins"))]
+
+
+## Attack / health: the number sits in the middle of its emblem.
+func _add_stat_badge(parent: Control, kind: String) -> Label:
+	var holder := Control.new()
+	holder.custom_minimum_size = Vector2(38, 38)
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(holder)
+	holder.add_child(Emblem.create(kind, 38))
+	var label := Label.new()
+	label.size = Vector2(38, 38)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 19)
+	label.add_theme_color_override("font_color", Color.WHITE)
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	label.add_theme_constant_override("outline_size", 5)
+	holder.add_child(label)
+	return label

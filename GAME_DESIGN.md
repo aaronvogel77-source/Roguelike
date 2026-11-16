@@ -499,7 +499,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- M3-Feedback einholen
+- M4 (echte Inhalte: thematische Gegner, Regel-Bosse, Gebiets-Segen) bauen
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -569,3 +569,4 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | M2 abgenommen. M3-Details: Plätze nach Boss + kaufbar (6/8/10), Belohnung 1 aus 3 oder +2 Gold, Rang-Quoten mit 2 % König in Akt 1, Start mit zufälligem Buben + 10 Gold | Spar-Dilemma, frühe Glücksmomente | Nur kaufbar/nur Boss; nur Gold; keine Könige in Akt 1; leere Reihe |
 | 2026-11-16 | M3: RunState (Gold, Zinsen, Shop, Neuwürfeln, Plätze, Leveln, Belohnung, Rückgängig), Budget-Gegnergenerator, Bildschirme Gegnerwahl/Planung/Belohnung/Run-Ende, Tippen + Drag & Drop, 63 Tests | Erster komplett spielbarer Mini-Run | – |
 | 2026-11-16 | M3-Feedback: Schuldeneintreiber +1 Angriff je 10 Gold (einmalig zu Kampfbeginn), Startgold 8, Angriff rot / Leben grün, Verkaufsfeld statt Button (ziehen oder antippen), farbige Schlüsselwörter in allen Beschreibungen, Zwischenbildschirm beim Verschmelzen (EP-Balken, bei Stufenaufstieg Werte alt → neu). Bedienung, Schwierigkeit und Informationen bestätigt | Lesbarkeit, weniger Gold am Anfang | Zugbeginn-Varianten; Einkommen 4; Zinsen erst ab Akt 2 |
+| 2026-11-16 | Symbole für Rang (Kappe/Helm/Krone), Farbe (Münze/Stab/Kelch/Schwert) und Stufe (Winkel) im Detail-Panel und auf Karten; Angriff als roter Zackenstern, Leben als grünes Herz mit Zahl in der Mitte. M3 abgenommen | Platzhalter-Symbole, werden in M8 verfeinert | – |
