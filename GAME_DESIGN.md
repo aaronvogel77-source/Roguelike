@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 5 abgeschlossen, Phase 6 Runde 1 läuft
+**Status:** Planung – Phase 6, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -183,7 +183,19 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - Verträglich mit Phase 4 („alles exakt“): Verborgen ist nur, *wie* man etwas freischaltet. Sobald eine Fusion sichtbar ist, sind ihre Werte exakt.
 
 ## Phase 6 – Kampfsystem
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Angriffsablauf:** **Vorderste gegen vorderste.** Pro Zug schlagen die beiden vordersten Figuren gleichzeitig zu. Wer stirbt, macht Platz für die nächste (Super-Auto-Pets-Prinzip).
+- **Zufall:** Grundsätzlich **kein Zufall** bei Treffern und Schaden. Zufall gibt es nur über:
+  - besondere **Fähigkeiten**, die den Angreifer mit **Multiplikatoren oder Boni** begünstigen
+  - **negative Effekte** als Ausgleich für starke Gegenstände oder Angriffe (Risiko-Tausch)
+  - **Gegenstände:** gleicher Grundtyp, aber je nach **Seltenheit zufällig in Stärke und Spezialeffekten ausgewürfelt** (Affix-Prinzip, → Phase 8)
+- **Statuseffekte:** Je Tarot-Farbe einer, also 4 insgesamt: Stäbe = **Brennen**, Kelche = **Fluch**, Schwerter = **Blutung**, Münzen = **Schild**. Genaue Regeln → Runde 2
+- **Auslöser (alle vier):**
+  - Kampfbeginn / Zugbeginn
+  - Bei Angriff / Treffer
+  - Bei Tod (eigene oder fremde Figur)
+  - Im Shop (Kauf / Verkauf / Level-Up)
 
 ## Phase 7 – Monster und KI
 _Noch nicht behandelt._
@@ -215,7 +227,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 6, Runde 1: Angriffsablauf, Trefferregel, Statuseffekte, Fähigkeits-Auslöser
+- Phase 6, Runde 2: Multiplikator-Formel, Auslösereihenfolge, Statusregeln, Gleichstand
 
 ## Später entscheiden
 - **Meisterfähigkeiten (F3):** Woher kommen sie (z. B. eine pro dominanter Tarot-Farbe)? → Phase 9
@@ -247,3 +259,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Angriff + Leben, Fusion erbt beide Fähigkeiten, Seelen aus 4 Quellen, 2 Okkultisten im Slice | Lesbarkeit auf Mobile, Fusion ohne Content-Explosion | Tempo/Rüstung als Grundwert; Farbe×Klasse-Tabelle, feste Rezepte |
 | 2026-11-16 | Volle Wiederherstellung nach dem Kampf, Seelen für Fusion/Pakte/Shop, Boss-Überspringen kostet eine Figur, 3 Stufen mit +1/+1 und stärkerer Fähigkeit | Fair trotz Permadeath, klare Level-Ups | Gestorbene weg/verwundet; 5 Stufen, zweite Fähigkeit |
 | 2026-11-16 | Fusion: 3 Stufen pro Figur, max. 3 Fähigkeiten + Meisterfähigkeit auf F3, Anlässe Altar/nach Boss/Item, geheime Rezepte/Anlässe/Meta-Freischaltung | Fusion als seltener Höhepunkt, Entdeckerfreude | Max. 3 pro Run; alle Fähigkeiten behalten, nur 2 |
+| 2026-11-16 | Vorderste gegen vorderste, kein Grundzufall (nur über Fähigkeiten/Items), 4 Status je Tarot-Farbe, 4 Auslöser-Familien | Planbarkeit bei Permadeath, Zufall als bewusster Tausch | Alle greifen an, abwechselnd; Krits, Schadensspanne; keine/viele Status |
