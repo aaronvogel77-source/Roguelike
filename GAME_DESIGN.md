@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 10 abgeschlossen, Phase 11 Runde 1 läuft
+**Status:** Planung – Phase 11, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -292,7 +292,12 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Save-Scumming:** **Verhindert.** Autosave nach jeder Aktion, kein manuelles Laden.
 
 ## Phase 11 – Benutzeroberfläche und Bedienung
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Kampf-Layout:** **Links vs. rechts.** Das eigene Team steht links, die Gegner rechts, die vordersten Figuren treffen sich in der Mitte.
+- **Details:** **Tippen → Detail-Panel** am Rand (Werte, Effekte, Ausrüstung, Segen). Am PC zusätzlich Hover.
+- **Bedienung:** **Drag & Drop + Tipp-Alternative** (antippen, dann Ziel antippen) für Kaufen, Umordnen, Ausrüsten, Fusionieren und Verkaufen.
+- **Einstieg:** **Hinweise beim ersten Mal**, wenn ein System erstmals auftaucht (erster Shop, erste Fusion, erster Pakt usw.). Kein Zwangs-Tutorial.
 
 ## Phase 12 – Präsentation: Grafik, Audio, Atmosphäre
 _Noch nicht behandelt._
@@ -309,7 +314,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 11, Runde 1: Bildschirm-Layout, Info-Anzeige per Touch, Bedienung der Planungsphase, Einstieg/Tutorial
+- Phase 11, Runde 2: Sicherheitsabfragen, Effekt-Feedback im Kampf, Barrierefreiheit, Textgröße
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -353,3 +358,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Passive Okkultisten-Regel, Meisterfähigkeit nach Farbkombination, Gebiets-Segen, max. 3 Pakte | Entdeckerfreude bei Fusion, Anpassung an Gebiete | Aktive Rituale; dominante Farbe/Zufall; Umweltregel/nur Thema; unbegrenzte Pakte, 1 pro Gebiet |
 | 2026-11-16 | Freischaltungen + kleine Upgrades, Schwierigkeitsstufen nach Sieg, exponentielle Gegner-Kurve, Meisterfähigkeit-Regel bestätigt | Langzeitmotivation ohne Balance-Bruch, Kurve knapp → explosiv | Nur Freischaltungen, großer Upgrade-Baum; wählbare/feste Schwierigkeit; lineare Kurve |
 | 2026-11-16 | Freischaltung durch Herausforderungen, lokale Bestwerte, Grimoire mit Fusionen, Save-Scum verhindert | Ziele über Runs hinweg, Permadeath mit Gewicht | Erfahrungs-Freischaltung; Online-Rangliste; kein/einfaches Sammelbuch |
+| 2026-11-16 | Links vs. rechts, Tippen → Detail-Panel, Drag & Drop + Tippen, Hinweise beim ersten Mal | Querformat nutzen, ein Bedienkonzept für Touch und Maus | Oben/unten; Long-Press; nur D&D/nur Tippen; geführter Run, kein Tutorial |
