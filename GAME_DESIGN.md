@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 12 abgeschlossen, Phase 13 Runde 1 läuft
+**Status:** Planung – Phase 13 abgeschlossen, Phase 14 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -337,7 +337,16 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Animation:** **Statische Bilder + Code-Effekte** (Wackeln, Stoßen, Aufblitzen, Zerfallen). Keine Frame-Animationen.
 
 ## Phase 13 – Speichern, Daten und Persistenz
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Speichern:** Autosave nach jeder Aktion, kein manuelles Laden (Phase 10)
+- **Speicherort:** **Lokal** (Browser-Speicher bzw. Gerät über Godot `user://`) + **Export/Import-Code** für den Meta-Fortschritt (Backup, Gerätewechsel). Kein Server.
+- **Format:** **JSON mit Versionsnummer.** Bei Updates werden alte Stände automatisch migriert.
+- **Determinismus:** **Ja.** Ein Master-Seed pro Run mit **getrennten Zufallsströmen** (Shop, Gegner-Generator, Ereignisse, Gegenstands-Würfe, Kampf-Fähigkeiten). Bugs sind exakt reproduzierbar, Seed-Teilen und Daily sind später möglich.
+- **Langzeit-Statistiken:**
+  - Runs / Siege / Siegquote je Okkultist und Schwierigkeitsstufe
+  - Figuren-Statistik (meistgekauft, Siegquote je Figur und Fusion)
+  - Rekorde (höchster Treffer, längster Run, meiste Seelen …)
 
 ## Phase 14 – Architektur und Code-Struktur
 _Noch nicht behandelt._
@@ -348,7 +357,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 13, Runde 1: Speicher-Umfang, Format/Ort, Determinismus, Statistiken
+- Phase 14, Runde 1: Architektur (Entitäten-Modell, Datenformat für Inhalte, Logik/Darstellung, Tests)
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -397,3 +406,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Rückgängig für den Shop + Abfragen bei unumkehrbaren Aktionen, saftiges Kampf-Feedback, 3 Barrierefreiheits-Optionen, minimales Menü | Permadeath ohne Fehlklick-Frust, explosive Power-Fantasy | Abfrage beim Kampfstart; schlichtes Feedback; Hub-Menü |
 | 2026-11-16 | Gedeckte Basis + Neon nach Seltenheit/Macht, freie SFX + KI-Musik, ernst mit trockenem Humor, Deutsch + Englisch vorbereitet | Stärke auf einen Blick lesbar, solo machbar | Reine Paletten; alles KI/Audio später; poetisch/humorvoll; nur DE/EN |
 | 2026-11-16 | Seltenheits-Leuchtsystem bestätigt, Musik pro Gebiet + Boss, statische Bilder + Code-Effekte, Name später | Stärke sofort lesbar, KI-Grafik-tauglich | Adaptive Musik, Hauptthema; Frame-Animationen |
+| 2026-11-16 | Lokal + Export-Code, versioniertes JSON, deterministisch mit getrennten RNG-Strömen, 3 Statistik-Bereiche | Kein Server nötig, Bugs reproduzierbar | Nur lokal, Cloud; binär; einfacher Zufall; Run-Verlauf |
