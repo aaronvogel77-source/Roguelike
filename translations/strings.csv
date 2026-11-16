@@ -1,0 +1,7 @@
+keys,de,en
+M0_TITLE,Arcana (Arbeitstitel),Arcana (working title)
+M0_SUBTITLE,Meilenstein 0 – Grundgerüst,Milestone 0 – Skeleton
+M0_TAP_BUTTON,Tippe mich an,Tap me
+M0_TAP_RESULT,Eingabe funktioniert – %d× getippt,Input works – tapped %d×
+M0_INFO,Viewport: %s · Bildschirm: %s · System: %s,Viewport: %s · Screen: %s · OS: %s
+M0_HINT,Bitte im Querformat testen. Funktioniert Tippen? Ist alles scharf und vollständig sichtbar?,Please test in landscape. Does tapping work? Is everything sharp and fully visible?

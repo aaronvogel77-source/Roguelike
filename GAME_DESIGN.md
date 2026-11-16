@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung und Slice-Inhalte abgeschlossen. Umsetzung startet mit M0.
+**Status:** Umsetzung – M0 (Grundgerüst) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -480,7 +480,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- Start M0 (Grundgerüst + GitHub Pages)
+- M0-Feedback einholen. GitHub Pages bei privatem Repo nur mit kostenpflichtigem Plan → Alternative klären (Repo öffentlich / GitHub Pro / itch.io)
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
 ## Später entscheiden
@@ -540,3 +540,4 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | Gegner, Bosse und Okkultisten werden vor M0 gemeinsam einzeln entworfen. Gegner 1–4: Bettlergeist, Schuldeneintreiber, Wechsler, Gierschlund | Maximale Mitsprache | Set-Vorschlag durch Claude; Inhalte erst vor dem jeweiligen Meilenstein |
 | 2026-11-16 | Gegner 5–8: Tresorwächter, Münzwerfer, Gieriger Drache, Spiegelmünze | Tank, Sniper, Opfer-Konter, Wildcard | Bankhalter, Kultist; Pfandmeister, Fluchpfennig; Golem, Steuerherr; Kassiererin, Bankrotteur |
 | 2026-11-16 | Bosse: Steuereintreiber (Akt 1), Goldene Mauer (Akt 2). Okkultisten: Wucherer, Fechtmeisterin | Wirtschaft vs. Tempo, Konter gegen Spar-Builds | Geblendeter, Stummer; Eiserner Tresor, Umkehrer, Gleichgewicht; Aschenhexe, Totengräber |
+| 2026-11-16 | M0: Godot 4.6.3, GL Compatibility, Web-Export ohne Threads, Pages-Workflow | Stabile Version, läuft in jedem Mobile-Browser | Godot 4.7 (sehr neu) |
