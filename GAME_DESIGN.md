@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 5, Runde 4 läuft
+**Status:** Planung – Phase 5 abgeschlossen, Phase 6 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -164,10 +164,23 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 
 ### Runde 3 (beantwortet)
 - **Nach dem Kampf:** Alle Figuren werden **voll wiederhergestellt**, auch die gefallenen. Die Knappheit entsteht über Gold und Seelen.
-- **Fusion (Nutzer-Antwort wörtlich):** „Maximal 3 Fusionen zur besten Fusionsstufe und zu bestimmten besonderen und seltenen Anlässen, die auch geheim freischaltbar sind.“ → Präzisierung in Runde 4
+- **Fusion (Nutzer-Antwort wörtlich):** „Maximal 3 Fusionen zur besten Fusionsstufe und zu bestimmten besonderen und seltenen Anlässen, die auch geheim freischaltbar sind.“ → präzisiert in Runde 4
 - **Seelen-Verwendung:** Fusionen, Pakte, seltene Shop-Angebote
   - Akt-Boss überspringen kostet damit **keine** Seelen. Preis bleibt das **Opfern einer Figur** (Phase 3).
 - **Stufen:** 3 Stufen. Stufe 2 bei 3 Erfahrung, Stufe 3 bei 6. Duplikat = +1 Erfahrung, Kampfsieg = +⅓ Erfahrung. Jede Stufe gibt **+1/+1** und verstärkt die Fähigkeit (z. B. +2 → +4 → +6).
+
+### Runde 4 – Fusionssystem (beantwortet)
+- **Fusionsstufen pro Figur:** F1 (2 Figuren) → F2 (F1 + Figur) → **F3 = beste Stufe** (4 Figuren in einer). Fusionsstufe und Level-Stufe (1–3) sind getrennte Systeme.
+- **Fähigkeiten:** Bei jeder Fusion wählt der Spieler, welche Fähigkeiten bleiben (**max. 3**). Auf **F3** kommt eine besondere **Meisterfähigkeit** dazu.
+- **Anlässe (selten):**
+  - **Fusions-Altar** (okkultes Ereignis, Kosten in Seelen)
+  - **Nach jedem besiegten Akt-Boss**
+  - **Besondere Gegenstände** (z. B. „Ritualkerze“, einmalig, aus Shop oder Ereignis)
+- **Geheimnisse:**
+  - **Geheime Rezepte:** Bestimmte Paare ergeben eine legendäre, handgemachte Figur statt einer normalen Fusion
+  - **Geheime Anlässe:** Versteckte seltene Ereignisse (z. B. „Blutmond“) mit besonderen Fusionen
+  - **Meta-Freischaltung:** Neue Fusionsmöglichkeiten werden dauerhaft durch Erfolge freigeschaltet (z. B. F3 erst nach dem ersten Sieg)
+  - Verträglich mit Phase 4 („alles exakt“): Verborgen ist nur, *wie* man etwas freischaltet. Sobald eine Fusion sichtbar ist, sind ihre Werte exakt.
 
 ## Phase 6 – Kampfsystem
 _Noch nicht behandelt._
@@ -202,9 +215,11 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 5, Runde 4: Fusion präzisieren (Stufen, Fähigkeiten-Anzahl, Anlässe, Geheimnisse)
+- Phase 6, Runde 1: Angriffsablauf, Trefferregel, Statuseffekte, Fähigkeits-Auslöser
 
 ## Später entscheiden
+- **Meisterfähigkeiten (F3):** Woher kommen sie (z. B. eine pro dominanter Tarot-Farbe)? → Phase 9
+- **Liste geheimer Rezepte und Anlässe** → Inhaltsphase
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
 - **Art der Synergie-Objekte** (Karten/Joker/Pakte sind Platzhalter) → Phase 8/9
 
@@ -231,3 +246,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Okkultisten-Wahl, Gold + Seelen, Leveln durch Verschmelzen + Kampf-Erfahrung, Fusion zu neuen Figuren | Build-Vielfalt ab Start, Pakt-Thema, Kombinieren als Kernfantasie | Fester/zufälliger Start; Zinsen, nur Gold; Traits, Positions-Kombos als Hauptsystem |
 | 2026-11-16 | Angriff + Leben, Fusion erbt beide Fähigkeiten, Seelen aus 4 Quellen, 2 Okkultisten im Slice | Lesbarkeit auf Mobile, Fusion ohne Content-Explosion | Tempo/Rüstung als Grundwert; Farbe×Klasse-Tabelle, feste Rezepte |
 | 2026-11-16 | Volle Wiederherstellung nach dem Kampf, Seelen für Fusion/Pakte/Shop, Boss-Überspringen kostet eine Figur, 3 Stufen mit +1/+1 und stärkerer Fähigkeit | Fair trotz Permadeath, klare Level-Ups | Gestorbene weg/verwundet; 5 Stufen, zweite Fähigkeit |
+| 2026-11-16 | Fusion: 3 Stufen pro Figur, max. 3 Fähigkeiten + Meisterfähigkeit auf F3, Anlässe Altar/nach Boss/Item, geheime Rezepte/Anlässe/Meta-Freischaltung | Fusion als seltener Höhepunkt, Entdeckerfreude | Max. 3 pro Run; alle Fähigkeiten behalten, nur 2 |
