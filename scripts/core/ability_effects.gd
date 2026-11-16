@@ -8,7 +8,6 @@ extends RefCounted
 ## apply() returns true when something actually happened, so the battle view
 ## only highlights abilities that had a visible result.
 
-const RICH_GOLD_THRESHOLD := 10
 const STEAL_CAP_PER_BATTLE := 3
 
 
@@ -68,10 +67,12 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			return _detonate_bleed(battle, int(value), targets)
 		"steal_gold":
 			return _steal_gold(battle, owner, int(value))
-		"attack_if_rich":
-			if battle.gold < RICH_GOLD_THRESHOLD:
+		"attack_per_ten_gold":
+			# Debt Collector: +value attack for every full 10 gold the player owns.
+			var bonus := battle.gold / 10 * int(value)
+			if bonus <= 0:
 				return false
-			owner.attack += int(value)
+			owner.attack += bonus
 			battle.emit_update(owner)
 			return true
 		"swap_stats":

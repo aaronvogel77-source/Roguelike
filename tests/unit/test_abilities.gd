@@ -219,6 +219,12 @@ func test_beggar_ghost_steals_at_most_three_gold() -> void:
 	assert_eq(result2["gold_after"], 7)
 
 
+func test_debt_collector_gains_attack_per_ten_gold() -> void:
+	var result := BattleSimulator.simulate([_unit(0, 100)], [_enemy("debt_collector", 2)], 35)
+	# Level 2: 3 attack + 3 × 2 (35 gold = 3 full tens) = 9.
+	assert_eq(_final(result, 2)["attack"], 9)
+
+
 func test_changer_swaps_front_enemy_stats() -> void:
 	var result := BattleSimulator.simulate([_unit(1, 9)], [_enemy("the_changer")])
 	assert_eq(_final(result, 1)["attack"], 9)

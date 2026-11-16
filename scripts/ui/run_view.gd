@@ -12,7 +12,7 @@ var _db: ContentDb
 var _run: RunState
 var _undo: Array = []  # RunState.to_dict() snapshots taken before shop actions
 var _selected: Dictionary = {}  # {"kind": "row"/"shop", "index": int}
-var _sell_armed := false  # selling a levelled figure needs a second tap
+var _sell_armed := -1  # row index whose sale awaits a confirming second tap
 
 var _screen: Control
 var _detail_panel: DetailPanel
@@ -49,7 +49,7 @@ func _new_run() -> void:
 
 func _show_stage() -> void:
 	_selected = {}
-	_sell_armed = false
+	_sell_armed = -1
 	_detail_panel.hide()
 	for child in _screen.get_children():
 		child.queue_free()
@@ -239,7 +239,7 @@ func _on_choose_enemy(index: int) -> void:
 
 var _row_slots: Array[SlotView] = []
 var _shop_slots: Array[SlotView] = []
-var _sell_button: Button
+var _sell_zone: SellZone
 var _undo_button: Button
 
 
@@ -303,8 +303,13 @@ func _build_planning() -> void:
 		bottom.add_child(shop_box)
 		_shop_slots.append(slot)
 
+	_sell_zone = SellZone.new()
+	_sell_zone.tapped.connect(_on_sell_zone_tapped)
+	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
+	bottom.add_child(_sell_zone)
+
 	var actions := GridContainer.new()
-	actions.columns = 2
+	actions.columns = 1
 	actions.add_theme_constant_override("h_separation", 10)
 	actions.add_theme_constant_override("v_separation", 10)
 	var reroll := _button(tr("UI_REROLL") % _run.reroll_price(), Vector2(200, 56), _on_reroll)
@@ -314,9 +319,6 @@ func _build_planning() -> void:
 	var buy_slot := _button(tr("UI_BUY_SLOT") % slot_price if slot_price > 0 else tr("UI_SLOTS_MAX"), Vector2(200, 56), _on_buy_slot)
 	buy_slot.disabled = slot_price < 0 or _run.gold < slot_price
 	actions.add_child(buy_slot)
-	_sell_button = _button(tr("UI_SELL"), Vector2(200, 56), _on_sell)
-	_sell_button.disabled = true
-	actions.add_child(_sell_button)
 	_undo_button = _button(tr("UI_UNDO"), Vector2(200, 56), _on_undo)
 	_undo_button.disabled = _undo.is_empty()
 	actions.add_child(_undo_button)
@@ -372,18 +374,16 @@ func _select(kind: String, index: int) -> void:
 			_detail_panel.show_card(slot.card)
 	if kind == "row":
 		var figure: Dictionary = _run.row[index]
-		_sell_button.text = tr("UI_SELL_FOR") % _run.sell_value(figure)
-		_sell_button.disabled = false
+		_sell_zone.show_text(tr("UI_SELL_FOR") % _run.sell_value(figure), true)
 
 
 func _clear_selection() -> void:
 	for slot in _row_slots + _shop_slots:
 		slot.set_selected(false)
 	_selected = {}
-	_sell_armed = false
-	if _sell_button != null:
-		_sell_button.text = tr("UI_SELL")
-		_sell_button.disabled = true
+	_sell_armed = -1
+	if _sell_zone != null:
+		_sell_zone.show_text(tr("UI_SELL_ZONE"), false)
 	_detail_panel.hide()
 
 
@@ -396,7 +396,7 @@ func _on_slot_tapped(slot: SlotView) -> void:
 		return
 	# Row slot: complete a pending buy or move, otherwise select.
 	if _selected.get("kind") == "shop":
-		_apply_action(func() -> bool: return _run.buy(_selected["index"], slot.index))
+		_buy(_selected["index"], slot.index)
 	elif _selected.get("kind") == "row" and _selected["index"] != slot.index:
 		var from: int = _selected["index"]
 		_apply_action(func() -> bool: return _run.move(from, slot.index))
@@ -408,9 +408,19 @@ func _on_slot_tapped(slot: SlotView) -> void:
 
 func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 	if data["kind"] == "shop":
-		_apply_action(func() -> bool: return _run.buy(data["index"], slot.index))
+		_buy(data["index"], slot.index)
 	elif data["kind"] == "row":
 		_apply_action(func() -> bool: return _run.move(data["index"], slot.index))
+
+
+## Buys a shop figure; shows the merge screen when it joined an equal figure.
+func _buy(shop_index: int, row_index: int) -> void:
+	var before: Variant = _run.row[row_index] if row_index < _run.row.size() else null
+	var before_xp := int(before["xp"]) if before != null else -1
+	_apply_action(func() -> bool: return _run.buy(shop_index, row_index))
+	var after: Variant = _run.row[row_index] if row_index < _run.row.size() else null
+	if before != null and after != null and int(after["xp"]) > before_xp:
+		_show_merge(after["def_id"], before_xp, int(after["xp"]))
 
 
 ## Runs an undoable shop action; rebuilds the screen if it succeeded.
@@ -423,15 +433,20 @@ func _apply_action(action: Callable) -> void:
 		_clear_selection()
 
 
-func _on_sell() -> void:
-	if _selected.get("kind") != "row":
+func _on_sell_zone_tapped() -> void:
+	if _selected.get("kind") == "row":
+		_request_sell(_selected["index"])
+
+
+## Sells a row figure. A levelled figure (stage 2+) needs a second confirmation.
+func _request_sell(index: int) -> void:
+	var figure: Variant = _run.row[index] if index < _run.row.size() else null
+	if figure == null:
 		return
-	var index: int = _selected["index"]
-	var figure: Dictionary = _run.row[index]
-	# Selling a levelled figure needs a confirming second tap.
-	if _run.figure_level(figure) >= 2 and not _sell_armed:
-		_sell_armed = true
-		_sell_button.text = tr("UI_SELL_CONFIRM") % _run.sell_value(figure)
+	if _run.figure_level(figure) >= 2 and _sell_armed != index:
+		_select("row", index)
+		_sell_armed = index
+		_sell_zone.show_text(tr("UI_SELL_CONFIRM") % _run.sell_value(figure), true)
 		return
 	_apply_action(func() -> bool: return _run.sell(index))
 
@@ -523,8 +538,98 @@ func _build_reward() -> void:
 
 
 func _on_take_reward(index: int) -> void:
+	var def_id: String = _run.rewards[index]
+	var target := _run.reward_target(def_id)
+	var before_xp := int(_run.row[target]["xp"]) if target >= 0 and _run.row[target] != null else -1
 	if _run.take_reward(index):
 		_show_stage()
+		if before_xp >= 0:
+			_show_merge(def_id, before_xp, int(_run.row[target]["xp"]))
+
+
+# --- Merge screen ----------------------------------------------------------------------
+
+## Overlay after merging a duplicate: XP counts up; on a level-up it shows the
+## new stats (old → new) and the stronger ability.
+func _show_merge(def_id: String, old_xp: int, new_xp: int) -> void:
+	var definition: Dictionary = _db.figures[def_id]
+	var old_level := RunState.level_for_xp(old_xp)
+	var new_level := RunState.level_for_xp(new_xp)
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.72)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.07, 0.1)
+	style.border_color = Palette.GOLD
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(14)
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
+		style.set_content_margin(side, 24)
+	panel.add_theme_stylebox_override("panel", style)
+	center.add_child(panel)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 28)
+	panel.add_child(row)
+	var card := UnitCard.for_definition(definition, new_level, false)
+	row.add_child(_scaled(card, 1.4))
+
+	var info := VBoxContainer.new()
+	info.add_theme_constant_override("separation", 10)
+	info.custom_minimum_size = Vector2(460, 0)
+	row.add_child(info)
+	var levelled := new_level > old_level
+	var title := _label(tr("UI_LEVEL_UP") % new_level if levelled else tr("UI_MERGED"), 32, Palette.GOLD)
+	info.add_child(title)
+	info.add_child(_label(tr(ContentDb.name_key(definition)), 22, Palette.PARCHMENT))
+
+	var bar := ProgressBar.new()
+	bar.custom_minimum_size = Vector2(420, 26)
+	bar.show_percentage = false
+	var threshold: int = RunState.XP_FOR_LEVEL[mini(old_level, 2)]
+	var start: int = RunState.XP_FOR_LEVEL[old_level - 1]
+	bar.min_value = start
+	bar.max_value = maxi(threshold, start + 1)
+	bar.value = old_xp
+	info.add_child(bar)
+	var xp_label := _label(tr("UI_XP_GAIN") % [NumberFormat.decimal(old_xp / 3.0), NumberFormat.decimal(new_xp / 3.0)], 18, Palette.MUTED)
+	info.add_child(xp_label)
+	var tween := create_tween()
+	tween.tween_property(bar, "value", float(mini(new_xp, int(bar.max_value))), 0.8).set_trans(Tween.TRANS_QUAD)
+
+	if levelled:
+		var old_unit := BattleUnit.from_definition(definition, 0, 0, old_level)
+		var new_unit := BattleUnit.from_definition(definition, 0, 0, new_level)
+		var details := RichTextLabel.new()
+		details.bbcode_enabled = true
+		details.fit_content = true
+		details.scroll_active = false
+		details.custom_minimum_size = Vector2(440, 0)
+		details.add_theme_font_size_override("normal_font_size", 20)
+		details.add_theme_color_override("default_color", Palette.PARCHMENT)
+		var ability: Dictionary = definition["ability"]
+		var old_value := NumberFormat.ability_value(ability["effect"], old_unit.level_value(ability))
+		var new_value := NumberFormat.ability_value(ability["effect"], new_unit.level_value(ability))
+		var lines := [
+			Keywords.colorize(tr("UI_STAT_CHANGE_ATTACK") % [old_unit.attack, new_unit.attack]),
+			Keywords.colorize(tr("UI_STAT_CHANGE_HEALTH") % [old_unit.health, new_unit.health]),
+			Keywords.colorize(tr("ABIL_" + def_id.to_upper()).replace("{v}", "%s → [b]%s[/b]" % [old_value, new_value])),
+		]
+		details.text = "\n".join(lines)
+		details.modulate.a = 0.0
+		info.add_child(details)
+		tween.tween_property(details, "modulate:a", 1.0, 0.4)
+		tween.parallel().tween_property(title, "scale", Vector2(1.15, 1.15), 0.15)
+		tween.tween_property(title, "scale", Vector2.ONE, 0.15)
+
+	var close := _button(tr("UI_CONTINUE"), Vector2(200, 60), overlay.queue_free)
+	close.size_flags_horizontal = Control.SIZE_SHRINK_END
+	info.add_child(close)
 
 
 func _on_skip_reward() -> void:

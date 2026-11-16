@@ -22,9 +22,9 @@ func _win() -> Dictionary:
 	return {"victory": true}
 
 
-func test_new_run_starts_with_one_page_and_ten_gold() -> void:
+func test_new_run_starts_with_one_page_and_eight_gold() -> void:
 	var run := _run()
-	assert_eq(run.gold, 10)
+	assert_eq(run.gold, 8)
 	assert_eq(run.slot_count(), 3)
 	assert_not_null(run.row[0])
 	assert_eq(_db.figures[run.row[0]["def_id"]]["rank"], "page")
@@ -41,7 +41,7 @@ func test_choosing_an_enemy_opens_the_shop() -> void:
 func test_buy_into_empty_slot_costs_three() -> void:
 	var run := _planning_run()
 	assert_true(run.buy(0, 1))
-	assert_eq(run.gold, 7)
+	assert_eq(run.gold, RunState.START_GOLD - 3)
 	assert_not_null(run.row[1])
 	assert_eq(run.shop[0], "")
 
@@ -91,7 +91,7 @@ func test_reroll_price_rises() -> void:
 	var run := _planning_run()
 	assert_eq(run.reroll_price(), 1)
 	run.reroll()
-	assert_eq(run.gold, 9)
+	assert_eq(run.gold, RunState.START_GOLD - 1)
 	assert_eq(run.reroll_price(), 2)
 
 

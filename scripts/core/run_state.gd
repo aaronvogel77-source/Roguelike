@@ -10,7 +10,7 @@ enum Stage { ENEMY_CHOICE, PLANNING, REWARD, WON, LOST }
 
 const ACTS := 2  # vertical slice: one region, two acts
 const FIGHTS_PER_ACT := 3
-const START_GOLD := 10
+const START_GOLD := 8
 const START_SLOTS := 3
 const MAX_SLOTS := 6
 const FIGURE_PRICE := 3

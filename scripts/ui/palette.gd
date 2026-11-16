@@ -7,8 +7,12 @@ const PANEL := Color(0.11, 0.095, 0.13)
 const GOLD := Color(0.85, 0.68, 0.32)
 const PARCHMENT := Color(0.91, 0.86, 0.74)
 const MUTED := Color(0.62, 0.58, 0.52)
-const ATTACK := Color(0.93, 0.55, 0.2)
+## Stat colors on cards and in texts: attack red, health green.
+const ATTACK := Color(0.85, 0.2, 0.22)
+const LIFE := Color(0.25, 0.68, 0.3)
+## Warning / defeat red (frames, banners) - separate from the attack stat.
 const HEALTH := Color(0.8, 0.2, 0.25)
+const TRIGGER := Color(0.95, 0.78, 0.35)
 const ENEMY_BORDER := Color(0.55, 0.2, 0.22)
 const DAMAGE_FLASH := Color(1.0, 0.35, 0.35)
 

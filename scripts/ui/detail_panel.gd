@@ -72,7 +72,7 @@ func show_card(card: UnitCard) -> void:
 		]
 
 	var lines: Array[String] = []
-	lines.append(tr("UI_STATS") % [snapshot["effective_attack"], maxi(snapshot["health"], 0), snapshot["max_health"]])
+	lines.append(Keywords.colorize(tr("UI_STATS") % [snapshot["effective_attack"], maxi(snapshot["health"], 0), snapshot["max_health"]]))
 	var multiplier: float = snapshot.get("multiplier", 1.0)
 	if absf(multiplier - 1.0) > 0.001:
 		lines.append(tr("UI_MULTIPLIER") % NumberFormat.decimal(multiplier))
@@ -81,14 +81,14 @@ func show_card(card: UnitCard) -> void:
 		var values: Array = ability["values"]
 		var value: float = values[mini(level, values.size()) - 1]
 		var text := tr("ABIL_" + String(definition["id"]).to_upper())
-		lines.append("[b]" + text.replace("{v}", NumberFormat.ability_value(ability["effect"], value)) + "[/b]")
+		lines.append("[b]" + Keywords.colorize(text.replace("{v}", NumberFormat.ability_value(ability["effect"], value))) + "[/b]")
 	var statuses: Dictionary = snapshot.get("statuses", {})
 	for status in UnitCard.STATUS_ORDER:
 		if statuses.get(status, 0) > 0:
 			var color := Emblem.COLORS[status] as Color
 			lines.append("[color=#%s]%s %d[/color] – %s" % [
 				color.to_html(false), tr("STATUS_" + status.to_upper()), statuses[status],
-				tr("STATUS_%s_DESC" % status.to_upper()),
+				Keywords.colorize(tr("STATUS_%s_DESC" % status.to_upper())),
 			])
 	_body.text = "\n".join(lines)
 	show()

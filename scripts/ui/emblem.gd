@@ -24,7 +24,7 @@ const EFFECT_KINDS := {
 	"apply_curse": "curse",
 	"damage": "sword",
 	"heal": "heart", "lifesteal": "heart", "revive": "heart",
-	"steal_gold": "coin", "health_per_gold": "coin", "attack_if_rich": "coin", "midas": "coin",
+	"steal_gold": "coin", "health_per_gold": "coin", "attack_per_ten_gold": "coin", "midas": "coin",
 	"execute": "skull",
 }
 

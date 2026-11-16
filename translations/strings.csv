@@ -50,7 +50,7 @@ ABIL_EXECUTIONER,Nach dem Angriff: Ein Ziel mit höchstens {v} Leben stirbt sofo
 ABIL_CLEAR_BLADE,"Kampfbeginn (zuletzt): Entfernt alle gegnerischen Schilde, pro Schildpunkt Blutung {v}.","Battle start (last): removes all enemy shields, {v} bleed per shield point."
 ABIL_THE_JUDGE,Nach dem Angriff: Die Blutung des Ziels richtet sofort ×{v} Schaden an.,After attacking: the target's bleed deals ×{v} damage at once.
 ABIL_BEGGAR_GHOST,Wenn getroffen: Stiehlt dir {v} Gold (max. 3 pro Kampf).,When hit: steals {v} gold from you (max. 3 per battle).
-ABIL_DEBT_COLLECTOR,"Zugbeginn: Hast du mind. 10 Gold, erhält er +{v} Angriff.","Turn start: if you own 10+ gold, gains +{v} attack."
+ABIL_DEBT_COLLECTOR,"Kampfbeginn: +{v} Angriff je 10 Gold, die du besitzt.",Battle start: +{v} attack for every 10 gold you own.
 ABIL_THE_CHANGER,Kampfbeginn: Tauscht Angriff und Leben deiner vordersten Figur.,Battle start: swaps attack and health of your front figure.
 ABIL_GREEDMAW,Nach dem Angriff: Frisst den Schild des Ziels und heilt sich um dessen Wert.,After attacking: eats the target's shield and heals by its value.
 ABIL_VAULT_WARDEN,Kampfbeginn: Schild {v}. Wenn getroffen: Schild +1.,Battle start: {v} shield. When hit: +1 shield.
@@ -126,3 +126,9 @@ UI_RUN_LOST,Niederlage,Defeat
 UI_RUN_REACHED,Erreicht: Akt %d · %s,Reached: act %d · %s
 UI_RUN_WINS,Gewonnene Kämpfe: %d,Battles won: %d
 UI_NEW_RUN,Neuer Run,New run
+UI_SELL_ZONE,Hierher ziehen zum Verkaufen,Drag here to sell
+UI_LEVEL_UP,Stufe %d!,Level %d!
+UI_MERGED,Verschmolzen!,Merged!
+UI_XP_GAIN,EP %s → %s,XP %s → %s
+UI_STAT_CHANGE_ATTACK,Angriff %d → %d,Attack %d → %d
+UI_STAT_CHANGE_HEALTH,Leben %d → %d,Health %d → %d

@@ -87,7 +87,7 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	stats.add_child(spacer)
-	_health_label = _make_badge(Palette.HEALTH)
+	_health_label = _make_badge(Palette.LIFE)
 	stats.add_child(_health_label)
 
 	apply_snapshot(initial)
