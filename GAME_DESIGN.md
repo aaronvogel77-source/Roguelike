@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 8 abgeschlossen, Phase 9 Runde 1 läuft
+**Status:** Planung – Phase 9 abgeschlossen, Phase 10 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -266,7 +266,14 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Tarot-Karten:** **2 Kartenplätze**, um Karten aufzuheben. Einsatz jederzeit in der Planungsphase.
 
 ## Phase 9 – Fähigkeiten, Magie und Spezialsysteme
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Okkultist:** Nur eine **passive Grundregel** pro Okkultist, keine aktive Fähigkeit (Balatro-Deck-Prinzip).
+- **Meisterfähigkeit (F3):** **Nach Farbkombination** der fusionierten Figuren.
+  - Regelvorschlag (Bestätigung in Phase 10.1): Die **zwei häufigsten Farben** der 4 enthaltenen Figuren bestimmen die Kombination. 4 reine (z. B. Münzen + Münzen) + 6 gemischte (z. B. Stäbe + Kelche = „Dampf“) = **10 Meisterfähigkeiten**.
+  - Gleichstand bei der Häufigkeit: Die Farbe der zuerst fusionierten Figur zählt.
+- **Gebiets-Segen:** Im Gebiet einer Farbe erhalten Figuren derselben Farbe einen kleinen Bonus (z. B. Münz-Gebiet: Münz-Figuren +1 Schild zu Kampfbeginn).
+- **Pakte:** Max. **3 gleichzeitig**.
 
 ## Phase 10 – Progression, Schwierigkeit und Meta
 _Noch nicht behandelt._
@@ -289,13 +296,13 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 9, Runde 1: Okkultisten-Fähigkeit, Meisterfähigkeiten, Gebietsmechanik, Pakt-Grenzen
+- Phase 10, Runde 1: Meta-Progression, Schwierigkeitsstufen, Gegner-Skalierung, Bestätigung der Meisterfähigkeit-Regel
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
 - **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
 - **Verderben-Zahlen** → Prototyp (Startpunkt: ab Zug 15, verdoppelnd)
-- **Meisterfähigkeiten (F3):** Woher kommen sie (z. B. eine pro dominanter Tarot-Farbe)? → Phase 9
+- **Die 10 Meisterfähigkeiten** inhaltlich → Inhaltsrunden
 - **Liste geheimer Rezepte und Anlässe** → Inhaltsphase
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
 
@@ -330,3 +337,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Slice = Münzen-Gebiet, 2 Akte; Gebiete zufällig gereiht; Figuren gemeinsam einzeln entwerfen | Wirtschafts-Synergien früh testen, maximale Mitsprache | 4 Akte, 8 Akte; feste/wählbare Reihenfolge; Vorschlag durch Claude |
 | 2026-11-16 | 4 Objekt-Kategorien (Relikte, Ausrüstung, Tarot-Verbrauch, Pakte), 4 Seltenheitsstufen mit Nachteil, 1 Ausrüstung + 1 Segen-Slot pro Figur, keine Reserve | Balatro-Synergien plus Diablo-Würfelreiz, Knappheit | Nur Wertespannen, freie Affixe; 2 Slots; Reserve 3/6+ |
 | 2026-11-16 | 3 globale Relikt-Slots + Segen-Slot pro Figur, Shop 3+2 mit Reroll, Gold mit Zinsen, 2 Tarot-Plätze | Balatro-Spar-Dilemma, Knappheit ohne Hortung | Nur an Figuren/nur global; getrennte/wachsende Shops; ohne Zinsen; sofort einsetzen |
+| 2026-11-16 | Passive Okkultisten-Regel, Meisterfähigkeit nach Farbkombination, Gebiets-Segen, max. 3 Pakte | Entdeckerfreude bei Fusion, Anpassung an Gebiete | Aktive Rituale; dominante Farbe/Zufall; Umweltregel/nur Thema; unbegrenzte Pakte, 1 pro Gebiet |
