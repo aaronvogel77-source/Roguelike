@@ -178,7 +178,7 @@ func sell(row_index: int) -> bool:
 ## Moves a figure. Onto an equal figure below max level it merges (the moved
 ## copy's experience plus one duplicate); onto another figure the two swap.
 func move(from_index: int, to_index: int) -> bool:
-	if stage != Stage.PLANNING or from_index == to_index:
+	if stage not in [Stage.PLANNING, Stage.REWARD] or from_index == to_index:
 		return false
 	if from_index < 0 or to_index < 0 or from_index >= row.size() or to_index >= row.size():
 		return false
@@ -199,7 +199,7 @@ func move(from_index: int, to_index: int) -> bool:
 ## Inserts a figure between two others: it ends up directly behind the figure
 ## at after_index (-1 = at the very front); the figures in between shift.
 func insert_between(from_index: int, after_index: int) -> bool:
-	if stage != Stage.PLANNING or from_index < 0 or from_index >= row.size() or row[from_index] == null:
+	if stage not in [Stage.PLANNING, Stage.REWARD] or from_index < 0 or from_index >= row.size() or row[from_index] == null:
 		return false
 	if after_index < -1 or after_index >= row.size():
 		return false
@@ -241,9 +241,9 @@ func buy_pack(index: int, force_legend: bool = false) -> bool:
 	return true
 
 
-## Debug: opens a free mega court pack whose first card is legendary.
+## Debug: opens a free mega arcana pack whose first card is legendary.
 func debug_legend_pack() -> void:
-	_open({"type": "court", "size": "mega"}, true)
+	_open({"type": "arcana", "size": "mega"}, true)
 
 
 func _open(pack: Dictionary, force_legend: bool) -> void:

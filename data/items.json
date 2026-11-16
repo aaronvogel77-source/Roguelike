@@ -224,17 +224,12 @@
       "relic": {
         "price": 6,
         "choices": 2
-      },
-      "court": {
-        "price": 5,
-        "choices": 3
       }
     },
     "type_weights": {
-      "equipment": 35,
-      "arcana": 30,
-      "relic": 15,
-      "court": 20
+      "equipment": 45,
+      "arcana": 35,
+      "relic": 20
     },
     "sizes": {
       "normal": {
@@ -256,16 +251,10 @@
         "weight": 5
       }
     },
-    "court_rank_odds": [
-      40,
-      35,
-      18,
-      7
-    ],
     "legend_chance": {
-      "normal": 0.015,
-      "jumbo": 0.015,
-      "mega": 0.03
+      "normal": 0.01,
+      "jumbo": 0.01,
+      "mega": 0.02
     }
   }
 }

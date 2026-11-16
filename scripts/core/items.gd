@@ -113,7 +113,7 @@ static func pack_choice_count(db: ContentDb, pack: Dictionary) -> int:
 
 
 ## Contents of an opened pack: entries {"kind": "equipment|tarot|relic|figure", ...}.
-## force_legend: debug tool, the first figure of a court pack is legendary.
+## force_legend: debug tool, the first card of an arcana pack is a legendary figure.
 static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: RandomNumberGenerator,
 		owned_relics: Array = [], force_legend: bool = false) -> Array:
 	var count := pack_choice_count(db, pack)
@@ -124,9 +124,15 @@ static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: Random
 			for i in count:
 				result.append({"kind": "equipment", "item": roll_equipment(db, act, rng, rarity_bonus)})
 		"arcana":
-			# No duplicates within one pack (refill the pool if a pack is larger).
+			# Tarot cards without duplicates; each card has a tiny chance to be
+			# a legendary figure instead (the only way to get aces).
+			var chance: float = db.items["packs"]["legend_chance"][pack["size"]]
 			var cards: Array = []
 			for i in count:
+				if (force_legend and i == 0) or rng.randf() < chance:
+					var legends := db.legendary_figures()
+					result.append({"kind": "figure", "def_id": legends[rng.randi_range(0, legends.size() - 1)]["id"]})
+					continue
 				if cards.is_empty():
 					cards = db.items["tarot"].duplicate()
 				var index := rng.randi_range(0, cards.size() - 1)
@@ -139,17 +145,6 @@ static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: Random
 				var index := rng.randi_range(0, relics.size() - 1)
 				result.append({"kind": "relic", "id": relics[index]})
 				relics.remove_at(index)
-		"court":
-			var chance: float = db.items["packs"]["legend_chance"][pack["size"]]
-			for i in count:
-				if (force_legend and i == 0) or rng.randf() < chance:
-					var legends := db.legendary_figures()
-					result.append({"kind": "figure", "def_id": legends[rng.randi_range(0, legends.size() - 1)]["id"]})
-				else:
-					var rank: String = ContentDb.RANKS[_weighted_index(db.items["packs"]["court_rank_odds"], rng)]
-					var pool := db.regular_figures().filter(func(f: Dictionary) -> bool: return f["rank"] == rank)
-					pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
-					result.append({"kind": "figure", "def_id": pool[rng.randi_range(0, pool.size() - 1)]["id"]})
 	return result
 
 

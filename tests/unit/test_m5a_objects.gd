@@ -141,13 +141,14 @@ func test_shop_has_two_packs_and_buying_opens_one() -> void:
 
 func test_pack_contents_match_type() -> void:
 	var rng := RngStreams.new(4).stream("t")
-	var kinds := {"equipment": "equipment", "arcana": "tarot", "relic": "relic", "court": "figure"}
+	var kinds := {"equipment": "equipment", "arcana": "tarot", "relic": "relic"}
 	for type in kinds:
 		for size in ["normal", "jumbo", "mega"]:
 			var items := Items.pack_contents(_db, {"type": type, "size": size}, 1, rng)
 			assert_gt(items.size(), 0)
 			for item in items:
-				assert_eq(item["kind"], kinds[type])
+				# Arcana packs may (rarely) contain a legendary figure instead.
+				assert_true(item["kind"] == kinds[type] or (type == "arcana" and item["kind"] == "figure"))
 
 
 func test_taking_items_from_a_pack() -> void:
@@ -228,3 +229,26 @@ func test_insert_between_shifts_figures() -> void:
 	assert_eq(run.row.map(func(f): return f["def_id"]), ["coin_squire", moving, "the_judge"])
 	assert_true(run.insert_between(1, -1), "to the very front")
 	assert_eq(run.row[0]["def_id"], moving)
+
+
+func test_legendary_figures_come_only_from_arcana_packs() -> void:
+	var rng := RngStreams.new(9).stream("t")
+	var legends := 0
+	for i in 2000:
+		for item in Items.pack_contents(_db, {"type": "arcana", "size": "normal"}, 1, rng):
+			if item["kind"] == "figure":
+				legends += 1
+				assert_eq(_db.figures[item["def_id"]]["rank"], "legend")
+	# 6000 cards at 1 % -> about 60.
+	assert_between(legends, 25, 110)
+	for i in 300:
+		for item in Items.pack_contents(_db, {"type": "equipment", "size": "mega"}, 1, rng):
+			assert_ne(item["kind"], "figure")
+
+
+func test_figures_can_be_merged_on_the_reward_screen() -> void:
+	var run := _planning_run()
+	run.row = [_fig("coin_squire"), _fig("coin_squire"), null]
+	run.apply_battle_result({"victory": true})
+	assert_true(run.move(1, 0))
+	assert_null(run.row[1])

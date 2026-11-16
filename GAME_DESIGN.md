@@ -506,12 +506,13 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 
 **Tarot-Karten** (2 Kartenplätze, Einmalnutzung, Ziel ist immer eine eigene Figur): Die Kraft (dauerhaft +2/+2) · Der Magier (+1 Erfahrung) · Der Stern (Segen: Kampfbeginn Schild 3) · Die Sonne (Segen: ×1,25 Angriff) · Der Gehängte (Figur opfern → voller Kaufpreis als Gold) · Das Rad des Schicksals (Figur wechselt zufällig die Tarot-Farbe). Ein Segen belegt den Segen-Platz der Figur, ein neuer ersetzt den alten.
 
-**Packs statt Direktkauf (Nutzer-Idee, Balatro-Prinzip):** Objekte sind nicht direkt kaufbar, nur über Packs. Figuren bleiben direkt kaufbar.
+**Packs statt Direktkauf (Nutzer-Idee, Balatro-Prinzip):** Objekte sind nicht direkt kaufbar, nur über Packs. Figuren gibt es nur direkt im Shop.
 - Shop: 3 Figuren (Direktkauf) + 2 Packs
-- Ausrüstungs-Pack 4 Gold (3 Ausrüstungen, wähle 1) · Arkana-Pack 4 Gold (3 Tarot, wähle 1) · Relikt-Pack 6 Gold (2 Relikte, wähle 1) · Hofstaat-Pack 5 Gold (3 Figuren mit besseren Rang-Chancen, wähle 1)
+- **Schmiede-Pack** 4 Gold (3 Ausrüstungen, wähle 1) · **Arkana-Pack** 4 Gold (3 Tarot, wähle 1; jede Karte mit 1 % Chance stattdessen eine legendäre Figur, Mega 2 %) · **Reliquien-Pack** 6 Gold (2 Relikte, wähle 1). ~~Hofstaat-Pack~~ gestrichen (M5a-Feedback).
+- Beim Öffnen eines Packs und auf dem Belohnungsbildschirm kann man eigene Figuren verschmelzen (aufeinanderziehen) und verkaufen.
 - Groß-Variante: +2 Gold, +1 Karte, bessere Seltenheit · Mega-Variante (selten): +4 Gold, 5 Karten, wähle 2
 
-**Legendäre Figuren (nur aus Hofstaat-Packs, ca. 1,5 % pro Karte, Mega 3 %; getrennt von Fusionsrezepten; Debug-Knopf zum gezielten Ziehen):**
+**Legendäre Figuren (nur aus Arcana-Packs, 1 % pro Karte, Mega 2 %; Hinweis „Legendär!“ mit polychromem Glanz; getrennt von Fusionsrezepten; Debug-Knopf zum gezielten Ziehen):**
 
 | Ass | Name | A/L | Fähigkeit |
 |---|---|---|---|
@@ -560,6 +561,9 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
 ## Später entscheiden
+- **Für den Inhaltsausbau nach dem Slice vorgemerkt (M5a-Feedback):** legendäre Ausrüstung, legendäre Reliquien, mehr Multiplikator-Relikte und -Fähigkeiten für das Endgame, ausgearbeitete Synergien, Blutpack (kostet Leben einer Figur statt Gold)
+- **Seelen-Pack** (Pakte gegen Seelen) → M5b
+- **Schwierigkeit** erst nachjustieren, wenn alle Systeme (Relikte, Pakte, Fusion …) drin sind; gefühlt evtl. eine Nuance leichter
 - **Spielname** (Kandidaten: Arcana Profana, Hofstaat der Asche, Die Verfluchte Hand)
 - **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
 - **Verderben-Zahlen** → Prototyp (Startpunkt: ab Zug 15, verdoppelnd)
@@ -632,3 +636,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | v0.4.2-Feedback (Umsetzung mit M5): Einschieben zwischen Karten statt nur Tauschen, Plätze nur durch Bosse, weniger Gold. Rest bestätigt | Run war noch zu leicht, zu viel Gold für Verkaufen und Verschmelzen | Plätze kaufbar |
 | 2026-11-16 | M5 in M5a/M5b geteilt; Objekt-Sets bestätigt; Objekte nur über Packs (Balatro), Figuren direkt; 4 legendäre Asse nur aus Packs (selten, Debug-Knopf), getrennt von Fusionsrezepten; Einkommen 4 | Glücksspiel-Reiz, seltene Highlights, knappere Wirtschaft | Direktkauf von Objekten; Legendäre = Fusionsrezepte |
 | 2026-11-16 | M5a gebaut (v0.5.0): Packs (4 Typen × 3 Größen) mit Öffnen-Bildschirm, Ausrüstung mit Affixen, 8 Relikte, 6 Tarot-Karten, 4 legendäre Asse, Relikt-/Tarot-Leiste, Einschieben zwischen Karten, Plätze nur durch Bosse, Einkommen 4, Debug „Legendär-Pack“; 104 Tests | – | – |
+| 2026-11-16 | M5a-Feedback: Hofstaat-Pack gestrichen, Legendäre nur in Arcana-Packs (1 %), polychromer Glanz + „Legendär!“, Verschmelzen/Verkaufen bei Belohnung und Pack-Öffnen, Blutungs-Tick mit aufsteigendem Tropfen. Blutung bleibt dauerhaft (Klarstellung) | Figuren nur gezielt im Shop, Legendäre als echtes Highlight | Hofstaat-Pack, Verfluchtes Pack, Omen-Pack |

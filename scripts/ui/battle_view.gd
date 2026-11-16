@@ -479,6 +479,8 @@ func _show_damage(event: Dictionary) -> void:
 	var color: Color = Palette.DAMAGE_FLASH
 	if event["source"] in ["burn", "bleed"]:
 		color = Emblem.COLORS[event["source"]]
+		# Damage over time: the status emblem rises out of the card.
+		_rise_emblem(event["source"], card.center_position() + Vector2(0, 20))
 	_float_number("-%d" % event["amount"], card.center_position(), color)
 
 

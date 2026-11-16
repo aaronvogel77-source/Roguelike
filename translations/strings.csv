@@ -219,10 +219,9 @@ TAROT_HANGED_MAN,Der Gehängte,The Hanged Man
 TAROT_HANGED_MAN_DESC,Opfert eine Figur. Du erhältst ihren vollen Kaufpreis als Gold.,Sacrifice a figure. You gain its full price in gold.
 TAROT_WHEEL_OF_FORTUNE,Das Rad des Schicksals,Wheel of Fortune
 TAROT_WHEEL_OF_FORTUNE_DESC,Eine Figur wechselt zufällig in eine andere Tarot-Farbe.,A figure switches to a random other tarot suit.
-PACK_EQUIPMENT,Ausrüstungs-Pack,Equipment Pack
+PACK_EQUIPMENT,Schmiede-Pack,Forge Pack
 PACK_ARCANA,Arkana-Pack,Arcana Pack
-PACK_RELIC,Relikt-Pack,Relic Pack
-PACK_COURT,Hofstaat-Pack,Court Pack
+PACK_RELIC,Reliquien-Pack,Reliquary Pack
 PACK_SIZE_NORMAL,,
 PACK_SIZE_JUMBO,Groß,Jumbo
 PACK_SIZE_MEGA,Mega,Mega
@@ -241,3 +240,5 @@ UI_USE_TAROT,"Tippe eine Figur an, um %s zu nutzen",Tap a figure to use %s
 UI_DEBUG_LEGEND,Legendär-Pack,Legend pack
 UI_BONUS_STATS,Dauerhaft +%d/+%d,Permanent +%d/+%d
 UI_INCOME_EXTRA,Relikte/Ausrüstung %+d,Relics/equipment %+d
+UI_RARE_LEGEND,Legendär!,Legendary!
+UI_PACK_ROW_HINT,"Dein Team: aufeinanderziehen zum Verschmelzen, ins Verkaufsfeld zum Verkaufen","Your team: drag onto each other to merge, onto the sell field to sell"

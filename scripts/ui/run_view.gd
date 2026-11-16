@@ -794,7 +794,7 @@ func _on_buy_pack(index: int) -> void:
 ## Overlay while a pack is open: pick items, choose targets, discard the rest.
 func _build_pack_overlay() -> void:
 	var overlay := ColorRect.new()
-	overlay.color = Color(0.02, 0.01, 0.03, 0.9)
+	overlay.color = Color(0.02, 0.01, 0.03, 0.96)
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	_screen.add_child(overlay)
@@ -818,25 +818,30 @@ func _build_pack_overlay() -> void:
 	items_center.add_child(items)
 	column.add_child(items_center)
 
+	# Own row: choose a target, or drag to merge / swap and sell to make room.
+	var hint_text := tr("UI_PACK_ROW_HINT")
 	if _pack_pick >= 0:
 		var entry: Dictionary = open["items"][_pack_pick]
 		var name: String = ItemText.equipment_name(entry["item"]) if entry["kind"] == "equipment" else tr(ContentDb.name_key(_db.figures[entry["def_id"]]))
-		var hint := _label(tr("UI_PICK_TARGET") % name, 22, Palette.PARCHMENT)
-		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		column.add_child(hint)
-		var targets := HBoxContainer.new()
-		targets.add_theme_constant_override("separation", CARD_SPACING)
-		var entries := _row_entries()
-		for r in range(_run.slot_count() - 1, -1, -1):
-			var slot := SlotView.new("row", r)
-			slot.accepts_drops = false
-			if _run.row[r] != null:
-				slot.set_card(UnitCard.for_entry(entries[r], _run.row[r], _db))
-			slot.tapped.connect(_on_pack_target)
-			targets.add_child(slot)
-		var target_center := CenterContainer.new()
-		target_center.add_child(targets)
-		column.add_child(target_center)
+		hint_text = tr("UI_PICK_TARGET") % name
+	var hint := _label(hint_text, 22, Palette.PARCHMENT)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(hint)
+	var targets := HBoxContainer.new()
+	targets.add_theme_constant_override("separation", 16)
+	targets.alignment = BoxContainer.ALIGNMENT_CENTER
+	var row_slots := _own_row_slots()
+	for slot in _row_slots:
+		slot.tapped.disconnect(_on_slot_tapped)
+		slot.tapped.connect(_on_pack_row_tapped)
+	targets.add_child(row_slots)
+	_sell_zone = SellZone.new()
+	_sell_zone.tapped.connect(_on_sell_zone_tapped)
+	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
+	targets.add_child(_sell_zone)
+	var target_center := CenterContainer.new()
+	target_center.add_child(targets)
+	column.add_child(target_center)
 
 	var skip := _button(tr("UI_PACK_SKIP"), Vector2(260, 60), _on_close_pack)
 	skip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -886,6 +891,15 @@ func _on_pack_take(index: int) -> void:
 		_show_stage()
 
 
+## In the pack overlay a row tap picks the target if an item waits for one,
+## otherwise it selects the figure (for selling).
+func _on_pack_row_tapped(slot: SlotView) -> void:
+	if _pack_pick >= 0:
+		_on_pack_target(slot)
+	else:
+		_on_slot_tapped(slot)
+
+
 func _on_pack_target(slot: SlotView) -> void:
 	if _pack_pick >= 0 and _run.take_pack_item(_pack_pick, slot.index):
 		_pack_pick = -1
@@ -902,9 +916,7 @@ func _on_close_pack() -> void:
 
 func _rarity(def_id: String) -> String:
 	var rank: String = _db.figures[def_id]["rank"]
-	if rank == "legend":
-		return "king"  # strongest shine for aces
-	return rank if rank in ["queen", "king"] else ""
+	return rank if rank in ["queen", "king", "legend"] else ""
 
 
 ## Rotating golden rays behind rare cards plus a "Rare!/Epic!" tag, popping in.
@@ -914,17 +926,25 @@ func _add_rarity_effect(host: Control, def_id: String) -> void:
 		return
 	var shine := RareShine.new()
 	shine.epic = rarity == "king"
+	shine.legend = rarity == "legend"
 	shine.size = UnitCard.CARD_SIZE + Vector2(80, 80)
 	shine.position = -Vector2(40, 40)
 	host.add_child(shine)
 	host.move_child(shine, 0)
-	var tag := _label(tr("UI_RARE_EPIC") if rarity == "king" else tr("UI_RARE"), 16, Palette.GOLD)
+	var tag_text: String = {"queen": tr("UI_RARE"), "king": tr("UI_RARE_EPIC"), "legend": tr("UI_RARE_LEGEND")}[rarity]
+	var tag := _label(tag_text, 18 if rarity == "legend" else 16, Palette.GOLD)
+
 	tag.add_theme_color_override("font_outline_color", Color.BLACK)
 	tag.add_theme_constant_override("outline_size", 6)
 	tag.position = Vector2(0, -26)
 	tag.size = Vector2(UnitCard.CARD_SIZE.x, 22)
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	host.add_child(tag)
+	if rarity == "legend":
+		# Colors cycle like the rays (tween bound to the tag, ends with it).
+		var cycle := tag.create_tween().set_loops()
+		for hue in [0.0, 0.33, 0.66]:
+			cycle.tween_property(tag, "modulate", Color.from_hsv(hue, 0.5, 1.0), 0.4)
 	host.pivot_offset = UnitCard.CARD_SIZE / 2
 	host.scale = Vector2(0.6, 0.6)
 	create_tween().tween_property(host, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
