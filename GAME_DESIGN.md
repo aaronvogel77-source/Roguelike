@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 14 abgeschlossen, Phase 15 Runde 1 läuft
+**Status:** Planung abgeschlossen (Phasen 0–15). Inhaltsrunden (16 Figuren) laufen, danach Start mit M0.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -369,13 +369,60 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Test-Builds:** **GitHub Pages**, automatisch per GitHub Actions. Godot-Web-Export ohne Threads (Pages sendet keine COOP/COEP-Header). Pages muss im Repo einmalig aktiviert werden, bei privatem Repo ggf. ein kostenpflichtiger Plan nötig.
 
 ## Phase 15 – Umsetzungsplan und Meilensteine
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser-Link (GitHub Pages), einem Commit und einer Feedback-Runde.
+
+| # | Meilenstein | Testbar |
+|---|---|---|
+| M0 | Grundgerüst: Godot-Projekt, Web-Export, GitHub-Pages-Pipeline | Link öffnet sich am Handy im Querformat |
+| M1 | Kampf-Kern: 2 Reihen, vorderste gegen vorderste, Schritt-Animation, 1×/2×/4×, Sieg/Niederlage, headless Simulation + Tests | Ein Kampf läuft nachvollziehbar |
+| M2 | Fähigkeiten-Baukasten: alle Auslöser, 4 Status, `(Angriff + Boni) × Mult`, ~6 Test-Figuren, saftiges Feedback | Synergie-Ketten feuern |
+| M3 | Run-Schleife: Gegnerwahl mit Vorschau, Shop 3+2, Neuwürfeln, Gold + Zinsen, Duplikate leveln, Plätze 3→6, Rückgängig, 2 Akte, Tod/Sieg | Kompletter Mini-Run |
+| M4 | Echte Inhalte: 16 Figuren, Münzen-Gegner, Budget-Generator, 2 Regel-Bosse, Gebiets-Segen | Slice mit echtem Inhalt |
+| M5 | Objekte: Ausrüstung mit Seltenheit, Relikte (global + Segen), Tarot-Karten, Seelen, Pakte, Ereignisse + Pity-Timer, Überspringen | Volle Build-Tiefe |
+| M6 | Fusion: F1–F3, Fähigkeitswahl, Meisterfähigkeiten, Altar / nach Boss / Ritualkerze | Das Herzstück |
+| M7 | 2 Okkultisten, Meta: Freischaltungen, Upgrades, Grimoire, Statistiken, Autosave + Export-Code | Fortschritt über Runs |
+| M8 | Präsentation: KI-Tool-Test, echte Grafik, Leucht-System, Sound/Musik, Barrierefreiheit, Erst-Hinweise | Sieht aus wie das Spiel |
+| M9 | Balancing per Simulation, Endlos-Modus → **Vertical Slice fertig** | Feedback: Macht es Spaß? |
+
+**Nach dem Slice:** Gebiete 2–4, 8 Akte, Endboss aus den Großen Arkana, Schwierigkeitsstufen, geheime Rezepte, Englisch, Seed-Teilen.
+
+- **Figurenrunden:** **Vor dem Start von M0** werden alle 16 Figuren gemeinsam Figur für Figur entworfen (eine Runde pro Tarot-Farbe), dazu die Münzen-Gegner.
+- **Zusammenfassung:** Vom Nutzer übersprungen („direkt starten“). Sie steht unten im Dokument.
+
+---
+
+## Inhalte – Figuren (Vertical Slice)
+*Basislinie: Kaufpreis 3 Gold für alle. Stufen geben +1/+1 und verstärken die Fähigkeit (Stufe 1/2/3). Ränge bestimmen, wie oft eine Figur im Shop erscheint.*
+
+### Münzen (Erde) – Thema Schild, Gold, Wirtschaft
+_In Arbeit (Inhaltsrunde 1)._
+
+### Stäbe (Feuer) – Thema Brennen, Aggression
+_Offen._
+
+### Kelche (Wasser) – Thema Fluch, Heilung, Opfer
+_Offen._
+
+### Schwerter (Luft) – Thema Blutung, Präzision
+_Offen._
+
+### Münzen-Gegner (Gebiet 1)
+_Offen._
+
+---
+
+## Kompakte Zusammenfassung
+**Dark-Fantasy-Auto-Battler-Roguelite (Browser + Mobile, Querformat, Godot 4).** Als Okkultist stellst du ein Team aus bis zu 6 Tarot-Hofkarten-Figuren (Bube bis König, 4 Farben) in einer Reihe auf. Kämpfe laufen automatisch und deterministisch Schritt für Schritt ab (vorderste gegen vorderste, `(Angriff + Boni) × Mult`). Zwischen den Kämpfen: Gegnerwahl mit voller Vorschau, Shop (Gold + Zinsen), Ausrüstung mit gewürfelter Seltenheit, globale Relikte, Tarot-Karten, Seelen-Pakte, okkulte Ereignisse. Höhepunkt ist die **Fusion** (F1–F3, Meisterfähigkeit nach Farbkombination, geheime Rezepte). 8 Akte à 3 Kämpfe in 4 zufällig gereihten Tarot-Gebieten, Regel-Bosse, Endboss aus den Großen Arkana. **Eine Niederlage beendet den Run.** Ein Run dauert 30–45 Min. Meta: Freischaltungen über Herausforderungen, kleine Upgrades, Grimoire, Schwierigkeitsstufen. Optik: KI-generierter Tarot-Holzschnitt-Stil, Neon-Leuchten zeigt Seltenheit. Erstes Ziel: Vertical Slice im Münzen-Gebiet (2 Akte, 16 Figuren, 2 Okkultisten).
 
 ---
 
 ## Offene Fragen
-- Phase 15, Runde 1: Meilensteinplan bestätigen, Zeitpunkt der Inhaltsrunden
-- Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
+- Inhaltsrunde 1: Münzen-Figuren (Bube, Ritter, Königin, König)
+- Inhaltsrunden 2–4: Stäbe, Kelche, Schwerter
+- Inhaltsrunde 5: Münzen-Gegner
+- Danach: Start M0
 
 ## Später entscheiden
 - **Spielname** (Kandidaten: Arcana Profana, Hofstaat der Asche, Die Verfluchte Hand)
@@ -426,3 +473,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Lokal + Export-Code, versioniertes JSON, deterministisch mit getrennten RNG-Strömen, 3 Statistik-Bereiche | Kein Server nötig, Bugs reproduzierbar | Nur lokal, Cloud; binär; einfacher Zufall; Run-Verlauf |
 | 2026-11-16 | Baukasten-Effekte + Sonderskripte, headless Kampf-Simulation, Debug-Menü mit 4 Werkzeugen | Fusionen kombinieren sauber, Balancing per Simulation | Ein Skript pro Fähigkeit, reiner Baukasten; Simulation später |
 | 2026-11-16 | JSON-Inhalte, Architektur-Paket (FSM, Commands, Event-Bus, Komposition, RNG-Ströme, GUT), Code komplett Englisch, GitHub Pages | Robust, testbar, Builds per Link spielbar | Tabellen, Godot-Ressourcen; deutsche Kommentare; itch.io |
+| 2026-11-16 | Meilensteinplan M0–M9 bestätigt, Figuren vor dem Start entwerfen | Mechanik vor Inhalt vor Optik | Fusion früher, Grafik früher; Figuren parallel oder vor M4 |
