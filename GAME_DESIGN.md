@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 8, Runde 2 läuft
+**Status:** Planung – Phase 8 abgeschlossen, Phase 9 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -248,9 +248,22 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - Selten: +2 Effekte
   - Verflucht/Legendär: +3 starke Effekte, aber **1 Nachteil**
 - **Slots pro Figur (Nutzer-Antwort):** „1 Slot pro Figur und max. 1 wirkendes Relikt oder Verbrauchsgegenstand wie Segen o. Ä.“
-  - Jede Figur hat also **1 Ausrüstungs-Slot + 1 Segen-Slot** (Relikt *oder* Verbrauchseffekt). Ob es zusätzlich globale Relikt-Slots gibt, wird in Runde 2 geklärt.
+  - Jede Figur hat also **1 Ausrüstungs-Slot + 1 Segen-Slot** (Relikt *oder* Verbrauchseffekt). Globale Slots → Runde 2
 - **Reserve:** **Keine.** Nur Figuren in der Kampfreihe zählen.
   - Konsequenz: Fusionspartner und Duplikate müssen in der Reihe stehen oder direkt beim Kauf verschmelzen. Planung ist bewusst knapp.
+
+### Runde 2 (beantwortet)
+- **Relikte:** **Beides.** Pro Figur 1 Segen-Slot, dazu **3 globale Relikt-Slots** für Joker-artige Team-Effekte.
+- **Shop nach jedem Kampf:** **3 Figuren + 2 Objekte** (Ausrüstung, Relikt oder Tarot-Karte)
+  - Neu würfeln: 1 Gold, +1 Gold je weiterem Neuwürfeln im selben Shop
+  - Seltene Angebote kosten **Seelen** statt Gold
+- **Gold-Wirtschaft (Startpunkt für den Prototyp):**
+  - Startgold: 10
+  - Einkommen pro Kampf: 5 + Schwierigkeitsbonus der gewählten Gegner (0 / 2 / 4)
+  - **Zinsen:** +1 Gold pro 5 gesparte Gold, max. +5 pro Runde
+  - Figur kaufen: 3 · Verkaufen: 1 (+1 pro Stufe) · Objekte: 3–8 je nach Seltenheit
+  - Übersprungene Kämpfe geben kein Gold (Phase 3)
+- **Tarot-Karten:** **2 Kartenplätze**, um Karten aufzuheben. Einsatz jederzeit in der Planungsphase.
 
 ## Phase 9 – Fähigkeiten, Magie und Spezialsysteme
 _Noch nicht behandelt._
@@ -276,7 +289,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 8, Runde 2: Relikte global oder an Figuren?, Shop-Aufbau, Gold-Wirtschaft, Aufbewahrung von Tarot-Karten
+- Phase 9, Runde 1: Okkultisten-Fähigkeit, Meisterfähigkeiten, Gebietsmechanik, Pakt-Grenzen
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -316,3 +329,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Eigene Monster je Gebiet, Spieler-Figuren als Tarot-Hofkarten (Rang = Seltenheit), 16 Figuren im Slice, Generator mit thematischen Synergien | Starkes Thema, klare Seltenheit, durchdachte Gegner | Gleicher Pool, Mix; 56 Karten, freie Figuren; 12/24 Figuren; Konter-/Zufallsteams |
 | 2026-11-16 | Slice = Münzen-Gebiet, 2 Akte; Gebiete zufällig gereiht; Figuren gemeinsam einzeln entwerfen | Wirtschafts-Synergien früh testen, maximale Mitsprache | 4 Akte, 8 Akte; feste/wählbare Reihenfolge; Vorschlag durch Claude |
 | 2026-11-16 | 4 Objekt-Kategorien (Relikte, Ausrüstung, Tarot-Verbrauch, Pakte), 4 Seltenheitsstufen mit Nachteil, 1 Ausrüstung + 1 Segen-Slot pro Figur, keine Reserve | Balatro-Synergien plus Diablo-Würfelreiz, Knappheit | Nur Wertespannen, freie Affixe; 2 Slots; Reserve 3/6+ |
+| 2026-11-16 | 3 globale Relikt-Slots + Segen-Slot pro Figur, Shop 3+2 mit Reroll, Gold mit Zinsen, 2 Tarot-Plätze | Balatro-Spar-Dilemma, Knappheit ohne Hortung | Nur an Figuren/nur global; getrennte/wachsende Shops; ohne Zinsen; sofort einsetzen |
