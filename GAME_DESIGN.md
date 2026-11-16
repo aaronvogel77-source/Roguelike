@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 4 abgeschlossen, Phase 5 Runde 1 läuft
+**Status:** Planung – Phase 5, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -140,7 +140,19 @@ Weil der Kampf automatisch läuft, kann eine einzelne Niederlage als unfair empf
 - **Nach dem Kampf:** **Schaden-Statistik** (Schaden und Heilung pro Figur). Kein Kampf-Log und kein Replay gewählt.
 
 ## Phase 5 – Spielercharakter
-_Noch nicht behandelt._
+*Der Spieler ist der **Okkultist**, der das Team führt. Er kämpft nicht selbst und hat keine eigenen HP (eine Niederlage beendet den Run).*
+
+### Runde 1 (beantwortet)
+- **Startwahl:** **Okkultisten-Wahl.** Mehrere Okkultisten mit eigener Grundregel und 1–2 Startfiguren (Balatro-Deck-Prinzip). Neue werden per Meta-Progression freigeschaltet.
+- **Ressourcen:** **Gold + Seelen.**
+  - Gold: Shop-Währung
+  - Seelen: seltene zweite Währung für Pakte und Ereignisse. Quellen und Verwendung → Runde 2
+- **Leveln:** **Beides.** Duplikate verschmelzen geben viel Erfahrung, Kämpfe geben wenig.
+- **Kombinieren:** **Fusion zu neuer Figur.** Zwei verschiedene Figuren verschmelzen zu einer neuen, stärkeren (z. B. Ritter + Geist = Todesritter).
+  - Synergie-Gruppen (Traits) und Positions-Kombos wurden **nicht** ausdrücklich gewählt. Positions-Effekte bleiben über die Reihen-Aufstellung trotzdem möglich (→ Phase 6).
+
+### ⚠️ Umfangs-Hinweis Fusion
+Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Handgemachte Ergebnisse für alle Paare sind unrealistisch. Die Fusionsregel wird in Runde 2 entschieden.
 
 ## Phase 6 – Kampfsystem
 _Noch nicht behandelt._
@@ -175,7 +187,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 5, Runde 1: Startwahl, Spieler-Ressourcen, Figuren leveln, Figuren kombinieren
+- Phase 5, Runde 2: Figuren-Werte, Fusionsregel, Seelen (Quellen/Verwendung), Anzahl Okkultisten im Vertical Slice
 
 ## Später entscheiden
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
@@ -201,3 +213,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Gegner prozedural nach Budget, Bosse handgemacht, 4 Gebiete à 2 Akte, Ereignisse/Pakte, Überspringen, interner Seed | Viel Abwechslung bei wenig Handarbeit, Risiko-Tausch passt zum Thema | Handgebaute Teams, Vorlagen; 8 Gebiete, ein Thema; Daily von Anfang an |
 | 2026-11-16 | Regel-Bosse, Ereignisse mit ~30 % Chance, Überspringen bis auf den Endboss, Gebiete = 4 Tarot-Farben | Build-Anpassung erzwingen, Risiko-Tausch, Tarot-Thema durchziehen | Boss-Figuren, Kombination; 1× pro Akt, als Option; nur Kampf 1+2 überspringbar; klassischer Abstieg |
 | 2026-11-16 | Exakte Werte, keine Prognose, Schaden-Statistik; Endboss aus den Großen Arkana; Pity-Timer nach 4 Kämpfen | Fairness durch Transparenz, Einschätzen als Skill | Versteckte Effekte; grobe/genaue Prognose; Kampf-Log, Replay |
+| 2026-11-16 | Okkultisten-Wahl, Gold + Seelen, Leveln durch Verschmelzen + Kampf-Erfahrung, Fusion zu neuen Figuren | Build-Vielfalt ab Start, Pakt-Thema, Kombinieren als Kernfantasie | Fester/zufälliger Start; Zinsen, nur Gold; Traits, Positions-Kombos als Hauptsystem |
