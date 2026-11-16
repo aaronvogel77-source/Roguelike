@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 7 abgeschlossen, Phase 8 Runde 1 läuft
+**Status:** Planung – Phase 8, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -235,7 +235,22 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Figurenliste:** **Gemeinsam Figur für Figur** in eigenen Inhaltsrunden pro Farbe. Zeitpunkt: nach Phase 9, wenn Items, Pakte und Meisterfähigkeiten feststehen.
 
 ## Phase 8 – Items, Inventar und Loot
-_Noch nicht behandelt._
+
+### Runde 1 (beantwortet)
+- **Objekt-Kategorien** (ersetzen die Platzhalter „Karten, Joker, Pakte“):
+  1. **Relikte:** passive Effekte, Joker-artig
+  2. **Ausrüstung an Figuren:** zufällig ausgewürfelt je nach Seltenheit
+  3. **Tarot-Karten:** Verbrauchsgegenstände mit Einmal-Effekt (z. B. „Segen“)
+  4. **Pakte:** dauerhafte Run-Effekte mit Stärke und Nachteil, bezahlt mit Seelen
+- **Seltenheit (Ausrüstung):** 4 Stufen
+  - Gewöhnlich: Grundwert
+  - Magisch: +1 Effekt
+  - Selten: +2 Effekte
+  - Verflucht/Legendär: +3 starke Effekte, aber **1 Nachteil**
+- **Slots pro Figur (Nutzer-Antwort):** „1 Slot pro Figur und max. 1 wirkendes Relikt oder Verbrauchsgegenstand wie Segen o. Ä.“
+  - Jede Figur hat also **1 Ausrüstungs-Slot + 1 Segen-Slot** (Relikt *oder* Verbrauchseffekt). Ob es zusätzlich globale Relikt-Slots gibt, wird in Runde 2 geklärt.
+- **Reserve:** **Keine.** Nur Figuren in der Kampfreihe zählen.
+  - Konsequenz: Fusionspartner und Duplikate müssen in der Reihe stehen oder direkt beim Kauf verschmelzen. Planung ist bewusst knapp.
 
 ## Phase 9 – Fähigkeiten, Magie und Spezialsysteme
 _Noch nicht behandelt._
@@ -261,7 +276,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 8, Runde 1: Objekt-Kategorien, Ausrüstung an Figuren, Seltenheit/Affixe, Bank/Reserve
+- Phase 8, Runde 2: Relikte global oder an Figuren?, Shop-Aufbau, Gold-Wirtschaft, Aufbewahrung von Tarot-Karten
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -270,7 +285,6 @@ _Noch nicht behandelt._
 - **Meisterfähigkeiten (F3):** Woher kommen sie (z. B. eine pro dominanter Tarot-Farbe)? → Phase 9
 - **Liste geheimer Rezepte und Anlässe** → Inhaltsphase
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
-- **Art der Synergie-Objekte** (Karten/Joker/Pakte sind Platzhalter) → Phase 8/9
 
 ---
 
@@ -301,3 +315,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Andere Ziele nur über Fähigkeiten, ~1 s pro Zug, Todesbildschirm mit Team/Statistik/Meta/Seed, Verderben im Prototyp | Pacing 24 Kämpfe in 30–45 Min., Lernen aus Niederlagen | Fernkämpfer-Klasse; 2 s, adaptiv |
 | 2026-11-16 | Eigene Monster je Gebiet, Spieler-Figuren als Tarot-Hofkarten (Rang = Seltenheit), 16 Figuren im Slice, Generator mit thematischen Synergien | Starkes Thema, klare Seltenheit, durchdachte Gegner | Gleicher Pool, Mix; 56 Karten, freie Figuren; 12/24 Figuren; Konter-/Zufallsteams |
 | 2026-11-16 | Slice = Münzen-Gebiet, 2 Akte; Gebiete zufällig gereiht; Figuren gemeinsam einzeln entwerfen | Wirtschafts-Synergien früh testen, maximale Mitsprache | 4 Akte, 8 Akte; feste/wählbare Reihenfolge; Vorschlag durch Claude |
+| 2026-11-16 | 4 Objekt-Kategorien (Relikte, Ausrüstung, Tarot-Verbrauch, Pakte), 4 Seltenheitsstufen mit Nachteil, 1 Ausrüstung + 1 Segen-Slot pro Figur, keine Reserve | Balatro-Synergien plus Diablo-Würfelreiz, Knappheit | Nur Wertespannen, freie Affixe; 2 Slots; Reserve 3/6+ |
