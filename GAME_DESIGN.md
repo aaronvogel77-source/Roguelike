@@ -523,6 +523,37 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 
 **Wirtschaft (v0.4.2-Feedback):** Grundeinkommen 5 → **4**. Plätze nicht mehr kaufbar.
 
+### M5b – Seelen, Pakte, Ereignisse, Überspringen (Set von Claude, mit Nutzer-Änderungen bestätigt)
+**Seelen:** Boss besiegt +3 · Figur opfern (Opferaltar) (Rangwert + Stufe) × 2 · eigene Figur stirbt im Kampf: 10 % Chance +1. Verwendung: Pakte (Seelen-Pack), Ereignisse, ab M6 Fusion.
+
+**Pakte** (max. 3; **Seelen-Pack** 3 Seelen, 2 Pakte, wähle 1) – stark und run-prägend, Nachteile nach Feedback abgeschwächt:
+
+| Pakt | Stärke | Nachteil |
+|---|---|---|
+| Blutpakt | Alle Figuren ×1,5 Angriff | Kampfbeginn: jede verliert 10 % Leben |
+| Goldener Schwur | Zinsen bis +10, Gold-Effekte zählen doppeltes Gold | Neuwürfeln +1 |
+| Aschepakt | Brennen-Schaden ×2, brennende Gegner geben Brennen beim Tod weiter | Vorderste Figur brennt zu Kampfbeginn (1) |
+| Klingenschwur | Blutung deiner Figuren doppelt so viele Stapel | Heilung bei dir −25 % |
+| Totenpakt | Stirbt eigene Figur: alle anderen ×1,1 Angriff (stapelt) | −1 Gold nach jedem Sieg |
+| Wiederkehr-Pakt | Die ersten 2 gefallenen Figuren pro Kampf kehren mit halbem Leben zurück | Zinsen max. +3 |
+| Pakt der Vorhut | Vorderste Figur ×2 Angriff und erhält alle Schilde des Teams | Hinterste Figur −1 Angriff |
+| Seelenhunger | Pro getötetem Gegner: deine Figuren +1/+1 bis Kampfende, 25 % Chance +1 Seele | Seelen-Pack +1 |
+
+**Ereignisse** (~40 % nach gewonnenen Kämpfen, spätestens nach 3 Kämpfen):
+
+| Ereignis | Wahlen |
+|---|---|
+| Opferaltar | Figur opfern → Seelen · zwei Figuren opfern → Pakt nach Wahl gratis · gehen |
+| Schwarzmarkt | Relikt für 4 Gold · Mega-Pack für 6 Gold · Königin/König zum halben Preis · gehen |
+| Verfluchter Brunnen | 3 / 6 / 10 Gold → Magische / Seltene / besonders starke Ausrüstung · trinken: Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn Fluch 2) |
+| Wahrsagerin | 1 von 3 Tarot gratis · nächste Boss-Regel entfällt · 1 Seele → Mega-Arcana-Pack |
+| Grabräuber | +8 Gold + Relikt, aber hinterste Figur verloren · +3 Gold |
+| Spiegelkammer | Figur duplizieren (Stufe 1) für 2 Seelen · eine Figur gratis +1 Erfahrung |
+| Duell | Sofortkampf gegen Elite: Sieg → Relikt + 2 Seelen, Niederlage → vorderste Figur verloren (kein Run-Ende) · ablehnen |
+| Seelenhändler | 1 Seele ↔ 5 Gold (beliebig oft) · Pakt zurückgeben (+2 Seelen) |
+
+**Überspringen:** Normale Kämpfe → **Marke** (in der Gegnerwahl vorher sichtbar): gratis Mega-Pack im nächsten Shop · +4 Seelen · 2 garantierte Königinnen/Könige im nächsten Shop · alle Figuren +1 Erfahrung. Kein Gold, keine Erfahrung, kein Ereignis. Akt-Boss überspringen: eine Figur opfern, kein Platz, keine Seelen. Der letzte Boss des Slice ist nicht überspringbar.
+
 ### Regel-Bosse (Vertical Slice)
 **Geändert nach M4-Feedback:** Bosse sind jetzt **Regel + echte Boss-Figur** (Phase-3-Entscheidung „Regel-Bosse“ erweitert zu „Beides kombiniert“). Die Boss-Figur ist 2–3 Kartenplätze breit, steht vorne, und ihr Gefolge füllt die restlichen Plätze.
 
@@ -553,7 +584,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 
 ## Offene Fragen
 - **M5 aufgeteilt:** M5a = Ausrüstung, Relikte, Tarot, Packs, Legendäre + Feedback unten · M5b = Seelen, Pakte, Ereignisse, Überspringen
-- M5a-Feedback einholen, dann M5b. **Mit M5a umgesetzt (Feedback zu v0.4.2):**
+- M5b bauen. **Mit M5a umgesetzt (Feedback zu v0.4.2):**
   - Umordnen: Wird eine Figur **zwischen** zwei Karten gezogen, wird sie dort eingeschoben (die anderen rücken). Nur wenn sie klar **auf** eine Karte gezogen wird, tauschen die beiden.
   - Plätze **nur noch durch Boss-Siege**, nicht mehr kaufbar
   - **Weniger Gold:** Grundeinkommen 5 → 4
@@ -639,3 +670,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | M5a gebaut (v0.5.0): Packs (4 Typen × 3 Größen) mit Öffnen-Bildschirm, Ausrüstung mit Affixen, 8 Relikte, 6 Tarot-Karten, 4 legendäre Asse, Relikt-/Tarot-Leiste, Einschieben zwischen Karten, Plätze nur durch Bosse, Einkommen 4, Debug „Legendär-Pack“; 104 Tests | – | – |
 | 2026-11-16 | M5a-Feedback: Hofstaat-Pack gestrichen, Legendäre nur in Arcana-Packs (1 %), polychromer Glanz + „Legendär!“, Verschmelzen/Verkaufen bei Belohnung und Pack-Öffnen, Blutungs-Tick mit aufsteigendem Tropfen. Blutung bleibt dauerhaft (Klarstellung) | Figuren nur gezielt im Shop, Legendäre als echtes Highlight | Hofstaat-Pack, Verfluchtes Pack, Omen-Pack |
 | 2026-11-16 | v0.5.2: Goldene Waage → hinterste Figur, Relikt-/Tarot-Einflüsse als Symbole auf der Karte + goldene Werte bei Bonus + Liste im Detail-Panel, Brennen zählt sichtbar herunter („Brennen 3 -> 2“), Kampf-Tempo ×0,8. Brennen-Regel und Tarot-Stapeln bleiben | Nachvollziehbarkeit | Brennen dauerhaft; nichts/alles stapelt |
+| 2026-11-16 | M5b-Inhalte: 8 starke Pakte mit milden Nachteilen, 8 Ereignisse (~40 %, Pity 3), stärkere Überspringen-Marken; Seelen-Quellen bestätigt | Pakte und Ereignisse sollen run-prägend sein | 4 schwächere Pakte, 6 schwächere Ereignisse, „2× gratis würfeln“ |
