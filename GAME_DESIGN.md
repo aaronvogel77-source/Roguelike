@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 10, Runde 2 läuft
+**Status:** Planung – Phase 10 abgeschlossen, Phase 11 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -285,6 +285,12 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Gegner-Skalierung:** **Exponentiell.** Startformel: `Budget(Akt) = Basis × 1,5^(Akt − 1)`, innerhalb eines Akts klein < groß < Boss. Feinschliff im Prototyp.
 - **Meisterfähigkeit-Regel** aus Phase 9 bestätigt.
 
+### Runde 2 (beantwortet)
+- **Freischalten:** **Durch Herausforderungen.** Jede Freischaltung hat eine Bedingung (z. B. „Gewinne mit einer F3-Fusion“), teils geheim.
+- **Score:** **Lokale Bestwerte** (höchster Treffer, weitester Endlos-Akt, schnellster Sieg usw.). Kein Server.
+- **Sammelbuch („Grimoire“):** Enthält alle entdeckten Figuren, Relikte, Meisterfähigkeiten und geheimen Rezepte. Unentdecktes erscheint als „???“.
+- **Save-Scumming:** **Verhindert.** Autosave nach jeder Aktion, kein manuelles Laden.
+
 ## Phase 11 – Benutzeroberfläche und Bedienung
 _Noch nicht behandelt._
 
@@ -303,7 +309,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 10, Runde 2: Meta-Währung, Score/Highscore, Erfolge, Save-Scumming
+- Phase 11, Runde 1: Bildschirm-Layout, Info-Anzeige per Touch, Bedienung der Planungsphase, Einstieg/Tutorial
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -346,3 +352,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | 3 globale Relikt-Slots + Segen-Slot pro Figur, Shop 3+2 mit Reroll, Gold mit Zinsen, 2 Tarot-Plätze | Balatro-Spar-Dilemma, Knappheit ohne Hortung | Nur an Figuren/nur global; getrennte/wachsende Shops; ohne Zinsen; sofort einsetzen |
 | 2026-11-16 | Passive Okkultisten-Regel, Meisterfähigkeit nach Farbkombination, Gebiets-Segen, max. 3 Pakte | Entdeckerfreude bei Fusion, Anpassung an Gebiete | Aktive Rituale; dominante Farbe/Zufall; Umweltregel/nur Thema; unbegrenzte Pakte, 1 pro Gebiet |
 | 2026-11-16 | Freischaltungen + kleine Upgrades, Schwierigkeitsstufen nach Sieg, exponentielle Gegner-Kurve, Meisterfähigkeit-Regel bestätigt | Langzeitmotivation ohne Balance-Bruch, Kurve knapp → explosiv | Nur Freischaltungen, großer Upgrade-Baum; wählbare/feste Schwierigkeit; lineare Kurve |
+| 2026-11-16 | Freischaltung durch Herausforderungen, lokale Bestwerte, Grimoire mit Fusionen, Save-Scum verhindert | Ziele über Runs hinweg, Permadeath mit Gewicht | Erfahrungs-Freischaltung; Online-Rangliste; kein/einfaches Sammelbuch |
