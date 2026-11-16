@@ -418,7 +418,15 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 *Technik-Hinweis:* „Aura“ ist ein Dauer-Modifikator (keiner der vier Auslöser). Der Baukasten bekommt dafür den Typ `aura`.
 
 ### Kelche (Wasser) – Thema Fluch, Heilung, Opfer
-_Offen._
+| Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
+|---|---|---|---|
+| Bube | **Messdiener** | 1/3 | *Zugbeginn:* heilt die Figur vor sich um 1 / 2 / 3 |
+| Ritter | **Bluttrinker** | 3/4 | *Bei Angriff:* heilt sich um 50 % / 75 % / 100 % des verursachten Schadens |
+| Königin | **Kelch der Wiederkehr** | 1/5 | *Bei Tod einer eigenen Figur:* einmal pro Kampf kehrt diese mit 1 / 2 / 3 Leben zurück |
+| König | **Der Ertrunkene König** | 4/8 | *Bei Tod einer eigenen Figur:* erhält deren Angriff ×0,5 / ×0,75 / ×1 und deren Leben für den Kampf |
+
+*Profil:* Ein Sustain- und Opfer-Team. Wiederkehr + Ertrunkener König: Die zurückgekehrte Figur stirbt ein zweites Mal und füttert den König doppelt.
+⚠️ *Lücke:* Keine Spieler-Figur nutzt den Kelch-Status **Fluch**. Fluch kommt vorerst über Gegner, Ausrüstung und Relikte (prüfen in Inhaltsrunde 5 / M5).
 
 ### Schwerter (Luft) – Thema Blutung, Präzision
 _Offen._
@@ -434,7 +442,7 @@ _Offen._
 ---
 
 ## Offene Fragen
-- Inhaltsrunden 3–4: Kelche, Schwerter
+- Inhaltsrunde 4: Schwerter
 - Inhaltsrunde 5: Münzen-Gegner
 - Danach: Start M0
 
@@ -490,3 +498,4 @@ _Offen._
 | 2026-11-16 | Meilensteinplan M0–M9 bestätigt, Figuren vor dem Start entwerfen | Mechanik vor Inhalt vor Optik | Fusion früher, Grafik früher; Figuren parallel oder vor M4 |
 | 2026-11-16 | Münzen: Münzknecht, Goldgepanzerter, Goldene Waage, König Midas | Spar-Build vs. Kaufen, Mult über Opfer | Pfandleiher, Zinseintreiber; Schildträger, Söldner; Schatzmeisterin, Herrin der Zinsen; Bankier, Goldener Koloss |
 | 2026-11-16 | Stäbe: Funkenträger, Wutentbrannter, Herrin der Glut, Aschekönig | Brennen-Motor + Eskalation | Fackelknecht, Aschejunge; Brandreiter, Flammenwächter; Phönixin, Feuerpredigerin; Brandstifter, Flammenkönig |
+| 2026-11-16 | Kelche: Messdiener, Bluttrinker, Kelch der Wiederkehr, Ertrunkener König | Sustain- und Opfer-Synergien | Fluchjunge, Opferlamm; Verfluchter Ritter, Seelenfänger; Hohepriesterin, Fluchweberin; Opferkönig, König der Flüche |
