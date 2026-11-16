@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 6 abgeschlossen, Phase 7 Runde 1 läuft
+**Status:** Planung – Phase 7, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -216,7 +216,17 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Todesbildschirm:** Letztes eigenes Team + siegreiches Gegner-Team, Run-Statistiken (Akt, Kämpfe, höchster Treffer, Fusionen, Gold/Seelen), verdienter Meta-Fortschritt, Seed.
 
 ## Phase 7 – Monster und KI
-_Noch nicht behandelt._
+*Klassische Monster-KI entfällt (Auto-Battler). Es geht um Figuren, Gegner und den Gegner-Generator.*
+
+### Runde 1 (beantwortet)
+- **Gegner:** **Eigene Monster je Gebiet** (je Tarot-Farbe eigene Gegner-Figuren mit passenden Effekten). Im Slice ca. 8–10 Gegner-Figuren für ein Gebiet.
+- **Spieler-Figuren = Tarot-Hofkarten:**
+  - Jede Figur hat eine **Farbe** (Stäbe / Kelche / Schwerter / Münzen) und einen **Rang = Seltenheit**
+  - Bube = häufig · Ritter = ungewöhnlich · Königin = selten · König = episch
+  - Mehrere Figuren pro Farbe und Rang möglich
+  - Große Arkana sind für Endbosse reserviert (Phase 3), evtl. auch für legendäre Fusionen aus geheimen Rezepten
+- **Slice-Umfang:** **16 Spieler-Figuren** (4 pro Farbe)
+- **Gegner-Generator:** **Thematische Synergien.** Er wählt im Stärke-Budget Figuren, die untereinander synergieren und zum Gebiet passen. Er reagiert nicht auf den Build des Spielers.
 
 ## Phase 8 – Items, Inventar und Loot
 _Noch nicht behandelt._
@@ -245,7 +255,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 7, Runde 1: Gegner-Pool, Figuren-Struktur (Tarot-Ränge?), Umfang im Slice, Gegner-Generator-Intelligenz
+- Phase 7, Runde 2: Slice-Run-Umfang, Gebiet im Slice, Gebiets-Reihenfolge, Figurenliste erarbeiten
 
 ## Später entscheiden
 - **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
@@ -282,3 +292,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Vorderste gegen vorderste, kein Grundzufall (nur über Fähigkeiten/Items), 4 Status je Tarot-Farbe, 4 Auslöser-Familien | Planbarkeit bei Permadeath, Zufall als bewusster Tausch | Alle greifen an, abwechselnd; Krits, Schadensspanne; keine/viele Status |
 | 2026-11-16 | (Angriff + Boni) × Mult, Auslösung von vorne nach hinten, Statusregeln im Prototyp, Gleichstand = Sieg | Explosive Kurve à la Balatro, nachvollziehbare Reihenfolge | Nur additiv, seltene Mults; höchster Angriff zuerst, abwechselnd; Gleichstand = Niederlage/keine Belohnung |
 | 2026-11-16 | Andere Ziele nur über Fähigkeiten, ~1 s pro Zug, Todesbildschirm mit Team/Statistik/Meta/Seed, Verderben im Prototyp | Pacing 24 Kämpfe in 30–45 Min., Lernen aus Niederlagen | Fernkämpfer-Klasse; 2 s, adaptiv |
+| 2026-11-16 | Eigene Monster je Gebiet, Spieler-Figuren als Tarot-Hofkarten (Rang = Seltenheit), 16 Figuren im Slice, Generator mit thematischen Synergien | Starkes Thema, klare Seltenheit, durchdachte Gegner | Gleicher Pool, Mix; 56 Karten, freie Figuren; 12/24 Figuren; Konter-/Zufallsteams |
