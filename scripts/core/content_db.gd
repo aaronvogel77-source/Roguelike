@@ -25,7 +25,14 @@ static func load_default() -> ContentDb:
 		db.regions[entry["id"]] = entry
 	for entry in region_data["bosses"]:
 		db.bosses[entry["id"]] = entry
+		# Boss figures fight like enemies, so they are looked up like enemies.
+		db.enemies[entry["unit"]["id"]] = entry["unit"]
 	return db
+
+
+## Normal enemies (without boss figures) - the pool the generator draws from.
+func regular_enemies() -> Array:
+	return enemies.values().filter(func(e: Dictionary) -> bool: return not e.get("boss", false))
 
 
 ## Bosses of a region for an act (the pool the boss is drawn from).

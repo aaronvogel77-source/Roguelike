@@ -8,10 +8,12 @@ func before_all() -> void:
 	_db = ContentDb.load_default()
 
 
+## Plays (auto-winning) until the boss shop of the given act.
 func _run_to_boss(seed_value: int, act: int) -> RunState:
 	var run := RunState.new_run(_db, seed_value)
 	while not (run.act == act and run.fight == 2):
-		run.choose_enemy(0)
+		if run.stage == RunState.Stage.ENEMY_CHOICE:
+			run.choose_enemy(0)
 		run.apply_battle_result({"victory": true})
 		if run.stage == RunState.Stage.REWARD:
 			run.skip_reward()
@@ -19,32 +21,37 @@ func _run_to_boss(seed_value: int, act: int) -> RunState:
 
 
 func test_every_enemy_has_themes_and_a_role() -> void:
-	for enemy in _db.enemies.values():
+	for enemy in _db.regular_enemies():
 		assert_gt(enemy.get("themes", []).size(), 0, enemy["id"])
 		assert_has(["front", "any", "back"], enemy.get("role", ""), enemy["id"])
 
 
 func test_boss_of_act_one_is_the_tax_collector() -> void:
 	var run := _run_to_boss(5, 1)
-	assert_eq(run.enemy_options.size(), 1)
-	assert_eq(run.enemy_options[0]["boss_id"], "tax_collector")
-	run.choose_enemy(0)
-	assert_eq(run.battle_gold(), 0, "gold counts as 0 in battle")
+	assert_eq(run.stage, RunState.Stage.PLANNING, "boss goes straight to the shop")
+	assert_eq(run.chosen_enemy["boss_id"], "tax_collector")
+	assert_eq(run.chosen_enemy["team"][0]["def_id"], "boss_tax_collector", "boss figure in front")
 	assert_true(run.battle_options().get("gold_zero", false))
 
 
-func test_tax_collector_does_not_change_real_gold() -> void:
-	var run := _run_to_boss(5, 1)
-	run.choose_enemy(0)
-	run.gold = 20
-	run.apply_battle_result({"victory": true, "gold_after": 0})
-	# 20 kept + 5 income + 4 boss bonus + 4 interest
-	assert_eq(run.gold, 33)
+func test_tax_collector_hides_gold_but_steals_real_gold() -> void:
+	var boss := {"def": _db.enemies["boss_tax_collector"], "level": 1}
+	var midas := {"def": _db.figures["king_midas"], "level": 1}
+	var result := BattleSimulator.simulate([midas, {"def": _db.figures["coin_squire"], "level": 1}], [boss], 20, {"gold_zero": true})
+	var mults: Array = result["events"].filter(func(e: Dictionary) -> bool:
+		return e["type"] == "update" and e["unit"]["uid"] == 1 and e["unit"]["multiplier"] > 1.0)
+	assert_eq(mults.size(), 0, "Midas sees 0 gold")
+	assert_lt(result["gold_after"], 20, "the boss stole real gold")
+	assert_gte(result["gold_after"], 17, "at most 3 per battle")
 
 
 func test_golden_wall_allows_seven_enemies() -> void:
 	var run := _run_to_boss(9, 2)
-	assert_eq(run.enemy_options[0]["boss_id"], "golden_wall")
+	assert_eq(run.chosen_enemy["boss_id"], "golden_wall")
+	var width := 0
+	for unit in run.chosen_enemy["team"]:
+		width += int(_db.enemies[unit["def_id"]].get("width", 1))
+	assert_lte(width, 7, "boss (3 wide) + retinue fit in 7 slots")
 	var team := EnemyGenerator.generate(_db, 40, RngStreams.new(1).stream("t"), "vault", 7)
 	assert_eq(team.size(), 7)
 

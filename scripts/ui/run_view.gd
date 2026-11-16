@@ -95,13 +95,13 @@ func _debug_gold() -> void:
 ## Wins every fight until the next boss choice (for testing bosses quickly).
 func _debug_to_boss() -> void:
 	var guard := 0
-	while guard < 20 and not (_run.stage == RunState.Stage.ENEMY_CHOICE and _run.is_boss_fight()):
+	while guard < 20 and not (_run.stage == RunState.Stage.PLANNING and _run.is_boss_fight()):
 		guard += 1
 		match _run.stage:
 			RunState.Stage.ENEMY_CHOICE:
 				_run.choose_enemy(0)
 			RunState.Stage.PLANNING:
-				_run.apply_battle_result({"victory": true})
+				_run.apply_battle_result({"victory": true, "gold_after": _run.gold})
 			RunState.Stage.REWARD:
 				_run.skip_reward()
 			_:
@@ -122,6 +122,11 @@ func _info_line() -> Control:
 	if _rule_text() != "":
 		text += "   ·   " + _rule_text()
 	return _rich_line(text, 17)
+
+
+func _boss_name() -> String:
+	var boss_id: String = _run.chosen_enemy.get("boss_id", "")
+	return tr("BOSS_" + boss_id.to_upper()) if boss_id != "" else ""
 
 
 func _rule_text() -> String:
@@ -291,7 +296,10 @@ func _enemy_option_panel(option: Dictionary, index: int) -> Control:
 		note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(note)
 	# Cards as large as the panel allows: up to full size, never wider than ~340 px.
-	var team_width: float = option["team"].size() * (UnitCard.CARD_SIZE.x + CARD_SPACING)
+	var widths := 0
+	for unit in option["team"]:
+		widths += int(_db.enemies[unit["def_id"]].get("width", 1))
+	var team_width: float = widths * (UnitCard.CARD_SIZE.x + CARD_SPACING)
 	var max_width := 340.0 if _run.enemy_options.size() > 1 else 900.0
 	var factor := clampf(max_width / maxf(team_width, 1.0), 0.5, 1.0)
 	var cards := CenterContainer.new()
@@ -551,8 +559,8 @@ func _on_fight() -> void:
 	_battle_view.sandbox = false
 	add_child(_battle_view)
 	_battle_view.finished.connect(_on_battle_finished)
-	_battle_view.play_battle(_run.player_battle_team(), _run.enemy_battle_team(), _run.battle_gold(),
-		_footer_text(), _run.battle_options(), _rule_text())
+	_battle_view.play_battle(_run.player_battle_team(), _run.enemy_battle_team(), _run.gold,
+		_footer_text(), _run.battle_options(), _rule_text(), _boss_name())
 
 
 func _on_battle_finished(result: Dictionary) -> void:

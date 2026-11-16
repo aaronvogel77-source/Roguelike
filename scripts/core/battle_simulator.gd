@@ -25,7 +25,11 @@ enum Outcome { WIN, LOSS, DRAW }
 
 var rows: Array = [[], []]
 var events: Array = []
+## Gold as abilities see it (0 under the Tax Collector's rule).
 var gold := 0
+## The player's real gold; thefts always take from this.
+var real_gold := 0
+var _gold_hidden := false
 var turn := 0
 var _next_uid := 1
 
@@ -34,7 +38,8 @@ var _next_uid := 1
 ## a content definition or {"def": definition, "level": 1..3}.
 ## Returns { "outcome", "victory", "turns", "gold_after", "events" }.
 ## options: {"blessing": {"suit", "status", "amount"}} gives the player's
-## figures of that suit a status at battle start (region blessing).
+## figures of that suit a status at battle start (region blessing);
+## {"gold_zero": true} makes abilities see 0 gold (thefts still hit real gold).
 static func simulate(player_team: Array, enemy_team: Array, player_gold: int = 0, options: Dictionary = {}) -> Dictionary:
 	var battle := BattleSimulator.new()
 	return battle._run(player_team, enemy_team, player_gold, options)
@@ -48,14 +53,16 @@ static func decay_damage(turn_number: int) -> int:
 
 
 func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dictionary = {}) -> Dictionary:
-	gold = player_gold
+	real_gold = player_gold
+	_gold_hidden = options.get("gold_zero", false)
+	gold = 0 if _gold_hidden else real_gold
 	for entry in player_team:
 		rows[PLAYER].append(_make_unit(entry, PLAYER))
 	for entry in enemy_team:
 		rows[ENEMY].append(_make_unit(entry, ENEMY))
 
 	events.append({
-		"type": "start", "gold": gold,
+		"type": "start", "gold": real_gold,
 		"player": rows[PLAYER].map(func(u: BattleUnit) -> Dictionary: return u.snapshot()),
 		"enemy": rows[ENEMY].map(func(u: BattleUnit) -> Dictionary: return u.snapshot()),
 	})
@@ -90,7 +97,7 @@ func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dict
 		"outcome": outcome,
 		"victory": outcome != Outcome.LOSS,  # a draw counts as a victory
 		"turns": turn,
-		"gold_after": gold,
+		"gold_after": real_gold,
 		"events": events,
 	}
 
@@ -319,12 +326,14 @@ func heal(unit: BattleUnit, amount: int) -> void:
 	_heal(unit, amount)
 
 
+## Changes the player's real gold; returns the actual change.
 func change_gold(delta: int) -> int:
-	var before := gold
-	gold = maxi(gold + delta, 0)
-	if gold != before:
-		events.append({"type": "gold", "gold": gold, "delta": gold - before})
-	return gold - before
+	var before := real_gold
+	real_gold = maxi(real_gold + delta, 0)
+	gold = 0 if _gold_hidden else real_gold
+	if real_gold != before:
+		events.append({"type": "gold", "gold": real_gold, "delta": real_gold - before})
+	return real_gold - before
 
 
 func emit_update(unit: BattleUnit) -> void:

@@ -85,6 +85,13 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			return not targets.is_empty()
 		"eat_shield":
 			return _eat_shield(battle, owner, targets)
+		"pawn_gold":
+			# Tax Collector boss: steals 1 real gold and grows (max 3x per battle).
+			if not _steal_gold(battle, owner, 1):
+				return false
+			owner.attack += int(value)
+			battle.emit_update(owner)
+			return true
 		"warden_shield":
 			# Vault Warden: shield at battle start, plus +1 shield whenever hit.
 			owner.add_status(BattleUnit.STATUS_SHIELD, int(value))

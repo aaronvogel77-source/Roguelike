@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "regions": [
     {
       "id": "coins",
@@ -20,13 +20,55 @@
       "id": "tax_collector",
       "region": "coins",
       "act": 1,
-      "rule": "gold_zero"
+      "rule": "gold_zero",
+      "unit": {
+        "id": "boss_tax_collector",
+        "boss": true,
+        "region": "coins",
+        "cost": 0,
+        "attack": 3,
+        "health": 10,
+        "width": 2,
+        "role": "front",
+        "themes": [],
+        "ability": {
+          "trigger": "on_attack",
+          "target": "self",
+          "effect": "pawn_gold",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
     },
     {
       "id": "golden_wall",
       "region": "coins",
       "act": 2,
-      "rule": "seven_slots"
+      "rule": "seven_slots",
+      "unit": {
+        "id": "boss_golden_wall",
+        "boss": true,
+        "region": "coins",
+        "cost": 0,
+        "attack": 3,
+        "health": 20,
+        "width": 3,
+        "role": "front",
+        "themes": [],
+        "ability": {
+          "trigger": "on_hit",
+          "target": "self",
+          "effect": "gain_shield",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
     }
   ]
 }

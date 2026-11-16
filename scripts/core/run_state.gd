@@ -113,7 +113,8 @@ func can_place(def_id: String, row_index: int) -> bool:
 	if row_index < 0 or row_index >= row.size():
 		return false
 	var target: Variant = row[row_index]
-	return target == null or target["def_id"] == def_id
+	# Merging is only possible below the maximum level.
+	return target == null or (target["def_id"] == def_id and figure_level(target) < 3)
 
 
 ## Battle entries ({"def", "level"}) for the simulator, front first.
@@ -213,15 +214,9 @@ func battle_options() -> Dictionary:
 	return options
 
 
-## Gold the battle sees (the Tax Collector makes it 0).
-func battle_gold() -> int:
-	return 0 if boss_rule() == "gold_zero" else gold
-
-
 ## Applies a finished battle. Returns the new stage.
 func apply_battle_result(result: Dictionary) -> Stage:
-	if boss_rule() != "gold_zero":
-		gold = int(result.get("gold_after", gold))
+	gold = int(result.get("gold_after", gold))
 	if not result["victory"]:
 		stage = Stage.LOST
 		return stage
@@ -271,7 +266,7 @@ func skip_reward() -> bool:
 ## Row slot a reward would go to, or -1 if there is no room.
 func reward_target(def_id: String) -> int:
 	for i in row.size():
-		if row[i] != null and row[i]["def_id"] == def_id:
+		if row[i] != null and row[i]["def_id"] == def_id and figure_level(row[i]) < 3:
 			return i
 	for i in row.size():
 		if row[i] == null:
@@ -285,6 +280,10 @@ func _finish_reward() -> void:
 	rewards.clear()
 	stage = Stage.ENEMY_CHOICE
 	_roll_enemy_options()
+	# A boss is not chosen: the run goes straight to its shop.
+	# (M5 brings boss skipping, which will need the choice screen again.)
+	if is_boss_fight() and enemy_options.size() == 1:
+		choose_enemy(0)
 
 
 func _place(def_id: String, row_index: int) -> void:

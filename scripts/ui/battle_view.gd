@@ -51,7 +51,7 @@ func _ready() -> void:
 
 ## Run mode: shows the given fight and starts it right away.
 func play_battle(player_team: Array, enemy_team: Array, gold: int, info: String,
-		options: Dictionary = {}, rule_text: String = "") -> void:
+		options: Dictionary = {}, rule_text: String = "", boss_name: String = "") -> void:
 	_playback_token += 1
 	_battle_gold = gold
 	_battle = BattleSimulator.simulate(player_team, enemy_team, gold, options)
@@ -64,8 +64,46 @@ func play_battle(player_team: Array, enemy_team: Array, gold: int, info: String,
 	_new_button.hide()
 	_show_start_state(_battle["events"][0])
 	_banner.text = rule_text
-	await get_tree().create_timer(1.2 if rule_text != "" else 0.6).timeout
+	if boss_name != "":
+		await _announce_boss(boss_name, rule_text)
+	else:
+		await get_tree().create_timer(0.6).timeout
 	_start_battle()
+
+
+## Full-width stripe with the boss name and rule, before the first turn.
+func _announce_boss(boss_name: String, rule_text: String) -> void:
+	var stripe := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.32, 0.04, 0.07, 0.94)
+	style.border_color = Palette.GOLD
+	style.border_width_top = 4
+	style.border_width_bottom = 4
+	style.content_margin_top = 18
+	style.content_margin_bottom = 18
+	stripe.add_theme_stylebox_override("panel", style)
+	stripe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(stripe)
+	stripe.set_anchors_and_offsets_preset(Control.PRESET_HCENTER_WIDE)
+	var column := VBoxContainer.new()
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	stripe.add_child(column)
+	for line in [[tr("UI_BOSS_APPEARS"), 26, Palette.PARCHMENT], [boss_name, 64, Palette.GOLD], [rule_text, 24, Palette.PARCHMENT]]:
+		var label := _make_label(line[0], line[1], line[2])
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.add_theme_color_override("font_outline_color", Color.BLACK)
+		label.add_theme_constant_override("outline_size", 8)
+		column.add_child(label)
+	await get_tree().process_frame
+	var height := stripe.size.y
+	stripe.position = Vector2(-size.x, (size.y - height) / 2)
+	stripe.size.x = size.x
+	var tween := create_tween()
+	tween.tween_property(stripe, "position:x", 0.0, 0.35).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(2.0)
+	tween.tween_property(stripe, "position:x", size.x, 0.35).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN)
+	tween.tween_callback(stripe.queue_free)
+	await tween.finished
 
 
 ## On wide screens (most phones in landscape) the battle field is scaled up so
@@ -267,8 +305,11 @@ func _show_start_state(start_event: Dictionary) -> void:
 		_player_row.add_child(_make_card(snapshot, false))
 	for snapshot in start_event["enemy"]:
 		_enemy_row.add_child(_make_card(snapshot, true))
-	# Rule bosses can field more than 6 units.
-	var enemy_slots := maxi(6, start_event["enemy"].size())
+	# Rule bosses can field more than 6 card widths (boss figures are 2-3 wide).
+	var enemy_slots := 0
+	for snapshot in start_event["enemy"]:
+		enemy_slots += int(_db.enemies[snapshot["def_id"]].get("width", 1))
+	enemy_slots = maxi(6, enemy_slots)
 	_enemy_row.custom_minimum_size.x = enemy_slots * (UnitCard.CARD_SIZE.x + CARD_SPACING)
 	_fit_field.call_deferred()
 

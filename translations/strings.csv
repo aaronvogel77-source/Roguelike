@@ -142,3 +142,8 @@ BOSS_TAX_COLLECTOR_RULE,Im Kampf gilt dein Gold als 0.,"In battle, your gold cou
 BOSS_GOLDEN_WALL,Die Goldene Mauer,The Golden Wall
 BOSS_GOLDEN_WALL_RULE,Das Gegner-Team hat 7 Plätze statt 6.,The enemy team has 7 slots instead of 6.
 UI_BOSS_RULE,Boss-Regel: %s,Boss rule: %s
+ENEMY_BOSS_TAX_COLLECTOR,Der Steuereintreiber,The Tax Collector
+ENEMY_BOSS_GOLDEN_WALL,Die Goldene Mauer,The Golden Wall
+ABIL_BOSS_TAX_COLLECTOR,Nach dem Angriff: Stiehlt dir 1 Gold und erhält dafür +{v} Angriff (max. 3× pro Kampf).,After attacking: steals 1 gold from you and gains +{v} attack (max. 3× per battle).
+ABIL_BOSS_GOLDEN_WALL,Wenn getroffen: Schild +{v}.,When hit: +{v} shield.
+UI_BOSS_APPEARS,Boss,Boss

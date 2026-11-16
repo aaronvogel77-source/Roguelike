@@ -487,12 +487,17 @@ Der Gegner-Generator wählt pro Gegner-Team ein Thema des Gebiets. Gegner mit di
 Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Münzwerfer, Gieriger Drache · beliebig = Rest
 
 ### Regel-Bosse (Vertical Slice)
-| Akt | Name | Regel |
-|---|---|---|
-| 1 | **Der Steuereintreiber** | Im Kampf gilt das Gold des Spielers als 0 (kontert Spar-Builds wie Midas und den Goldgepanzerten) |
-| 2 | **Die Goldene Mauer** | Das Gegner-Team hat **7 Plätze** statt 6 |
+**Geändert nach M4-Feedback:** Bosse sind jetzt **Regel + echte Boss-Figur** (Phase-3-Entscheidung „Regel-Bosse“ erweitert zu „Beides kombiniert“). Die Boss-Figur ist 2–3 Kartenplätze breit, steht vorne, und ihr Gefolge füllt die restlichen Plätze.
 
-*Technik:* Das Boss-Team wird vom Generator mit erhöhtem Budget (Boss-Faktor) gefüllt. Das Layout muss 7 Gegner-Plätze unterstützen.
+| Akt | Name | Regel | Boss-Figur (gewählt → aktuell nach Simulation) |
+|---|---|---|---|
+| 1 | **Der Steuereintreiber** | Im Kampf gilt dein Gold als 0 (Fähigkeiten sehen 0, Diebstahl trifft echtes Gold) | „Pfänder“, 2 breit. *Nach dem Angriff:* stiehlt 1 Gold und erhält +X Angriff (max. 3× pro Kampf). Gewählt 6/14, +2 → **aktuell 3/10, +1** |
+| 2 | **Die Goldene Mauer** | Das Gegner-Team hat 7 Plätze (Boss belegt 3) | „Bollwerk“, 3 breit. *Wenn getroffen:* Schild +X. Gewählt 4/30, +2 → **aktuell 3/20, +1** |
+
+- **Ablauf:** Der Boss wird nicht gewählt. Nach der letzten Belohnung des Akts geht es direkt in den Boss-Shop, dann in den Kampf (Überspringen folgt mit M5).
+- **Ankündigung:** Zu Kampfbeginn fährt ein Streifen über den ganzen Bildschirm (Name + Regel).
+- **Boss-Budget fürs Gefolge:** gewählt ×1,5 → aktuell Akt 1 = 2 (×1,5 pro Akt). Die Boss-Figur selbst ist sehr stark, weil sie im Vorne-gegen-Vorne Runde für Runde eine Figur erledigt.
+- ⚠️ **Simulation:** Mit den gewählten Werten (6/14 bzw. 4/30, Gefolge ×1,5) gewann der Bot 0 % der Runs. Mit den aktuellen Werten scheitern noch ~85 % der Bot-Runs, die den Akt-1-Boss erreichen. Menschliche Spieler sollten deutlich besser sein. Feinschliff nach Spieltests.
 
 ### Okkultisten (Vertical Slice)
 | Name | Grundregel | Startfigur |
@@ -510,7 +515,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 ---
 
 ## Offene Fragen
-- M4-Feedback einholen (Debug: `?debug=1` → „+10 Gold“, „Zum Boss“)
+- Feedback zu Boss-Figuren und Boss-Stärke einholen (Debug: `?debug=1` → „+10 Gold“, „Zum Boss“)
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -582,3 +587,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | M3-Feedback: Schuldeneintreiber +1 Angriff je 10 Gold (einmalig zu Kampfbeginn), Startgold 8, Angriff rot / Leben grün, Verkaufsfeld statt Button (ziehen oder antippen), farbige Schlüsselwörter in allen Beschreibungen, Zwischenbildschirm beim Verschmelzen (EP-Balken, bei Stufenaufstieg Werte alt → neu). Bedienung, Schwierigkeit und Informationen bestätigt | Lesbarkeit, weniger Gold am Anfang | Zugbeginn-Varianten; Einkommen 4; Zinsen erst ab Akt 2 |
 | 2026-11-16 | Symbole für Rang (Kappe/Helm/Krone), Farbe (Münze/Stab/Kelch/Schwert) und Stufe (Winkel) im Detail-Panel und auf Karten; Angriff als roter Zackenstern, Leben als grünes Herz mit Zahl in der Mitte. M3 abgenommen | Platzhalter-Symbole, werden in M8 verfeinert | – |
 | 2026-11-16 | M4: thematische Gegner-Teams (3 Themen, Rollen-Aufstellung), Regel-Bosse Steuereintreiber (Gold im Kampf = 0, echtes Gold bleibt) und Goldene Mauer (7 Gegner-Plätze), Gebiets-Segen Münzen (+1 Schild für Münz-Figuren), Anzeige in Gegnerwahl/Planung/Kampf, Debug-Werkzeuge per `?debug=1` | Slice-Inhalte vollständig spielbar | – |
+| 2026-11-16 | M4-Feedback: Boss ohne Gegnerwahl direkt nach dem Shop, Ankündigungs-Streifen zu Kampfbeginn, echte Boss-Figuren (2–3 Plätze breit), kein Verschmelzen auf Max. Stufe; Boss-Werte per Simulation stark abgeschwächt (Nutzerwahl war zu stark) | Bosse spürbar, aber schaffbar | Reine Regel-Bosse; Boss-Karte nur als Darstellung; Ankündigung beim Shop |

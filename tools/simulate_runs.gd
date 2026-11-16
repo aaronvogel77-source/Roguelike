@@ -13,10 +13,11 @@ func _init() -> void:
 	for seed_value in range(1, runs + 1):
 		var run := RunState.new_run(db, seed_value)
 		while run.stage != RunState.Stage.WON and run.stage != RunState.Stage.LOST:
-			if run.stage == RunState.Stage.ENEMY_CHOICE:
-				run.choose_enemy(mini(difficulty, run.enemy_options.size() - 1))
+			if run.stage == RunState.Stage.ENEMY_CHOICE or run.stage == RunState.Stage.PLANNING:
+				if run.stage == RunState.Stage.ENEMY_CHOICE:
+					run.choose_enemy(mini(difficulty, run.enemy_options.size() - 1))
 				_shop(run)
-				var result := BattleSimulator.simulate(run.player_battle_team(), run.enemy_battle_team(), run.battle_gold(), run.battle_options())
+				var result := BattleSimulator.simulate(run.player_battle_team(), run.enemy_battle_team(), run.gold, run.battle_options())
 				run.apply_battle_result(result)
 			elif run.stage == RunState.Stage.REWARD:
 				if not run.take_reward(0):

@@ -7,6 +7,8 @@ extends Control
 signal tapped(card: UnitCard)
 
 const CARD_SIZE := Vector2(96, 140)
+## Gap between cards in a row; a card "width" units wide also spans the gaps.
+const ROW_GAP := 6.0
 const STATUS_ORDER := ["shield", "burn", "curse", "bleed"]
 
 var uid: int
@@ -14,6 +16,8 @@ var definition: Dictionary
 var is_enemy: bool
 var snapshot: Dictionary = {}
 var body: PanelContainer
+## Actual size: boss figures span 2-3 card widths.
+var card_size := CARD_SIZE
 
 var _style: StyleBoxFlat
 var _identity: HBoxContainer
@@ -35,19 +39,23 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	uid = initial["uid"]
 	definition = unit_definition
 	is_enemy = enemy
-	custom_minimum_size = CARD_SIZE
-	size = CARD_SIZE
+	var width := int(unit_definition.get("width", 1))
+	card_size = Vector2(CARD_SIZE.x * width + ROW_GAP * (width - 1), CARD_SIZE.y)
+	custom_minimum_size = card_size
+	size = card_size
 
 	body = PanelContainer.new()
-	body.size = CARD_SIZE
-	body.pivot_offset = CARD_SIZE / 2
+	body.size = card_size
+	body.pivot_offset = card_size / 2
 	body.mouse_filter = Control.MOUSE_FILTER_STOP
 	body.gui_input.connect(_on_body_input)
 	_style = StyleBoxFlat.new()
 	_style.bg_color = Palette.PANEL
 	_style.border_color = base_border_color()
-	_style.set_border_width_all(3)
+	_style.set_border_width_all(5 if unit_definition.get("boss", false) else 3)
 	_style.set_corner_radius_all(10)
+	if unit_definition.get("boss", false):
+		_style.bg_color = Color(0.2, 0.06, 0.08)
 	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
 		_style.set_content_margin(side, 5)
 	body.add_theme_stylebox_override("panel", _style)
@@ -95,6 +103,8 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 
 
 func base_border_color() -> Color:
+	if definition.get("boss", false):
+		return Palette.GOLD
 	if is_enemy:
 		return Palette.ENEMY_BORDER
 	return Palette.SUIT_COLORS.get(definition.get("suit", ""), Palette.GOLD)
@@ -116,7 +126,7 @@ func flash_trigger(duration: float) -> void:
 	tween.tween_interval(duration)
 	tween.tween_callback(func() -> void:
 		_style.border_color = base_border_color()
-		_style.set_border_width_all(3))
+		_style.set_border_width_all(5 if definition.get("boss", false) else 3))
 
 
 ## Colored halo pulse around the card (abilities that act on the unit itself).
@@ -132,7 +142,7 @@ func pulse_glow(color: Color, duration: float) -> void:
 	style.shadow_size = 14
 	halo.add_theme_stylebox_override("panel", style)
 	halo.position = body.position - Vector2(6, 6)
-	halo.size = CARD_SIZE + Vector2(12, 12)
+	halo.size = card_size + Vector2(12, 12)
 	halo.pivot_offset = halo.size / 2
 	add_child(halo)  # on the outer card, not inside the PanelContainer layout
 	var tween := create_tween().set_parallel(true)
@@ -143,7 +153,7 @@ func pulse_glow(color: Color, duration: float) -> void:
 
 ## Center of the card in canvas coordinates (for floating numbers).
 func center_position() -> Vector2:
-	return body.global_position + CARD_SIZE / 2
+	return body.global_position + card_size / 2
 
 
 func _rebuild_chips() -> void:
@@ -201,9 +211,10 @@ func _on_body_input(event: InputEvent) -> void:
 ## lines and no single word is wider than the card (no mid-word breaks).
 func _fitting_font_size(label: Label) -> int:
 	var font := label.get_theme_font("font")
-	var available := CARD_SIZE.x - 14.0
+	var available := card_size.x - 14.0
 	var words := label.text.split(" ")
-	for font_size in range(14, 8, -1):
+	var largest := 19 if definition.get("boss", false) else 14
+	for font_size in range(largest, 8, -1):
 		if _wrapped_line_count(words, font, font_size, available) <= 2:
 			return font_size
 	return 9
