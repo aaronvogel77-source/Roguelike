@@ -59,6 +59,7 @@ jobs:
           mkdir -p build/web
           ~/godot/godot --headless --export-release "Web" build/web/index.html
           test -f build/web/index.wasm
+          python3 tools/ci/cache_bust.py build/web "${GITHUB_SHA}"
 
       - uses: actions/upload-pages-artifact@v3
         with:

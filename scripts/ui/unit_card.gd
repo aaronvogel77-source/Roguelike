@@ -149,20 +149,29 @@ func _rebuild_chips() -> void:
 		_chips.add_child(_make_chip("star", "×%s" % NumberFormat.decimal(multiplier)))
 
 
-## A status emblem with its stack count (or a multiplier) next to it.
+## A status emblem with its stack count (or a multiplier) on a dark pill.
 func _make_chip(kind: String, text: String) -> Control:
+	var pill := PanelContainer.new()
+	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0, 0, 0, 0.75)
+	style.border_color = Emblem.COLORS.get(kind, Color.WHITE)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(8)
+	style.content_margin_left = 1
+	style.content_margin_right = 4
+	pill.add_theme_stylebox_override("panel", style)
 	var chip := HBoxContainer.new()
-	chip.add_theme_constant_override("separation", 0)
+	chip.add_theme_constant_override("separation", 1)
 	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	chip.add_child(Emblem.create(kind, 18))
+	pill.add_child(chip)
+	chip.add_child(Emblem.create(kind, 24))
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_font_size_override("font_size", 16)
 	label.add_theme_color_override("font_color", Color.WHITE)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 4)
 	chip.add_child(label)
-	return chip
+	return pill
 
 
 func _small_label(color: Color) -> Label:

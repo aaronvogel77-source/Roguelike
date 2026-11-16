@@ -12,6 +12,7 @@ var _speed := 1.0
 var _cards: Dictionary = {}  # uid -> UnitCard
 var _battle: Dictionary = {}
 var _battle_gold := 0
+var _url_seed_used := false
 var _playback_token := 0  # increments to cancel an older playback
 
 var _player_row: HBoxContainer
@@ -25,6 +26,8 @@ var _start_button: Button
 var _new_button: Button
 var _speed_buttons: Array[Button] = []
 var _fx_layer: Control
+var _field: HBoxContainer
+var _field_holder: Control
 
 
 func _ready() -> void:
@@ -32,6 +35,20 @@ func _ready() -> void:
 	_db = ContentDb.load_default()
 	_build_layout()
 	_new_battle()
+	_fit_field.call_deferred()
+
+
+## On wide screens (most phones in landscape) the battle field is scaled up so
+## cards use the extra width; never shrinks below the 1280×720 design size.
+func _fit_field() -> void:
+	if _field == null:
+		return
+	_field.size = _field.get_combined_minimum_size()
+	var needed := _field.size.x + 40
+	var factor := clampf(_field_holder.size.x / needed, 1.0, 1.3)
+	factor = minf(factor, _field_holder.size.y / maxf(_field.size.y, 1.0))
+	_field.scale = Vector2(factor, factor)
+	_field.position = (_field_holder.size - _field.size * factor) / 2
 
 
 # --- Layout -----------------------------------------------------------------
@@ -49,11 +66,17 @@ func _build_layout() -> void:
 
 	root.add_child(_build_top_bar())
 
+	# Containers reset the scale of their children, so the field sits in a plain
+	# Control and is positioned and scaled by _fit_field().
+	_field_holder = Control.new()
+	_field_holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_field_holder.resized.connect(_fit_field)
+	root.add_child(_field_holder)
 	var field := HBoxContainer.new()
-	field.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_field = field
 	field.alignment = BoxContainer.ALIGNMENT_CENTER
 	field.add_theme_constant_override("separation", ROW_GAP)
-	root.add_child(field)
+	_field_holder.add_child(field)
 
 	_player_row = _make_row(BoxContainer.ALIGNMENT_END)
 	field.add_child(_wrap_row(_player_row, tr("UI_YOUR_TEAM")))
@@ -118,7 +141,7 @@ func _build_bottom_bar() -> Control:
 	bar.add_theme_constant_override("separation", 24)
 
 	_seed_label = _make_label("", 18, Palette.MUTED)
-	_seed_label.custom_minimum_size = Vector2(200, 0)
+	_seed_label.custom_minimum_size = Vector2(240, 0)
 	bar.add_child(_seed_label)
 
 	_start_button = _make_button(tr("UI_START_BATTLE"), Vector2(260, 72))
@@ -175,7 +198,9 @@ func _make_button(text: String, min_size: Vector2) -> Button:
 
 func _new_battle() -> void:
 	_playback_token += 1
-	var seed_value := randi()
+	var seed_value := _take_url_seed()
+	if seed_value < 0:
+		seed_value = randi()
 	_rng_streams = RngStreams.new(seed_value)
 	var rng := _rng_streams.stream("debug_teams")
 	var player_team := DebugTeams.random_player_team(_db, rng, rng.randi_range(3, 6))
@@ -183,7 +208,7 @@ func _new_battle() -> void:
 	_battle_gold = rng.randi_range(0, 30)
 	_battle = BattleSimulator.simulate(player_team, enemy_team, _battle_gold)
 
-	_seed_label.text = tr("UI_SEED") % seed_value
+	_seed_label.text = "v%s · %s" % [ProjectSettings.get_setting("application/config/version"), tr("UI_SEED") % seed_value]
 	_set_gold(_battle_gold)
 	_turn_label.text = ""
 	_banner.text = ""
@@ -205,6 +230,17 @@ func _show_start_state(start_event: Dictionary) -> void:
 		_player_row.add_child(_make_card(snapshot, false))
 	for snapshot in start_event["enemy"]:
 		_enemy_row.add_child(_make_card(snapshot, true))
+
+
+## Web only: "?seed=123" in the address replays that battle (for bug reports).
+## Used once, for the first battle after loading.
+func _take_url_seed() -> int:
+	if _url_seed_used or not OS.has_feature("web"):
+		return -1
+	_url_seed_used = true
+	var query := str(JavaScriptBridge.eval("window.location.search", true))
+	var match := RegEx.create_from_string("seed=(\\d+)").search(query)
+	return int(match.get_string(1)) if match != null else -1
 
 
 func _make_card(snapshot: Dictionary, is_enemy: bool) -> UnitCard:
