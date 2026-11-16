@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 7, Runde 2 läuft
+**Status:** Planung – Phase 7 abgeschlossen, Phase 8 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -228,6 +228,12 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Slice-Umfang:** **16 Spieler-Figuren** (4 pro Farbe)
 - **Gegner-Generator:** **Thematische Synergien.** Er wählt im Stärke-Budget Figuren, die untereinander synergieren und zum Gebiet passen. Er reagiert nicht auf den Build des Spielers.
 
+### Runde 2 (beantwortet)
+- **Slice-Run:** **1 Gebiet = 2 Akte** (6 Kämpfe inkl. 2 Regel-Bossen, ca. 8–12 Min.), danach optional ein Endlos-Modus zum Stärketest
+- **Erstes Gebiet:** **Münzen (Erde)**. Status Schild, Thema Gold und Wirtschaft, testet die Shop-Auslöser.
+- **Gebiets-Reihenfolge (volles Spiel):** **Zufällig pro Run.** Die Gegner-Stärke skaliert über das Budget, nicht über das Gebiet. Jedes Gebiet braucht damit Gegner für alle Stärkestufen.
+- **Figurenliste:** **Gemeinsam Figur für Figur** in eigenen Inhaltsrunden pro Farbe. Zeitpunkt: nach Phase 9, wenn Items, Pakte und Meisterfähigkeiten feststehen.
+
 ## Phase 8 – Items, Inventar und Loot
 _Noch nicht behandelt._
 
@@ -255,7 +261,8 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 7, Runde 2: Slice-Run-Umfang, Gebiet im Slice, Gebiets-Reihenfolge, Figurenliste erarbeiten
+- Phase 8, Runde 1: Objekt-Kategorien, Ausrüstung an Figuren, Seltenheit/Affixe, Bank/Reserve
+- Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
 - **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
@@ -293,3 +300,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | (Angriff + Boni) × Mult, Auslösung von vorne nach hinten, Statusregeln im Prototyp, Gleichstand = Sieg | Explosive Kurve à la Balatro, nachvollziehbare Reihenfolge | Nur additiv, seltene Mults; höchster Angriff zuerst, abwechselnd; Gleichstand = Niederlage/keine Belohnung |
 | 2026-11-16 | Andere Ziele nur über Fähigkeiten, ~1 s pro Zug, Todesbildschirm mit Team/Statistik/Meta/Seed, Verderben im Prototyp | Pacing 24 Kämpfe in 30–45 Min., Lernen aus Niederlagen | Fernkämpfer-Klasse; 2 s, adaptiv |
 | 2026-11-16 | Eigene Monster je Gebiet, Spieler-Figuren als Tarot-Hofkarten (Rang = Seltenheit), 16 Figuren im Slice, Generator mit thematischen Synergien | Starkes Thema, klare Seltenheit, durchdachte Gegner | Gleicher Pool, Mix; 56 Karten, freie Figuren; 12/24 Figuren; Konter-/Zufallsteams |
+| 2026-11-16 | Slice = Münzen-Gebiet, 2 Akte; Gebiete zufällig gereiht; Figuren gemeinsam einzeln entwerfen | Wirtschafts-Synergien früh testen, maximale Mitsprache | 4 Akte, 8 Akte; feste/wählbare Reihenfolge; Vorschlag durch Claude |
