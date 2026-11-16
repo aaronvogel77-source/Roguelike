@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 11, Runde 2 läuft
+**Status:** Planung – Phase 11 abgeschlossen, Phase 12 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -299,6 +299,18 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Bedienung:** **Drag & Drop + Tipp-Alternative** (antippen, dann Ziel antippen) für Kaufen, Umordnen, Ausrüsten, Fusionieren und Verkaufen.
 - **Einstieg:** **Hinweise beim ersten Mal**, wenn ein System erstmals auftaucht (erster Shop, erste Fusion, erster Pakt usw.). Kein Zwangs-Tutorial.
 
+### Runde 2 (beantwortet)
+- **Schutz vor Fehlern:**
+  - **Rückgängig-Knopf** für Shop-Aktionen (Kaufen, Umordnen, Ausrüsten), solange der Kampf nicht gestartet ist
+  - Neu würfeln ist **nicht** rückgängig zu machen, sonst ließen sich Angebote ausspielen
+  - **Bestätigungsabfrage** bei unumkehrbaren Aktionen: Verkauf von Figuren ab Stufe 2 oder mit Fusion, Opfern, Pakte, Fusion
+- **Kampf-Feedback:** **Klar + saftig.** Die auslösende Figur leuchtet auf, ein Pfeil zeigt zum Ziel, Zahlen fliegen hoch, Multiplikatoren erscheinen groß in Rot, große Treffer lassen den Bildschirm wackeln (Balatro-Feeling).
+- **Barrierefreiheit:**
+  - Farbenblind-Modus: Tarot-Farben zusätzlich mit Symbolen (Stab, Kelch, Schwert, Münze). Symbole von Anfang an einplanen.
+  - Einstellbare Textgröße
+  - „Weniger Bewegung“: Wackeln und Blitze abschaltbar
+- **Hauptmenü:** Minimal: Fortsetzen / Neuer Run (Okkultisten-Wahl + Stufe) / Grimoire / Bestwerte / Optionen
+
 ## Phase 12 – Präsentation: Grafik, Audio, Atmosphäre
 _Noch nicht behandelt._
 
@@ -314,7 +326,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 11, Runde 2: Sicherheitsabfragen, Effekt-Feedback im Kampf, Barrierefreiheit, Textgröße
+- Phase 12, Runde 1: Farbpalette, Sound/Musik, Textton, Sprachen, Spielname
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -359,3 +371,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Freischaltungen + kleine Upgrades, Schwierigkeitsstufen nach Sieg, exponentielle Gegner-Kurve, Meisterfähigkeit-Regel bestätigt | Langzeitmotivation ohne Balance-Bruch, Kurve knapp → explosiv | Nur Freischaltungen, großer Upgrade-Baum; wählbare/feste Schwierigkeit; lineare Kurve |
 | 2026-11-16 | Freischaltung durch Herausforderungen, lokale Bestwerte, Grimoire mit Fusionen, Save-Scum verhindert | Ziele über Runs hinweg, Permadeath mit Gewicht | Erfahrungs-Freischaltung; Online-Rangliste; kein/einfaches Sammelbuch |
 | 2026-11-16 | Links vs. rechts, Tippen → Detail-Panel, Drag & Drop + Tippen, Hinweise beim ersten Mal | Querformat nutzen, ein Bedienkonzept für Touch und Maus | Oben/unten; Long-Press; nur D&D/nur Tippen; geführter Run, kein Tutorial |
+| 2026-11-16 | Rückgängig für den Shop + Abfragen bei unumkehrbaren Aktionen, saftiges Kampf-Feedback, 3 Barrierefreiheits-Optionen, minimales Menü | Permadeath ohne Fehlklick-Frust, explosive Power-Fantasy | Abfrage beim Kampfstart; schlichtes Feedback; Hub-Menü |
