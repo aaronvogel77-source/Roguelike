@@ -8,12 +8,6 @@ signal tapped(card: UnitCard)
 
 const CARD_SIZE := Vector2(96, 140)
 const STATUS_ORDER := ["shield", "burn", "curse", "bleed"]
-const STATUS_COLORS := {
-	"shield": Color(0.55, 0.65, 0.75),
-	"burn": Color(0.95, 0.45, 0.15),
-	"curse": Color(0.6, 0.35, 0.8),
-	"bleed": Color(0.75, 0.1, 0.2),
-}
 
 var uid: int
 var definition: Dictionary
@@ -23,7 +17,7 @@ var body: PanelContainer
 
 var _style: StyleBoxFlat
 var _level_label: Label
-var _chips: HBoxContainer
+var _chips: HFlowContainer
 var _attack_label: Label
 var _health_label: Label
 
@@ -69,10 +63,12 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	_level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(_level_label)
 
-	_chips = HBoxContainer.new()
-	_chips.alignment = BoxContainer.ALIGNMENT_CENTER
-	_chips.add_theme_constant_override("separation", 2)
-	_chips.custom_minimum_size = Vector2(0, 18)
+	_chips = HFlowContainer.new()
+	_chips.alignment = FlowContainer.ALIGNMENT_CENTER
+	_chips.add_theme_constant_override("h_separation", 3)
+	_chips.add_theme_constant_override("v_separation", 1)
+	_chips.custom_minimum_size = Vector2(0, 20)
+	_chips.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_chips)
 
 	var stats := HBoxContainer.new()
@@ -114,6 +110,28 @@ func flash_trigger(duration: float) -> void:
 		_style.set_border_width_all(3))
 
 
+## Colored halo pulse around the card (abilities that act on the unit itself).
+func pulse_glow(color: Color, duration: float) -> void:
+	var halo := Panel.new()
+	halo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(color, 0.0)
+	style.border_color = color
+	style.set_border_width_all(4)
+	style.set_corner_radius_all(14)
+	style.shadow_color = Color(color, 0.7)
+	style.shadow_size = 14
+	halo.add_theme_stylebox_override("panel", style)
+	halo.position = body.position - Vector2(6, 6)
+	halo.size = CARD_SIZE + Vector2(12, 12)
+	halo.pivot_offset = halo.size / 2
+	add_child(halo)  # on the outer card, not inside the PanelContainer layout
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(halo, "scale", Vector2(1.08, 1.08), duration)
+	tween.tween_property(halo, "modulate:a", 0.0, duration).set_delay(duration * 0.4)
+	tween.chain().tween_callback(halo.queue_free)
+
+
 ## Center of the card in canvas coordinates (for floating numbers).
 func center_position() -> Vector2:
 	return body.global_position + CARD_SIZE / 2
@@ -125,24 +143,25 @@ func _rebuild_chips() -> void:
 	var statuses: Dictionary = snapshot.get("statuses", {})
 	for status in STATUS_ORDER:
 		if statuses.get(status, 0) > 0:
-			var text := "%s%d" % [tr("STATUS_%s_SHORT" % status.to_upper()), statuses[status]]
-			_chips.add_child(_make_chip(text, STATUS_COLORS[status]))
+			_chips.add_child(_make_chip(status, str(statuses[status])))
 	var multiplier: float = snapshot.get("multiplier", 1.0)
 	if absf(multiplier - 1.0) > 0.001:
-		_chips.add_child(_make_chip("×%s" % NumberFormat.decimal(multiplier), Palette.HEALTH))
+		_chips.add_child(_make_chip("star", "×%s" % NumberFormat.decimal(multiplier)))
 
 
-func _make_chip(text: String, color: Color) -> Label:
-	var chip := Label.new()
-	chip.text = text
-	chip.add_theme_font_size_override("font_size", 11)
-	chip.add_theme_color_override("font_color", Color.WHITE)
-	var style := StyleBoxFlat.new()
-	style.bg_color = color
-	style.set_corner_radius_all(4)
-	style.content_margin_left = 3
-	style.content_margin_right = 3
-	chip.add_theme_stylebox_override("normal", style)
+## A status emblem with its stack count (or a multiplier) next to it.
+func _make_chip(kind: String, text: String) -> Control:
+	var chip := HBoxContainer.new()
+	chip.add_theme_constant_override("separation", 0)
+	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	chip.add_child(Emblem.create(kind, 18))
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", Color.WHITE)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 4)
+	chip.add_child(label)
 	return chip
 
 

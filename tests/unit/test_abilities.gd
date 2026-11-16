@@ -86,12 +86,24 @@ func test_mistress_of_embers_multiplies_burn() -> void:
 	assert_eq(burns[0]["amount"], 2)
 
 
-func test_bleed_adds_to_every_attack_hit() -> void:
-	# Blade apprentice 2/2 applies bleed 1 after the first hit; second hit deals 2 + 1.
-	var result := BattleSimulator.simulate([_fig("blade_apprentice")], [_unit(0, 20)])
+func test_bleed_ticks_every_turn_and_keeps_its_stacks() -> void:
+	# Blade apprentice 2/2 applies bleed 1 per attack: bleed ticks 1, then 2, then 3.
+	var result := BattleSimulator.simulate([_fig("blade_apprentice")], [_unit(0, 30)])
+	var bleeds := _events(result, "damage").filter(func(e): return e["source"] == "bleed")
+	assert_eq(bleeds[0]["amount"], 1)
+	assert_eq(bleeds[1]["amount"], 2)
+	assert_eq(bleeds[2]["amount"], 3)
+	# Attack hits are not increased by bleed.
 	var hits := _events(result, "damage").filter(func(e): return e["source"] == "attack")
-	assert_eq(hits[0]["amount"], 2)
-	assert_eq(hits[1]["amount"], 3)
+	assert_eq(hits[1]["amount"], 2)
+
+
+func test_bleed_hits_units_in_the_back_row_too() -> void:
+	var bleeder := _unit(0, 50, _ab("battle_start", "back_enemy", "apply_bleed", [2, 2, 2]))
+	var result := BattleSimulator.simulate([_unit(0, 50, null, "front"), _unit(0, 50, null, "back")], [bleeder])
+	var bleeds := _events(result, "damage").filter(func(e): return e["source"] == "bleed")
+	assert_eq(bleeds[0]["uid"], 2, "the rear unit bleeds")
+	assert_eq(bleeds[0]["amount"], 2)
 
 
 func test_curse_lowers_attack_and_wears_off() -> void:

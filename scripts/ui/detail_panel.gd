@@ -81,7 +81,7 @@ func show_card(card: UnitCard) -> void:
 	var statuses: Dictionary = snapshot.get("statuses", {})
 	for status in UnitCard.STATUS_ORDER:
 		if statuses.get(status, 0) > 0:
-			var color := UnitCard.STATUS_COLORS[status] as Color
+			var color := Emblem.COLORS[status] as Color
 			lines.append("[color=#%s]%s %d[/color] – %s" % [
 				color.to_html(false), tr("STATUS_" + status.to_upper()), statuses[status],
 				tr("STATUS_%s_DESC" % status.to_upper()),

@@ -68,7 +68,7 @@ STATUS_BLEED_SHORT,Bl,Bl
 STATUS_SHIELD_DESC,Blockt so viele Schadenspunkte (nicht die Dunkelheit).,Blocks that many points of damage (not the darkness).
 STATUS_BURN_DESC,"Zugbeginn: so viel Schaden wie Stapel, danach −1 Stapel.","Turn start: damage equal to stacks, then −1 stack."
 STATUS_CURSE_DESC,"−Angriff in Höhe der Stapel, verfliegt nach 3 Zügen.","−attack equal to stacks, fades after 3 turns."
-STATUS_BLEED_DESC,Jeder Angriffstreffer gegen diese Figur macht so viel Zusatzschaden.,Every attack hit against this figure deals that much extra damage.
+STATUS_BLEED_DESC,"Zugbeginn: so viel Schaden wie Stapel, egal wo die Figur steht. Die Stapel bleiben.","Turn start: damage equal to stacks, wherever the figure stands. Stacks remain."
 UI_GOLD,Gold: %d,Gold: %d
 UI_LEVEL_SHORT,St. %d,Lv %d
 UI_LEVEL,Stufe %d,Level %d

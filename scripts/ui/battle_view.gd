@@ -254,7 +254,7 @@ func _play_events(token: int) -> void:
 			"clash":
 				await _animate_clash(event)
 			"shielded":
-				_float_on(event["uid"], "-%d %s" % [event["amount"], tr("STATUS_SHIELD")], UnitCard.STATUS_COLORS["shield"])
+				_float_on(event["uid"], "-%d %s" % [event["amount"], tr("STATUS_SHIELD")], Emblem.COLORS["shield"])
 			"damage":
 				_show_damage(event)
 				if next_type not in ["damage", "update", "shielded"]:
@@ -281,11 +281,54 @@ func _show_trigger(event: Dictionary) -> void:
 	var card: UnitCard = _cards.get(event["uid"])
 	if card == null:
 		return
-	card.flash_trigger(0.35 / _speed)
+	var kind := Emblem.kind_for_effect(event["effect"])
+	var color: Color = Emblem.COLORS.get(kind, Palette.GOLD)
+	card.flash_trigger(0.4 / _speed)
+	var other_targets: Array = event["targets"].filter(func(uid: int) -> bool: return uid != event["uid"])
+	if other_targets.is_empty():
+		# Ability on itself: halo pulse plus the emblem rising out of the card.
+		card.pulse_glow(color, 0.45 / _speed)
+		_rise_emblem(kind, card.center_position())
+		await _wait(0.35)
+		return
+	# Ability on others: the emblem flies from the source to every target.
+	for uid in other_targets:
+		var target: UnitCard = _cards.get(uid)
+		if target != null:
+			_fly_emblem(kind, card.center_position(), target)
+	await _wait(0.4)
+
+
+func _rise_emblem(kind: String, at: Vector2) -> void:
+	var emblem := Emblem.create(kind, 44)
+	emblem.position = at - emblem.size / 2
+	emblem.scale = Vector2(0.4, 0.4)
+	_fx_layer.add_child(emblem)
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(emblem, "scale", Vector2(1.2, 1.2), 0.2 / _speed).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(emblem, "position:y", emblem.position.y - 46, 0.5 / _speed)
+	tween.tween_property(emblem, "modulate:a", 0.0, 0.25 / _speed).set_delay(0.35 / _speed)
+	tween.chain().tween_callback(emblem.queue_free)
+
+
+## Emblem flies on an arc from a point to a target card, then bursts on it.
+func _fly_emblem(kind: String, from: Vector2, target: UnitCard, flight := 0.3, arc := true) -> void:
+	var emblem := Emblem.create(kind, 40)
+	_fx_layer.add_child(emblem)
+	var to := target.center_position()
+	var lift := (-60.0 - absf(to.x - from.x) * 0.15) if arc else -12.0
+	var place := func(t: float) -> void:
+		var point := from.lerp(to, t) + Vector2(0, lift * 4.0 * t * (1.0 - t))
+		emblem.position = point - emblem.size / 2
+		emblem.rotation = (to - from).angle() * 0.2 * (1.0 - t)
+	place.call(0.0)
 	var tween := create_tween()
-	tween.tween_property(card.body, "scale", Vector2(1.12, 1.12), 0.1 / _speed)
-	tween.tween_property(card.body, "scale", Vector2.ONE, 0.1 / _speed)
-	await _wait(0.25)
+	tween.tween_method(place, 0.0, 1.0, flight / _speed).set_ease(Tween.EASE_IN_OUT)
+	if kind != "sword":  # plain attacks already flash red on impact
+		tween.tween_callback(func() -> void: target.pulse_glow(emblem.color, 0.3 / _speed))
+	tween.tween_property(emblem, "scale", Vector2(1.6, 1.6), 0.12 / _speed)
+	tween.parallel().tween_property(emblem, "modulate:a", 0.0, 0.12 / _speed)
+	tween.tween_callback(emblem.queue_free)
 
 
 func _animate_clash(event: Dictionary) -> void:
@@ -297,7 +340,10 @@ func _animate_clash(event: Dictionary) -> void:
 	tween.tween_property(enemy_card.body, "position:x", -lunge, 0.15 / _speed)
 	tween.chain().tween_property(player_card.body, "position:x", 0.0, 0.15 / _speed)
 	tween.parallel().tween_property(enemy_card.body, "position:x", 0.0, 0.15 / _speed)
-	await _wait(0.15)
+	# Crossing swords show who strikes whom.
+	_fly_emblem("sword", player_card.center_position(), enemy_card, 0.2, false)
+	_fly_emblem("sword", enemy_card.center_position(), player_card, 0.2, false)
+	await _wait(0.2)
 
 
 func _show_damage(event: Dictionary) -> void:
@@ -306,7 +352,9 @@ func _show_damage(event: Dictionary) -> void:
 		return
 	card.body.modulate = Palette.DAMAGE_FLASH
 	create_tween().tween_property(card.body, "modulate", Color.WHITE, 0.3 / _speed)
-	var color: Color = UnitCard.STATUS_COLORS["burn"] if event["source"] == "burn" else Palette.DAMAGE_FLASH
+	var color: Color = Palette.DAMAGE_FLASH
+	if event["source"] in ["burn", "bleed"]:
+		color = Emblem.COLORS[event["source"]]
 	_float_number("-%d" % event["amount"], card.center_position(), color)
 
 

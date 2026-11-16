@@ -204,12 +204,12 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Statusregeln:** Werden im Prototyp festgelegt. Startpunkt-Vorschlag:
   - Brennen: X Schaden zu Zugbeginn, danach −1 Stapel
   - Fluch: −X Angriff, verfliegt nach 3 Zügen
-  - Blutung: Jeder Treffer gegen die Figur macht +X Schaden
+  - Blutung: ~~Jeder Treffer gegen die Figur macht +X Schaden~~ → **geändert nach M2-Feedback:** Zugbeginn X Schaden an der blutenden Figur, egal wo sie steht, Stapel bleiben (kein Abbau)
   - Schild: Blockt die nächsten X Schaden
 - **Gleichstand** (beide Teams fallen gleichzeitig): **zählt als Sieg**
   - ⚠️ Risiko: Selbstzerstörungs-Builds könnten gezielt auf ein Unentschieden spielen. Im Prototyp beobachten, ggf. später nachjustieren (z. B. Sieg ohne Gold).
 
-### Präzisierungen M2 (von Claude vorgeschlagen, Bestätigung ausstehend)
+### Präzisierungen M2 (vom Nutzer bestätigt)
 - **Ablauf pro Zug:** Brennen tickt → Zugbeginn-Fähigkeiten → Zusammenstoß → „Wenn getroffen“ (getroffene Figuren) → „Nach dem Angriff“ (Angreifer) → Fluch-Countdown → Dunkelheit (ab Zug 15)
 - **„Nach dem Angriff“** löst *nach* dem Treffer aus (Bluttrinker kennt so den verursachten Schaden, der Henker den Restwert)
 - **„Wenn getroffen“** zählt auch Treffer, die ein Schild komplett abfängt
@@ -489,7 +489,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- M2-Feedback einholen (Test-Link: https://aaronvogel77-source.github.io/Roguelike/), inkl. Bestätigung der Regel-Präzisierungen aus M2 (siehe Phase 6, „Präzisierungen M2“)
+- Feedback zur M2-Überarbeitung (Embleme, fliegende Effekte, Blutung als Dauerschaden) einholen, dann M3
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -554,3 +554,4 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | Repo öffentlich, GitHub Pages über Actions aktiv | Kostenlose Test-Links per Handy | GitHub Pro, itch.io |
 | 2026-11-16 | M0 abgenommen (läuft auf dem Handy). M1: deterministischer Kampf-Simulator, Kampfbildschirm mit 1×/2×/4×, 15 GUT-Tests (GUT 9.6.1 passend zu Godot 4.6), Simulationswerkzeug `tools/simulate.gd` | Logik headless testbar, Balancing per Simulation | GUT 9.7.1 (benötigt Godot 4.7) |
 | 2026-11-16 | M1 abgenommen. M2: Fähigkeiten-Baukasten (24 Fähigkeiten, 4 Status, Multiplikatoren, Stufen), Detail-Panel per Tippen, 40 Tests | Alle Slice-Inhalte kämpfen mit echten Regeln | – |
+| 2026-11-16 | M2-Feedback: Status als gezeichnete Embleme, Fähigkeiten fliegen als Emblem zum Ziel bzw. leuchten als Lichtkranz auf der eigenen Karte, Schwerter beim Zusammenstoß, Blutung = Dauerschaden für jede Figur (Stapel bleiben). Tempo und Regel-Präzisierungen bestätigt | Bessere Lesbarkeit, Blutung auch für hintere Figuren relevant | Kürzel; Blutung nur als Trefferbonus |

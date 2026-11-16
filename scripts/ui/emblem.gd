@@ -1,0 +1,123 @@
+class_name Emblem
+extends Control
+## Small vector emblems drawn in code (placeholder art until M8):
+## shield, burn (flame), bleed (drop), curse (eye), sword, heart, coin,
+## star (buff / multiplier) and skull (execute).
+
+const COLORS := {
+	"shield": Color(0.62, 0.72, 0.85),
+	"burn": Color(0.98, 0.5, 0.15),
+	"bleed": Color(0.85, 0.1, 0.18),
+	"curse": Color(0.68, 0.4, 0.9),
+	"sword": Color(0.9, 0.9, 0.95),
+	"heart": Color(0.35, 0.85, 0.45),
+	"coin": Color(0.95, 0.78, 0.3),
+	"star": Color(1.0, 0.85, 0.35),
+	"skull": Color(0.92, 0.9, 0.85),
+}
+
+## Which emblem represents an ability effect.
+const EFFECT_KINDS := {
+	"gain_shield": "shield", "warden_shield": "shield", "eat_shield": "shield",
+	"apply_burn": "burn", "burn_mult": "burn",
+	"apply_bleed": "bleed", "shields_to_bleed": "bleed", "detonate_bleed": "bleed",
+	"apply_curse": "curse",
+	"damage": "sword",
+	"heal": "heart", "lifesteal": "heart", "revive": "heart",
+	"steal_gold": "coin", "health_per_gold": "coin", "attack_if_rich": "coin", "midas": "coin",
+	"execute": "skull",
+}
+
+var kind := "star"
+var color := Color.WHITE
+
+
+static func create(emblem_kind: String, emblem_size: float) -> Emblem:
+	var emblem := Emblem.new()
+	emblem.kind = emblem_kind
+	emblem.color = COLORS.get(emblem_kind, Color.WHITE)
+	emblem.custom_minimum_size = Vector2(emblem_size, emblem_size)
+	emblem.size = emblem.custom_minimum_size
+	emblem.pivot_offset = emblem.size / 2
+	emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return emblem
+
+
+static func kind_for_effect(effect: String) -> String:
+	return EFFECT_KINDS.get(effect, "star")
+
+
+func _draw() -> void:
+	var s := minf(size.x, size.y)
+	var c := size / 2
+	var outline := Color(0, 0, 0, 0.85)
+	match kind:
+		"shield":
+			var pts := _pts(s, [Vector2(0.15, 0.12), Vector2(0.5, 0.02), Vector2(0.85, 0.12),
+				Vector2(0.82, 0.55), Vector2(0.5, 0.97), Vector2(0.18, 0.55)])
+			_filled(pts, color, outline, s)
+			draw_line(c + Vector2(0, -0.32 * s), c + Vector2(0, 0.35 * s), color.darkened(0.35), maxf(1.0, s * 0.07))
+		"burn":
+			var flame := _pts(s, [Vector2(0.5, 0.0), Vector2(0.72, 0.3), Vector2(0.86, 0.6), Vector2(0.78, 0.86),
+				Vector2(0.5, 1.0), Vector2(0.22, 0.86), Vector2(0.14, 0.6), Vector2(0.3, 0.42), Vector2(0.38, 0.22)])
+			_filled(flame, color, outline, s)
+			var inner := _pts(s, [Vector2(0.5, 0.4), Vector2(0.66, 0.66), Vector2(0.5, 0.9), Vector2(0.34, 0.66)])
+			draw_colored_polygon(inner, Color(1, 0.9, 0.4))
+		"bleed":
+			var drop := _pts(s, [Vector2(0.5, 0.0), Vector2(0.72, 0.38), Vector2(0.8, 0.62), Vector2(0.72, 0.84),
+				Vector2(0.5, 0.97), Vector2(0.28, 0.84), Vector2(0.2, 0.62), Vector2(0.28, 0.38)])
+			_filled(drop, color, outline, s)
+			draw_circle(c + Vector2(-0.12, 0.12) * s, s * 0.08, Color(1, 1, 1, 0.6))
+		"curse":
+			var eye := PackedVector2Array()
+			for i in 24:
+				var a := TAU * i / 24.0
+				eye.append(c + Vector2(cos(a) * 0.46, sin(a) * 0.28) * s)
+			_filled(eye, color, outline, s)
+			draw_circle(c, s * 0.17, Color(0.12, 0.02, 0.18))
+			draw_circle(c, s * 0.06, color.lightened(0.6))
+		"sword":
+			var blade := _pts(s, [Vector2(0.82, 0.08), Vector2(0.92, 0.18), Vector2(0.38, 0.72), Vector2(0.28, 0.62)])
+			_filled(blade, color, outline, s)
+			draw_line(c + Vector2(-0.32, 0.04) * s, c + Vector2(-0.04, 0.32) * s, Color(0.8, 0.6, 0.3), maxf(2.0, s * 0.12))
+			draw_line(c + Vector2(-0.2, 0.2) * s, c + Vector2(-0.38, 0.38) * s, Color(0.55, 0.35, 0.2), maxf(2.0, s * 0.12))
+		"heart":
+			var heart := PackedVector2Array()
+			for i in 32:
+				var t := TAU * i / 32.0
+				var x := 16.0 * pow(sin(t), 3)
+				var y := -(13.0 * cos(t) - 5.0 * cos(2 * t) - 2.0 * cos(3 * t) - cos(4 * t))
+				heart.append(c + Vector2(x, y + 2.0) * s / 36.0)
+			_filled(heart, color, outline, s)
+		"coin":
+			draw_circle(c, s * 0.46, outline)
+			draw_circle(c, s * 0.42, color)
+			draw_circle(c, s * 0.28, color.darkened(0.25))
+		"skull":
+			draw_circle(c + Vector2(0, -0.08) * s, s * 0.4, outline)
+			draw_circle(c + Vector2(0, -0.08) * s, s * 0.36, color)
+			draw_rect(Rect2(c + Vector2(-0.2, 0.1) * s, Vector2(0.4, 0.3) * s), color)
+			draw_circle(c + Vector2(-0.15, -0.08) * s, s * 0.1, Color(0.1, 0.05, 0.05))
+			draw_circle(c + Vector2(0.15, -0.08) * s, s * 0.1, Color(0.1, 0.05, 0.05))
+		_:  # star
+			var star := PackedVector2Array()
+			for i in 10:
+				var r := 0.48 if i % 2 == 0 else 0.2
+				var a := -PI / 2 + PI * i / 5.0
+				star.append(c + Vector2(cos(a), sin(a)) * r * s)
+			_filled(star, color, outline, s)
+
+
+func _pts(s: float, normalized: Array) -> PackedVector2Array:
+	var result := PackedVector2Array()
+	var origin := (size - Vector2(s, s)) / 2
+	for p: Vector2 in normalized:
+		result.append(origin + p * s)
+	return result
+
+
+func _filled(points: PackedVector2Array, fill: Color, outline: Color, s: float) -> void:
+	draw_colored_polygon(points, fill)
+	var closed := points.duplicate()
+	closed.append(points[0])
+	draw_polyline(closed, outline, maxf(1.0, s * 0.06), true)

@@ -5,7 +5,7 @@ extends RefCounted
 ## Turn order:
 ##   battle start: "battle_start" abilities (player front→back, then enemies,
 ##                 then abilities flagged "late")
-##   every turn:   burn ticks → "turn_start" abilities → front units clash
+##   every turn:   burn + bleed tick → "turn_start" abilities → front units clash
 ##                 (simultaneous) → "on_hit" / "on_attack" abilities →
 ##                 curse countdown → decay (from turn 15)
 ##   after every damage step: deaths, death abilities, revives.
@@ -66,7 +66,7 @@ func _run(player_team: Array, enemy_team: Array, player_gold: int) -> Dictionary
 	while not _battle_over() and turn < MAX_TURNS:
 		turn += 1
 		events.append({"type": "turn", "turn": turn})
-		_tick_burn()
+		_tick_damage_over_time()
 		_process_deaths()
 		if _battle_over():
 			break
@@ -106,9 +106,8 @@ func _clash() -> void:
 	var player_front: BattleUnit = rows[PLAYER][0]
 	var enemy_front: BattleUnit = rows[ENEMY][0]
 	# Both hits are computed before either is applied: simultaneous strike.
-	# Bleed on the target adds its stacks to every attack hit it takes.
-	var damage_to_enemy := player_front.effective_attack() + enemy_front.status(BattleUnit.STATUS_BLEED)
-	var damage_to_player := enemy_front.effective_attack() + player_front.status(BattleUnit.STATUS_BLEED)
+	var damage_to_enemy := player_front.effective_attack()
+	var damage_to_player := enemy_front.effective_attack()
 	events.append({"type": "clash", "player_uid": player_front.uid, "enemy_uid": enemy_front.uid})
 	var dealt_to_enemy := _deal_damage(enemy_front, damage_to_enemy, "attack")
 	var dealt_to_player := _deal_damage(player_front, damage_to_player, "attack")
@@ -125,16 +124,21 @@ func _clash() -> void:
 			_fire_unit_abilities(attacker, "on_attack", {"attack_target": pair[1], "damage_dealt": pair[2]})
 
 
-func _tick_burn() -> void:
+## Turn start, every unit wherever it stands in the row:
+## burn deals its stacks (× burn auras) and loses one stack;
+## bleed deals its stacks and keeps them.
+func _tick_damage_over_time() -> void:
 	for side in [PLAYER, ENEMY]:
 		for unit: BattleUnit in rows[side].duplicate():
-			var stacks := unit.status(BattleUnit.STATUS_BURN)
-			if stacks <= 0:
-				continue
-			var amount := int(floor(stacks * _burn_multiplier_against(unit)))
-			_deal_damage(unit, amount, "burn")
-			unit.add_status(BattleUnit.STATUS_BURN, -1)
-			_emit_update(unit)
+			var burn := unit.status(BattleUnit.STATUS_BURN)
+			if burn > 0:
+				var amount := int(floor(burn * _burn_multiplier_against(unit)))
+				_deal_damage(unit, amount, "burn")
+				unit.add_status(BattleUnit.STATUS_BURN, -1)
+				_emit_update(unit)
+			var bleed := unit.status(BattleUnit.STATUS_BLEED)
+			if bleed > 0 and unit.is_alive():
+				_deal_damage(unit, bleed, "bleed")
 
 
 func _tick_curses() -> void:
