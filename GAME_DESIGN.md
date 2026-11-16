@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 6, Runde 2 läuft
+**Status:** Planung – Phase 6, Runde 3 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -197,6 +197,18 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - Bei Tod (eigene oder fremde Figur)
   - Im Shop (Kauf / Verkauf / Level-Up)
 
+### Runde 2 (beantwortet)
+- **Schadensformel:** `Schaden = (Angriff + Summe additiver Boni) × Produkt aller Multiplikatoren` (Balatro-Prinzip Chips × Mult)
+  - Erst werden alle `+X` addiert, dann alle `×Y` multipliziert, das Ergebnis wird abgerundet. Fluch und andere Mali wirken auf der additiven Ebene.
+- **Auslösereihenfolge:** Von vorne nach hinten. Bei gleichzeitigen Auslösern zuerst alle Spieler-Figuren, dann die Gegner.
+- **Statusregeln:** Werden im Prototyp festgelegt. Startpunkt-Vorschlag:
+  - Brennen: X Schaden zu Zugbeginn, danach −1 Stapel
+  - Fluch: −X Angriff, verfliegt nach 3 Zügen
+  - Blutung: Jeder Treffer gegen die Figur macht +X Schaden
+  - Schild: Blockt die nächsten X Schaden
+- **Gleichstand** (beide Teams fallen gleichzeitig): **zählt als Sieg**
+  - ⚠️ Risiko: Selbstzerstörungs-Builds könnten gezielt auf ein Unentschieden spielen. Im Prototyp beobachten, ggf. später nachjustieren (z. B. Sieg ohne Gold).
+
 ## Phase 7 – Monster und KI
 _Noch nicht behandelt._
 
@@ -227,9 +239,10 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 6, Runde 2: Multiplikator-Formel, Auslösereihenfolge, Statusregeln, Gleichstand
+- Phase 6, Runde 3: Fernkampf/Zielwahl, Verderben-Zahlen, Todesbildschirm, Kampftempo pro Zug
 
 ## Später entscheiden
+- **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
 - **Meisterfähigkeiten (F3):** Woher kommen sie (z. B. eine pro dominanter Tarot-Farbe)? → Phase 9
 - **Liste geheimer Rezepte und Anlässe** → Inhaltsphase
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
@@ -260,3 +273,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Volle Wiederherstellung nach dem Kampf, Seelen für Fusion/Pakte/Shop, Boss-Überspringen kostet eine Figur, 3 Stufen mit +1/+1 und stärkerer Fähigkeit | Fair trotz Permadeath, klare Level-Ups | Gestorbene weg/verwundet; 5 Stufen, zweite Fähigkeit |
 | 2026-11-16 | Fusion: 3 Stufen pro Figur, max. 3 Fähigkeiten + Meisterfähigkeit auf F3, Anlässe Altar/nach Boss/Item, geheime Rezepte/Anlässe/Meta-Freischaltung | Fusion als seltener Höhepunkt, Entdeckerfreude | Max. 3 pro Run; alle Fähigkeiten behalten, nur 2 |
 | 2026-11-16 | Vorderste gegen vorderste, kein Grundzufall (nur über Fähigkeiten/Items), 4 Status je Tarot-Farbe, 4 Auslöser-Familien | Planbarkeit bei Permadeath, Zufall als bewusster Tausch | Alle greifen an, abwechselnd; Krits, Schadensspanne; keine/viele Status |
+| 2026-11-16 | (Angriff + Boni) × Mult, Auslösung von vorne nach hinten, Statusregeln im Prototyp, Gleichstand = Sieg | Explosive Kurve à la Balatro, nachvollziehbare Reihenfolge | Nur additiv, seltene Mults; höchster Angriff zuerst, abwechselnd; Gleichstand = Niederlage/keine Belohnung |
