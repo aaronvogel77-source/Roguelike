@@ -486,6 +486,42 @@ Der Gegner-Generator wählt pro Gegner-Team ein Thema des Gebiets. Gegner mit di
 
 Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Münzwerfer, Gieriger Drache · beliebig = Rest
 
+### Objekte (M5a, Set-Vorschläge von Claude, vom Nutzer bestätigt)
+**Ausrüstung** (1 pro Figur) – Grundtyp + zufällige Zusatzeffekte je Seltenheit:
+
+| Grundtyp | Grundwirkung |
+|---|---|
+| Klinge | +2 Angriff |
+| Schildbuckel | Kampfbeginn: Schild 3 |
+| Amulett | +3 Leben |
+| Fackel | Nach dem Angriff: Ziel erhält Brennen 1 |
+| Dolch | Nach dem Angriff: Ziel erhält Blutung 1 |
+| Geldkatze | Kampfbeginn: +1 Angriff je 10 Gold |
+
+- Seltenheit: Gewöhnlich (nur Grundwirkung) · Magisch (+1 Zusatz) · Selten (+2) · Verflucht (+3 und 1 Nachteil)
+- Zusatz-Pool: +1–2 Angriff · +2–3 Leben · Kampfbeginn Schild 1–2 · Zugbeginn Heilung 1 · Wenn getroffen +1 Angriff · Bei Tod +2 Gold · ×1,1–1,2 Angriff (ab Selten) · Ziel Brennen 1 · Ziel Blutung 1
+- Nachteil-Pool: −2 Leben · Kampfbeginn Fluch 1 auf sich · Kampfbeginn Brennen 1 auf sich · −1 Gold nach jedem Kampf
+
+**Relikte** (3 globale Plätze): Kriegskasse (Münz-Figuren +1 Angriff) · Ewige Glut (eigenes Brennen +1 Stapel) · Blutkelch (Kelch-Figuren heilen zu Zugbeginn 1) · Wetzstein (Blutung der Schwert-Figuren +1 Stapel) · Vorhut-Banner (vorderste Figur ×1,5 Angriff) · Totenglocke (stirbt eine eigene Figur: alle anderen +1 Angriff) · Bettelschale (nach jedem Sieg +1 Gold) · Hofstaat (je Königin/König/Legendäre: alle Figuren +1 Leben)
+
+**Tarot-Karten** (2 Kartenplätze, Einmalnutzung, Ziel ist immer eine eigene Figur): Die Kraft (dauerhaft +2/+2) · Der Magier (+1 Erfahrung) · Der Stern (Segen: Kampfbeginn Schild 3) · Die Sonne (Segen: ×1,25 Angriff) · Der Gehängte (Figur opfern → voller Kaufpreis als Gold) · Das Rad des Schicksals (Figur wechselt zufällig die Tarot-Farbe). Ein Segen belegt den Segen-Platz der Figur, ein neuer ersetzt den alten.
+
+**Packs statt Direktkauf (Nutzer-Idee, Balatro-Prinzip):** Objekte sind nicht direkt kaufbar, nur über Packs. Figuren bleiben direkt kaufbar.
+- Shop: 3 Figuren (Direktkauf) + 2 Packs
+- Ausrüstungs-Pack 4 Gold (3 Ausrüstungen, wähle 1) · Arkana-Pack 4 Gold (3 Tarot, wähle 1) · Relikt-Pack 6 Gold (2 Relikte, wähle 1) · Hofstaat-Pack 5 Gold (3 Figuren mit besseren Rang-Chancen, wähle 1)
+- Groß-Variante: +2 Gold, +1 Karte, bessere Seltenheit · Mega-Variante (selten): +4 Gold, 5 Karten, wähle 2
+
+**Legendäre Figuren (nur aus Hofstaat-Packs, ca. 1,5 % pro Karte, Mega 3 %; getrennt von Fusionsrezepten; Debug-Knopf zum gezielten Ziehen):**
+
+| Ass | Name | A/L | Fähigkeit |
+|---|---|---|---|
+| Münzen | **Goldene Quelle** | 4/10 | Kampfbeginn: Alle Figuren erhalten Schild = Zinsen × 2 |
+| Stäbe | **Flammenkrone** | 7/7 | Nach dem Angriff: Alle Gegner erhalten Brennen 1 |
+| Kelche | **Tränenquelle** | 4/12 | Stirbt eine eigene Figur: Sie kehrt mit halbem Leben zurück (max. 2× pro Kampf) |
+| Schwerter | **Klinge der Wahrheit** | 7/7 | Angriffe ignorieren Schild; nach dem Angriff verdoppelt sie die Blutung des Ziels |
+
+**Wirtschaft (v0.4.2-Feedback):** Grundeinkommen 5 → **4**. Plätze nicht mehr kaufbar.
+
 ### Regel-Bosse (Vertical Slice)
 **Geändert nach M4-Feedback:** Bosse sind jetzt **Regel + echte Boss-Figur** (Phase-3-Entscheidung „Regel-Bosse“ erweitert zu „Beides kombiniert“). Die Boss-Figur ist 2–3 Kartenplätze breit, steht vorne, und ihr Gefolge füllt die restlichen Plätze.
 
@@ -515,10 +551,11 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 ---
 
 ## Offene Fragen
-- M5 (Objekte) mit Inhaltsrunden. **Zusammen mit M5 umsetzen (Feedback zu v0.4.2):**
+- **M5 aufgeteilt:** M5a = Ausrüstung, Relikte, Tarot, Packs, Legendäre + Feedback unten · M5b = Seelen, Pakte, Ereignisse, Überspringen
+- M5a bauen. **Zusammen mit M5a umsetzen (Feedback zu v0.4.2):**
   - Umordnen: Wird eine Figur **zwischen** zwei Karten gezogen, wird sie dort eingeschoben (die anderen rücken). Nur wenn sie klar **auf** eine Karte gezogen wird, tauschen die beiden.
   - Plätze **nur noch durch Boss-Siege**, nicht mehr kaufbar
-  - **Weniger Gold** (Art der Kürzung wird in M5-Runde 1 entschieden)
+  - **Weniger Gold:** Grundeinkommen 5 → 4
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -593,3 +630,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | M4-Feedback: Boss ohne Gegnerwahl direkt nach dem Shop, Ankündigungs-Streifen zu Kampfbeginn, echte Boss-Figuren (2–3 Plätze breit), kein Verschmelzen auf Max. Stufe; Boss-Werte per Simulation stark abgeschwächt (Nutzerwahl war zu stark) | Bosse spürbar, aber schaffbar | Reine Regel-Bosse; Boss-Karte nur als Darstellung; Ankündigung beim Shop |
 | 2026-11-16 | M4-Feedback 2: größere Karten/Schriften (Spielfeld skaliert nach Inhalt bis ×1,7), Gebiets-Einführung vor Gebietsbeginn, Glanz-Effekt für Königinnen/Könige ("Selten!"/"Episch!"), Verkaufen auf dem Belohnungsbildschirm, nachträgliches Verschmelzen durch Ziehen, Rangpreise 3/4/6/8, Verkauf = halber Preis + Stufe, Ertrunkener König 30/60/100 %, Steuereintreiber 12 Leben, fehlende Glyphen ersetzt, Schlüsselwörter nur als ganze Wörter. Boss-Grafik folgt in M8 | Lesbarkeit, Belohnungsgefühl, Balance | – |
 | 2026-11-16 | v0.4.2-Feedback (Umsetzung mit M5): Einschieben zwischen Karten statt nur Tauschen, Plätze nur durch Bosse, weniger Gold. Rest bestätigt | Run war noch zu leicht, zu viel Gold für Verkaufen und Verschmelzen | Plätze kaufbar |
+| 2026-11-16 | M5 in M5a/M5b geteilt; Objekt-Sets bestätigt; Objekte nur über Packs (Balatro), Figuren direkt; 4 legendäre Asse nur aus Packs (selten, Debug-Knopf), getrennt von Fusionsrezepten; Einkommen 4 | Glücksspiel-Reiz, seltene Highlights, knappere Wirtschaft | Direktkauf von Objekten; Legendäre = Fusionsrezepte |
