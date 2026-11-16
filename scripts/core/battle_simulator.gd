@@ -32,6 +32,14 @@ var real_gold := 0
 var _gold_hidden := false
 ## Extra stacks for statuses the player applies, e.g. {"burn": {"all": 1}, "bleed": {"swords": 1}}.
 var status_bonus: Dictionary = {}
+## Pact hooks (see RunState.battle_options): gold factor, burn ×2 and spread,
+## bleed ×2, weaker player healing, team-wide revives.
+var gold_factor := 1
+var burn_factor_vs_enemy := 1.0
+var burn_spread := false
+var bleed_factor := 1
+var player_heal_factor := 1.0
+var team_revives_left := 0
 var turn := 0
 var _next_uid := 1
 
@@ -63,7 +71,13 @@ func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dict
 	real_gold = player_gold
 	_gold_hidden = options.get("gold_zero", false)
 	status_bonus = options.get("status_bonus", {})
-	gold = 0 if _gold_hidden else real_gold
+	gold_factor = int(options.get("gold_factor", 1))
+	burn_factor_vs_enemy = float(options.get("burn_factor_vs_enemy", 1.0))
+	burn_spread = bool(options.get("burn_spread", false))
+	bleed_factor = int(options.get("bleed_factor", 1))
+	player_heal_factor = float(options.get("player_heal_factor", 1.0))
+	team_revives_left = int(options.get("team_revives", 0))
+	gold = 0 if _gold_hidden else real_gold * gold_factor
 	for entry in player_team:
 		rows[PLAYER].append(_make_unit(entry, PLAYER))
 	for entry in enemy_team:
@@ -203,7 +217,7 @@ func _apply_decay() -> void:
 
 ## Burn damage multiplier from "burn_mult" auras of the burning unit's opponents.
 func _burn_multiplier_against(unit: BattleUnit) -> float:
-	var factor := 1.0
+	var factor := burn_factor_vs_enemy if unit.side == ENEMY else 1.0
 	for owner: BattleUnit in rows[1 - unit.side]:
 		for ability in owner.abilities:
 			if ability["trigger"] == "aura" and ability["effect"] == "burn_mult":
@@ -236,6 +250,8 @@ func _deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 
 
 func _heal(unit: BattleUnit, amount: int) -> void:
+	if unit.side == PLAYER and player_heal_factor < 1.0:
+		amount = int(floor(amount * player_heal_factor))
 	var healed := mini(amount, unit.max_health - unit.health)
 	if healed <= 0 or not unit.is_alive():
 		return
@@ -258,11 +274,28 @@ func _process_deaths() -> void:
 			unit.flags["death_resolved"] = true
 			events.append({"type": "dying", "uid": unit.uid})
 			_fire_death_abilities(unit)
+			_pact_death_hooks(unit)
 			if unit.is_alive():  # revived by an ability
 				unit.flags["death_resolved"] = false
 			else:
 				rows[unit.side].erase(unit)
 				events.append({"type": "removed", "uid": unit.uid, "side": unit.side})
+
+
+## Pacts: burning enemies pass their burn on; team revives for the player.
+func _pact_death_hooks(unit: BattleUnit) -> void:
+	if burn_spread and unit.side == ENEMY and unit.status(BattleUnit.STATUS_BURN) > 0:
+		var next_units := living(ENEMY)
+		if not next_units.is_empty():
+			var next_unit: BattleUnit = next_units[0]
+			next_unit.add_status(BattleUnit.STATUS_BURN, unit.status(BattleUnit.STATUS_BURN))
+			_emit_update(next_unit)
+	if unit.side == PLAYER and not unit.is_alive() and team_revives_left > 0:
+		team_revives_left -= 1
+		unit.health = maxi(unit.max_health / 2, 1)
+		unit.statuses.clear()
+		events.append({"type": "revive", "uid": unit.uid, "health": unit.health})
+		_emit_update(unit)
 
 
 func _fire_death_abilities(dying_unit: BattleUnit) -> void:
@@ -362,7 +395,7 @@ func heal(unit: BattleUnit, amount: int) -> void:
 func change_gold(delta: int) -> int:
 	var before := real_gold
 	real_gold = maxi(real_gold + delta, 0)
-	gold = 0 if _gold_hidden else real_gold
+	gold = 0 if _gold_hidden else real_gold * gold_factor * gold_factor
 	if real_gold != before:
 		events.append({"type": "gold", "gold": real_gold, "delta": real_gold - before})
 	return real_gold - before

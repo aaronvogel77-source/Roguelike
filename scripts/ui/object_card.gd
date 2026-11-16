@@ -46,6 +46,13 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 			title = ItemText.relic_name(entry["id"])
 			border = Emblem.COLORS["relic"]
 			lines = [ItemText.relic_text(entry["id"])]
+		"pact":
+			emblem_kind = "pact"
+			var key := "PACT_" + String(entry["id"]).to_upper()
+			title = TranslationServer.translate(key)
+			border = Emblem.COLORS["pact"]
+			lines = [TranslationServer.translate(key + "_DESC"),
+				TranslationServer.translate("PACT_COST_PREFIX") % TranslationServer.translate(key + "_COST")]
 	_style = StyleBoxFlat.new()
 	_style.bg_color = Palette.PANEL
 	_style.border_color = border

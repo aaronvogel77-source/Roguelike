@@ -32,7 +32,7 @@ func test_run_scene_runs_through_its_screens() -> void:
 	assert_eq(view._run.stage, RunState.Stage.REWARD)
 	view._on_skip_reward()
 	await wait_frames(2)
-	assert_eq(view._run.stage, RunState.Stage.ENEMY_CHOICE)
+	assert_true(view._run.stage in [RunState.Stage.ENEMY_CHOICE, RunState.Stage.EVENT])
 
 
 func test_merge_screen_and_sell_zone() -> void:
@@ -77,3 +77,37 @@ func test_pack_overlay_tarot_and_insert() -> void:
 	view._on_slot_inserted({"kind": "row", "index": 1}, view._slot_for("row", 0), "right")
 	await wait_frames(2)
 	assert_eq(view._db.figures[view._run.row[0]["def_id"]]["rank"], "legend", "inserted at the front")
+
+
+func test_event_screens_skip_and_soul_pack() -> void:
+	var view: Node = load("res://scenes/run.tscn").instantiate()
+	add_child_autofree(view)
+	await wait_frames(3)
+	for id in view._db.items["events"]["ids"]:
+		view._run.start_event(id)
+		view._show_stage()
+		await wait_frames(1)
+	view._run.start_event("altar")
+	view._run.row[1] = {"uid": 77, "def_id": "coin_squire", "xp": 0}
+	view._show_stage()
+	view._on_event_option("sacrifice_one", 1)
+	view._on_event_row_tapped(view._slot_for("row", 1))
+	await wait_frames(2)
+	assert_gt(view._run.souls, 0, "sacrificed for souls")
+	view._on_event_option("leave", 0)
+	await wait_frames(2)
+	assert_ne(view._run.stage, RunState.Stage.EVENT)
+	if view._run.stage == RunState.Stage.ENEMY_CHOICE and not view._run.is_boss_fight():
+		view._on_skip_fight()
+		await wait_frames(2)
+	view._run.stage = RunState.Stage.PLANNING
+	view._run.chosen_enemy = view._run.enemy_options[0]
+	view._run.souls = 5
+	view._show_stage()
+	await wait_frames(2)
+	assert_true(view._run.buy_soul_pack())
+	view._show_stage()
+	await wait_frames(2)
+	view._on_pack_take(0)
+	await wait_frames(2)
+	assert_eq(view._run.pacts.size(), 1)

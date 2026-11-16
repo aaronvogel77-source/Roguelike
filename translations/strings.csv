@@ -244,3 +244,89 @@ UI_RARE_LEGEND,Legendär!,Legendary!
 UI_PACK_ROW_HINT,"Dein Team: aufeinanderziehen zum Verschmelzen, ins Verkaufsfeld zum Verkaufen","Your team: drag onto each other to merge, onto the sell field to sell"
 UI_BURN_TICK,Brennen %d -> %d,Burn %d -> %d
 UI_AFFECTED_BY,Wirkt auf diese Figur: %s,Affecting this figure: %s
+UI_SOULS,Seelen: %d,Souls: %d
+UI_PACTS,Pakte,Pacts
+UI_SOUL_PACK,Seelen-Pack,Soul Pack
+UI_SOUL_PRICE,%d Seelen,%d souls
+UI_PACT_SLOTS_FULL,Pakt-Plätze voll,Pact slots full
+UI_SKIP,Überspringen,Skip
+UI_SKIP_INFO,"Kein Gold, keine Erfahrung – dafür:","No gold, no experience – instead:"
+UI_SKIP_BOSS,Boss überspringen (Figur opfern),Skip boss (sacrifice a figure)
+UI_SKIP_BOSS_HINT,"Tippe die Figur an, die geopfert wird",Tap the figure to sacrifice
+UI_INCOME_SOULS,+%d Seelen,+%d souls
+MARK_MEGA_PACK,Marke: gratis Mega-Pack im nächsten Shop,Mark: free mega pack in the next shop
+MARK_SOULS,Marke: +4 Seelen,Mark: +4 souls
+MARK_ROYAL_SHOP,Marke: 2 garantierte Königinnen/Könige im nächsten Shop,Mark: 2 guaranteed queens/kings in the next shop
+MARK_EXPERIENCE,Marke: alle Figuren +1 Erfahrung,Mark: all figures +1 experience
+PACT_BLOOD_PACT,Blutpakt,Blood Pact
+PACT_BLOOD_PACT_DESC,"Alle Figuren ×1,5 Angriff.",All figures ×1.5 attack.
+PACT_BLOOD_PACT_COST,Kampfbeginn: Jede Figur verliert 10 % Leben.,Battle start: every figure loses 10 % health.
+PACT_GOLDEN_OATH,Goldener Schwur,Golden Oath
+PACT_GOLDEN_OATH_DESC,Zinsen bis +10. Gold-Effekte zählen doppeltes Gold.,Interest up to +10. Gold effects count double gold.
+PACT_GOLDEN_OATH_COST,Neuwürfeln kostet +1.,Rerolls cost +1.
+PACT_ASH_PACT,Aschepakt,Ash Pact
+PACT_ASH_PACT_DESC,Brennen-Schaden an Gegnern ×2. Brennende Gegner geben ihr Brennen beim Tod weiter.,Burn damage to enemies ×2. Burning enemies pass their burn on when they die.
+PACT_ASH_PACT_COST,Kampfbeginn: Deine vorderste Figur erhält Brennen 1.,Battle start: your front figure gains 1 burn.
+PACT_BLADE_OATH,Klingenschwur,Blade Oath
+PACT_BLADE_OATH_DESC,Blutung deiner Figuren: doppelt so viele Stapel.,Bleed from your figures: twice the stacks.
+PACT_BLADE_OATH_COST,Heilung bei dir -25 %.,Your healing -25 %.
+PACT_DEATH_PACT,Totenpakt,Death Pact
+PACT_DEATH_PACT_DESC,"Wenn eine eigene Figur stirbt: alle anderen ×1,1 Angriff (stapelt).",When an ally dies: all others ×1.1 attack (stacks).
+PACT_DEATH_PACT_COST,-1 Gold nach jedem Sieg.,-1 gold after every victory.
+PACT_RETURN_PACT,Wiederkehr-Pakt,Return Pact
+PACT_RETURN_PACT_DESC,Die ersten 2 gefallenen Figuren pro Kampf kehren mit halbem Leben zurück.,The first 2 fallen figures per battle return with half health.
+PACT_RETURN_PACT_COST,Zinsen max. +3.,Interest max. +3.
+PACT_VANGUARD_PACT,Pakt der Vorhut,Vanguard Pact
+PACT_VANGUARD_PACT_DESC,Vorderste Figur ×2 Angriff und erhält alle Schilde des Teams.,Front figure ×2 attack and takes all shields of the team.
+PACT_VANGUARD_PACT_COST,Hinterste Figur -1 Angriff.,Rearmost figure -1 attack.
+PACT_SOUL_HUNGER,Seelenhunger,Soul Hunger
+PACT_SOUL_HUNGER_DESC,"Pro getötetem Gegner: deine Figuren +1/+1 bis Kampfende, 25 % Chance auf +1 Seele.","Per enemy killed: your figures +1/+1 until the end of battle, 25 % chance of +1 soul."
+PACT_SOUL_HUNGER_COST,Seelen-Pack kostet +1.,Soul packs cost +1.
+PACT_COST_PREFIX,Preis: %s,Price: %s
+EVENT_ALTAR,Opferaltar,Sacrificial Altar
+EVENT_ALTAR_DESC,"Ein schwarzer Stein, noch warm. Er will etwas von dir.","A black stone, still warm. It wants something from you."
+EVENT_BLACK_MARKET,Schwarzmarkt,Black Market
+EVENT_BLACK_MARKET_DESC,Ein Händler ohne Gesicht öffnet seinen Mantel.,A faceless trader opens his coat.
+EVENT_CURSED_WELL,Verfluchter Brunnen,Cursed Well
+EVENT_CURSED_WELL_DESC,"Aus der Tiefe glänzt es. Je mehr du opferst, desto heller.","Something gleams in the depths. The more you give, the brighter."
+EVENT_FORTUNE_TELLER,Wahrsagerin,Fortune Teller
+EVENT_FORTUNE_TELLER_DESC,"Sie legt die Karten, bevor du dich setzt.",She lays out the cards before you sit down.
+EVENT_GRAVE_ROBBER,Grabräuber,Grave Robber
+EVENT_GRAVE_ROBBER_DESC,"Ein frisches Grab, eine Schaufel, ein Angebot.","A fresh grave, a shovel, an offer."
+EVENT_MIRROR,Spiegelkammer,Hall of Mirrors
+EVENT_MIRROR_DESC,Dein Spiegelbild nickt dir zu – eine Sekunde zu spät.,Your reflection nods at you – a second too late.
+EVENT_DUEL,Duell,Duel
+EVENT_DUEL_DESC,Ein Champion fordert dich heraus. Hier geht es nicht um dein Leben – nur um einen Kämpfer.,A champion challenges you. Not your life is at stake – only one fighter.
+EVENT_SOUL_TRADER,Seelenhändler,Soul Trader
+EVENT_SOUL_TRADER_DESC,"Er wiegt Seelen gegen Münzen. Beide Richtungen, jederzeit.","He weighs souls against coins. Both ways, any time."
+OPT_SACRIFICE_ONE,Eine Figur opfern: Seelen,Sacrifice a figure: souls
+OPT_SACRIFICE_TWO,Zwei Figuren opfern: Pakt nach Wahl,Sacrifice two figures: a pact of your choice
+OPT_LEAVE,Weitergehen,Move on
+OPT_BUY_RELIC,Relikt kaufen: %s (4 Gold),Buy relic: %s (4 gold)
+OPT_BUY_PACK,Mega-Pack kaufen: %s (6 Gold),Buy mega pack: %s (6 gold)
+OPT_BUY_FIGURE,%s zum halben Preis (%d Gold),%s at half price (%d gold)
+OPT_THROW_3,3 Gold hineinwerfen: magische Ausrüstung,Throw in 3 gold: magic equipment
+OPT_THROW_6,6 Gold hineinwerfen: seltene Ausrüstung,Throw in 6 gold: rare equipment
+OPT_THROW_10,10 Gold hineinwerfen: besonders starke Ausrüstung,Throw in 10 gold: exceptionally strong equipment
+OPT_DRINK,"Trinken: Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn Fluch 2)","Drink: a figure +3/+3 permanently, but cursed (battle start: 2 curse)"
+OPT_TAROT,Eine von 3 Tarot-Karten gratis,One of 3 tarot cards for free
+OPT_NO_BOSS_RULE,Die nächste Boss-Regel entfällt,The next boss rule is lifted
+OPT_MEGA_ARCANA,1 Seele: Mega-Arcana-Pack,1 soul: mega arcana pack
+OPT_ROB,+8 Gold und ein Relikt – deine hinterste Figur bleibt im Grab,+8 gold and a relic – your rearmost figure stays in the grave
+OPT_SMALL,Nur ein wenig nehmen: +3 Gold,Take just a little: +3 gold
+OPT_DUPLICATE,Figur duplizieren (Stufe 1) für 2 Seelen,Duplicate a figure (level 1) for 2 souls
+OPT_TRAIN,Eine Figur gratis +1 Erfahrung,A figure +1 experience for free
+OPT_FIGHT,Kämpfen,Fight
+OPT_DECLINE,Ablehnen,Decline
+OPT_SOUL_TO_GOLD,1 Seele: 5 Gold,1 soul: 5 gold
+OPT_GOLD_TO_SOUL,5 Gold: 1 Seele,5 gold: 1 soul
+OPT_RETURN_PACT,Einen Pakt zurückgeben (+2 Seelen),Return a pact (+2 souls)
+UI_PICK_FIGURES,Wähle %d Figur(en) in deinem Team,Choose %d figure(s) in your team
+UI_PICK_PACT,"Tippe den Pakt an, den du zurückgibst",Tap the pact you return
+UI_EVENT_DONE,Erledigt.,Done.
+RESULT_DUEL_WON_RELIC,Sieg! Du erhältst ein Relikt und 2 Seelen.,Victory! You gain a relic and 2 souls.
+RESULT_DUEL_WON_GOLD,Sieg! Du erhältst 3 Gold und 2 Seelen.,Victory! You gain 3 gold and 2 souls.
+RESULT_DUEL_LOST,Niederlage – deine vorderste Figur ist gefallen.,Defeat – your front figure has fallen.
+PACK_SOUL,Seelen-Pack,Soul Pack
+UI_DEBUG_EVENT,Ereignis,Event
+UI_PACTS_SOULS,Seelen,souls

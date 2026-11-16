@@ -168,6 +168,8 @@ func test_boss_win_adds_a_slot_and_two_acts_win_the_run() -> void:
 			assert_eq(run.slot_count(), slots_before + 1)
 		if run.stage == RunState.Stage.REWARD:
 			run.skip_reward()
+		if run.stage == RunState.Stage.EVENT:
+			run.resolve_event("leave")
 	assert_eq(run.stage, RunState.Stage.WON)
 	assert_eq(run.battles_won, 6)
 

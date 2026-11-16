@@ -17,6 +17,8 @@ func _run_to_boss(seed_value: int, act: int) -> RunState:
 		run.apply_battle_result({"victory": true})
 		if run.stage == RunState.Stage.REWARD:
 			run.skip_reward()
+		if run.stage == RunState.Stage.EVENT:
+			run.resolve_event("leave")
 	return run
 
 

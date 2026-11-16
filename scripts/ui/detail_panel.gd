@@ -112,12 +112,26 @@ func show_card(card: UnitCard) -> void:
 				lines.append("   " + Keywords.colorize(line))
 		var names: Array = []
 		for source in card.extras.get("sources", []):
-			names.append(ItemText.tarot_name("strength") if source == "tarot_strength" else ItemText.relic_name(source))
+			if source == "tarot_strength":
+				names.append(ItemText.tarot_name("strength"))
+			elif source in card.extras["db"].items["pacts"]:
+				names.append(tr("PACT_" + String(source).to_upper()))
+			else:
+				names.append(ItemText.relic_name(source))
 		if not names.is_empty():
 			lines.append("[color=#%s]%s[/color]" % [Emblem.COLORS["relic"].to_html(false), tr("UI_AFFECTED_BY") % ", ".join(names)])
 		if figure.has("blessing"):
 			lines.append(Keywords.colorize(tr("UI_BLESSING") % ItemText.tarot_name(figure["blessing"]) + " – " + ItemText.tarot_text(figure["blessing"])))
 	_body.text = "\n".join(lines)
+	show()
+
+
+## A plain message (title + text), e.g. instructions.
+func show_message(title_text: String, text: String) -> void:
+	_title.text = title_text
+	for child in _subtitle.get_children():
+		child.queue_free()
+	_body.text = text
 	show()
 
 

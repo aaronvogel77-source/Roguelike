@@ -22,6 +22,8 @@ func _init() -> void:
 			elif run.stage == RunState.Stage.REWARD:
 				if not run.take_reward(0):
 					run.skip_reward()
+			elif run.stage == RunState.Stage.EVENT:
+				run.resolve_event("leave")
 		var key := "act %d fight %d" % [run.act, run.fight + 1]
 		if run.stage == RunState.Stage.WON:
 			wins += 1

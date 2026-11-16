@@ -107,6 +107,10 @@ func _show_stage() -> void:
 				_build_pack_overlay()
 		RunState.Stage.REWARD:
 			_build_reward()
+		RunState.Stage.EVENT:
+			_build_event()
+			if not _run.open_pack.is_empty():
+				_build_pack_overlay()
 		RunState.Stage.WON, RunState.Stage.LOST:
 			_build_run_end()
 
@@ -125,16 +129,42 @@ func _top_bar(title: String) -> HBoxContainer:
 	bar.add_child(_label(tr("UI_GOLD") % _run.gold, 30, Palette.GOLD))
 	bar.add_child(_label(tr("UI_INTEREST") % _run.interest(), 20, Palette.MUTED))
 	bar.add_child(_label(tr("UI_SLOTS") % [_filled_slots(), _run.slot_count()], 22, Palette.PARCHMENT))
+	var souls := HBoxContainer.new()
+	souls.add_child(Emblem.create("soul", 26))
+	souls.add_child(_label(tr("UI_SOULS") % _run.souls, 22, Emblem.COLORS["soul"]))
+	bar.add_child(souls)
 	if _url_flag("debug"):
-		bar.add_child(_button("+10 Gold", Vector2(110, 44), _debug_gold))
-		bar.add_child(_button("Zum Boss", Vector2(130, 44), _debug_to_boss))
+		# Debug tools in a compact row (small font).
+		var tools := HBoxContainer.new()
+		tools.add_theme_constant_override("separation", 4)
+		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls]]
 		if _run.stage == RunState.Stage.PLANNING:
-			bar.add_child(_button(tr("UI_DEBUG_LEGEND"), Vector2(170, 44), _debug_legend))
+			entries.insert(2, [tr("UI_DEBUG_LEGEND"), _debug_legend])
+		for entry in entries:
+			var button := _button(entry[0], Vector2(0, 40), entry[1])
+			button.add_theme_font_size_override("font_size", 14)
+			tools.add_child(button)
+		bar.add_child(tools)
 	bar.add_child(_spacer(8))
 	return bar
 
 
 # --- Debug tools ("?debug=1" in the address) ---------------------------------------
+
+## Starts the next event in the list (cycles through all eight).
+func _debug_event() -> void:
+	var ids: Array = _db.items["events"]["ids"]
+	var current: String = _run.event.get("id", ids[-1])
+	_run.start_event(ids[(ids.find(current) + 1) % ids.size()])
+	_event_option = ""
+	_undo.clear()
+	_show_stage()
+
+
+func _debug_souls() -> void:
+	_run.souls += 5
+	_show_stage()
+
 
 func _debug_legend() -> void:
 	_run.debug_legend_pack()
@@ -301,12 +331,12 @@ func _build_enemy_choice() -> void:
 	var options := HBoxContainer.new()
 	options.alignment = BoxContainer.ALIGNMENT_CENTER
 	options.add_theme_constant_override("separation", 20)
-	var options_holder := CenterContainer.new()
-	options_holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	options_holder.add_child(options)
-	column.add_child(options_holder)
+	# Scales down when the options (3 enemies + skip) do not fit the width.
+	column.add_child(_fitted(options, 1.0))
 	for i in _run.enemy_options.size():
 		options.add_child(_enemy_option_panel(_run.enemy_options[i], i))
+	if not _run.is_boss_fight():
+		options.add_child(_skip_panel())
 
 	var own := HBoxContainer.new()
 	own.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -315,6 +345,44 @@ func _build_enemy_choice() -> void:
 	own.add_child(_scaled(_card_row(_own_team_entries(), false, true), 0.62))
 	column.add_child(own)
 	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+
+
+## Skip the fight for the mark shown here (no gold, no experience).
+func _skip_panel() -> Control:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.09, 0.14)
+	style.border_color = Emblem.COLORS["tarot"]
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(12)
+	panel.add_theme_stylebox_override("panel", style)
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 10)
+	box.custom_minimum_size = Vector2(220, 0)
+	panel.add_child(box)
+	var title := _label(tr("UI_SKIP"), 22, Emblem.COLORS["tarot"])
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(title)
+	var info := _label(tr("UI_SKIP_INFO"), 15, Palette.MUTED)
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(info)
+	var mark: String = _run.enemy_options[0].get("skip_mark", "")
+	var mark_line := _rich_line(tr("MARK_" + mark.to_upper()), 18)
+	mark_line.custom_minimum_size = Vector2(220, 0)
+	box.add_child(mark_line)
+	var skip := _button(tr("UI_SKIP"), Vector2(180, 56), _on_skip_fight)
+	skip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(skip)
+	return panel
+
+
+func _on_skip_fight() -> void:
+	if _run.skip_fight():
+		_undo.clear()
+		_show_stage()
 
 
 func _enemy_option_panel(option: Dictionary, index: int) -> Control:
@@ -431,6 +499,7 @@ func _build_planning() -> void:
 
 	for i in _run.packs.size():
 		bottom.add_child(_pack_view(i))
+	bottom.add_child(_soul_pack_view())
 
 	_sell_zone = SellZone.new()
 	_sell_zone.tapped.connect(_on_sell_zone_tapped)
@@ -449,6 +518,10 @@ func _build_planning() -> void:
 	actions.add_child(_undo_button)
 	bottom.add_child(actions)
 
+	if _run.can_skip_boss():
+		var skip_boss := _button(tr("UI_SKIP_BOSS"), Vector2(200, 56), _on_skip_boss)
+		skip_boss.add_theme_font_size_override("font_size", 15)
+		actions.add_child(skip_boss)
 	var fight := _button(tr("UI_FIGHT"), Vector2(170, 124), _on_fight)
 	fight.add_theme_font_size_override("font_size", 30)
 	fight.disabled = _filled_slots() == 0
@@ -563,7 +636,23 @@ func _clear_selection() -> void:
 	_detail_panel.hide()
 
 
+func _on_skip_boss() -> void:
+	_clear_selection()
+	_selected = {"kind": "boss_skip", "index": -1}
+	_detail_panel.show_message(tr("UI_SKIP_BOSS"), tr("UI_SKIP_BOSS_HINT"))
+
+
 func _on_slot_tapped(slot: SlotView) -> void:
+	if _run.stage == RunState.Stage.EVENT:
+		_on_event_row_tapped(slot)
+		return
+	if _selected.get("kind") == "boss_skip":
+		if slot.card != null and _run.skip_boss(slot.index):
+			_undo.clear()
+			_show_stage()
+		else:
+			_clear_selection()
+		return
 	if slot.kind == "shop":
 		if slot.card == null or (_selected.get("kind") == "shop" and _selected["index"] == slot.index):
 			_clear_selection()
@@ -707,6 +796,10 @@ func _object_strip() -> Control:
 	strip.add_child(_label(tr("UI_TAROTS"), 18, Emblem.COLORS["tarot"]))
 	for i in RunState.MAX_TAROTS:
 		strip.add_child(_strip_slot("tarot", i, _run.tarots[i] if i < _run.tarots.size() else ""))
+	strip.add_child(_spacer(30))
+	strip.add_child(_label(tr("UI_PACTS"), 18, Emblem.COLORS["pact"]))
+	for i in RunState.MAX_PACTS:
+		strip.add_child(_strip_slot("pact", i, _run.pacts[i] if i < _run.pacts.size() else ""))
 	return strip
 
 
@@ -732,6 +825,11 @@ func _on_strip_tapped(kind: String, index: int, card: ObjectCard) -> void:
 	_clear_selection()
 	if was_selected:
 		return
+	if kind == "pact" and _run.stage == RunState.Stage.EVENT and _event_option == "return_pact":
+		if _run.resolve_event("return_pact", [index]):
+			_event_option = ""
+			_show_stage()
+		return
 	_selected = {"kind": kind, "index": index}
 	card.set_selected(true)
 	_detail_panel.show_object(card)
@@ -739,6 +837,45 @@ func _on_strip_tapped(kind: String, index: int, card: ObjectCard) -> void:
 		_detail_panel.show_hint(tr("UI_USE_TAROT") % card.title)
 	elif kind == "relic" and _sell_zone != null:
 		_sell_zone.show_text(tr("UI_SELL_FOR") % (Items.relic_price(_db, _run.relics[index]) / 2), true)
+
+
+## The soul pack (paid in souls): two pacts, pick one.
+func _soul_pack_view() -> Control:
+	var box := VBoxContainer.new()
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = UnitCard.CARD_SIZE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.05, 0.08)
+	style.border_color = Emblem.COLORS["pact"]
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.set_content_margin_all(4)
+	panel.add_theme_stylebox_override("panel", style)
+	var inner := VBoxContainer.new()
+	inner.alignment = BoxContainer.ALIGNMENT_CENTER
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var emblem_box := CenterContainer.new()
+	emblem_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	emblem_box.add_child(Emblem.create("pact", 46))
+	inner.add_child(emblem_box)
+	var name := _label(tr("UI_SOUL_PACK"), 14, Palette.PARCHMENT)
+	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(name)
+	panel.add_child(inner)
+	panel.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			if _run.buy_soul_pack():
+				_undo.clear()
+				_pack_pick = -1
+				_show_stage())
+	box.add_child(panel)
+	var price := _label(tr("UI_SOUL_PRICE") % _run.soul_pack_price(), 18, Emblem.COLORS["soul"])
+	price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(price)
+	if _run.pacts.size() >= RunState.MAX_PACTS:
+		panel.modulate.a = 0.4
+	return box
 
 
 ## A pack in the shop: tap to buy and open it.
@@ -774,7 +911,7 @@ func _pack_view(index: int) -> Control:
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		inner.add_child(content)
 		panel.add_child(inner)
-		price_text = tr("UI_PRICE") % Items.pack_price(_db, pack)
+		price_text = tr("UI_PRICE") % _run.pack_cost(pack)
 		panel.gui_input.connect(func(event: InputEvent) -> void:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 				_on_buy_pack(index))
@@ -870,6 +1007,9 @@ func _pack_item_box(i: int) -> Control:
 	if entry["kind"] == "tarot" and _run.tarots.size() >= RunState.MAX_TAROTS:
 		text = tr("UI_TAROT_SLOTS_FULL")
 		enabled = false
+	elif entry["kind"] == "pact" and _run.pacts.size() >= RunState.MAX_PACTS:
+		text = tr("UI_PACT_SLOTS_FULL")
+		enabled = false
 	elif entry["kind"] == "relic" and _run.relics.size() >= RunState.MAX_RELICS:
 		text = tr("UI_RELIC_SLOTS_FULL")
 		enabled = false
@@ -910,6 +1050,150 @@ func _on_close_pack() -> void:
 	_run.close_pack()
 	_pack_pick = -1
 	_show_stage()
+
+
+# --- Events ---------------------------------------------------------------------------
+
+## Option layout per event: [option id, figures it needs].
+const EVENT_OPTIONS := {
+	"altar": [["sacrifice_one", 1], ["sacrifice_two", 2], ["leave", 0]],
+	"black_market": [["buy_relic", 0], ["buy_pack", 0], ["buy_figure", 1], ["leave", 0]],
+	"cursed_well": [["throw_3", 0], ["throw_6", 0], ["throw_10", 0], ["drink", 1], ["leave", 0]],
+	"fortune_teller": [["tarot", 0], ["no_boss_rule", 0], ["mega_arcana", 0], ["leave", 0]],
+	"grave_robber": [["rob", 0], ["small", 0]],
+	"mirror": [["duplicate", 1], ["train", 1], ["leave", 0]],
+	"duel": [["fight", 0], ["decline", 0]],
+	"soul_trader": [["soul_to_gold", 0], ["gold_to_soul", 0], ["return_pact", 0], ["leave", 0]],
+}
+
+var _event_option := ""  # option waiting for figure targets
+var _event_targets: Array = []
+
+
+func _build_event() -> void:
+	var event: Dictionary = _run.event
+	var id: String = event["id"]
+	var backdrop := RegionBackdrop.new()
+	backdrop.suit = _run.region
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.modulate = Color(0.6, 0.6, 0.7)
+	_screen.add_child(backdrop)
+	var column := _column()
+	column.add_child(_top_bar(tr("EVENT_" + id.to_upper())))
+	column.add_child(_object_strip())
+	var desc := _label(tr("EVENT_" + id.to_upper() + "_DESC"), 24, Palette.PARCHMENT)
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+	column.add_child(desc)
+
+	var options := VBoxContainer.new()
+	options.add_theme_constant_override("separation", 8)
+	if event["resolved"]:
+		var result_key: String = event.get("result", "")
+		var result := _label(tr("RESULT_" + result_key.to_upper()) if result_key != "" else tr("UI_EVENT_DONE"), 24, Palette.GOLD)
+		result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		options.add_child(result)
+		options.add_child(_button(tr("UI_CONTINUE"), Vector2(560, 60), _on_event_option.bind("leave", 0)))
+	else:
+		for entry in EVENT_OPTIONS[id]:
+			var option: String = entry[0]
+			var button := _button(_event_option_text(option), Vector2(640, 56), _on_event_option.bind(option, entry[1]))
+			button.add_theme_font_size_override("font_size", 19)
+			var block := _run.event_option_block(option, [])
+			button.disabled = block == "cost" or block == "done"
+			if _event_option == option:
+				button.add_theme_color_override("font_color", Palette.GOLD)
+			options.add_child(button)
+	var options_center := CenterContainer.new()
+	options_center.add_child(options)
+	column.add_child(options_center)
+
+	if _event_option != "":
+		var needed: int = _needed_targets(_event_option)
+		var hint := _label(tr("UI_PICK_PACT") if _event_option == "return_pact" else tr("UI_PICK_FIGURES") % needed, 20, Palette.GOLD)
+		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		column.add_child(hint)
+	var row_box := HBoxContainer.new()
+	row_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	row_box.add_theme_constant_override("separation", 16)
+	row_box.add_child(_own_row_slots())
+	_sell_zone = SellZone.new()
+	_sell_zone.tapped.connect(_on_sell_zone_tapped)
+	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
+	row_box.add_child(_sell_zone)
+	column.add_child(_fitted(row_box, 1.2))
+	for slot in _row_slots:
+		if slot.index in _event_targets:
+			slot.set_selected(true)
+	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+
+
+func _event_option_text(option: String) -> String:
+	var key := "OPT_" + option.to_upper()
+	match option:
+		"buy_relic":
+			return tr(key) % ItemText.relic_name(_run.event.get("relic", ""))
+		"buy_pack":
+			return tr(key) % ItemText.pack_name({"type": _run.event["pack_type"], "size": "normal"})
+		"buy_figure":
+			var def_id: String = _run.event["figure"]
+			return tr(key) % [tr(ContentDb.name_key(_db.figures[def_id])), _run.price_of(def_id) / 2]
+	return tr(key)
+
+
+func _needed_targets(option: String) -> int:
+	for entry in EVENT_OPTIONS.get(_run.event.get("id", ""), []):
+		if entry[0] == option:
+			return entry[1]
+	return 0
+
+
+func _on_event_option(option: String, needed: int) -> void:
+	if option == "fight":
+		_play_duel()
+		return
+	if needed > 0 or option == "return_pact":
+		_event_option = option
+		_event_targets.clear()
+		_show_stage()
+		return
+	if _run.resolve_event(option):
+		_event_option = ""
+		_undo.clear()
+		_show_stage()
+
+
+## Row taps during an event pick targets for the waiting option.
+func _on_event_row_tapped(slot: SlotView) -> void:
+	if _event_option == "" or _event_option == "return_pact":
+		if slot.card != null:
+			_select("row", slot.index)
+		return
+	if slot.index in _event_targets:
+		_event_targets.erase(slot.index)
+	elif _event_option == "buy_figure" or slot.card != null:
+		_event_targets.append(slot.index)
+	if _event_targets.size() >= _needed_targets(_event_option):
+		var targets := _event_targets.duplicate()
+		var option := _event_option
+		_event_option = ""
+		_event_targets.clear()
+		_run.resolve_event(option, targets)
+	_show_stage()
+
+
+func _play_duel() -> void:
+	_detail_panel.hide()
+	_battle_view = BattleScene.instantiate()
+	_battle_view.sandbox = false
+	add_child(_battle_view)
+	_battle_view.finished.connect(func(result: Dictionary) -> void:
+		_battle_view.queue_free()
+		_battle_view = null
+		_run.apply_duel_result(result)
+		_show_stage())
+	_battle_view.play_battle(_run.player_battle_team(), _run.duel_team(), _run.gold, _footer_text(),
+		_run.battle_options(), "", tr("EVENT_DUEL"))
 
 
 # --- Rarity effect (queens and kings) ------------------------------------------------
@@ -971,6 +1255,8 @@ func _build_reward() -> void:
 	column.add_child(_top_bar(tr("UI_VICTORY")))
 	var income := _run.last_income
 	var summary := tr("UI_INCOME") % [income.get("base", 0), income.get("bonus", 0), income.get("interest", 0)]
+	if int(income.get("souls", 0)) > 0:
+		summary += "  ·  " + tr("UI_INCOME_SOULS") % income["souls"]
 	if income.get("slot", false):
 		summary += "  ·  " + tr("UI_NEW_SLOT")
 	var summary_label := _label(summary, 20, Palette.PARCHMENT)

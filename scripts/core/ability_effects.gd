@@ -85,6 +85,25 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			return not targets.is_empty()
 		"eat_shield":
 			return _eat_shield(battle, owner, targets)
+		"lose_health_pct":
+			# Blood pact: lose a share of max health (at least 1).
+			var loss := maxi(int(floor(owner.max_health * value / 100.0)), 1)
+			owner.health = maxi(owner.health - loss, 1)
+			battle.emit_update(owner)
+			return true
+		"gather_shields":
+			# Vanguard pact: the front figure takes every ally's shield.
+			var gathered := 0
+			for ally: BattleUnit in battle.living(owner.side):
+				if ally != owner and ally.status(BattleUnit.STATUS_SHIELD) > 0:
+					gathered += ally.status(BattleUnit.STATUS_SHIELD)
+					ally.statuses.erase(BattleUnit.STATUS_SHIELD)
+					battle.emit_update(ally)
+			if gathered <= 0:
+				return false
+			owner.add_status(BattleUnit.STATUS_SHIELD, gathered)
+			battle.emit_update(owner)
+			return true
 		"gain_gold":
 			return battle.change_gold(int(value)) != 0
 		"shield_from_interest":
@@ -128,6 +147,8 @@ static func _add_status(battle: BattleSimulator, owner: BattleUnit, targets: Arr
 	# Shields are protection; relic bonuses only add to damaging statuses.
 	if status != BattleUnit.STATUS_SHIELD:
 		amount += battle.bonus_stacks(owner, status)
+	if status == BattleUnit.STATUS_BLEED and owner.side == BattleSimulator.PLAYER:
+		amount *= battle.bleed_factor
 	for t: BattleUnit in targets:
 		t.add_status(status, amount)
 		battle.emit_update(t)

@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M4 abgeschlossen. M5a (Ausrüstung, Relikte, Tarot, Packs, Legendäre) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0–M5a abgeschlossen. M5b (Seelen, Pakte, Ereignisse, Überspringen) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -584,7 +584,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 
 ## Offene Fragen
 - **M5 aufgeteilt:** M5a = Ausrüstung, Relikte, Tarot, Packs, Legendäre + Feedback unten · M5b = Seelen, Pakte, Ereignisse, Überspringen
-- M5b bauen. **Mit M5a umgesetzt (Feedback zu v0.4.2):**
+- M5b-Feedback einholen, dann M6 (Fusion). **Mit M5a umgesetzt (Feedback zu v0.4.2):**
   - Umordnen: Wird eine Figur **zwischen** zwei Karten gezogen, wird sie dort eingeschoben (die anderen rücken). Nur wenn sie klar **auf** eine Karte gezogen wird, tauschen die beiden.
   - Plätze **nur noch durch Boss-Siege**, nicht mehr kaufbar
   - **Weniger Gold:** Grundeinkommen 5 → 4
@@ -671,3 +671,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | M5a-Feedback: Hofstaat-Pack gestrichen, Legendäre nur in Arcana-Packs (1 %), polychromer Glanz + „Legendär!“, Verschmelzen/Verkaufen bei Belohnung und Pack-Öffnen, Blutungs-Tick mit aufsteigendem Tropfen. Blutung bleibt dauerhaft (Klarstellung) | Figuren nur gezielt im Shop, Legendäre als echtes Highlight | Hofstaat-Pack, Verfluchtes Pack, Omen-Pack |
 | 2026-11-16 | v0.5.2: Goldene Waage → hinterste Figur, Relikt-/Tarot-Einflüsse als Symbole auf der Karte + goldene Werte bei Bonus + Liste im Detail-Panel, Brennen zählt sichtbar herunter („Brennen 3 -> 2“), Kampf-Tempo ×0,8. Brennen-Regel und Tarot-Stapeln bleiben | Nachvollziehbarkeit | Brennen dauerhaft; nichts/alles stapelt |
 | 2026-11-16 | M5b-Inhalte: 8 starke Pakte mit milden Nachteilen, 8 Ereignisse (~40 %, Pity 3), stärkere Überspringen-Marken; Seelen-Quellen bestätigt | Pakte und Ereignisse sollen run-prägend sein | 4 schwächere Pakte, 6 schwächere Ereignisse, „2× gratis würfeln“ |
+| 2026-11-16 | M5b gebaut (v0.6.0): Seelen (Boss, Opfer, Tod, Seelenhunger), 8 Pakte inkl. Seelen-Pack im Shop, Pakt-Leiste, 8 Ereignisse (40 %, Pity 3, eigener Bildschirm, Duell-Kampf), Überspringen mit Marken, Boss-Überspringen per Opfer, Debug „Ereignis“/„+5 Seelen“; 129 Tests | – | – |

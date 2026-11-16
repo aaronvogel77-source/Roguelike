@@ -31,6 +31,8 @@ const COLORS := {
 	"pack": Color(0.95, 0.78, 0.35),
 	"blessing_star": Color(0.62, 0.72, 0.85),
 	"blessing_sun": Color(1.0, 0.75, 0.25),
+	"soul": Color(0.6, 0.85, 1.0),
+	"pact": Color(0.85, 0.2, 0.3),
 }
 
 ## Emblem of an equipment base.
@@ -214,6 +216,18 @@ func _draw() -> void:
 				draw_line(c + Vector2(cos(a), sin(a)) * 0.28 * s, c + Vector2(cos(a), sin(a)) * 0.48 * s, color, maxf(1.5, s * 0.07))
 			draw_circle(c, s * 0.26, outline)
 			draw_circle(c, s * 0.23, color)
+		"soul":
+			var wisp := _pts(s, [Vector2(0.55, 0.02), Vector2(0.62, 0.3), Vector2(0.82, 0.55), Vector2(0.75, 0.82),
+				Vector2(0.5, 0.97), Vector2(0.25, 0.82), Vector2(0.2, 0.55), Vector2(0.4, 0.35)])
+			_filled(wisp, color, outline, s)
+			draw_circle(c + Vector2(-0.08, 0.18) * s, s * 0.06, Color(0.1, 0.2, 0.3))
+			draw_circle(c + Vector2(0.1, 0.18) * s, s * 0.06, Color(0.1, 0.2, 0.3))
+		"pact":
+			_filled(_pts(s, [Vector2(0.2, 0.08), Vector2(0.8, 0.08), Vector2(0.8, 0.92), Vector2(0.2, 0.92)]), Color(0.92, 0.85, 0.7), outline, s)
+			for i in 3:
+				var y := 0.25 + i * 0.15
+				draw_line(c + Vector2(-0.2, y - 0.5) * s, c + Vector2(0.2, y - 0.5) * s, Color(0.3, 0.25, 0.2), maxf(1.0, s * 0.04))
+			draw_circle(c + Vector2(0.12, 0.28) * s, s * 0.12, color)
 		"enemy":
 			_filled(_pts(s, [Vector2(0.15, 0.2), Vector2(0.35, 0.35), Vector2(0.5, 0.15), Vector2(0.65, 0.35),
 				Vector2(0.85, 0.2), Vector2(0.75, 0.85), Vector2(0.25, 0.85)]), color, outline, s)

@@ -12,7 +12,43 @@ static func player_team(run: RunState) -> Array:
 		if figure != null:
 			team.append(_figure_entry(run, figure))
 	_apply_relics(run, team)
+	_apply_pacts(run, team)
 	return team
+
+
+## Per-figure pact effects (economy and battle-wide pact effects live in
+## RunState and the battle options).
+static func _apply_pacts(run: RunState, team: Array) -> void:
+	for pact in run.pacts:
+		for i in team.size():
+			var entry: Dictionary = team[i]
+			var affected := true
+			match pact:
+				"blood_pact":
+					entry["multipliers"].append(1.5)
+					entry["abilities"].append(_ability("battle_start", "self", "lose_health_pct", 10))
+				"ash_pact":
+					affected = i == 0
+					if affected:
+						entry["abilities"].append(_ability("battle_start", "self", "apply_burn", 1))
+				"death_pact":
+					entry["abilities"].append(_ability("on_ally_death", "self", "mult_attack", 1.1))
+				"vanguard_pact":
+					if i == 0:
+						entry["multipliers"].append(2.0)
+						var gather := _ability("battle_start", "self", "gather_shields", 1)
+						gather["late"] = true
+						entry["abilities"].append(gather)
+					elif i == team.size() - 1:
+						entry["bonus_attack"] -= 1
+					else:
+						affected = false
+				"soul_hunger":
+					entry["abilities"].append(_ability("on_enemy_death", "self", "gain_stats", 1))
+				_:
+					affected = false
+			if affected:
+				entry["sources"].append(pact)
 
 
 static func _figure_entry(run: RunState, figure: Dictionary) -> Dictionary:
@@ -35,6 +71,8 @@ static func _figure_entry(run: RunState, figure: Dictionary) -> Dictionary:
 		entry["bonus_health"] += mods["health"]
 		entry["multipliers"].append_array(mods["multipliers"])
 		entry["abilities"].append_array(mods["abilities"])
+	if figure.get("cursed", false):  # cursed well: +3/+3, but cursed every battle
+		entry["abilities"].append(_ability("battle_start", "self", "apply_curse", 2))
 	match figure.get("blessing", ""):
 		"star":
 			entry["abilities"].append(_ability("battle_start", "self", "gain_shield", 3))
@@ -98,9 +136,11 @@ static func status_bonus(run: RunState) -> Dictionary:
 	return bonus
 
 
-## Extra gold after a won battle: relics plus equipment drawbacks.
+## Extra gold after a won battle: relics, pacts and equipment drawbacks.
 static func gold_after_win(run: RunState) -> int:
 	var extra := 1 if "beggars_bowl" in run.relics else 0
+	if "death_pact" in run.pacts:
+		extra -= 1
 	for figure in run.row:
 		if figure != null and figure.has("equipment"):
 			extra += Items.equipment_modifiers(run.db, figure["equipment"])["run_gold"]

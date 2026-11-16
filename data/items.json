@@ -255,6 +255,40 @@
       "normal": 0.01,
       "jumbo": 0.01,
       "mega": 0.02
+    },
+    "soul_pack": {
+      "price_souls": 3,
+      "choices": 2
     }
+  },
+  "pacts": [
+    "blood_pact",
+    "golden_oath",
+    "ash_pact",
+    "blade_oath",
+    "death_pact",
+    "return_pact",
+    "vanguard_pact",
+    "soul_hunger"
+  ],
+  "marks": [
+    "mega_pack",
+    "souls",
+    "royal_shop",
+    "experience"
+  ],
+  "events": {
+    "chance": 0.4,
+    "pity_after": 3,
+    "ids": [
+      "altar",
+      "black_market",
+      "cursed_well",
+      "fortune_teller",
+      "grave_robber",
+      "mirror",
+      "duel",
+      "soul_trader"
+    ]
   }
 }
