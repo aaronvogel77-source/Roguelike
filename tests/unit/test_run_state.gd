@@ -100,17 +100,9 @@ func test_reroll_price_rises() -> void:
 	assert_eq(run.reroll_price(), 2)
 
 
-func test_slot_prices_six_eight_ten() -> void:
+func test_slots_cannot_be_bought() -> void:
 	var run := _planning_run()
-	run.gold = 100
-	assert_eq(run.slot_price(), 6)
-	run.buy_slot()
-	assert_eq(run.slot_price(), 8)
-	run.buy_slot()
-	run.buy_slot()
-	assert_eq(run.slot_count(), 6)
-	assert_eq(run.slot_price(), -1, "max 6 slots")
-	assert_eq(run.gold, 100 - 24)
+	assert_false(run.has_method("buy_slot"), "slots only come from bosses")
 
 
 func test_income_with_difficulty_bonus_and_interest() -> void:
@@ -118,9 +110,9 @@ func test_income_with_difficulty_bonus_and_interest() -> void:
 	run.choose_enemy(2)  # hard: +4
 	run.gold = 12
 	run.apply_battle_result({"victory": true, "gold_after": 12})
-	# 12 gold -> interest 2; income 5 + 4 + 2 = 11.
-	assert_eq(run.gold, 23)
-	assert_eq(run.last_income, {"base": 5, "bonus": 4, "interest": 2})
+	# 12 gold -> interest 2; income 4 + 4 + 2 = 10.
+	assert_eq(run.gold, 22)
+	assert_eq(run.last_income, {"base": 4, "bonus": 4, "interest": 2, "extra": 0})
 
 
 func test_interest_is_capped_at_five() -> void:

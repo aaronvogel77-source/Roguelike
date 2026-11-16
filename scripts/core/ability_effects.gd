@@ -15,13 +15,13 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 		targets: Array, context: Dictionary) -> bool:
 	match effect:
 		"gain_shield":
-			return _add_status(battle, targets, BattleUnit.STATUS_SHIELD, int(value))
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_SHIELD, int(value))
 		"apply_burn":
-			return _add_status(battle, targets, BattleUnit.STATUS_BURN, int(value))
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_BURN, int(value))
 		"apply_bleed":
-			return _add_status(battle, targets, BattleUnit.STATUS_BLEED, int(value))
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_BLEED, int(value))
 		"apply_curse":
-			return _add_status(battle, targets, BattleUnit.STATUS_CURSE, int(value))
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_CURSE, int(value))
 		"gain_attack":
 			for t: BattleUnit in targets:
 				t.attack += int(value)
@@ -85,6 +85,24 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			return not targets.is_empty()
 		"eat_shield":
 			return _eat_shield(battle, owner, targets)
+		"gain_gold":
+			return battle.change_gold(int(value)) != 0
+		"shield_from_interest":
+			# Ace of Coins: shield = interest (1 per 5 gold, max 5) × value.
+			var shield := mini(battle.gold / 5, 5) * int(value)
+			if shield <= 0:
+				return false
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_SHIELD, shield)
+		"revive_half":
+			return _revive_half(battle, owner, int(value), targets)
+		"double_bleed":
+			for t: BattleUnit in targets:
+				var bleed := t.status(BattleUnit.STATUS_BLEED)
+				if bleed > 0 and t.is_alive():
+					t.add_status(BattleUnit.STATUS_BLEED, bleed)
+					battle.emit_update(t)
+					return true
+			return false
 		"pawn_gold":
 			# Tax Collector boss: steals 1 real gold and grows (max 3x per battle).
 			if not _steal_gold(battle, owner, 1):
@@ -106,7 +124,10 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 	return false
 
 
-static func _add_status(battle: BattleSimulator, targets: Array, status: String, amount: int) -> bool:
+static func _add_status(battle: BattleSimulator, owner: BattleUnit, targets: Array, status: String, amount: int) -> bool:
+	# Shields are protection; relic bonuses only add to damaging statuses.
+	if status != BattleUnit.STATUS_SHIELD:
+		amount += battle.bonus_stacks(owner, status)
 	for t: BattleUnit in targets:
 		t.add_status(status, amount)
 		battle.emit_update(t)
@@ -164,6 +185,22 @@ static func _revive(battle: BattleSimulator, owner: BattleUnit, health: int, tar
 		return false
 	owner.flags["revive_used"] = true
 	unit.health = mini(health, unit.max_health)
+	unit.statuses.clear()
+	battle.events.append({"type": "revive", "uid": unit.uid, "health": unit.health})
+	battle.emit_update(unit)
+	return true
+
+
+## Ace of Cups: a fallen ally returns with half its health (charges per battle).
+static func _revive_half(battle: BattleSimulator, owner: BattleUnit, charges: int, targets: Array) -> bool:
+	var used: int = owner.flags.get("revives_used", 0)
+	if used >= charges or targets.is_empty():
+		return false
+	var unit: BattleUnit = targets[0]
+	if unit.is_alive():
+		return false
+	owner.flags["revives_used"] = used + 1
+	unit.health = maxi(unit.max_health / 2, 1)
 	unit.statuses.clear()
 	battle.events.append({"type": "revive", "uid": unit.uid, "health": unit.health})
 	battle.emit_update(unit)

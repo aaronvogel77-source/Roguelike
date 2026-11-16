@@ -5,13 +5,18 @@ extends RefCounted
 const FIGURES_PATH := "res://data/figures.json"
 const ENEMIES_PATH := "res://data/enemies.json"
 const REGIONS_PATH := "res://data/regions.json"
+const ITEMS_PATH := "res://data/items.json"
 const SUITS := ["coins", "wands", "cups", "swords"]
 const RANKS := ["page", "knight", "queen", "king"]
+## Legendary figures (aces) only come from court packs.
+const LEGEND_RANK := "legend"
 
 var figures: Dictionary = {}  # id -> definition
 var enemies: Dictionary = {}  # id -> definition
 var regions: Dictionary = {}  # id -> definition (themes, blessing)
 var bosses: Dictionary = {}  # id -> definition (region, act, rule)
+## Equipment bases, affixes, relics, tarot cards, pack rules.
+var items: Dictionary = {}
 
 
 static func load_default() -> ContentDb:
@@ -20,6 +25,7 @@ static func load_default() -> ContentDb:
 		db.figures[entry["id"]] = entry
 	for entry in _read_json(ENEMIES_PATH)["enemies"]:
 		db.enemies[entry["id"]] = entry
+	db.items = _read_json(ITEMS_PATH)
 	var region_data := _read_json(REGIONS_PATH)
 	for entry in region_data["regions"]:
 		db.regions[entry["id"]] = entry
@@ -28,6 +34,17 @@ static func load_default() -> ContentDb:
 		# Boss figures fight like enemies, so they are looked up like enemies.
 		db.enemies[entry["unit"]["id"]] = entry["unit"]
 	return db
+
+
+## Figures that can appear in the shop (no legendary aces).
+func regular_figures() -> Array:
+	return figures.values().filter(func(f: Dictionary) -> bool: return f["rank"] != LEGEND_RANK)
+
+
+func legendary_figures() -> Array:
+	var result := figures.values().filter(func(f: Dictionary) -> bool: return f["rank"] == LEGEND_RANK)
+	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
+	return result
 
 
 ## Normal enemies (without boss figures) - the pool the generator draws from.

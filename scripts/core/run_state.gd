@@ -14,12 +14,14 @@ const START_GOLD := 8
 const START_SLOTS := 3
 const MAX_SLOTS := 6
 ## Shop price by rank (page, knight, queen, king).
-const RANK_PRICES := {"page": 3, "knight": 4, "queen": 6, "king": 8}
+const RANK_PRICES := {"page": 3, "knight": 4, "queen": 6, "king": 8, "legend": 10}
 const SHOP_FIGURE_SLOTS := 3
-const BASE_INCOME := 5
+const BASE_INCOME := 4
 const GOLD_PER_INTEREST := 5
 const MAX_INTEREST := 5
-const SLOT_PRICES := [6, 8, 10]
+const SHOP_PACK_SLOTS := 2
+const MAX_RELICS := 3
+const MAX_TAROTS := 2
 const REWARD_CHOICES := 3
 const REWARD_SKIP_GOLD := 2
 ## Experience is counted in thirds: a duplicate gives 3 (= 1 XP), a win 1 (= 1/3 XP).
@@ -43,11 +45,17 @@ var region := "coins"
 var act := 1
 var fight := 0  # 0 = small, 1 = big, 2 = boss
 var gold := START_GOLD
-var slots_bought := 0
-## Battle row, front first. Each entry is null or {"uid", "def_id", "xp"}.
+## Battle row, front first. Each entry is null or {"uid", "def_id", "xp"} plus
+## optional "equipment", "blessing", "bonus_attack", "bonus_health", "suit".
 var row: Array = []
 ## Shop offers: figure ids, "" for a bought slot.
 var shop: Array = []
+## Shop packs: {"type", "size"} or {} once bought.
+var packs: Array = []
+## The pack being opened: {"pack", "items", "picks_left"} or {}.
+var open_pack: Dictionary = {}
+var relics: Array = []  # relic ids, max 3
+var tarots: Array = []  # tarot ids, max 2
 var reroll_count := 0
 var enemy_options: Array = []
 var chosen_enemy: Dictionary = {}
@@ -92,10 +100,9 @@ func reroll_price() -> int:
 	return 1 + reroll_count
 
 
-func slot_price() -> int:
-	if slot_count() >= MAX_SLOTS or slots_bought >= SLOT_PRICES.size():
-		return -1
-	return SLOT_PRICES[slots_bought]
+## Tarot suit of a figure (the Wheel of Fortune can change it).
+func figure_suit(figure: Dictionary) -> String:
+	return figure.get("suit", db.figures[figure["def_id"]]["suit"])
 
 
 func price_of(def_id: String) -> int:
@@ -123,13 +130,9 @@ func can_place(def_id: String, row_index: int) -> bool:
 	return target == null or (target["def_id"] == def_id and figure_level(target) < 3)
 
 
-## Battle entries ({"def", "level"}) for the simulator, front first.
+## Battle entries for the simulator, front first, with all run modifiers.
 func player_battle_team() -> Array:
-	var team: Array = []
-	for figure in row:
-		if figure != null:
-			team.append({"def": db.figures[figure["def_id"]], "level": figure_level(figure)})
-	return team
+	return TeamBuilder.player_team(self)
 
 
 func enemy_battle_team() -> Array:
@@ -193,6 +196,26 @@ func move(from_index: int, to_index: int) -> bool:
 	return true
 
 
+## Inserts a figure between two others: it ends up directly behind the figure
+## at after_index (-1 = at the very front); the figures in between shift.
+func insert_between(from_index: int, after_index: int) -> bool:
+	if stage != Stage.PLANNING or from_index < 0 or from_index >= row.size() or row[from_index] == null:
+		return false
+	if after_index < -1 or after_index >= row.size():
+		return false
+	var target := after_index + 1
+	if target == from_index or target == from_index + 1:
+		return false  # already there
+	var moving: Variant = row[from_index]
+	var order := row.duplicate()
+	order.remove_at(from_index)
+	if from_index < target:
+		target -= 1
+	order.insert(target, moving)
+	row = order
+	return true
+
+
 func reroll() -> bool:
 	if stage != Stage.PLANNING or gold < reroll_price():
 		return false
@@ -202,13 +225,122 @@ func reroll() -> bool:
 	return true
 
 
-func buy_slot() -> bool:
-	var price := slot_price()
-	if stage != Stage.PLANNING or price < 0 or gold < price:
+# --- Packs, relics, tarot ----------------------------------------------------------
+
+## Buys and opens a pack. Its contents wait in open_pack until picked.
+## force_legend: debug tool for testing legendary figures.
+func buy_pack(index: int, force_legend: bool = false) -> bool:
+	if stage != Stage.PLANNING or not open_pack.is_empty() or index < 0 or index >= packs.size():
 		return false
-	gold -= price
-	slots_bought += 1
-	row.append(null)
+	var pack: Dictionary = packs[index]
+	if pack.is_empty() or gold < Items.pack_price(db, pack):
+		return false
+	gold -= Items.pack_price(db, pack)
+	packs[index] = {}
+	_open(pack, force_legend)
+	return true
+
+
+## Debug: opens a free mega court pack whose first card is legendary.
+func debug_legend_pack() -> void:
+	_open({"type": "court", "size": "mega"}, true)
+
+
+func _open(pack: Dictionary, force_legend: bool) -> void:
+	open_pack = {
+		"pack": pack,
+		"items": Items.pack_contents(db, pack, act, rng.stream("pack_contents"), relics, force_legend),
+		"picks_left": Items.pack_picks(db, pack),
+	}
+
+
+## Whether a pack item can be taken; target_index is a row slot where needed.
+func can_take_pack_item(item_index: int, target_index: int = -1) -> bool:
+	if open_pack.is_empty() or item_index < 0 or item_index >= open_pack["items"].size():
+		return false
+	var entry: Dictionary = open_pack["items"][item_index]
+	if entry.get("taken", false):
+		return false
+	match entry["kind"]:
+		"equipment":
+			return target_index >= 0 and target_index < row.size() and row[target_index] != null
+		"tarot":
+			return tarots.size() < MAX_TAROTS
+		"relic":
+			return relics.size() < MAX_RELICS
+		"figure":
+			return can_place(entry["def_id"], target_index)
+	return false
+
+
+## Kind of target a pack item needs: "figure" (row figure), "slot" (row slot) or "".
+func pack_item_target(item_index: int) -> String:
+	var kind: String = open_pack["items"][item_index]["kind"]
+	if kind == "equipment":
+		return "figure"
+	if kind == "figure":
+		return "slot"
+	return ""
+
+
+func take_pack_item(item_index: int, target_index: int = -1) -> bool:
+	if not can_take_pack_item(item_index, target_index):
+		return false
+	var entry: Dictionary = open_pack["items"][item_index]
+	match entry["kind"]:
+		"equipment":
+			row[target_index]["equipment"] = entry["item"].duplicate(true)
+		"tarot":
+			tarots.append(entry["id"])
+		"relic":
+			relics.append(entry["id"])
+		"figure":
+			_place(entry["def_id"], target_index)
+	entry["taken"] = true
+	open_pack["picks_left"] = int(open_pack["picks_left"]) - 1
+	if open_pack["picks_left"] <= 0:
+		open_pack = {}
+	return true
+
+
+func close_pack() -> void:
+	open_pack = {}
+
+
+func sell_relic(index: int) -> bool:
+	if index < 0 or index >= relics.size():
+		return false
+	gold += Items.relic_price(db, relics[index]) / 2
+	relics.remove_at(index)
+	return true
+
+
+## Uses a tarot card on a row figure.
+func use_tarot(tarot_index: int, row_index: int) -> bool:
+	if stage != Stage.PLANNING or tarot_index < 0 or tarot_index >= tarots.size():
+		return false
+	if row_index < 0 or row_index >= row.size() or row[row_index] == null:
+		return false
+	var figure: Dictionary = row[row_index]
+	match tarots[tarot_index]:
+		"strength":
+			figure["bonus_attack"] = int(figure.get("bonus_attack", 0)) + 2
+			figure["bonus_health"] = int(figure.get("bonus_health", 0)) + 2
+		"magician":
+			figure["xp"] = mini(int(figure["xp"]) + XP_PER_DUPLICATE, XP_FOR_LEVEL[2])
+		"star":
+			figure["blessing"] = "star"
+		"sun":
+			figure["blessing"] = "sun"
+		"hanged_man":
+			gold += price_of(figure["def_id"])
+			row[row_index] = null
+		"wheel_of_fortune":
+			var suits := ContentDb.SUITS.filter(func(s: String) -> bool: return s != figure_suit(figure))
+			figure["suit"] = suits[rng.stream("tarot").randi_range(0, suits.size() - 1)]
+		_:
+			return false
+	tarots.remove_at(tarot_index)
 	return true
 
 
@@ -225,6 +357,9 @@ func battle_options() -> Dictionary:
 		options["blessing"] = blessing
 	if boss_rule() == "gold_zero":
 		options["gold_zero"] = true
+	var status_bonus := TeamBuilder.status_bonus(self)
+	if not status_bonus.is_empty():
+		options["status_bonus"] = status_bonus
 	return options
 
 
@@ -240,8 +375,9 @@ func apply_battle_result(result: Dictionary) -> Stage:
 			figure["xp"] = mini(int(figure["xp"]) + XP_PER_WIN, XP_FOR_LEVEL[2])
 	var paid_interest := interest()
 	var bonus := int(chosen_enemy.get("bonus", 0))
-	gold += BASE_INCOME + bonus + paid_interest
-	last_income = {"base": BASE_INCOME, "bonus": bonus, "interest": paid_interest}
+	var extra := TeamBuilder.gold_after_win(self)
+	gold = maxi(gold + BASE_INCOME + bonus + paid_interest + extra, 0)
+	last_income = {"base": BASE_INCOME, "bonus": bonus, "interest": paid_interest, "extra": extra}
 	if is_boss_fight() and slot_count() < MAX_SLOTS:
 		row.append(null)
 		last_income["slot"] = true
@@ -322,6 +458,9 @@ func _roll_shop() -> void:
 	shop.clear()
 	for i in SHOP_FIGURE_SLOTS:
 		shop.append(_random_figure_id(rng.stream("shop")))
+	packs.clear()
+	for i in SHOP_PACK_SLOTS:
+		packs.append(Items.roll_pack(db, rng.stream("packs")))
 
 
 func _roll_rewards() -> void:
@@ -349,7 +488,7 @@ func _random_figure_id(stream: RandomNumberGenerator) -> String:
 
 func _figure_ids_of_rank(rank: String) -> Array:
 	var ids: Array = []
-	for figure in db.figures.values():
+	for figure in db.regular_figures():
 		if figure["rank"] == rank:
 			ids.append(figure["id"])
 	ids.sort()
@@ -361,7 +500,8 @@ func _figure_ids_of_rank(rank: String) -> Array:
 func to_dict() -> Dictionary:
 	return {
 		"rng": rng.to_dict(), "stage": stage, "region": region, "act": act, "fight": fight, "gold": gold,
-		"slots_bought": slots_bought, "row": row.duplicate(true), "shop": shop.duplicate(),
+		"row": row.duplicate(true), "shop": shop.duplicate(), "packs": packs.duplicate(true),
+		"open_pack": open_pack.duplicate(true), "relics": relics.duplicate(), "tarots": tarots.duplicate(),
 		"reroll_count": reroll_count, "enemy_options": enemy_options.duplicate(true),
 		"chosen_enemy": chosen_enemy.duplicate(true), "rewards": rewards.duplicate(),
 		"next_uid": next_uid, "battles_won": battles_won, "last_income": last_income.duplicate(),
@@ -377,7 +517,10 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.act = int(data["act"])
 	run.fight = int(data["fight"])
 	run.gold = int(data["gold"])
-	run.slots_bought = int(data["slots_bought"])
+	run.packs = data.get("packs", []).duplicate(true)
+	run.open_pack = data.get("open_pack", {}).duplicate(true)
+	run.relics = data.get("relics", []).duplicate()
+	run.tarots = data.get("tarots", []).duplicate()
 	run.row = data["row"].duplicate(true)
 	run.shop = data["shop"].duplicate()
 	run.reroll_count = int(data["reroll_count"])

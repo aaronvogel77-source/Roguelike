@@ -49,3 +49,31 @@ func test_merge_screen_and_sell_zone() -> void:
 	view._request_sell(0)
 	await wait_frames(2)
 	assert_null(view._run.row[0], "level-1 figure sold without confirmation")
+
+
+func test_pack_overlay_tarot_and_insert() -> void:
+	var view: Node = load("res://scenes/run.tscn").instantiate()
+	add_child_autofree(view)
+	await wait_frames(3)
+	view._on_choose_enemy(0)
+	await wait_frames(2)
+	view._run.debug_legend_pack()
+	view._show_stage()
+	await wait_frames(2)
+	view._on_pack_take(0)
+	await wait_frames(2)
+	assert_eq(view._pack_pick, 0, "figure pick waits for a slot")
+	view._on_pack_target(view._slot_for("row", 1))
+	await wait_frames(2)
+	assert_eq(view._db.figures[view._run.row[1]["def_id"]]["rank"], "legend")
+	view._on_close_pack()
+	view._run.tarots = ["strength"]
+	view._show_stage()
+	await wait_frames(2)
+	view._selected = {"kind": "tarot", "index": 0}
+	view._on_slot_tapped(view._slot_for("row", 1))
+	await wait_frames(2)
+	assert_eq(view._run.row[1]["bonus_attack"], 2)
+	view._on_slot_inserted({"kind": "row", "index": 1}, view._slot_for("row", 0), "right")
+	await wait_frames(2)
+	assert_eq(view._db.figures[view._run.row[0]["def_id"]]["rank"], "legend", "inserted at the front")

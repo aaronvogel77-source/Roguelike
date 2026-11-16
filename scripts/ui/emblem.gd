@@ -26,6 +26,17 @@ const COLORS := {
 	"rank_king": Color(1.0, 0.85, 0.3),
 	"level": Color(0.95, 0.78, 0.35),
 	"enemy": Color(0.75, 0.25, 0.28),
+	"tarot": Color(0.8, 0.65, 0.95),
+	"relic": Color(0.4, 0.85, 0.8),
+	"pack": Color(0.95, 0.78, 0.35),
+	"blessing_star": Color(0.62, 0.72, 0.85),
+	"blessing_sun": Color(1.0, 0.75, 0.25),
+}
+
+## Emblem of an equipment base.
+const EQUIPMENT_KINDS := {
+	"blade": "sword", "buckler": "shield", "amulet": "life",
+	"torch": "burn", "dagger": "bleed", "purse": "coin",
 }
 
 ## Which emblem represents an ability effect.
@@ -173,6 +184,36 @@ func _draw() -> void:
 				var chevron := _pts(s, [Vector2(0.2, y + 0.16), Vector2(0.5, y - 0.06), Vector2(0.8, y + 0.16),
 					Vector2(0.8, y + 0.28), Vector2(0.5, y + 0.06), Vector2(0.2, y + 0.28)])
 				_filled(chevron, color, outline, s)
+		"tarot":
+			_filled(_pts(s, [Vector2(0.22, 0.06), Vector2(0.78, 0.06), Vector2(0.78, 0.94), Vector2(0.22, 0.94)]), Color(0.18, 0.12, 0.25), outline, s)
+			draw_rect(Rect2(c + Vector2(-0.22, -0.38) * s, Vector2(0.44, 0.76) * s), color, false, maxf(1.5, s * 0.05))
+			var tstar := PackedVector2Array()
+			for i in 10:
+				var r := 0.18 if i % 2 == 0 else 0.08
+				var a := -PI / 2 + PI * i / 5.0
+				tstar.append(c + Vector2(cos(a), sin(a)) * r * s)
+			draw_colored_polygon(tstar, color)
+		"relic":
+			_filled(_pts(s, [Vector2(0.5, 0.05), Vector2(0.85, 0.35), Vector2(0.5, 0.95), Vector2(0.15, 0.35)]), color, outline, s)
+			draw_line(c + Vector2(-0.35, -0.15) * s, c + Vector2(0.35, -0.15) * s, color.lightened(0.4), maxf(1.0, s * 0.04))
+			draw_line(c + Vector2(0, -0.45) * s, c + Vector2(0, 0.45) * s, color.darkened(0.3), maxf(1.0, s * 0.04))
+		"pack":
+			_filled(_pts(s, [Vector2(0.12, 0.3), Vector2(0.88, 0.3), Vector2(0.88, 0.92), Vector2(0.12, 0.92)]), color.darkened(0.2), outline, s)
+			_filled(_pts(s, [Vector2(0.06, 0.18), Vector2(0.94, 0.18), Vector2(0.94, 0.36), Vector2(0.06, 0.36)]), color, outline, s)
+			draw_line(c + Vector2(0, -0.32) * s, c + Vector2(0, 0.42) * s, Color(0.75, 0.15, 0.2), maxf(2.0, s * 0.1))
+		"blessing_star":
+			var bstar := PackedVector2Array()
+			for i in 16:
+				var r := 0.48 if i % 2 == 0 else 0.16
+				var a := -PI / 2 + PI * i / 8.0
+				bstar.append(c + Vector2(cos(a), sin(a)) * r * s)
+			_filled(bstar, color, outline, s)
+		"blessing_sun":
+			for i in 12:
+				var a := TAU * i / 12.0
+				draw_line(c + Vector2(cos(a), sin(a)) * 0.28 * s, c + Vector2(cos(a), sin(a)) * 0.48 * s, color, maxf(1.5, s * 0.07))
+			draw_circle(c, s * 0.26, outline)
+			draw_circle(c, s * 0.23, color)
 		"enemy":
 			_filled(_pts(s, [Vector2(0.15, 0.2), Vector2(0.35, 0.35), Vector2(0.5, 0.15), Vector2(0.65, 0.35),
 				Vector2(0.85, 0.2), Vector2(0.75, 0.85), Vector2(0.25, 0.85)]), color, outline, s)

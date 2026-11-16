@@ -4,7 +4,8 @@ extends GutTest
 
 func test_slice_content_counts() -> void:
 	var db := ContentDb.load_default()
-	assert_eq(db.figures.size(), 16, "16 player figures in the slice")
+	assert_eq(db.regular_figures().size(), 16, "16 player figures in the slice")
+	assert_eq(db.legendary_figures().size(), 4, "4 legendary aces")
 	assert_eq(db.regular_enemies().size(), 8, "8 coin-region enemies in the slice")
 
 
@@ -12,7 +13,7 @@ func test_four_figures_per_suit_one_per_rank() -> void:
 	var db := ContentDb.load_default()
 	for suit in ContentDb.SUITS:
 		var ranks: Array = []
-		for figure in db.figures.values():
+		for figure in db.regular_figures():
 			if figure["suit"] == suit:
 				ranks.append(figure["rank"])
 		ranks.sort()

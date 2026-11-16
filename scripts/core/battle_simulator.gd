@@ -30,6 +30,8 @@ var gold := 0
 ## The player's real gold; thefts always take from this.
 var real_gold := 0
 var _gold_hidden := false
+## Extra stacks for statuses the player applies, e.g. {"burn": {"all": 1}, "bleed": {"swords": 1}}.
+var status_bonus: Dictionary = {}
 var turn := 0
 var _next_uid := 1
 
@@ -45,6 +47,11 @@ static func simulate(player_team: Array, enemy_team: Array, player_gold: int = 0
 	return battle._run(player_team, enemy_team, player_gold, options)
 
 
+## A unit as it would enter battle (for showing run modifiers on cards).
+static func preview_unit(entry: Dictionary, side: int) -> BattleUnit:
+	return BattleSimulator.new()._make_unit(entry, side)
+
+
 ## Decay damage on a given turn: 1, 2, 4, 8 ... starting at DECAY_START_TURN.
 static func decay_damage(turn_number: int) -> int:
 	if turn_number < DECAY_START_TURN:
@@ -55,6 +62,7 @@ static func decay_damage(turn_number: int) -> int:
 func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dictionary = {}) -> Dictionary:
 	real_gold = player_gold
 	_gold_hidden = options.get("gold_zero", false)
+	status_bonus = options.get("status_bonus", {})
 	gold = 0 if _gold_hidden else real_gold
 	for entry in player_team:
 		rows[PLAYER].append(_make_unit(entry, PLAYER))
@@ -107,6 +115,17 @@ func _make_unit(entry: Dictionary, side: int) -> BattleUnit:
 	var level := int(entry.get("level", 1))
 	var unit := BattleUnit.from_definition(definition, side, _next_uid, level)
 	_next_uid += 1
+	# Run modifiers: equipment, tarot boons, relics, blessings, suit changes.
+	unit.attack += int(entry.get("bonus_attack", 0))
+	unit.health += int(entry.get("bonus_health", 0))
+	unit.health = maxi(unit.health, 1)
+	unit.max_health = unit.health
+	for factor in entry.get("multipliers", []):
+		unit.multipliers.append(float(factor))
+	unit.abilities.append_array(entry.get("abilities", []))
+	if entry.has("suit"):
+		unit.suit = entry["suit"]
+	unit.pierce = bool(definition.get("pierce", false))
 	return unit
 
 
@@ -130,8 +149,8 @@ func _clash() -> void:
 	var damage_to_enemy := player_front.effective_attack()
 	var damage_to_player := enemy_front.effective_attack()
 	events.append({"type": "clash", "player_uid": player_front.uid, "enemy_uid": enemy_front.uid})
-	var dealt_to_enemy := _deal_damage(enemy_front, damage_to_enemy, "attack")
-	var dealt_to_player := _deal_damage(player_front, damage_to_player, "attack")
+	var dealt_to_enemy := _deal_damage(enemy_front, damage_to_enemy, "pierce" if player_front.pierce else "attack")
+	var dealt_to_player := _deal_damage(player_front, damage_to_player, "pierce" if enemy_front.pierce else "attack")
 
 	# Reactions: the hit units first, then the attackers.
 	# "on_hit" counts any attack that connects, even if a shield absorbed it.
@@ -199,7 +218,8 @@ func _deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 		return 0
 	var remaining := amount
 	var shield := unit.status(BattleUnit.STATUS_SHIELD)
-	if shield > 0 and source != "decay":
+	# The darkness and piercing attacks ignore shields.
+	if shield > 0 and source != "decay" and source != "pierce":
 		var absorbed := mini(shield, remaining)
 		unit.add_status(BattleUnit.STATUS_SHIELD, -absorbed)
 		remaining -= absorbed
@@ -245,6 +265,8 @@ func _process_deaths() -> void:
 
 
 func _fire_death_abilities(dying_unit: BattleUnit) -> void:
+	# The unit's own "on death" abilities (e.g. equipment that pays gold).
+	_fire_unit_abilities(dying_unit, "on_death", {"dying_unit": dying_unit})
 	for owner: BattleUnit in rows[dying_unit.side].duplicate():
 		if owner != dying_unit and owner.is_alive():
 			_fire_unit_abilities(owner, "on_ally_death", {"dying_unit": dying_unit})
@@ -317,6 +339,13 @@ func _resolve_targets(owner: BattleUnit, target: String, context: Dictionary) ->
 
 
 # --- Helpers used by AbilityEffects ---------------------------------------------
+
+## Extra stacks when a player unit applies a status (relics like Eternal Ember).
+func bonus_stacks(owner: BattleUnit, status: String) -> int:
+	if owner.side != PLAYER or not status_bonus.has(status):
+		return 0
+	var rule: Dictionary = status_bonus[status]
+	return int(rule.get("all", 0)) + int(rule.get(owner.suit, 0))
 
 func deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 	return _deal_damage(unit, amount, source)

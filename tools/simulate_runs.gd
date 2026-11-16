@@ -40,8 +40,6 @@ func _shop(run: RunState) -> void:
 	var guard := 0
 	while guard < 20:
 		guard += 1
-		if run.gold >= 12 and run.slot_price() > 0 and run.gold - run.slot_price() >= 3:
-			run.buy_slot()
 		var bought := false
 		for i in run.shop.size():
 			if run.shop[i] == "" or run.gold < run.price_of(run.shop[i]):

@@ -103,6 +103,8 @@ func _show_stage() -> void:
 			_build_enemy_choice()
 		RunState.Stage.PLANNING:
 			_build_planning()
+			if not _run.open_pack.is_empty():
+				_build_pack_overlay()
 		RunState.Stage.REWARD:
 			_build_reward()
 		RunState.Stage.WON, RunState.Stage.LOST:
@@ -126,11 +128,19 @@ func _top_bar(title: String) -> HBoxContainer:
 	if _url_flag("debug"):
 		bar.add_child(_button("+10 Gold", Vector2(110, 44), _debug_gold))
 		bar.add_child(_button("Zum Boss", Vector2(130, 44), _debug_to_boss))
+		if _run.stage == RunState.Stage.PLANNING:
+			bar.add_child(_button(tr("UI_DEBUG_LEGEND"), Vector2(170, 44), _debug_legend))
 	bar.add_child(_spacer(8))
 	return bar
 
 
 # --- Debug tools ("?debug=1" in the address) ---------------------------------------
+
+func _debug_legend() -> void:
+	_run.debug_legend_pack()
+	_undo.clear()
+	_show_stage()
+
 
 func _debug_gold() -> void:
 	_run.gold += 10
@@ -375,6 +385,7 @@ func _build_planning() -> void:
 	var column := _column()
 	column.add_child(_top_bar(_stage_title()))
 	column.add_child(_info_line())
+	column.add_child(_object_strip())
 
 	# Battle field preview: own slots (front next to the middle) and the chosen
 	# enemy. Scaled up to fill the free space, so cards are as large as possible.
@@ -418,6 +429,9 @@ func _build_planning() -> void:
 		bottom.add_child(shop_box)
 		_shop_slots.append(slot)
 
+	for i in _run.packs.size():
+		bottom.add_child(_pack_view(i))
+
 	_sell_zone = SellZone.new()
 	_sell_zone.tapped.connect(_on_sell_zone_tapped)
 	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
@@ -430,10 +444,6 @@ func _build_planning() -> void:
 	var reroll := _button(tr("UI_REROLL") % _run.reroll_price(), Vector2(200, 56), _on_reroll)
 	reroll.disabled = _run.gold < _run.reroll_price()
 	actions.add_child(reroll)
-	var slot_price := _run.slot_price()
-	var buy_slot := _button(tr("UI_BUY_SLOT") % slot_price if slot_price > 0 else tr("UI_SLOTS_MAX"), Vector2(200, 56), _on_buy_slot)
-	buy_slot.disabled = slot_price < 0 or _run.gold < slot_price
-	actions.add_child(buy_slot)
 	_undo_button = _button(tr("UI_UNDO"), Vector2(200, 56), _on_undo)
 	_undo_button.disabled = _undo.is_empty()
 	actions.add_child(_undo_button)
@@ -452,16 +462,30 @@ func _own_row_slots() -> HBoxContainer:
 	var own_row := HBoxContainer.new()
 	own_row.add_theme_constant_override("separation", CARD_SPACING)
 	_row_slots.clear()
+	var entries := _row_entries()
 	for i in range(_run.slot_count() - 1, -1, -1):
 		var slot := SlotView.new("row", i)
 		var figure: Variant = _run.row[i]
 		if figure != null:
-			slot.set_card(UnitCard.for_definition(_db.figures[figure["def_id"]], _run.figure_level(figure), false))
+			slot.set_card(UnitCard.for_entry(entries[i], figure, _db))
 		slot.tapped.connect(_on_slot_tapped)
 		slot.dropped.connect(_on_slot_dropped)
+		slot.inserted.connect(_on_slot_inserted)
 		own_row.add_child(slot)
 		_row_slots.append(slot)
 	return own_row
+
+
+## Battle entries (with equipment, boons, relics) by row index.
+func _row_entries() -> Dictionary:
+	var team := _run.player_battle_team()
+	var result := {}
+	var k := 0
+	for i in _run.row.size():
+		if _run.row[i] != null:
+			result[i] = team[k]
+			k += 1
+	return result
 
 
 ## A holder that fills the free space and scales its content to fit
@@ -530,6 +554,8 @@ func _select(kind: String, index: int) -> void:
 func _clear_selection() -> void:
 	for slot in _row_slots + _shop_slots:
 		slot.set_selected(false)
+	for object_card in _strip_cards:
+		object_card.set_selected(false)
 	_selected = {}
 	_sell_armed = -1
 	if _sell_zone != null:
@@ -544,7 +570,15 @@ func _on_slot_tapped(slot: SlotView) -> void:
 		else:
 			_select("shop", slot.index)
 		return
-	# Row slot: complete a pending buy or move, otherwise select.
+	# Row slot: use a selected tarot card, complete a pending buy or move, otherwise select.
+	if _selected.get("kind") == "tarot":
+		var tarot_index: int = _selected["index"]
+		if _run.use_tarot(tarot_index, slot.index):
+			_undo.clear()  # tarot use is final (some cards are random)
+			_show_stage()
+		else:
+			_clear_selection()
+		return
 	if _selected.get("kind") == "shop":
 		_buy(_selected["index"], slot.index)
 	elif _selected.get("kind") == "row" and _selected["index"] != slot.index:
@@ -560,6 +594,14 @@ func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 		_buy(data["index"], slot.index)
 	elif data["kind"] == "row":
 		_move(data["index"], slot.index)
+
+
+## Dropped between two cards: the figure is inserted there. Visually the
+## front is on the right, so "left of a card" means behind it.
+func _on_slot_inserted(data: Dictionary, slot: SlotView, side: String) -> void:
+	var after_index := slot.index if side == "left" else slot.index - 1
+	var from: int = data["index"]
+	_apply_action(func() -> bool: return _run.insert_between(from, after_index))
 
 
 ## Moves (or swaps) row figures; dropping onto an equal figure merges them.
@@ -596,6 +638,10 @@ func _apply_action(action: Callable) -> void:
 func _on_sell_zone_tapped() -> void:
 	if _selected.get("kind") == "row":
 		_request_sell(_selected["index"])
+	elif _selected.get("kind") == "relic":
+		if _run.sell_relic(_selected["index"]):
+			_undo.clear()
+			_show_stage()
 
 
 ## Sells a row figure. A levelled figure (stage 2+) needs a second confirmation.
@@ -624,10 +670,6 @@ func _on_reroll() -> void:
 		_show_stage()
 
 
-func _on_buy_slot() -> void:
-	_apply_action(_run.buy_slot)
-
-
 func _on_fight() -> void:
 	_undo.clear()
 	_detail_panel.hide()
@@ -646,10 +688,222 @@ func _on_battle_finished(result: Dictionary) -> void:
 	_show_stage()
 
 
+# --- Relics, tarot, packs ---------------------------------------------------------------
+
+var _strip_cards: Array[ObjectCard] = []
+var _pack_pick := -1  # pack item waiting for a target figure/slot
+
+
+## Relic slots (3) and tarot slots (2) under the info line.
+func _object_strip() -> Control:
+	_strip_cards.clear()
+	var strip := HBoxContainer.new()
+	strip.alignment = BoxContainer.ALIGNMENT_CENTER
+	strip.add_theme_constant_override("separation", 10)
+	strip.add_child(_label(tr("UI_RELICS"), 18, Emblem.COLORS["relic"]))
+	for i in RunState.MAX_RELICS:
+		strip.add_child(_strip_slot("relic", i, _run.relics[i] if i < _run.relics.size() else ""))
+	strip.add_child(_spacer(30))
+	strip.add_child(_label(tr("UI_TAROTS"), 18, Emblem.COLORS["tarot"]))
+	for i in RunState.MAX_TAROTS:
+		strip.add_child(_strip_slot("tarot", i, _run.tarots[i] if i < _run.tarots.size() else ""))
+	return strip
+
+
+func _strip_slot(kind: String, index: int, id: String) -> Control:
+	if id == "":
+		var empty := Panel.new()
+		empty.custom_minimum_size = Vector2(52, 52)
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(1, 1, 1, 0.03)
+		style.border_color = Color(1, 1, 1, 0.15)
+		style.set_border_width_all(2)
+		style.set_corner_radius_all(8)
+		empty.add_theme_stylebox_override("panel", style)
+		return empty
+	var card := ObjectCard.create(_db, {"kind": kind, "id": id}, Vector2(52, 52), true)
+	card.tapped.connect(func(c: ObjectCard) -> void: _on_strip_tapped(kind, index, c))
+	_strip_cards.append(card)
+	return card
+
+
+func _on_strip_tapped(kind: String, index: int, card: ObjectCard) -> void:
+	var was_selected: bool = _selected.get("kind") == kind and _selected.get("index") == index
+	_clear_selection()
+	if was_selected:
+		return
+	_selected = {"kind": kind, "index": index}
+	card.set_selected(true)
+	_detail_panel.show_object(card)
+	if kind == "tarot":
+		_detail_panel.show_hint(tr("UI_USE_TAROT") % card.title)
+	elif kind == "relic" and _sell_zone != null:
+		_sell_zone.show_text(tr("UI_SELL_FOR") % (Items.relic_price(_db, _run.relics[index]) / 2), true)
+
+
+## A pack in the shop: tap to buy and open it.
+func _pack_view(index: int) -> Control:
+	var box := VBoxContainer.new()
+	var pack: Dictionary = _run.packs[index]
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = UnitCard.CARD_SIZE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.16, 0.12, 0.08) if not pack.is_empty() else Color(1, 1, 1, 0.03)
+	style.border_color = Palette.GOLD if not pack.is_empty() else Color(1, 1, 1, 0.15)
+	style.set_border_width_all(4 if pack.get("size", "") == "mega" else 2)
+	style.set_corner_radius_all(10)
+	style.set_content_margin_all(4)
+	panel.add_theme_stylebox_override("panel", style)
+	box.add_child(panel)
+	var price_text := ""
+	if not pack.is_empty():
+		var inner := VBoxContainer.new()
+		inner.alignment = BoxContainer.ALIGNMENT_CENTER
+		inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var emblem_box := CenterContainer.new()
+		emblem_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		emblem_box.add_child(Emblem.create("pack", 46))
+		inner.add_child(emblem_box)
+		var name := _label(ItemText.pack_name(pack), 13, Palette.PARCHMENT)
+		name.autowrap_mode = TextServer.AUTOWRAP_WORD
+		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		inner.add_child(name)
+		var content := _label(tr("UI_PACK_CONTENT") % [Items.pack_choice_count(_db, pack), Items.pack_picks(_db, pack)], 11, Palette.MUTED)
+		content.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		inner.add_child(content)
+		panel.add_child(inner)
+		price_text = tr("UI_PRICE") % Items.pack_price(_db, pack)
+		panel.gui_input.connect(func(event: InputEvent) -> void:
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+				_on_buy_pack(index))
+	var price := _label(price_text, 20, Palette.GOLD)
+	price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(price)
+	return box
+
+
+func _on_buy_pack(index: int) -> void:
+	if _run.buy_pack(index):
+		_undo.clear()  # opening packs is final
+		_pack_pick = -1
+		_show_stage()
+
+
+## Overlay while a pack is open: pick items, choose targets, discard the rest.
+func _build_pack_overlay() -> void:
+	var overlay := ColorRect.new()
+	overlay.color = Color(0.02, 0.01, 0.03, 0.9)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_screen.add_child(overlay)
+	var column := VBoxContainer.new()
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 14)
+	overlay.add_child(column)
+	var open: Dictionary = _run.open_pack
+	var title := _label("%s  ·  %s" % [ItemText.pack_name(open["pack"]),
+		tr("UI_OPEN_PACK") % [open["picks_left"], open["items"].size()]], 30, Palette.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+
+	var items := HBoxContainer.new()
+	items.alignment = BoxContainer.ALIGNMENT_CENTER
+	items.add_theme_constant_override("separation", 24)
+	for i in open["items"].size():
+		items.add_child(_pack_item_box(i))
+	var items_center := CenterContainer.new()
+	items_center.add_child(items)
+	column.add_child(items_center)
+
+	if _pack_pick >= 0:
+		var entry: Dictionary = open["items"][_pack_pick]
+		var name: String = ItemText.equipment_name(entry["item"]) if entry["kind"] == "equipment" else tr(ContentDb.name_key(_db.figures[entry["def_id"]]))
+		var hint := _label(tr("UI_PICK_TARGET") % name, 22, Palette.PARCHMENT)
+		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		column.add_child(hint)
+		var targets := HBoxContainer.new()
+		targets.add_theme_constant_override("separation", CARD_SPACING)
+		var entries := _row_entries()
+		for r in range(_run.slot_count() - 1, -1, -1):
+			var slot := SlotView.new("row", r)
+			slot.accepts_drops = false
+			if _run.row[r] != null:
+				slot.set_card(UnitCard.for_entry(entries[r], _run.row[r], _db))
+			slot.tapped.connect(_on_pack_target)
+			targets.add_child(slot)
+		var target_center := CenterContainer.new()
+		target_center.add_child(targets)
+		column.add_child(target_center)
+
+	var skip := _button(tr("UI_PACK_SKIP"), Vector2(260, 60), _on_close_pack)
+	skip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	column.add_child(skip)
+
+
+func _pack_item_box(i: int) -> Control:
+	var entry: Dictionary = _run.open_pack["items"][i]
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	var visual: Control
+	if entry["kind"] == "figure":
+		var card := UnitCard.for_definition(_db.figures[entry["def_id"]], 1, false)
+		card.tapped.connect(_detail_panel.show_card)
+		visual = _with_rarity(card, entry["def_id"])
+		visual = _scaled(visual, 1.3)
+	else:
+		var object_card := ObjectCard.create(_db, entry)
+		object_card.tapped.connect(_detail_panel.show_object)
+		visual = object_card
+	if entry.get("taken", false):
+		visual.modulate.a = 0.3
+	box.add_child(visual)
+	var text := tr("UI_PICK")
+	var enabled: bool = not entry.get("taken", false)
+	if entry["kind"] == "tarot" and _run.tarots.size() >= RunState.MAX_TAROTS:
+		text = tr("UI_TAROT_SLOTS_FULL")
+		enabled = false
+	elif entry["kind"] == "relic" and _run.relics.size() >= RunState.MAX_RELICS:
+		text = tr("UI_RELIC_SLOTS_FULL")
+		enabled = false
+	var take := _button(text, Vector2(150, 54), _on_pack_take.bind(i))
+	take.disabled = not enabled
+	if _pack_pick == i:
+		take.add_theme_color_override("font_color", Palette.GOLD)
+	box.add_child(take)
+	return box
+
+
+func _on_pack_take(index: int) -> void:
+	if _run.pack_item_target(index) != "":
+		_pack_pick = index  # needs a figure or slot: show the row
+		_show_stage()
+		return
+	if _run.take_pack_item(index):
+		_pack_pick = -1
+		_show_stage()
+
+
+func _on_pack_target(slot: SlotView) -> void:
+	if _pack_pick >= 0 and _run.take_pack_item(_pack_pick, slot.index):
+		_pack_pick = -1
+		_show_stage()
+
+
+func _on_close_pack() -> void:
+	_run.close_pack()
+	_pack_pick = -1
+	_show_stage()
+
+
 # --- Rarity effect (queens and kings) ------------------------------------------------
 
 func _rarity(def_id: String) -> String:
 	var rank: String = _db.figures[def_id]["rank"]
+	if rank == "legend":
+		return "king"  # strongest shine for aces
 	return rank if rank in ["queen", "king"] else ""
 
 
@@ -676,13 +930,18 @@ func _add_rarity_effect(host: Control, def_id: String) -> void:
 	create_tween().tween_property(host, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
-## Reward card wrapped with the rarity effect.
+## Card wrapped with the rarity effect. The effect animates an inner host,
+## so the returned control can still be scaled from outside.
 func _with_rarity(card: UnitCard, def_id: String) -> Control:
+	var outer := Control.new()
+	outer.custom_minimum_size = UnitCard.CARD_SIZE
 	var host := Control.new()
 	host.custom_minimum_size = UnitCard.CARD_SIZE
+	host.size = UnitCard.CARD_SIZE
 	host.add_child(card)
+	outer.add_child(host)
 	_add_rarity_effect(host, def_id)
-	return host
+	return outer
 
 
 # --- Reward ---------------------------------------------------------------------------

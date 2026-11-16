@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M3 abgeschlossen. M4 (echte Inhalte) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0–M4 abgeschlossen. M5a (Ausrüstung, Relikte, Tarot, Packs, Legendäre) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -552,7 +552,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 
 ## Offene Fragen
 - **M5 aufgeteilt:** M5a = Ausrüstung, Relikte, Tarot, Packs, Legendäre + Feedback unten · M5b = Seelen, Pakte, Ereignisse, Überspringen
-- M5a bauen. **Zusammen mit M5a umsetzen (Feedback zu v0.4.2):**
+- M5a-Feedback einholen, dann M5b. **Mit M5a umgesetzt (Feedback zu v0.4.2):**
   - Umordnen: Wird eine Figur **zwischen** zwei Karten gezogen, wird sie dort eingeschoben (die anderen rücken). Nur wenn sie klar **auf** eine Karte gezogen wird, tauschen die beiden.
   - Plätze **nur noch durch Boss-Siege**, nicht mehr kaufbar
   - **Weniger Gold:** Grundeinkommen 5 → 4
@@ -631,3 +631,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | M4-Feedback 2: größere Karten/Schriften (Spielfeld skaliert nach Inhalt bis ×1,7), Gebiets-Einführung vor Gebietsbeginn, Glanz-Effekt für Königinnen/Könige ("Selten!"/"Episch!"), Verkaufen auf dem Belohnungsbildschirm, nachträgliches Verschmelzen durch Ziehen, Rangpreise 3/4/6/8, Verkauf = halber Preis + Stufe, Ertrunkener König 30/60/100 %, Steuereintreiber 12 Leben, fehlende Glyphen ersetzt, Schlüsselwörter nur als ganze Wörter. Boss-Grafik folgt in M8 | Lesbarkeit, Belohnungsgefühl, Balance | – |
 | 2026-11-16 | v0.4.2-Feedback (Umsetzung mit M5): Einschieben zwischen Karten statt nur Tauschen, Plätze nur durch Bosse, weniger Gold. Rest bestätigt | Run war noch zu leicht, zu viel Gold für Verkaufen und Verschmelzen | Plätze kaufbar |
 | 2026-11-16 | M5 in M5a/M5b geteilt; Objekt-Sets bestätigt; Objekte nur über Packs (Balatro), Figuren direkt; 4 legendäre Asse nur aus Packs (selten, Debug-Knopf), getrennt von Fusionsrezepten; Einkommen 4 | Glücksspiel-Reiz, seltene Highlights, knappere Wirtschaft | Direktkauf von Objekten; Legendäre = Fusionsrezepte |
+| 2026-11-16 | M5a gebaut (v0.5.0): Packs (4 Typen × 3 Größen) mit Öffnen-Bildschirm, Ausrüstung mit Affixen, 8 Relikte, 6 Tarot-Karten, 4 legendäre Asse, Relikt-/Tarot-Leiste, Einschieben zwischen Karten, Plätze nur durch Bosse, Einkommen 4, Debug „Legendär-Pack“; 104 Tests | – | – |

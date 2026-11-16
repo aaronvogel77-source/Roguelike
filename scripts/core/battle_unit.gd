@@ -24,6 +24,8 @@ var multipliers: Array[float] = []
 var statuses: Dictionary = {}
 var curse_turns_left := 0
 var abilities: Array = []
+## Attacks ignore shields (Ace of Swords).
+var pierce := false
 ## Per-battle bookkeeping for abilities (charges, counters).
 var flags: Dictionary = {}
 
@@ -80,7 +82,7 @@ func level_value(ability: Dictionary) -> float:
 
 func snapshot() -> Dictionary:
 	return {
-		"uid": uid, "def_id": def_id, "side": side, "level": level,
+		"uid": uid, "def_id": def_id, "side": side, "level": level, "suit": suit,
 		"attack": attack, "effective_attack": effective_attack(),
 		"health": health, "max_health": max_health,
 		"multiplier": total_multiplier(), "statuses": statuses.duplicate(),

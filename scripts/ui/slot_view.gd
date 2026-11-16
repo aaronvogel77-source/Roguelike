@@ -6,6 +6,11 @@ extends Control
 
 signal tapped(slot: SlotView)
 signal dropped(data: Dictionary, slot: SlotView)
+## Dropped near the left or right edge: insert there instead of swapping.
+signal inserted(data: Dictionary, slot: SlotView, side: String)
+
+## Outer share of the card that counts as "between two cards".
+const EDGE_ZONE := 0.24
 
 const TAP_TOLERANCE := 12.0
 
@@ -17,6 +22,7 @@ var accepts_drops := true
 var _frame: Panel
 var _frame_style: StyleBoxFlat
 var _press_position := Vector2.INF
+var _hover_zone := ""  # "", "left", "right", "center" while a drag hovers
 
 
 func _init(slot_kind: String, slot_index: int) -> void:
@@ -80,9 +86,49 @@ func _drag_data(_at: Vector2) -> Variant:
 	return {"kind": kind, "index": index}
 
 
-func _can_drop(_at: Vector2, data: Variant) -> bool:
-	return accepts_drops and kind == "row" and data is Dictionary and data.has("kind")
+func _can_drop(at: Vector2, data: Variant) -> bool:
+	var ok: bool = accepts_drops and kind == "row" and data is Dictionary and data.has("kind")
+	var zone := _zone(at, data) if ok else ""
+	if zone != _hover_zone:
+		_hover_zone = zone
+		queue_redraw()
+	return ok
 
 
-func _drop(_at: Vector2, data: Variant) -> void:
-	dropped.emit(data, self)
+func _drop(at: Vector2, data: Variant) -> void:
+	var zone := _zone(at, data)
+	_hover_zone = ""
+	queue_redraw()
+	if zone == "left" or zone == "right":
+		inserted.emit(data, self, zone)
+	else:
+		dropped.emit(data, self)
+
+
+## Edge zones only exist for moving row figures next to another figure.
+func _zone(at: Vector2, data: Dictionary) -> String:
+	if data.get("kind") != "row" or card == null or data.get("index") == index:
+		return "center"
+	if at.x < size.x * EDGE_ZONE:
+		return "left"
+	if at.x > size.x * (1.0 - EDGE_ZONE):
+		return "right"
+	return "center"
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END or what == NOTIFICATION_MOUSE_EXIT:
+		if _hover_zone != "":
+			_hover_zone = ""
+			queue_redraw()
+
+
+## Insert marker: a gold bar at the edge; a gold frame when swapping/merging.
+func _draw() -> void:
+	match _hover_zone:
+		"left":
+			draw_rect(Rect2(-7, -6, 6, size.y + 12), Palette.GOLD)
+		"right":
+			draw_rect(Rect2(size.x + 1, -6, 6, size.y + 12), Palette.GOLD)
+		"center":
+			draw_rect(Rect2(Vector2(-3, -3), size + Vector2(6, 6)), Palette.GOLD, false, 3.0)

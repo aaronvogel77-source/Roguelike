@@ -1,0 +1,271 @@
+{
+  "version": 1,
+  "rarities": [
+    "common",
+    "magic",
+    "rare",
+    "cursed"
+  ],
+  "equipment_prices": [
+    3,
+    4,
+    6,
+    7
+  ],
+  "equipment": [
+    {
+      "id": "blade",
+      "base": {
+        "stat": "attack",
+        "value": 2
+      }
+    },
+    {
+      "id": "buckler",
+      "base": {
+        "ability": {
+          "trigger": "battle_start",
+          "target": "self",
+          "effect": "gain_shield",
+          "values": [
+            3,
+            3,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "id": "amulet",
+      "base": {
+        "stat": "health",
+        "value": 3
+      }
+    },
+    {
+      "id": "torch",
+      "base": {
+        "ability": {
+          "trigger": "on_attack",
+          "target": "attack_target",
+          "effect": "apply_burn",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "dagger",
+      "base": {
+        "ability": {
+          "trigger": "on_attack",
+          "target": "attack_target",
+          "effect": "apply_bleed",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "purse",
+      "base": {
+        "ability": {
+          "trigger": "battle_start",
+          "target": "self",
+          "effect": "attack_per_ten_gold",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    }
+  ],
+  "affixes": [
+    {
+      "id": "plus_attack",
+      "stat": "attack",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "id": "plus_health",
+      "stat": "health",
+      "min": 2,
+      "max": 3
+    },
+    {
+      "id": "start_shield",
+      "ability": "battle_start|self|gain_shield",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "id": "regen",
+      "ability": "turn_start|self|heal",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "id": "rage",
+      "ability": "on_hit|self|gain_attack",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "id": "death_gold",
+      "ability": "on_death|self|gain_gold",
+      "min": 2,
+      "max": 2
+    },
+    {
+      "id": "multiplier",
+      "mult": true,
+      "min": 1.1,
+      "max": 1.2,
+      "min_rarity": 2
+    },
+    {
+      "id": "burning_hits",
+      "ability": "on_attack|attack_target|apply_burn",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "id": "bleeding_hits",
+      "ability": "on_attack|attack_target|apply_bleed",
+      "min": 1,
+      "max": 1
+    }
+  ],
+  "drawbacks": [
+    {
+      "id": "frail",
+      "stat": "health",
+      "min": -2,
+      "max": -2
+    },
+    {
+      "id": "self_curse",
+      "ability": "battle_start|self|apply_curse",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "id": "self_burn",
+      "ability": "battle_start|self|apply_burn",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "id": "gold_drain",
+      "run_gold": -1
+    }
+  ],
+  "relics": [
+    {
+      "id": "war_chest",
+      "price": 6
+    },
+    {
+      "id": "eternal_ember",
+      "price": 6
+    },
+    {
+      "id": "blood_chalice",
+      "price": 5
+    },
+    {
+      "id": "whetstone",
+      "price": 5
+    },
+    {
+      "id": "vanguard_banner",
+      "price": 7
+    },
+    {
+      "id": "death_bell",
+      "price": 6
+    },
+    {
+      "id": "beggars_bowl",
+      "price": 5
+    },
+    {
+      "id": "royal_court",
+      "price": 6
+    }
+  ],
+  "tarot": [
+    "strength",
+    "magician",
+    "star",
+    "sun",
+    "hanged_man",
+    "wheel_of_fortune"
+  ],
+  "packs": {
+    "types": {
+      "equipment": {
+        "price": 4,
+        "choices": 3
+      },
+      "arcana": {
+        "price": 4,
+        "choices": 3
+      },
+      "relic": {
+        "price": 6,
+        "choices": 2
+      },
+      "court": {
+        "price": 5,
+        "choices": 3
+      }
+    },
+    "type_weights": {
+      "equipment": 35,
+      "arcana": 30,
+      "relic": 15,
+      "court": 20
+    },
+    "sizes": {
+      "normal": {
+        "extra_price": 0,
+        "extra_choices": 0,
+        "picks": 1,
+        "weight": 75
+      },
+      "jumbo": {
+        "extra_price": 2,
+        "extra_choices": 1,
+        "picks": 1,
+        "weight": 20
+      },
+      "mega": {
+        "extra_price": 4,
+        "set_choices": 5,
+        "picks": 2,
+        "weight": 5
+      }
+    },
+    "court_rank_odds": [
+      40,
+      35,
+      18,
+      7
+    ],
+    "legend_chance": {
+      "normal": 0.015,
+      "jumbo": 0.015,
+      "mega": 0.03
+    }
+  }
+}

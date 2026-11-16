@@ -153,3 +153,91 @@ REGION_COINS_DESC,Gold glänzt in jedem Schatten – und jeder Schatten will es 
 UI_REGION_ENEMIES,Gegner: %s,Enemies: %s
 UI_REGION_BOSSES,Bosse: %s,Bosses: %s
 UI_ENTER_REGION,Betreten,Enter
+FIG_ACE_OF_COINS,Goldene Quelle,Golden Spring
+FIG_ACE_OF_WANDS,Flammenkrone,Crown of Flames
+FIG_ACE_OF_CUPS,Tränenquelle,Fount of Tears
+FIG_ACE_OF_SWORDS,Klinge der Wahrheit,Blade of Truth
+ABIL_ACE_OF_COINS,Kampfbeginn: Alle eigenen Figuren erhalten Schild in Höhe deiner Zinsen ×{v}.,Battle start: all your figures gain shield equal to your interest ×{v}.
+ABIL_ACE_OF_WANDS,Nach dem Angriff: Alle Gegner erhalten Brennen {v}.,After attacking: all enemies gain {v} burn.
+ABIL_ACE_OF_CUPS,Wenn eine eigene Figur stirbt: Sie kehrt mit halbem Leben zurück (max. {v}× pro Kampf).,When an ally dies: it returns with half its health (max. {v}× per battle).
+ABIL_ACE_OF_SWORDS,Angriffe ignorieren Schild. Nach dem Angriff: Die Blutung des Ziels verdoppelt sich.,Attacks ignore shield. After attacking: the target's bleed doubles.
+RANK_LEGEND,Ass (legendär),Ace (legendary)
+RARITY_0,Gewöhnlich,Common
+RARITY_1,Magisch,Magic
+RARITY_2,Selten,Rare
+RARITY_3,Verflucht,Cursed
+EQUIP_BLADE,Klinge,Blade
+EQUIP_BUCKLER,Schildbuckel,Buckler
+EQUIP_AMULET,Amulett,Amulet
+EQUIP_TORCH,Fackel,Torch
+EQUIP_DAGGER,Dolch,Dagger
+EQUIP_PURSE,Geldkatze,Purse
+EQUIP_BLADE_DESC,+{v} Angriff,+{v} attack
+EQUIP_BUCKLER_DESC,Kampfbeginn: Schild {v},Battle start: {v} shield
+EQUIP_AMULET_DESC,+{v} Leben,+{v} health
+EQUIP_TORCH_DESC,Nach dem Angriff: Ziel erhält Brennen {v},After attacking: target gains {v} burn
+EQUIP_DAGGER_DESC,Nach dem Angriff: Ziel erhält Blutung {v},After attacking: target gains {v} bleed
+EQUIP_PURSE_DESC,Kampfbeginn: +{v} Angriff je 10 Gold,Battle start: +{v} attack per 10 gold
+AFFIX_PLUS_ATTACK,+{v} Angriff,+{v} attack
+AFFIX_PLUS_HEALTH,+{v} Leben,+{v} health
+AFFIX_START_SHIELD,Kampfbeginn: Schild {v},Battle start: {v} shield
+AFFIX_REGEN,Zugbeginn: heilt sich um {v},Turn start: heals {v}
+AFFIX_RAGE,Wenn getroffen: +{v} Angriff,When hit: +{v} attack
+AFFIX_DEATH_GOLD,Bei Tod: +{v} Gold,On death: +{v} gold
+AFFIX_MULTIPLIER,×{v} Angriff,×{v} attack
+AFFIX_BURNING_HITS,Nach dem Angriff: Ziel erhält Brennen {v},After attacking: target gains {v} burn
+AFFIX_BLEEDING_HITS,Nach dem Angriff: Ziel erhält Blutung {v},After attacking: target gains {v} bleed
+AFFIX_FRAIL,{v} Leben,{v} health
+AFFIX_SELF_CURSE,Kampfbeginn: erhält selbst Fluch {v},Battle start: gains {v} curse itself
+AFFIX_SELF_BURN,Kampfbeginn: erhält selbst Brennen {v},Battle start: gains {v} burn itself
+AFFIX_GOLD_DRAIN,{v} Gold nach jedem Kampf,{v} gold after every battle
+RELIC_WAR_CHEST,Kriegskasse,War Chest
+RELIC_WAR_CHEST_DESC,Münz-Figuren +1 Angriff.,Coin figures +1 attack.
+RELIC_ETERNAL_EMBER,Ewige Glut,Eternal Ember
+RELIC_ETERNAL_EMBER_DESC,"Brennen, das deine Figuren verursachen, +1 Stapel.",Burn your figures apply gets +1 stack.
+RELIC_BLOOD_CHALICE,Blutkelch,Blood Chalice
+RELIC_BLOOD_CHALICE_DESC,Kelch-Figuren heilen sich zu Zugbeginn um 1.,Cup figures heal 1 at turn start.
+RELIC_WHETSTONE,Wetzstein,Whetstone
+RELIC_WHETSTONE_DESC,Blutung deiner Schwert-Figuren +1 Stapel.,Bleed from your sword figures gets +1 stack.
+RELIC_VANGUARD_BANNER,Vorhut-Banner,Vanguard Banner
+RELIC_VANGUARD_BANNER_DESC,"Deine vorderste Figur erhält ×1,5 Angriff.",Your front figure gains ×1.5 attack.
+RELIC_DEATH_BELL,Totenglocke,Death Bell
+RELIC_DEATH_BELL_DESC,Wenn eine eigene Figur stirbt: Alle anderen +1 Angriff.,When an ally dies: all others +1 attack.
+RELIC_BEGGARS_BOWL,Bettelschale,Beggar's Bowl
+RELIC_BEGGARS_BOWL_DESC,Nach jedem Sieg +1 Gold.,After every victory +1 gold.
+RELIC_ROYAL_COURT,Hofstaat,Royal Court
+RELIC_ROYAL_COURT_DESC,"Je Königin, König oder Ass im Team: alle Figuren +1 Leben.","For each queen, king or ace in your team: all figures +1 health."
+TAROT_STRENGTH,Die Kraft,Strength
+TAROT_STRENGTH_DESC,Eine Figur erhält dauerhaft +2 Angriff und +2 Leben.,A figure gains +2 attack and +2 health permanently.
+TAROT_MAGICIAN,Der Magier,The Magician
+TAROT_MAGICIAN_DESC,Eine Figur erhält +1 Erfahrung.,A figure gains +1 experience.
+TAROT_STAR,Der Stern,The Star
+TAROT_STAR_DESC,Segen: Die Figur erhält zu jedem Kampfbeginn Schild 3.,Blessing: the figure gains 3 shield at every battle start.
+TAROT_SUN,Die Sonne,The Sun
+TAROT_SUN_DESC,"Segen: Die Figur erhält ×1,25 Angriff.",Blessing: the figure gains ×1.25 attack.
+TAROT_HANGED_MAN,Der Gehängte,The Hanged Man
+TAROT_HANGED_MAN_DESC,Opfert eine Figur. Du erhältst ihren vollen Kaufpreis als Gold.,Sacrifice a figure. You gain its full price in gold.
+TAROT_WHEEL_OF_FORTUNE,Das Rad des Schicksals,Wheel of Fortune
+TAROT_WHEEL_OF_FORTUNE_DESC,Eine Figur wechselt zufällig in eine andere Tarot-Farbe.,A figure switches to a random other tarot suit.
+PACK_EQUIPMENT,Ausrüstungs-Pack,Equipment Pack
+PACK_ARCANA,Arkana-Pack,Arcana Pack
+PACK_RELIC,Relikt-Pack,Relic Pack
+PACK_COURT,Hofstaat-Pack,Court Pack
+PACK_SIZE_NORMAL,,
+PACK_SIZE_JUMBO,Groß,Jumbo
+PACK_SIZE_MEGA,Mega,Mega
+UI_PACK_CONTENT,%d Karten · wähle %d,%d cards · pick %d
+UI_OPEN_PACK,Wähle %d von %d,Pick %d of %d
+UI_PACK_SKIP,Rest verwerfen,Discard the rest
+UI_PICK,Nehmen,Take
+UI_PICK_TARGET,Wähle eine Figur für: %s,Choose a figure for: %s
+UI_TAROT_SLOTS_FULL,Kartenplätze voll,Card slots full
+UI_RELIC_SLOTS_FULL,Relikt-Plätze voll,Relic slots full
+UI_RELICS,Relikte,Relics
+UI_TAROTS,Tarot,Tarot
+UI_EQUIPMENT,Ausrüstung: %s,Equipment: %s
+UI_BLESSING,Segen: %s,Blessing: %s
+UI_USE_TAROT,"Tippe eine Figur an, um %s zu nutzen",Tap a figure to use %s
+UI_DEBUG_LEGEND,Legendär-Pack,Legend pack
+UI_BONUS_STATS,Dauerhaft +%d/+%d,Permanent +%d/+%d
+UI_INCOME_EXTRA,Relikte/Ausrüstung %+d,Relics/equipment %+d

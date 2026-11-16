@@ -13,6 +13,8 @@ const STATUS_ORDER := ["shield", "burn", "curse", "bleed"]
 
 var uid: int
 var definition: Dictionary
+## Run data for figures in the row: {"figure": dict, "db": ContentDb}.
+var extras: Dictionary = {}
 var is_enemy: bool
 var snapshot: Dictionary = {}
 var body: PanelContainer
@@ -24,6 +26,15 @@ var _identity: HBoxContainer
 var _chips: HFlowContainer
 var _attack_label: Label
 var _health_label: Label
+
+
+## Card for a row figure: stats include equipment, boons, blessing and relics.
+static func for_entry(entry: Dictionary, figure: Dictionary, db: ContentDb) -> UnitCard:
+	var unit := BattleSimulator.preview_unit(entry, BattleSimulator.PLAYER)
+	var card := UnitCard.new()
+	card.extras = {"figure": figure, "db": db}
+	card.setup(unit.snapshot(), entry["def"], false)
+	return card
 
 
 ## Card for a figure outside of battle (shop, row, rewards, previews).
@@ -107,11 +118,12 @@ func base_border_color() -> Color:
 		return Palette.GOLD
 	if is_enemy:
 		return Palette.ENEMY_BORDER
-	return Palette.SUIT_COLORS.get(definition.get("suit", ""), Palette.GOLD)
+	return Palette.SUIT_COLORS.get(snapshot.get("suit", definition.get("suit", "")), Palette.GOLD)
 
 
 func apply_snapshot(new_snapshot: Dictionary) -> void:
 	snapshot = new_snapshot
+	_style.border_color = base_border_color()
 	_attack_label.text = str(snapshot["effective_attack"])
 	_health_label.text = str(maxi(snapshot["health"], 0))
 	_rebuild_identity(snapshot.get("level", 1))
@@ -240,17 +252,28 @@ func _wrapped_line_count(words: PackedStringArray, font: Font, font_size: int, a
 func _rebuild_identity(level: int) -> void:
 	for child in _identity.get_children():
 		child.queue_free()
-	for kind in identity_kinds(definition, is_enemy):
+	for kind in identity_kinds(definition, is_enemy, snapshot.get("suit", "")):
 		_identity.add_child(Emblem.create(kind, 16))
 	var chevrons := Emblem.create("level", 16)
 	chevrons.count = level
 	_identity.add_child(chevrons)
+	# Equipment and blessing marks for row figures.
+	var figure: Dictionary = extras.get("figure", {})
+	if figure.has("equipment"):
+		_identity.add_child(Emblem.create(Emblem.EQUIPMENT_KINDS.get(figure["equipment"]["base"], "sword"), 16))
+	if figure.has("blessing"):
+		_identity.add_child(Emblem.create("blessing_" + String(figure["blessing"]), 16))
 
 
-static func identity_kinds(unit_definition: Dictionary, enemy: bool) -> Array:
+static func identity_kinds(unit_definition: Dictionary, enemy: bool, suit: String = "") -> Array:
 	if enemy:
 		return ["enemy"]
-	return ["rank_" + String(unit_definition.get("rank", "page")), "suit_" + String(unit_definition.get("suit", "coins"))]
+	var rank := String(unit_definition.get("rank", "page"))
+	if rank == "legend":
+		rank = "king"  # placeholder emblem until M8
+	if suit == "":
+		suit = String(unit_definition.get("suit", "coins"))
+	return ["rank_" + rank, "suit_" + suit]
 
 
 ## Attack / health: the number sits in the middle of its emblem.

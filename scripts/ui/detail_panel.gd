@@ -64,10 +64,10 @@ func show_card(card: UnitCard) -> void:
 	# Rank · suit · level, each with its emblem.
 	for child in _subtitle.get_children():
 		child.queue_free()
-	var kinds := UnitCard.identity_kinds(definition, card.is_enemy)
+	var kinds := UnitCard.identity_kinds(definition, card.is_enemy, snapshot.get("suit", ""))
 	var texts: Array = [tr("UI_ENEMY")] if card.is_enemy else [
 		tr("RANK_" + String(definition["rank"]).to_upper()),
-		tr("SUIT_" + String(definition["suit"]).to_upper()),
+		tr("SUIT_" + String(snapshot.get("suit", definition["suit"])).to_upper()),
 	]
 	kinds.append("level")
 	texts.append(tr("UI_LEVEL") % level)
@@ -99,7 +99,34 @@ func show_card(card: UnitCard) -> void:
 				color.to_html(false), tr("STATUS_" + status.to_upper()), statuses[status],
 				Keywords.colorize(tr("STATUS_%s_DESC" % status.to_upper())),
 			])
+	var figure: Dictionary = card.extras.get("figure", {})
+	if not figure.is_empty():
+		if int(figure.get("bonus_attack", 0)) != 0 or int(figure.get("bonus_health", 0)) != 0:
+			lines.append(Keywords.colorize(tr("UI_BONUS_STATS") % [figure.get("bonus_attack", 0), figure.get("bonus_health", 0)]))
+		if figure.has("equipment"):
+			var item: Dictionary = figure["equipment"]
+			var color: Color = ItemText.RARITY_COLORS[int(item["rarity"])]
+			lines.append("[color=#%s]%s[/color]" % [color.to_html(false),
+				tr("UI_EQUIPMENT") % ("%s (%s)" % [ItemText.equipment_name(item), ItemText.rarity_name(int(item["rarity"]))])])
+			for line in ItemText.equipment_lines(card.extras["db"], item):
+				lines.append("   " + Keywords.colorize(line))
+		if figure.has("blessing"):
+			lines.append(Keywords.colorize(tr("UI_BLESSING") % ItemText.tarot_name(figure["blessing"]) + " – " + ItemText.tarot_text(figure["blessing"])))
 	_body.text = "\n".join(lines)
+	show()
+
+
+## Adds a hint line under the current content (e.g. how to use a tarot card).
+func show_hint(text: String) -> void:
+	_body.text += "\n[color=#%s]%s[/color]" % [Palette.GOLD.to_html(false), text]
+
+
+## Shows an object (relic, tarot, equipment) in the same panel.
+func show_object(object_card: ObjectCard) -> void:
+	_title.text = object_card.title
+	for child in _subtitle.get_children():
+		child.queue_free()
+	_body.text = "\n".join(object_card.lines.map(func(l: String) -> String: return Keywords.colorize(l)))
 	show()
 
 
