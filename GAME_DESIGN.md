@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 2 abgeschlossen, Phase 3 Runde 1 läuft
+**Status:** Planung – Phase 3, Runde 2 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -107,7 +107,15 @@ Weil der Kampf automatisch läuft, kann eine einzelne Niederlage als unfair empf
 - „Wahl aus 2–3 Gegnern“ verdreifacht grob den Bedarf an Gegner-Teams pro Akt (→ Phase 3/7).
 
 ## Phase 3 – Welt und prozedurale Generierung
-_Noch nicht behandelt._
+*Im Auto-Battler ist die „Welt“ die Abfolge der Begegnungen, keine Dungeon-Karte.*
+
+### Runde 1 (beantwortet)
+- **Gegner-Generierung:** **Prozedural nach Budget.** Jeder Kampf hat ein Stärke-Budget, und der Generator kauft dafür Gegner-Figuren aus dem Pool des Gebiets und gibt ihnen thematische Synergien. **Bosse sind handgemacht.**
+- **Gebiete:** **4 Gebiete à 2 Akte** (Beispiele: Friedhof → Kathedrale → Hexenwald → Abgrund, die Namen sind noch offen). Für den Vertical Slice reicht zunächst ein Gebiet.
+- **Zwischen den Kämpfen:**
+  - **Okkulte Ereignisse/Pakte:** Text-Ereignisse mit Wahl und Risiko-Tausch, z. B. „Opfere eine Figur für einen mächtigen Pakt“
+  - **Gegner überspringen** (Balatro-Blinds-Prinzip): Den Kampf auslassen und eine kleine Belohnung erhalten, aber auf Gold und Erfahrung verzichten
+- **Seeds:** Jeder Run hat intern einen Seed (für Reproduzierbarkeit und Bug-Reports). Seed eingeben und teilen kommt später, Daily-Challenge evtl. noch später.
 
 ## Phase 4 – Sicht, Erkundung und Information
 _Noch nicht behandelt._
@@ -148,9 +156,10 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 3, Runde 1: Gegner-Generierung, Gebiete/Biome, Ereignisse zwischen Kämpfen, Seeds
+- Phase 3, Runde 2: Boss-Design, Ereignis-Häufigkeit, Überspringen-Regeln, Gebietsthemen
 
 ## Später entscheiden
+- **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
 - **Art der Synergie-Objekte** (Karten/Joker/Pakte sind Platzhalter) → Phase 8/9
 
 ---
@@ -170,3 +179,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Auto-Battler mit Team aus levelbaren, kombinierbaren Figuren; Loop Kampf → Belohnung → Shop → Boss | Synergien und Build sind der Kern, Angriffe laufen automatisch | Survivors-Echtzeit, Züge mit freier Position, Raster mit Auto-Angriff; Einzelheld |
 | 2026-11-16 | Eine Reihe, Schritt-für-Schritt-Kampf, eine Niederlage = Tod, Akte mit Bossen | Lesbarkeit, Synergien nachvollziehbar, maximaler Druck | Zwei Reihen, freies Feld; Echtzeit-Simulation; Leben-System, übertragene HP |
 | 2026-11-16 | Volle Vorschau + Wahl aus 2–3 Gegnern, 8 Akte à 3 Kämpfe, 3→6 Plätze, Zuglimit mit Verderben | Fairness trotz Permadeath, Balatro-Rhythmus, Kurve knapp → explosiv | Nur Boss-Vorschau, Leben-System; 3×5, 4×4; feste Teamgröße; Unentschieden = Niederlage/weiter |
+| 2026-11-16 | Gegner prozedural nach Budget, Bosse handgemacht, 4 Gebiete à 2 Akte, Ereignisse/Pakte, Überspringen, interner Seed | Viel Abwechslung bei wenig Handarbeit, Risiko-Tausch passt zum Thema | Handgebaute Teams, Vorlagen; 8 Gebiete, ein Thema; Daily von Anfang an |
