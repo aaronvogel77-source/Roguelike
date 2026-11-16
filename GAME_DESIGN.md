@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 14, Runde 2 läuft
+**Status:** Planung – Phase 14 abgeschlossen, Phase 15 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -356,13 +356,25 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Kampf-Simulation:** **Ja.** Spiellogik ist strikt von der Darstellung getrennt (headless lauffähig), damit sich tausende Kämpfe für das Balancing simulieren lassen.
 - **Debug-Menü (versteckt, nur im Test-Build):** Gold/Seelen geben, Figur/Objekt spawnen, zu Akt/Boss springen, Seed anzeigen/setzen.
 
+### Runde 2 (beantwortet)
+- **Inhalts-Format:** **JSON** für alle Inhalte (Figuren, Gegner, Objekte, Pakte, Bosse, Ereignisse) im Ordner `data/`, mit automatischer Schema-Prüfung.
+- **Architektur-Paket (bestätigt):**
+  1. Zustandsmaschine: Menü → Okkultisten-Wahl → Gegnerwahl → Planung → Kampf → Belohnung → Shop → Tod/Sieg
+  2. Spieler-Aktionen als Command-Objekte (für Rückgängig und Autosave)
+  3. Event-Bus für Auslöser (Kampfbeginn, Treffer, Tod, Shop …)
+  4. Figuren als Datenobjekte, Komposition statt Vererbung
+  5. Master-Seed mit getrennten RNG-Strömen
+  6. Automatische Tests mit GUT (Formeln, Effekte, Fusionen, Generator)
+- **Code-Sprache:** **Alles Englisch** (Bezeichner und Kommentare). Spieltexte über die Übersetzungsdatei (Deutsch zuerst).
+- **Test-Builds:** **GitHub Pages**, automatisch per GitHub Actions. Godot-Web-Export ohne Threads (Pages sendet keine COOP/COEP-Header). Pages muss im Repo einmalig aktiviert werden, bei privatem Repo ggf. ein kostenpflichtiger Plan nötig.
+
 ## Phase 15 – Umsetzungsplan und Meilensteine
 _Noch nicht behandelt._
 
 ---
 
 ## Offene Fragen
-- Phase 14, Runde 2: JSON bestätigen, Code-Sprache, Test-Builds/Hosting, Architektur-Gesamtpaket bestätigen
+- Phase 15, Runde 1: Meilensteinplan bestätigen, Zeitpunkt der Inhaltsrunden
 - Inhaltsrunden (nach Phase 9): 16 Figuren (4 je Farbe) + Gegner Münzen-Gebiet, Figur für Figur
 
 ## Später entscheiden
@@ -413,3 +425,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Seltenheits-Leuchtsystem bestätigt, Musik pro Gebiet + Boss, statische Bilder + Code-Effekte, Name später | Stärke sofort lesbar, KI-Grafik-tauglich | Adaptive Musik, Hauptthema; Frame-Animationen |
 | 2026-11-16 | Lokal + Export-Code, versioniertes JSON, deterministisch mit getrennten RNG-Strömen, 3 Statistik-Bereiche | Kein Server nötig, Bugs reproduzierbar | Nur lokal, Cloud; binär; einfacher Zufall; Run-Verlauf |
 | 2026-11-16 | Baukasten-Effekte + Sonderskripte, headless Kampf-Simulation, Debug-Menü mit 4 Werkzeugen | Fusionen kombinieren sauber, Balancing per Simulation | Ein Skript pro Fähigkeit, reiner Baukasten; Simulation später |
+| 2026-11-16 | JSON-Inhalte, Architektur-Paket (FSM, Commands, Event-Bus, Komposition, RNG-Ströme, GUT), Code komplett Englisch, GitHub Pages | Robust, testbar, Builds per Link spielbar | Tabellen, Godot-Ressourcen; deutsche Kommentare; itch.io |
