@@ -16,7 +16,7 @@ func _init() -> void:
 			if run.stage == RunState.Stage.ENEMY_CHOICE:
 				run.choose_enemy(mini(difficulty, run.enemy_options.size() - 1))
 				_shop(run)
-				var result := BattleSimulator.simulate(run.player_battle_team(), run.enemy_battle_team(), run.gold)
+				var result := BattleSimulator.simulate(run.player_battle_team(), run.enemy_battle_team(), run.battle_gold(), run.battle_options())
 				run.apply_battle_result(result)
 			elif run.stage == RunState.Stage.REWARD:
 				if not run.take_reward(0):

@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M2 abgeschlossen. M3 (Run-Schleife) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0–M3 abgeschlossen. M4 (echte Inhalte) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -475,6 +475,17 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 *Profil:* Diese Gegner greifen Gold und Schild an, also genau die Stärken der Münz-Figuren. Es gibt einen echten Tank (Tresorwächter), einen Sniper gegen die hintere Reihe (Münzwerfer), einen Konter gegen Opfer-Builds (Drache) und einen Wildcard-Gegner (Spiegelmünze, in der Vorschau sichtbar).
 ⚠️ *Fluch-Lücke bleibt:* Weder Spieler noch Münzen-Gegner nutzen Fluch → über Ausrüstung/Relikte in M5 abdecken.
 
+### Gegner-Themen (M4, Vorschlag von Claude)
+Der Gegner-Generator wählt pro Gegner-Team ein Thema des Gebiets. Gegner mit diesem Thema werden 3× so oft gezogen. Die Aufstellung folgt der Rolle: vorne → beliebig → hinten (bei Gleichstand mehr Leben nach vorne).
+
+| Thema | Name im Spiel | Gegner |
+|---|---|---|
+| greed | Gierige Bande | Bettlergeist, Schuldeneintreiber, Gieriger Drache |
+| vault | Tresorwache | Tresorwächter, Gierschlund, Spiegelmünze |
+| trickster | Gaukler | Der Wechsler, Münzwerfer, Spiegelmünze |
+
+Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Münzwerfer, Gieriger Drache · beliebig = Rest
+
 ### Regel-Bosse (Vertical Slice)
 | Akt | Name | Regel |
 |---|---|---|
@@ -499,7 +510,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- M4 (echte Inhalte: thematische Gegner, Regel-Bosse, Gebiets-Segen) bauen
+- M4-Feedback einholen (Debug: `?debug=1` → „+10 Gold“, „Zum Boss“)
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -570,3 +581,4 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | M3: RunState (Gold, Zinsen, Shop, Neuwürfeln, Plätze, Leveln, Belohnung, Rückgängig), Budget-Gegnergenerator, Bildschirme Gegnerwahl/Planung/Belohnung/Run-Ende, Tippen + Drag & Drop, 63 Tests | Erster komplett spielbarer Mini-Run | – |
 | 2026-11-16 | M3-Feedback: Schuldeneintreiber +1 Angriff je 10 Gold (einmalig zu Kampfbeginn), Startgold 8, Angriff rot / Leben grün, Verkaufsfeld statt Button (ziehen oder antippen), farbige Schlüsselwörter in allen Beschreibungen, Zwischenbildschirm beim Verschmelzen (EP-Balken, bei Stufenaufstieg Werte alt → neu). Bedienung, Schwierigkeit und Informationen bestätigt | Lesbarkeit, weniger Gold am Anfang | Zugbeginn-Varianten; Einkommen 4; Zinsen erst ab Akt 2 |
 | 2026-11-16 | Symbole für Rang (Kappe/Helm/Krone), Farbe (Münze/Stab/Kelch/Schwert) und Stufe (Winkel) im Detail-Panel und auf Karten; Angriff als roter Zackenstern, Leben als grünes Herz mit Zahl in der Mitte. M3 abgenommen | Platzhalter-Symbole, werden in M8 verfeinert | – |
+| 2026-11-16 | M4: thematische Gegner-Teams (3 Themen, Rollen-Aufstellung), Regel-Bosse Steuereintreiber (Gold im Kampf = 0, echtes Gold bleibt) und Goldene Mauer (7 Gegner-Plätze), Gebiets-Segen Münzen (+1 Schild für Münz-Figuren), Anzeige in Gegnerwahl/Planung/Kampf, Debug-Werkzeuge per `?debug=1` | Slice-Inhalte vollständig spielbar | – |

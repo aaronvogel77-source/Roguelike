@@ -78,8 +78,72 @@ func _top_bar(title: String) -> HBoxContainer:
 	bar.add_child(_label(tr("UI_GOLD") % _run.gold, 26, Palette.GOLD))
 	bar.add_child(_label(tr("UI_INTEREST") % _run.interest(), 18, Palette.MUTED))
 	bar.add_child(_label(tr("UI_SLOTS") % [_filled_slots(), _run.slot_count()], 20, Palette.PARCHMENT))
+	if _url_flag("debug"):
+		bar.add_child(_button("+10 Gold", Vector2(110, 44), _debug_gold))
+		bar.add_child(_button("Zum Boss", Vector2(130, 44), _debug_to_boss))
 	bar.add_child(_spacer(8))
 	return bar
+
+
+# --- Debug tools ("?debug=1" in the address) ---------------------------------------
+
+func _debug_gold() -> void:
+	_run.gold += 10
+	_show_stage()
+
+
+## Wins every fight until the next boss choice (for testing bosses quickly).
+func _debug_to_boss() -> void:
+	var guard := 0
+	while guard < 20 and not (_run.stage == RunState.Stage.ENEMY_CHOICE and _run.is_boss_fight()):
+		guard += 1
+		match _run.stage:
+			RunState.Stage.ENEMY_CHOICE:
+				_run.choose_enemy(0)
+			RunState.Stage.PLANNING:
+				_run.apply_battle_result({"victory": true})
+			RunState.Stage.REWARD:
+				_run.skip_reward()
+			_:
+				break
+	_undo.clear()
+	_show_stage()
+
+
+func _url_flag(flag: String) -> bool:
+	if not OS.has_feature("web"):
+		return false
+	return str(JavaScriptBridge.eval("window.location.search", true)).contains(flag + "=1")
+
+
+## Region blessing, plus the boss rule when the chosen enemy is a boss.
+func _info_line() -> Control:
+	var text := tr("REGION_" + _run.region.to_upper()) + " · " + tr("BLESSING_" + _run.region.to_upper())
+	if _rule_text() != "":
+		text += "   ·   " + _rule_text()
+	return _rich_line(text, 17)
+
+
+func _rule_text() -> String:
+	var boss_id: String = _run.chosen_enemy.get("boss_id", "")
+	if boss_id == "":
+		return ""
+	return tr("UI_BOSS_RULE") % tr("BOSS_" + boss_id.to_upper() + "_RULE")
+
+
+## Centered one-line text with colored keywords.
+func _rich_line(text: String, font_size: int) -> RichTextLabel:
+	var line := RichTextLabel.new()
+	line.bbcode_enabled = true
+	line.fit_content = true
+	line.scroll_active = false
+	line.autowrap_mode = TextServer.AUTOWRAP_WORD
+	line.custom_minimum_size = Vector2(320, 0)
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_theme_font_size_override("normal_font_size", font_size)
+	line.add_theme_color_override("default_color", Palette.PARCHMENT)
+	line.text = "[center]" + Keywords.colorize(text) + "[/center]"
+	return line
 
 
 func _stage_title() -> String:
@@ -169,6 +233,7 @@ func _url_seed() -> int:
 func _build_enemy_choice() -> void:
 	var column := _column()
 	column.add_child(_top_bar(_stage_title()))
+	column.add_child(_info_line())
 	var title := _label(tr("UI_CHOOSE_ENEMY"), 24, Palette.PARCHMENT)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(title)
@@ -211,6 +276,16 @@ func _enemy_option_panel(option: Dictionary, index: int) -> Control:
 	var title := _label("%s · %s" % [heading, tr("UI_BONUS_GOLD") % option["bonus"]], 22, Palette.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
+	if option["kind"] == "boss" and option.get("boss_id", "") != "":
+		var boss_key := "BOSS_" + String(option["boss_id"]).to_upper()
+		var boss_name := _label(tr(boss_key), 24, Palette.HEALTH)
+		boss_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		box.add_child(boss_name)
+		box.add_child(_rich_line(tr("UI_BOSS_RULE") % tr(boss_key + "_RULE"), 18))
+	elif option.get("theme", "") != "":
+		var theme_label := _label(tr("THEME_" + String(option["theme"]).to_upper()), 18, Palette.PARCHMENT)
+		theme_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		box.add_child(theme_label)
 	if option["kind"] == "boss":
 		var note := _label(tr("UI_BOSS_SLOT_NOTE"), 16, Palette.PARCHMENT)
 		note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -246,6 +321,7 @@ var _undo_button: Button
 func _build_planning() -> void:
 	var column := _column()
 	column.add_child(_top_bar(_stage_title()))
+	column.add_child(_info_line())
 
 	# Battle field preview: own slots (front next to the middle) and the chosen enemy.
 	var field := HBoxContainer.new()
@@ -475,7 +551,8 @@ func _on_fight() -> void:
 	_battle_view.sandbox = false
 	add_child(_battle_view)
 	_battle_view.finished.connect(_on_battle_finished)
-	_battle_view.play_battle(_run.player_battle_team(), _run.enemy_battle_team(), _run.gold, _footer_text())
+	_battle_view.play_battle(_run.player_battle_team(), _run.enemy_battle_team(), _run.battle_gold(),
+		_footer_text(), _run.battle_options(), _rule_text())
 
 
 func _on_battle_finished(result: Dictionary) -> void:

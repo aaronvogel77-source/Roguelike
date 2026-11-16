@@ -37,6 +37,8 @@ const RANK_ODDS := [
 var db: ContentDb
 var rng: RngStreams
 var stage: Stage = Stage.ENEMY_CHOICE
+## Region (tarot suit) of the current act. The slice only has the coin region.
+var region := "coins"
 var act := 1
 var fight := 0  # 0 = small, 1 = big, 2 = boss
 var gold := START_GOLD
@@ -195,9 +197,31 @@ func buy_slot() -> bool:
 	return true
 
 
+## Rule of the chosen boss ("" for normal fights).
+func boss_rule() -> String:
+	return chosen_enemy.get("rule", "")
+
+
+## Battle options: region blessing and boss rules.
+func battle_options() -> Dictionary:
+	var options := {}
+	var blessing: Dictionary = db.regions.get(region, {}).get("blessing", {})
+	if not blessing.is_empty():
+		options["blessing"] = blessing
+	if boss_rule() == "gold_zero":
+		options["gold_zero"] = true
+	return options
+
+
+## Gold the battle sees (the Tax Collector makes it 0).
+func battle_gold() -> int:
+	return 0 if boss_rule() == "gold_zero" else gold
+
+
 ## Applies a finished battle. Returns the new stage.
 func apply_battle_result(result: Dictionary) -> Stage:
-	gold = int(result.get("gold_after", gold))
+	if boss_rule() != "gold_zero":
+		gold = int(result.get("gold_after", gold))
 	if not result["victory"]:
 		stage = Stage.LOST
 		return stage
@@ -277,7 +301,7 @@ func _new_figure(def_id: String) -> Dictionary:
 
 
 func _roll_enemy_options() -> void:
-	enemy_options = EnemyGenerator.options(db, act, fight, rng.stream("enemy_gen"))
+	enemy_options = EnemyGenerator.options(db, region, act, fight, rng.stream("enemy_gen"))
 	chosen_enemy = {}
 
 
@@ -323,7 +347,7 @@ func _figure_ids_of_rank(rank: String) -> Array:
 
 func to_dict() -> Dictionary:
 	return {
-		"rng": rng.to_dict(), "stage": stage, "act": act, "fight": fight, "gold": gold,
+		"rng": rng.to_dict(), "stage": stage, "region": region, "act": act, "fight": fight, "gold": gold,
 		"slots_bought": slots_bought, "row": row.duplicate(true), "shop": shop.duplicate(),
 		"reroll_count": reroll_count, "enemy_options": enemy_options.duplicate(true),
 		"chosen_enemy": chosen_enemy.duplicate(true), "rewards": rewards.duplicate(),
@@ -336,6 +360,7 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.db = content
 	run.rng = RngStreams.from_dict(data["rng"])
 	run.stage = int(data["stage"]) as Stage
+	run.region = data.get("region", "coins")
 	run.act = int(data["act"])
 	run.fight = int(data["fight"])
 	run.gold = int(data["gold"])

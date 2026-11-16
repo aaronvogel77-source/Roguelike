@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "regions": [
+    {
+      "id": "coins",
+      "themes": [
+        "greed",
+        "vault",
+        "trickster"
+      ],
+      "blessing": {
+        "suit": "coins",
+        "status": "shield",
+        "amount": 1
+      }
+    }
+  ],
+  "bosses": [
+    {
+      "id": "tax_collector",
+      "region": "coins",
+      "act": 1,
+      "rule": "gold_zero"
+    },
+    {
+      "id": "golden_wall",
+      "region": "coins",
+      "act": 2,
+      "rule": "seven_slots"
+    }
+  ]
+}

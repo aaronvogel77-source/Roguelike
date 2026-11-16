@@ -33,9 +33,11 @@ var _next_uid := 1
 ## player_team / enemy_team: arrays of entries, front first. An entry is either
 ## a content definition or {"def": definition, "level": 1..3}.
 ## Returns { "outcome", "victory", "turns", "gold_after", "events" }.
-static func simulate(player_team: Array, enemy_team: Array, player_gold: int = 0) -> Dictionary:
+## options: {"blessing": {"suit", "status", "amount"}} gives the player's
+## figures of that suit a status at battle start (region blessing).
+static func simulate(player_team: Array, enemy_team: Array, player_gold: int = 0, options: Dictionary = {}) -> Dictionary:
 	var battle := BattleSimulator.new()
-	return battle._run(player_team, enemy_team, player_gold)
+	return battle._run(player_team, enemy_team, player_gold, options)
 
 
 ## Decay damage on a given turn: 1, 2, 4, 8 ... starting at DECAY_START_TURN.
@@ -45,7 +47,7 @@ static func decay_damage(turn_number: int) -> int:
 	return 1 << mini(turn_number - DECAY_START_TURN, 30)
 
 
-func _run(player_team: Array, enemy_team: Array, player_gold: int) -> Dictionary:
+func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dictionary = {}) -> Dictionary:
 	gold = player_gold
 	for entry in player_team:
 		rows[PLAYER].append(_make_unit(entry, PLAYER))
@@ -59,6 +61,7 @@ func _run(player_team: Array, enemy_team: Array, player_gold: int) -> Dictionary
 	})
 
 	if not _battle_over():
+		_apply_blessing(options.get("blessing", {}))
 		_fire_trigger("battle_start", false)
 		_fire_trigger("battle_start", true)
 		_process_deaths()
@@ -98,6 +101,17 @@ func _make_unit(entry: Dictionary, side: int) -> BattleUnit:
 	var unit := BattleUnit.from_definition(definition, side, _next_uid, level)
 	_next_uid += 1
 	return unit
+
+
+## Region blessing: player figures of the region's suit get a status first.
+func _apply_blessing(blessing: Dictionary) -> void:
+	if blessing.is_empty():
+		return
+	for unit: BattleUnit in rows[PLAYER]:
+		if unit.suit == blessing["suit"]:
+			unit.add_status(blessing["status"], int(blessing["amount"]))
+			events.append({"type": "blessing", "uid": unit.uid, "status": blessing["status"]})
+			_emit_update(unit)
 
 
 # --- Turn steps ---------------------------------------------------------------

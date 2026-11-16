@@ -50,10 +50,11 @@ func _ready() -> void:
 
 
 ## Run mode: shows the given fight and starts it right away.
-func play_battle(player_team: Array, enemy_team: Array, gold: int, info: String) -> void:
+func play_battle(player_team: Array, enemy_team: Array, gold: int, info: String,
+		options: Dictionary = {}, rule_text: String = "") -> void:
 	_playback_token += 1
 	_battle_gold = gold
-	_battle = BattleSimulator.simulate(player_team, enemy_team, gold)
+	_battle = BattleSimulator.simulate(player_team, enemy_team, gold, options)
 	_seed_label.text = info
 	_set_gold(gold)
 	_turn_label.text = ""
@@ -62,7 +63,8 @@ func play_battle(player_team: Array, enemy_team: Array, gold: int, info: String)
 	_new_button.text = tr("UI_CONTINUE")
 	_new_button.hide()
 	_show_start_state(_battle["events"][0])
-	await get_tree().create_timer(0.6).timeout
+	_banner.text = rule_text
+	await get_tree().create_timer(1.2 if rule_text != "" else 0.6).timeout
 	_start_battle()
 
 
@@ -265,6 +267,10 @@ func _show_start_state(start_event: Dictionary) -> void:
 		_player_row.add_child(_make_card(snapshot, false))
 	for snapshot in start_event["enemy"]:
 		_enemy_row.add_child(_make_card(snapshot, true))
+	# Rule bosses can field more than 6 units.
+	var enemy_slots := maxi(6, start_event["enemy"].size())
+	_enemy_row.custom_minimum_size.x = enemy_slots * (UnitCard.CARD_SIZE.x + CARD_SPACING)
+	_fit_field.call_deferred()
 
 
 ## Web only: "?seed=123" in the address replays that battle (for bug reports).
@@ -316,6 +322,8 @@ func _play_events(token: int) -> void:
 					await _wait(0.3)  # breathing room between turns
 				_turn_label.text = tr("UI_TURN") % event["turn"]
 				_banner.text = ""
+			"blessing":
+				await _show_trigger({"uid": event["uid"], "effect": "gain_shield", "targets": [event["uid"]]})
 			"trigger":
 				await _show_trigger(event)
 			"update":

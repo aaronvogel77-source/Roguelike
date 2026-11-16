@@ -132,3 +132,13 @@ UI_MERGED,Verschmolzen!,Merged!
 UI_XP_GAIN,EP %s → %s,XP %s → %s
 UI_STAT_CHANGE_ATTACK,Angriff %d → %d,Attack %d → %d
 UI_STAT_CHANGE_HEALTH,Leben %d → %d,Health %d → %d
+REGION_COINS,Münzen-Gebiet,Coin region
+BLESSING_COINS,Gebiets-Segen: Münz-Figuren erhalten zu Kampfbeginn Schild 1.,Region blessing: coin figures gain 1 shield at battle start.
+THEME_GREED,Gierige Bande,Greedy gang
+THEME_VAULT,Tresorwache,Vault guard
+THEME_TRICKSTER,Gaukler,Tricksters
+BOSS_TAX_COLLECTOR,Der Steuereintreiber,The Tax Collector
+BOSS_TAX_COLLECTOR_RULE,Im Kampf gilt dein Gold als 0.,"In battle, your gold counts as 0."
+BOSS_GOLDEN_WALL,Die Goldene Mauer,The Golden Wall
+BOSS_GOLDEN_WALL_RULE,Das Gegner-Team hat 7 Plätze statt 6.,The enemy team has 7 slots instead of 6.
+UI_BOSS_RULE,Boss-Regel: %s,Boss rule: %s
