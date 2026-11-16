@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 1 abgeschlossen, Phase 2 Runde 1 läuft
+**Status:** Planung – Phase 2, Runde 3 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -75,8 +75,16 @@ Ein kommerzieller Release ohne Programmiererfahrung ist ein sehr großes Vorhabe
 - **Zeitsystem:** Einfache Züge (eine Aktion pro Zug)
 - **Bewegung/Kampf:** „Figuren bewegen sich frei, ohne Raster. Am wichtigsten sind Synergien und Build, Angriffe laufen meist automatisch.“
 
-### ⚠️ Widerspruch
-„Rundenbasiert auf Raster“ passt nicht zu „frei ohne Raster, Angriffe automatisch“. Das betrifft auch Phase 1 (kompaktes Spielfeld als Raster). Klärung folgt in Runde 2.
+### Runde 2 (Widerspruch geklärt)
+- **Kampfmodell: Auto-Battler.** In der Planungsphase (Shop, Belohnung) stellt der Spieler Figuren, Joker und Karten zusammen und ordnet sie an. Der Kampf läuft danach **automatisch** ab.
+  - „Einfache Züge“ bedeutet damit den Rhythmus **Planungsphase → Kampf**, nicht Züge innerhalb des Kampfs.
+  - „Frei ohne Raster“ bezieht sich auf die Bewegung im Kampf. Wie die Figuren aufgestellt werden, entscheidet Runde 3.
+- **Figuren:** Ein **Team aus Figuren**, die man **leveln und miteinander kombinieren** kann. Die Synergien entstehen zwischen den Figuren und werden durch Joker und Karten verstärkt.
+- 📚 Referenzen: Super Auto Pets, Backpack Battles, Teamfight Tactics, Balatro (Synergie-Eskalation)
+
+### Rückwirkung auf Phase 1
+- „Kompaktes Spielfeld (Raster ~7×9)“ wird zu einem **kompakten, vollständig sichtbaren Kampffeld**. Die genaue Aufstellungsform wird in Phase 2, Runde 3 entschieden.
+- Touch passt sehr gut: Drag & Drop in der Planungsphase, Zuschauen im Kampf.
 
 ## Phase 3 – Welt und prozedurale Generierung
 _Noch nicht behandelt._
@@ -120,11 +128,10 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 2, Runde 2: Widerspruch Raster/rundenbasiert vs. frei/automatisch klären; ein Held oder Team aus Figuren?
+- Phase 2, Runde 3: Aufstellung, Kampfdarstellung, Niederlage-Regel/Druck, Run-Ziel
 
 ## Später entscheiden
 - **Art der Synergie-Objekte** (Karten/Joker/Pakte sind Platzhalter) → Phase 8/9
-- **Kampftempo** (Echtzeit, rundenbasiert, Auto-Kampf oder kartenbasiert) → Phase 2. Leitlinie: Das Tempo muss komplexes Synergie-Kombinieren unterstützen.
 
 ---
 
@@ -140,3 +147,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | Browser + Mobile, Godot 4 + GDScript, Maus + Touch, KI-generierte Grafik | Einsteigerfreundlich, leicht teilbar, starke UI für Synergien | Desktop-only, Python, LÖVE, Unity; Gamepad |
 | 2026-11-16 | Querformat, Tarot-Illustrationsstil, KI-Tool per Vergleichstest, kompaktes Spielfeld | Lesbarkeit auf Mobile, passt zu Dark Fantasy und Touch-Taktik | Hochformat, responsiv; Pixel-Art, gemalter Stil; scrollende Karte, abstrakte Szene |
 | 2026-11-16 | 1280×720, KI-Test nach der Planung, Claude committet, Claude baut und Nutzer testet | Nutzer will testen statt programmieren lernen | 1080p, 360p; sofortiger KI-Test; Lernen am Projekt |
+| 2026-11-16 | Auto-Battler mit Team aus levelbaren, kombinierbaren Figuren; Loop Kampf → Belohnung → Shop → Boss | Synergien und Build sind der Kern, Angriffe laufen automatisch | Survivors-Echtzeit, Züge mit freier Position, Raster mit Auto-Angriff; Einzelheld |
