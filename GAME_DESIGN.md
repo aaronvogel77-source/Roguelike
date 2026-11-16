@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung abgeschlossen (Phasen 0–15). Inhaltsrunden (16 Figuren) laufen, danach Start mit M0.
+**Status:** Planung und Slice-Inhalte abgeschlossen. Umsetzung startet mit M0.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -456,6 +456,22 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 *Profil:* Diese Gegner greifen Gold und Schild an, also genau die Stärken der Münz-Figuren. Es gibt einen echten Tank (Tresorwächter), einen Sniper gegen die hintere Reihe (Münzwerfer), einen Konter gegen Opfer-Builds (Drache) und einen Wildcard-Gegner (Spiegelmünze, in der Vorschau sichtbar).
 ⚠️ *Fluch-Lücke bleibt:* Weder Spieler noch Münzen-Gegner nutzen Fluch → über Ausrüstung/Relikte in M5 abdecken.
 
+### Regel-Bosse (Vertical Slice)
+| Akt | Name | Regel |
+|---|---|---|
+| 1 | **Der Steuereintreiber** | Im Kampf gilt das Gold des Spielers als 0 (kontert Spar-Builds wie Midas und den Goldgepanzerten) |
+| 2 | **Die Goldene Mauer** | Das Gegner-Team hat **7 Plätze** statt 6 |
+
+*Technik:* Das Boss-Team wird vom Generator mit erhöhtem Budget (Boss-Faktor) gefüllt. Das Layout muss 7 Gegner-Plätze unterstützen.
+
+### Okkultisten (Vertical Slice)
+| Name | Grundregel | Startfigur |
+|---|---|---|
+| **Der Wucherer** | Zinsen max. +7 statt +5, aber nur 6 Startgold statt 10 | Münzknecht |
+| **Die Fechtmeisterin** | Start mit 4 statt 3 Plätzen, dafür keine Zinsen | Klingenlehrling |
+
+*Profil:* Wirtschaft gegen Tempo. Die zwei Okkultisten ziehen das Zins-Dilemma in entgegengesetzte Richtungen.
+
 ---
 
 ## Kompakte Zusammenfassung
@@ -464,9 +480,8 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- Inhaltsrunde 6: 2 Regel-Bosse
-- Inhaltsrunde 7: 2 Okkultisten
-- Danach: Start M0
+- Start M0 (Grundgerüst + GitHub Pages)
+- Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
 ## Später entscheiden
 - **Spielname** (Kandidaten: Arcana Profana, Hofstaat der Asche, Die Verfluchte Hand)
@@ -524,3 +539,4 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | Schwerter: Klingenlehrling, Henker, Klare Klinge, Der Richter – alle 16 Spieler-Figuren stehen | Blutung aufbauen/auslösen, Konter gegen Schild | Messerwerfer, Duellant; Schattenklinge, Sturmklinge; Witwe der Klingen, Windtochter; Tausend Schnitte, Schwertkönig |
 | 2026-11-16 | Gegner, Bosse und Okkultisten werden vor M0 gemeinsam einzeln entworfen. Gegner 1–4: Bettlergeist, Schuldeneintreiber, Wechsler, Gierschlund | Maximale Mitsprache | Set-Vorschlag durch Claude; Inhalte erst vor dem jeweiligen Meilenstein |
 | 2026-11-16 | Gegner 5–8: Tresorwächter, Münzwerfer, Gieriger Drache, Spiegelmünze | Tank, Sniper, Opfer-Konter, Wildcard | Bankhalter, Kultist; Pfandmeister, Fluchpfennig; Golem, Steuerherr; Kassiererin, Bankrotteur |
+| 2026-11-16 | Bosse: Steuereintreiber (Akt 1), Goldene Mauer (Akt 2). Okkultisten: Wucherer, Fechtmeisterin | Wirtschaft vs. Tempo, Konter gegen Spar-Builds | Geblendeter, Stummer; Eiserner Tresor, Umkehrer, Gleichgewicht; Aschenhexe, Totengräber |
