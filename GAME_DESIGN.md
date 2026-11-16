@@ -420,7 +420,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 |---|---|---|---|
 | Bube | **Münzknecht** | 1/4 | *Kampfbeginn:* erhält Schild 2 / 4 / 6 |
 | Ritter | **Goldgepanzerter** | 3/4 | *Kampfbeginn:* erhält +1 Leben pro 4 / 3 / 2 Gold im Besitz |
-| Königin | **Goldene Waage** | 3/4 | *Bei Tod einer eigenen Figur:* vorderste eigene Figur erhält ×1,2 / ×1,35 / ×1,5 Angriff (Mult, stapelt) |
+| Königin | **Goldene Waage** | 3/4 | *Bei Tod einer eigenen Figur:* **hinterste** eigene Figur erhält ×1,2 / ×1,35 / ×1,5 Angriff (Mult, stapelt) – geändert nach M5a-Feedback, vorher vorderste |
 | König | **König Midas** | 4/6 | *Kampfbeginn:* erhält ×(1 + Gold/20) / ×(1 + Gold/15) / ×(1 + Gold/10) Angriff (Mult) |
 
 *Profil:* Ein starker Spar-Build (Goldgepanzerter + Midas) steht gegen das Kaufen. Schild kommt nur vom Buben. Die Waage bringt Multiplikatoren für Opfer-Builds und verbindet sich mit Kelchen (Opfer).
@@ -563,6 +563,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 ## Später entscheiden
 - **Für den Inhaltsausbau nach dem Slice vorgemerkt (M5a-Feedback):** legendäre Ausrüstung, legendäre Reliquien, mehr Multiplikator-Relikte und -Fähigkeiten für das Endgame, ausgearbeitete Synergien, Blutpack (kostet Leben einer Figur statt Gold)
 - **Seelen-Pack** (Pakte gegen Seelen) → M5b
+- **Relikt „Heiligenschein“:** gibt einer Figur einen 2. Segen-Platz (Inhaltsausbau). Tarot-Regel bleibt: Kraft und Magier stapeln, Segen max. 1 pro Figur.
 - **Schwierigkeit** erst nachjustieren, wenn alle Systeme (Relikte, Pakte, Fusion …) drin sind; gefühlt evtl. eine Nuance leichter
 - **Spielname** (Kandidaten: Arcana Profana, Hofstaat der Asche, Die Verfluchte Hand)
 - **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
@@ -637,3 +638,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | M5 in M5a/M5b geteilt; Objekt-Sets bestätigt; Objekte nur über Packs (Balatro), Figuren direkt; 4 legendäre Asse nur aus Packs (selten, Debug-Knopf), getrennt von Fusionsrezepten; Einkommen 4 | Glücksspiel-Reiz, seltene Highlights, knappere Wirtschaft | Direktkauf von Objekten; Legendäre = Fusionsrezepte |
 | 2026-11-16 | M5a gebaut (v0.5.0): Packs (4 Typen × 3 Größen) mit Öffnen-Bildschirm, Ausrüstung mit Affixen, 8 Relikte, 6 Tarot-Karten, 4 legendäre Asse, Relikt-/Tarot-Leiste, Einschieben zwischen Karten, Plätze nur durch Bosse, Einkommen 4, Debug „Legendär-Pack“; 104 Tests | – | – |
 | 2026-11-16 | M5a-Feedback: Hofstaat-Pack gestrichen, Legendäre nur in Arcana-Packs (1 %), polychromer Glanz + „Legendär!“, Verschmelzen/Verkaufen bei Belohnung und Pack-Öffnen, Blutungs-Tick mit aufsteigendem Tropfen. Blutung bleibt dauerhaft (Klarstellung) | Figuren nur gezielt im Shop, Legendäre als echtes Highlight | Hofstaat-Pack, Verfluchtes Pack, Omen-Pack |
+| 2026-11-16 | v0.5.2: Goldene Waage → hinterste Figur, Relikt-/Tarot-Einflüsse als Symbole auf der Karte + goldene Werte bei Bonus + Liste im Detail-Panel, Brennen zählt sichtbar herunter („Brennen 3 -> 2“), Kampf-Tempo ×0,8. Brennen-Regel und Tarot-Stapeln bleiben | Nachvollziehbarkeit | Brennen dauerhaft; nichts/alles stapelt |

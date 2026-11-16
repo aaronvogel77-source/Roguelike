@@ -110,6 +110,11 @@ func show_card(card: UnitCard) -> void:
 				tr("UI_EQUIPMENT") % ("%s (%s)" % [ItemText.equipment_name(item), ItemText.rarity_name(int(item["rarity"]))])])
 			for line in ItemText.equipment_lines(card.extras["db"], item):
 				lines.append("   " + Keywords.colorize(line))
+		var names: Array = []
+		for source in card.extras.get("sources", []):
+			names.append(ItemText.tarot_name("strength") if source == "tarot_strength" else ItemText.relic_name(source))
+		if not names.is_empty():
+			lines.append("[color=#%s]%s[/color]" % [Emblem.COLORS["relic"].to_html(false), tr("UI_AFFECTED_BY") % ", ".join(names)])
 		if figure.has("blessing"):
 			lines.append(Keywords.colorize(tr("UI_BLESSING") % ItemText.tarot_name(figure["blessing"]) + " – " + ItemText.tarot_text(figure["blessing"])))
 	_body.text = "\n".join(lines)

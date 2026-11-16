@@ -35,7 +35,7 @@ UI_YOUR_TEAM,Dein Team,Your team
 UI_ENEMIES,Gegner,Enemies
 ABIL_COIN_SQUIRE,Kampfbeginn: erhält Schild {v}.,Battle start: gains {v} shield.
 ABIL_GOLD_ARMORED,Kampfbeginn: +1 Leben pro {v} Gold im Besitz.,Battle start: +1 health per {v} gold you own.
-ABIL_GOLDEN_SCALES,Wenn eine eigene Figur stirbt: Die vorderste eigene Figur erhält ×{v} Angriff.,When an ally dies: your front figure gains ×{v} attack.
+ABIL_GOLDEN_SCALES,Wenn eine eigene Figur stirbt: Die hinterste eigene Figur erhält ×{v} Angriff.,When an ally dies: your rearmost figure gains ×{v} attack.
 ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×(1 + gold / {v}).
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
 ABIL_ENRAGED_ONE,Wenn getroffen: +{v} Angriff.,When hit: +{v} attack.
@@ -242,3 +242,5 @@ UI_BONUS_STATS,Dauerhaft +%d/+%d,Permanent +%d/+%d
 UI_INCOME_EXTRA,Relikte/Ausrüstung %+d,Relics/equipment %+d
 UI_RARE_LEGEND,Legendär!,Legendary!
 UI_PACK_ROW_HINT,"Dein Team: aufeinanderziehen zum Verschmelzen, ins Verkaufsfeld zum Verkaufen","Your team: drag onto each other to merge, onto the sell field to sell"
+UI_BURN_TICK,Brennen %d -> %d,Burn %d -> %d
+UI_AFFECTED_BY,Wirkt auf diese Figur: %s,Affecting this figure: %s

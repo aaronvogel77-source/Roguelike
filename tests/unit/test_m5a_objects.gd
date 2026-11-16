@@ -252,3 +252,16 @@ func test_figures_can_be_merged_on_the_reward_screen() -> void:
 	run.apply_battle_result({"victory": true})
 	assert_true(run.move(1, 0))
 	assert_null(run.row[1])
+
+
+func test_team_entries_list_what_modifies_a_figure() -> void:
+	var run := _planning_run()
+	run.row = [_fig("coin_squire"), _fig("spark_bearer"), null]
+	run.row[0]["bonus_attack"] = 2
+	run.relics = ["war_chest", "eternal_ember", "beggars_bowl"]
+	var team := run.player_battle_team()
+	assert_has(team[0]["sources"], "war_chest")
+	assert_has(team[0]["sources"], "tarot_strength")
+	assert_does_not_have(team[0]["sources"], "eternal_ember")
+	assert_has(team[1]["sources"], "eternal_ember", "spark bearer applies burn")
+	assert_does_not_have(team[1]["sources"], "beggars_bowl", "gold relics affect no figure")

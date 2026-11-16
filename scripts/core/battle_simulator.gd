@@ -175,6 +175,7 @@ func _tick_damage_over_time() -> void:
 				var amount := int(floor(burn * _burn_multiplier_against(unit)))
 				_deal_damage(unit, amount, "burn")
 				unit.add_status(BattleUnit.STATUS_BURN, -1)
+				events.append({"type": "burn_tick", "uid": unit.uid, "from": burn, "to": burn - 1})
 				_emit_update(unit)
 			var bleed := unit.status(BattleUnit.STATUS_BLEED)
 			if bleed > 0 and unit.is_alive():
@@ -323,6 +324,8 @@ func _resolve_targets(owner: BattleUnit, target: String, context: Dictionary) ->
 			return [context["dying_unit"]]
 		"front_ally":
 			return allies.slice(0, 1)
+		"back_ally":
+			return allies.slice(allies.size() - 1) if not allies.is_empty() else []
 		"ally_in_front":
 			var index := allies.find(owner)
 			return [allies[index - 1]] if index > 0 else []

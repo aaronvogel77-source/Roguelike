@@ -24,7 +24,11 @@ static func _figure_entry(run: RunState, figure: Dictionary) -> Dictionary:
 		"multipliers": [],
 		"abilities": [],
 		"suit": run.figure_suit(figure),
+		# What is modifying this figure (shown as marks on its card).
+		"sources": [],
 	}
+	if int(figure.get("bonus_attack", 0)) != 0 or int(figure.get("bonus_health", 0)) != 0:
+		entry["sources"].append("tarot_strength")
 	if figure.has("equipment"):
 		var mods := Items.equipment_modifiers(run.db, figure["equipment"])
 		entry["bonus_attack"] += mods["attack"]
@@ -44,20 +48,44 @@ static func _apply_relics(run: RunState, team: Array) -> void:
 	for relic in run.relics:
 		for i in team.size():
 			var entry: Dictionary = team[i]
+			var affected := true
 			match relic:
 				"war_chest":
-					if entry["suit"] == "coins":
+					affected = entry["suit"] == "coins"
+					if affected:
 						entry["bonus_attack"] += 1
 				"blood_chalice":
-					if entry["suit"] == "cups":
+					affected = entry["suit"] == "cups"
+					if affected:
 						entry["abilities"].append(_ability("turn_start", "self", "heal", 1))
 				"vanguard_banner":
-					if i == 0:
+					affected = i == 0
+					if affected:
 						entry["multipliers"].append(1.5)
 				"death_bell":
 					entry["abilities"].append(_ability("on_ally_death", "self", "gain_attack", 1))
 				"royal_court":
+					affected = royals > 0
 					entry["bonus_health"] += royals
+				"eternal_ember":
+					affected = _applies(entry, "apply_burn")
+				"whetstone":
+					affected = entry["suit"] == "swords" and _applies(entry, "apply_bleed")
+				_:
+					affected = false
+			if affected:
+				entry["sources"].append(relic)
+
+
+## Whether a figure (with its extra abilities) applies a status effect.
+static func _applies(entry: Dictionary, effect: String) -> bool:
+	var abilities: Array = entry["abilities"].duplicate()
+	if entry["def"].has("ability"):
+		abilities.append(entry["def"]["ability"])
+	for ability in abilities:
+		if ability["effect"] == effect:
+			return true
+	return false
 
 
 ## Relic bonuses on statuses the player applies (read by the simulator).

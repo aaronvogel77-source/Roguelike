@@ -336,10 +336,14 @@ func _make_card(snapshot: Dictionary, is_enemy: bool) -> UnitCard:
 	return card
 
 
+## Animations run a bit slower than the nominal speed so each step is readable.
+const PACE := 1.25
+
+
 func _set_speed(speed: float) -> void:
-	_speed = speed
+	_speed = speed / PACE
 	for i in _speed_buttons.size():
-		_speed_buttons[i].set_pressed_no_signal(SPEEDS[i] == speed)
+		_speed_buttons[i].set_pressed_no_signal(is_equal_approx(SPEEDS[i], speed))
 
 
 # --- Playback -----------------------------------------------------------------
@@ -365,6 +369,8 @@ func _play_events(token: int) -> void:
 					await _wait(0.3)  # breathing room between turns
 				_turn_label.text = tr("UI_TURN") % event["turn"]
 				_banner.text = ""
+			"burn_tick":
+				_float_on(event["uid"], tr("UI_BURN_TICK") % [event["from"], event["to"]], Emblem.COLORS["burn"])
 			"blessing":
 				await _show_trigger({"uid": event["uid"], "effect": "gain_shield", "targets": [event["uid"]]})
 			"trigger":

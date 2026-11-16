@@ -31,8 +31,10 @@ var _health_label: Label
 ## Card for a row figure: stats include equipment, boons, blessing and relics.
 static func for_entry(entry: Dictionary, figure: Dictionary, db: ContentDb) -> UnitCard:
 	var unit := BattleSimulator.preview_unit(entry, BattleSimulator.PLAYER)
+	var base := BattleUnit.from_definition(entry["def"], BattleSimulator.PLAYER, 0, entry["level"])
 	var card := UnitCard.new()
-	card.extras = {"figure": figure, "db": db}
+	card.extras = {"figure": figure, "db": db, "sources": entry.get("sources", []),
+		"base_attack": base.effective_attack(), "base_health": base.max_health}
 	card.setup(unit.snapshot(), entry["def"], false)
 	return card
 
@@ -126,6 +128,12 @@ func apply_snapshot(new_snapshot: Dictionary) -> void:
 	_style.border_color = base_border_color()
 	_attack_label.text = str(snapshot["effective_attack"])
 	_health_label.text = str(maxi(snapshot["health"], 0))
+	# Values raised by equipment, tarot or relics glow gold.
+	if extras.has("base_attack"):
+		var attack_up: bool = snapshot["effective_attack"] > extras["base_attack"]
+		var health_up: bool = snapshot["max_health"] > extras["base_health"]
+		_attack_label.add_theme_color_override("font_color", Palette.GOLD if attack_up else Color.WHITE)
+		_health_label.add_theme_color_override("font_color", Palette.GOLD if health_up else Color.WHITE)
 	_rebuild_identity(snapshot.get("level", 1))
 	_rebuild_chips()
 
@@ -263,6 +271,11 @@ func _rebuild_identity(level: int) -> void:
 		_identity.add_child(Emblem.create(Emblem.EQUIPMENT_KINDS.get(figure["equipment"]["base"], "sword"), 16))
 	if figure.has("blessing"):
 		_identity.add_child(Emblem.create("blessing_" + String(figure["blessing"]), 16))
+	var sources: Array = extras.get("sources", [])
+	if "tarot_strength" in sources:
+		_identity.add_child(Emblem.create("tarot", 16))
+	if sources.any(func(s: String) -> bool: return s != "tarot_strength"):
+		_identity.add_child(Emblem.create("relic", 16))
 
 
 static func identity_kinds(unit_definition: Dictionary, enemy: bool, suit: String = "") -> Array:

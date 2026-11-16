@@ -128,12 +128,10 @@ func test_king_midas_multiplier_from_gold() -> void:
 	assert_eq(hits[0]["amount"], 24)
 
 
-func test_golden_scales_multiplies_front_ally_when_ally_dies() -> void:
-	# Front 1/1 dies to the 1/50 enemy; the scales (now front) get ×1.2: 3 → 3.
-	# Use level 3 (×1.5): attack 5 → 7.
-	var result := BattleSimulator.simulate([_unit(0, 1), _fig("golden_scales", 3)], [_unit(1, 50)])
-	var hits := _events(result, "damage").filter(func(e): return e["source"] == "attack" and e["uid"] == 3)
-	assert_eq(hits[0]["amount"], 7)
+func test_golden_scales_multiplies_rearmost_ally_when_ally_dies() -> void:
+	# Front 0/1 dies; the rearmost figure (a 5/50 behind the scales) gets ×1.5 (scales level 3).
+	var result := BattleSimulator.simulate([_unit(0, 1), _fig("golden_scales", 3), _unit(5, 50, null, "back")], [_unit(1, 50)])
+	assert_true(_ever(result, 3, func(u): return absf(u["multiplier"] - 1.5) < 0.001), "rearmost figure multiplied")
 
 
 # --- Wands --------------------------------------------------------------------------
