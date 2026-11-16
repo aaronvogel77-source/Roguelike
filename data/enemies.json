@@ -1,13 +1,13 @@
 {
-  "version": 1,
+  "version": 2,
   "enemies": [
-    {"id": "beggar_ghost",     "region": "coins", "cost": 1, "attack": 1, "health": 3},
-    {"id": "debt_collector",   "region": "coins", "cost": 1, "attack": 2, "health": 3},
-    {"id": "the_changer",      "region": "coins", "cost": 2, "attack": 3, "health": 4},
-    {"id": "greedmaw",         "region": "coins", "cost": 2, "attack": 4, "health": 4},
-    {"id": "vault_warden",     "region": "coins", "cost": 2, "attack": 2, "health": 8},
-    {"id": "coin_thrower",     "region": "coins", "cost": 2, "attack": 2, "health": 3},
-    {"id": "greedy_dragon",    "region": "coins", "cost": 3, "attack": 6, "health": 6},
-    {"id": "mirror_coin",      "region": "coins", "cost": 3, "attack": 3, "health": 5}
+    {"id": "beggar_ghost", "region": "coins", "cost": 1, "attack": 1, "health": 3, "ability": {"trigger": "on_hit", "target": "self", "effect": "steal_gold", "values": [1, 1, 2]}},
+    {"id": "debt_collector", "region": "coins", "cost": 1, "attack": 2, "health": 3, "ability": {"trigger": "turn_start", "target": "self", "effect": "attack_if_rich", "values": [1, 2, 3]}},
+    {"id": "the_changer", "region": "coins", "cost": 2, "attack": 3, "health": 4, "ability": {"trigger": "battle_start", "target": "front_enemy", "effect": "swap_stats", "values": [1, 1, 1]}},
+    {"id": "greedmaw", "region": "coins", "cost": 2, "attack": 4, "health": 4, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "eat_shield", "values": [1, 1, 1]}},
+    {"id": "vault_warden", "region": "coins", "cost": 2, "attack": 2, "health": 8, "ability": {"trigger": "battle_start", "target": "self", "effect": "warden_shield", "values": [3, 4, 5]}},
+    {"id": "coin_thrower", "region": "coins", "cost": 2, "attack": 2, "health": 3, "ability": {"trigger": "turn_start", "target": "back_enemy", "effect": "damage", "values": [1, 2, 3]}},
+    {"id": "greedy_dragon", "region": "coins", "cost": 3, "attack": 6, "health": 6, "ability": {"trigger": "on_enemy_death", "target": "self", "effect": "gain_stats", "values": [1, 2, 3]}},
+    {"id": "mirror_coin", "region": "coins", "cost": 3, "attack": 3, "health": 5, "ability": {"trigger": "battle_start", "target": "front_enemy", "effect": "copy_ability", "values": [1, 1, 1]}}
   ]
 }

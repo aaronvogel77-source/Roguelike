@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0 abgeschlossen. M1 (Kampf-Kern) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0, M1 abgeschlossen. M2 (Fähigkeiten-Baukasten) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -208,6 +208,15 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - Schild: Blockt die nächsten X Schaden
 - **Gleichstand** (beide Teams fallen gleichzeitig): **zählt als Sieg**
   - ⚠️ Risiko: Selbstzerstörungs-Builds könnten gezielt auf ein Unentschieden spielen. Im Prototyp beobachten, ggf. später nachjustieren (z. B. Sieg ohne Gold).
+
+### Präzisierungen M2 (von Claude vorgeschlagen, Bestätigung ausstehend)
+- **Ablauf pro Zug:** Brennen tickt → Zugbeginn-Fähigkeiten → Zusammenstoß → „Wenn getroffen“ (getroffene Figuren) → „Nach dem Angriff“ (Angreifer) → Fluch-Countdown → Dunkelheit (ab Zug 15)
+- **„Nach dem Angriff“** löst *nach* dem Treffer aus (Bluttrinker kennt so den verursachten Schaden, der Henker den Restwert)
+- **„Wenn getroffen“** zählt auch Treffer, die ein Schild komplett abfängt
+- **Schild** blockt jeden Schaden außer der Dunkelheit
+- **Klare Klinge** löst zu Kampfbeginn *zuletzt* aus (nach den Gegner-Schilden), sonst wäre sie gegen Tresorwächter wirkungslos. Pro entferntem Schildpunkt Blutung 1/2/3.
+- **Tod und Wiederkehr:** Eine sterbende Figur löst erst alle Tod-Fähigkeiten aus (Waage, Ertrunkener König, Drache), dann holt der Kelch sie zurück. So füttert sie den König zweimal.
+- **Stufen:** jede Stufe über 1 = +1/+1 auf die Grundwerte, Fähigkeitswerte laut Tabelle (Stufe 1/2/3)
 
 ### Runde 3 (beantwortet)
 - **Zielwahl:** Der normale Angriff trifft immer die vorderste gegnerische Figur. **Andere Ziele nur über Fähigkeiten** (z. B. hinterste oder schwächste Figur). Die hinteren Plätze werden zur Unterstützer- und Sniper-Zone.
@@ -480,7 +489,8 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- M1-Feedback einholen (Test-Link: https://aaronvogel77-source.github.io/Roguelike/)
+- M2-Feedback einholen (Test-Link: https://aaronvogel77-source.github.io/Roguelike/), inkl. Bestätigung der Regel-Präzisierungen aus M2 (siehe Phase 6, „Präzisierungen M2“)
+- Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
 ## Später entscheiden
@@ -543,3 +553,4 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | M0: Godot 4.6.3, GL Compatibility, Web-Export ohne Threads, Pages-Workflow | Stabile Version, läuft in jedem Mobile-Browser | Godot 4.7 (sehr neu) |
 | 2026-11-16 | Repo öffentlich, GitHub Pages über Actions aktiv | Kostenlose Test-Links per Handy | GitHub Pro, itch.io |
 | 2026-11-16 | M0 abgenommen (läuft auf dem Handy). M1: deterministischer Kampf-Simulator, Kampfbildschirm mit 1×/2×/4×, 15 GUT-Tests (GUT 9.6.1 passend zu Godot 4.6), Simulationswerkzeug `tools/simulate.gd` | Logik headless testbar, Balancing per Simulation | GUT 9.7.1 (benötigt Godot 4.7) |
+| 2026-11-16 | M1 abgenommen. M2: Fähigkeiten-Baukasten (24 Fähigkeiten, 4 Status, Multiplikatoren, Stufen), Detail-Panel per Tippen, 40 Tests | Alle Slice-Inhalte kämpfen mit echten Regeln | – |

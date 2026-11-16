@@ -23,7 +23,7 @@ func test_stronger_front_wins_and_next_unit_moves_up() -> void:
 	var result := BattleSimulator.simulate([_unit("a", 5, 10)], [_unit("b", 2, 2), _unit("c", 2, 2)])
 	assert_eq(result["outcome"], BattleSimulator.Outcome.WIN)
 	assert_eq(result["turns"], 2)
-	var deaths: Array = result["events"].filter(func(e: Dictionary) -> bool: return e["type"] == "death")
+	var deaths: Array = result["events"].filter(func(e: Dictionary) -> bool: return e["type"] == "removed")
 	assert_eq(deaths.size(), 2)
 
 

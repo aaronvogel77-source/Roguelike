@@ -33,3 +33,56 @@ UI_DEFEAT,Niederlage – der Run wäre vorbei,Defeat – the run would be over
 UI_DRAW,Gleichstand – zählt als Sieg,Draw – counts as victory
 UI_YOUR_TEAM,Dein Team,Your team
 UI_ENEMIES,Gegner,Enemies
+ABIL_COIN_SQUIRE,Kampfbeginn: erhält Schild {v}.,Battle start: gains {v} shield.
+ABIL_GOLD_ARMORED,Kampfbeginn: +1 Leben pro {v} Gold im Besitz.,Battle start: +1 health per {v} gold you own.
+ABIL_GOLDEN_SCALES,Wenn eine eigene Figur stirbt: Die vorderste eigene Figur erhält ×{v} Angriff.,When an ally dies: your front figure gains ×{v} attack.
+ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold ÷ {v}).,Battle start: attack ×(1 + gold ÷ {v}).
+ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
+ABIL_ENRAGED_ONE,Wenn getroffen: +{v} Angriff.,When hit: +{v} attack.
+ABIL_MISTRESS_OF_EMBERS,Dauerhaft: Brennen-Schaden an Gegnern ×{v}.,Always: burn damage to enemies ×{v}.
+ABIL_ASH_KING,"Wenn ein Gegner stirbt: Sein Brennen springt auf den nächsten Gegner, und dieser König erhält ×{v} Angriff.",When an enemy dies: its burn jumps to the next enemy and this king gains ×{v} attack.
+ABIL_ALTAR_SERVER,Zugbeginn: Heilt die Figur vor sich um {v}.,Turn start: heals the figure in front by {v}.
+ABIL_BLOOD_DRINKER,Nach dem Angriff: Heilt sich um {v} % des verursachten Schadens.,After attacking: heals {v} % of the damage dealt.
+ABIL_CHALICE_OF_RETURN,Wenn eine eigene Figur stirbt: Einmal pro Kampf kehrt sie mit {v} Leben zurück.,When an ally dies: once per battle it returns with {v} health.
+ABIL_DROWNED_KING,Wenn eine eigene Figur stirbt: erhält ×{v} ihres Angriffs und ihr volles Leben.,When an ally dies: gains ×{v} of its attack and all of its health.
+ABIL_BLADE_APPRENTICE,Nach dem Angriff: Das Ziel erhält Blutung {v}.,After attacking: the target gains {v} bleed.
+ABIL_EXECUTIONER,Nach dem Angriff: Ein Ziel mit höchstens {v} Leben stirbt sofort.,After attacking: a target with {v} health or less dies instantly.
+ABIL_CLEAR_BLADE,"Kampfbeginn (zuletzt): Entfernt alle gegnerischen Schilde, pro Schildpunkt Blutung {v}.","Battle start (last): removes all enemy shields, {v} bleed per shield point."
+ABIL_THE_JUDGE,Nach dem Angriff: Die Blutung des Ziels richtet sofort ×{v} Schaden an.,After attacking: the target's bleed deals ×{v} damage at once.
+ABIL_BEGGAR_GHOST,Wenn getroffen: Stiehlt dir {v} Gold (max. 3 pro Kampf).,When hit: steals {v} gold from you (max. 3 per battle).
+ABIL_DEBT_COLLECTOR,"Zugbeginn: Hast du mind. 10 Gold, erhält er +{v} Angriff.","Turn start: if you own 10+ gold, gains +{v} attack."
+ABIL_THE_CHANGER,Kampfbeginn: Tauscht Angriff und Leben deiner vordersten Figur.,Battle start: swaps attack and health of your front figure.
+ABIL_GREEDMAW,Nach dem Angriff: Frisst den Schild des Ziels und heilt sich um dessen Wert.,After attacking: eats the target's shield and heals by its value.
+ABIL_VAULT_WARDEN,Kampfbeginn: Schild {v}. Wenn getroffen: Schild +1.,Battle start: {v} shield. When hit: +1 shield.
+ABIL_COIN_THROWER,Zugbeginn: {v} Schaden an deine hinterste Figur.,Turn start: {v} damage to your rearmost figure.
+ABIL_GREEDY_DRAGON,Wenn eine deiner Figuren stirbt: +{v}/+{v}.,When one of your figures dies: +{v}/+{v}.
+ABIL_MIRROR_COIN,Kampfbeginn: Kopiert die Fähigkeit deiner vordersten Figur.,Battle start: copies the ability of your front figure.
+STATUS_SHIELD,Schild,Shield
+STATUS_BURN,Brennen,Burn
+STATUS_CURSE,Fluch,Curse
+STATUS_BLEED,Blutung,Bleed
+STATUS_SHIELD_SHORT,S,S
+STATUS_BURN_SHORT,Br,Bu
+STATUS_CURSE_SHORT,Fl,Cu
+STATUS_BLEED_SHORT,Bl,Bl
+STATUS_SHIELD_DESC,Blockt so viele Schadenspunkte (nicht die Dunkelheit).,Blocks that many points of damage (not the darkness).
+STATUS_BURN_DESC,"Zugbeginn: so viel Schaden wie Stapel, danach −1 Stapel.","Turn start: damage equal to stacks, then −1 stack."
+STATUS_CURSE_DESC,"−Angriff in Höhe der Stapel, verfliegt nach 3 Zügen.","−attack equal to stacks, fades after 3 turns."
+STATUS_BLEED_DESC,Jeder Angriffstreffer gegen diese Figur macht so viel Zusatzschaden.,Every attack hit against this figure deals that much extra damage.
+UI_GOLD,Gold: %d,Gold: %d
+UI_LEVEL_SHORT,St. %d,Lv %d
+UI_LEVEL,Stufe %d,Level %d
+UI_MULTIPLIER,Multiplikator ×%s,Multiplier ×%s
+UI_STATS,Angriff %d · Leben %d / %d,Attack %d · Health %d / %d
+UI_TAP_HINT,Tippe eine Karte an für Details.,Tap a card for details.
+UI_CLOSE,Schließen,Close
+UI_REVIVED,Wiederkehr!,Returned!
+UI_ENEMY,Gegner,Enemy
+SUIT_COINS,Münzen,Coins
+SUIT_WANDS,Stäbe,Wands
+SUIT_CUPS,Kelche,Cups
+SUIT_SWORDS,Schwerter,Swords
+RANK_PAGE,Bube,Page
+RANK_KNIGHT,Ritter,Knight
+RANK_QUEEN,Königin,Queen
+RANK_KING,König,King

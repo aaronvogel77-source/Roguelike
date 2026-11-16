@@ -19,14 +19,15 @@ func _init() -> void:
 		var size := rng.randi_range(3, 6)
 		var player := DebugTeams.random_player_team(db, rng, size)
 		var enemy := DebugTeams.random_enemy_team(db, rng, size)
-		var result := BattleSimulator.simulate(player, enemy)
+		var result := BattleSimulator.simulate(player, enemy, rng.randi_range(0, 30))
 		total_turns += result["turns"]
 		if result["victory"]:
 			total_wins += 1
-		for figure in player:
-			picks[figure["id"]] = picks.get(figure["id"], 0) + 1
+		for entry in player:
+			var id: String = entry["def"]["id"]
+			picks[id] = picks.get(id, 0) + 1
 			if result["victory"]:
-				wins[figure["id"]] = wins.get(figure["id"], 0) + 1
+				wins[id] = wins.get(id, 0) + 1
 
 	print("Battles: %d  seed: %d" % [battles, seed_value])
 	print("Player win rate: %.1f %%   avg turns: %.1f" % [100.0 * total_wins / battles, float(total_turns) / battles])

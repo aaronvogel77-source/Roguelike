@@ -11,11 +11,14 @@ var _rng_streams: RngStreams
 var _speed := 1.0
 var _cards: Dictionary = {}  # uid -> UnitCard
 var _battle: Dictionary = {}
+var _battle_gold := 0
 var _playback_token := 0  # increments to cancel an older playback
 
 var _player_row: HBoxContainer
 var _enemy_row: HBoxContainer
 var _turn_label: Label
+var _gold_label: Label
+var _detail_panel: DetailPanel
 var _seed_label: Label
 var _banner: Label
 var _start_button: Button
@@ -64,6 +67,13 @@ func _build_layout() -> void:
 	_fx_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_fx_layer)
 
+	_detail_panel = DetailPanel.new()
+	_detail_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	_detail_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_detail_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_detail_panel.position.y -= 110
+	add_child(_detail_panel)
+
 
 func _build_top_bar() -> Control:
 	var bar := HBoxContainer.new()
@@ -75,8 +85,12 @@ func _build_top_bar() -> Control:
 	bar.add_child(margin)
 
 	_turn_label = _make_label("", 28, Palette.GOLD)
-	_turn_label.custom_minimum_size = Vector2(160, 0)
+	_turn_label.custom_minimum_size = Vector2(140, 0)
 	bar.add_child(_turn_label)
+
+	_gold_label = _make_label("", 24, Palette.GOLD)
+	_gold_label.custom_minimum_size = Vector2(140, 0)
+	bar.add_child(_gold_label)
 
 	_banner = _make_label("", 30, Palette.PARCHMENT)
 	_banner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -166,13 +180,16 @@ func _new_battle() -> void:
 	var rng := _rng_streams.stream("debug_teams")
 	var player_team := DebugTeams.random_player_team(_db, rng, rng.randi_range(3, 6))
 	var enemy_team := DebugTeams.random_enemy_team(_db, rng, rng.randi_range(3, 6))
-	_battle = BattleSimulator.simulate(player_team, enemy_team)
+	_battle_gold = rng.randi_range(0, 30)
+	_battle = BattleSimulator.simulate(player_team, enemy_team, _battle_gold)
 
 	_seed_label.text = tr("UI_SEED") % seed_value
+	_set_gold(_battle_gold)
 	_turn_label.text = ""
 	_banner.text = ""
 	_banner.add_theme_color_override("font_color", Palette.PARCHMENT)
 	_start_button.disabled = false
+	_detail_panel.hide()
 	_show_start_state(_battle["events"][0])
 
 
@@ -194,6 +211,7 @@ func _make_card(snapshot: Dictionary, is_enemy: bool) -> UnitCard:
 	var definition: Dictionary = _db.enemies[snapshot["def_id"]] if is_enemy else _db.figures[snapshot["def_id"]]
 	var card := UnitCard.new()
 	card.setup(snapshot, definition, is_enemy)
+	card.tapped.connect(_detail_panel.show_card)
 	_cards[card.uid] = card
 	return card
 
@@ -208,6 +226,7 @@ func _set_speed(speed: float) -> void:
 
 func _start_battle() -> void:
 	_start_button.disabled = true
+	_detail_panel.hide()
 	_playback_token += 1
 	_play_events(_playback_token)
 
@@ -219,25 +238,54 @@ func _play_events(token: int) -> void:
 		if token != _playback_token:
 			return
 		var event: Dictionary = events[i]
+		var next_type: String = events[i + 1]["type"] if i + 1 < events.size() else ""
 		match event["type"]:
 			"turn":
+				if i > 1:
+					await _wait(0.3)  # breathing room between turns
 				_turn_label.text = tr("UI_TURN") % event["turn"]
 				_banner.text = ""
+			"trigger":
+				await _show_trigger(event)
+			"update":
+				var card: UnitCard = _cards.get(event["unit"]["uid"])
+				if card != null:
+					card.apply_snapshot(event["unit"])
 			"clash":
 				await _animate_clash(event)
+			"shielded":
+				_float_on(event["uid"], "-%d %s" % [event["amount"], tr("STATUS_SHIELD")], UnitCard.STATUS_COLORS["shield"])
 			"damage":
 				_show_damage(event)
-				if i + 1 >= events.size() or events[i + 1]["type"] != "damage":
+				if next_type not in ["damage", "update", "shielded"]:
 					await _wait(0.25)
+			"heal":
+				_float_on(event["uid"], "+%d" % event["amount"], Palette.SUIT_COLORS["coins"])
+			"gold":
+				_set_gold(event["gold"])
+				_float_number("%+d Gold" % event["delta"], _gold_label.global_position + Vector2(40, 30), Palette.GOLD)
 			"decay":
 				_banner.text = tr("UI_DECAY") % event["amount"]
-			"death":
-				await _animate_death(event)
+			"dying":
+				await _animate_dying(event)
+			"revive":
+				await _animate_revive(event)
+			"removed":
+				await _animate_removed(event)
 			"end":
 				_show_result(event)
-		if event["type"] == "turn" and i > 1:
-			await _wait(0.35)  # breathing room so one turn takes ~1 s at 1x
 		i += 1
+
+
+func _show_trigger(event: Dictionary) -> void:
+	var card: UnitCard = _cards.get(event["uid"])
+	if card == null:
+		return
+	card.flash_trigger(0.35 / _speed)
+	var tween := create_tween()
+	tween.tween_property(card.body, "scale", Vector2(1.12, 1.12), 0.1 / _speed)
+	tween.tween_property(card.body, "scale", Vector2.ONE, 0.1 / _speed)
+	await _wait(0.25)
 
 
 func _animate_clash(event: Dictionary) -> void:
@@ -256,13 +304,33 @@ func _show_damage(event: Dictionary) -> void:
 	var card: UnitCard = _cards.get(event["uid"])
 	if card == null:
 		return
-	card.set_stats(card.attack, event["health_after"])
 	card.body.modulate = Palette.DAMAGE_FLASH
 	create_tween().tween_property(card.body, "modulate", Color.WHITE, 0.3 / _speed)
-	_float_number("-%d" % event["amount"], card.center_position(), Palette.DAMAGE_FLASH)
+	var color: Color = UnitCard.STATUS_COLORS["burn"] if event["source"] == "burn" else Palette.DAMAGE_FLASH
+	_float_number("-%d" % event["amount"], card.center_position(), color)
 
 
-func _animate_death(event: Dictionary) -> void:
+func _animate_dying(event: Dictionary) -> void:
+	var card: UnitCard = _cards.get(event["uid"])
+	if card == null:
+		return
+	var tween := create_tween()
+	for offset in [-6.0, 6.0, -4.0, 0.0]:
+		tween.tween_property(card.body, "position:x", offset, 0.04 / _speed)
+	await _wait(0.16)
+
+
+func _animate_revive(event: Dictionary) -> void:
+	var card: UnitCard = _cards.get(event["uid"])
+	if card == null:
+		return
+	card.body.modulate = Color(2, 2, 2)
+	create_tween().tween_property(card.body, "modulate", Color.WHITE, 0.4 / _speed)
+	_float_on(event["uid"], tr("UI_REVIVED"), Palette.PARCHMENT)
+	await _wait(0.3)
+
+
+func _animate_removed(event: Dictionary) -> void:
 	var card: UnitCard = _cards.get(event["uid"])
 	if card == null:
 		return
@@ -274,14 +342,26 @@ func _animate_death(event: Dictionary) -> void:
 	card.queue_free()
 
 
+func _float_on(uid: int, text: String, color: Color) -> void:
+	var card: UnitCard = _cards.get(uid)
+	if card != null:
+		_float_number(text, card.center_position() + Vector2(0, -24), color)
+
+
 func _float_number(text: String, at: Vector2, color: Color) -> void:
-	var label := _make_label(text, 30, color)
+	var label := _make_label(text, 26, color)
 	label.position = at - Vector2(20, 40)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 6)
 	_fx_layer.add_child(label)
 	var tween := create_tween().set_parallel(true)
-	tween.tween_property(label, "position:y", label.position.y - 50, 0.6 / _speed)
-	tween.tween_property(label, "modulate:a", 0.0, 0.6 / _speed)
+	tween.tween_property(label, "position:y", label.position.y - 50, 0.7 / _speed)
+	tween.tween_property(label, "modulate:a", 0.0, 0.7 / _speed).set_delay(0.2 / _speed)
 	tween.chain().tween_callback(label.queue_free)
+
+
+func _set_gold(value: int) -> void:
+	_gold_label.text = tr("UI_GOLD") % value
 
 
 func _show_result(event: Dictionary) -> void:

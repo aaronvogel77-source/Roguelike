@@ -1,40 +1,58 @@
 class_name UnitCard
 extends Control
-## Placeholder card for one battle unit: name, suit-colored frame,
-## attack (bottom left) and health (bottom right).
+## Placeholder card for one battle unit: name, level, status chips,
+## multiplier, attack (bottom left) and health (bottom right).
 ## The outer Control keeps its slot in the row; the inner body is what moves.
 
+signal tapped(card: UnitCard)
+
 const CARD_SIZE := Vector2(96, 140)
+const STATUS_ORDER := ["shield", "burn", "curse", "bleed"]
+const STATUS_COLORS := {
+	"shield": Color(0.55, 0.65, 0.75),
+	"burn": Color(0.95, 0.45, 0.15),
+	"curse": Color(0.6, 0.35, 0.8),
+	"bleed": Color(0.75, 0.1, 0.2),
+}
 
 var uid: int
-var attack: int
-var health: int
+var definition: Dictionary
+var is_enemy: bool
+var snapshot: Dictionary = {}
 var body: PanelContainer
+
+var _style: StyleBoxFlat
+var _level_label: Label
+var _chips: HBoxContainer
 var _attack_label: Label
 var _health_label: Label
 
 
-func setup(snapshot: Dictionary, definition: Dictionary, is_enemy: bool) -> void:
-	uid = snapshot["uid"]
+func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> void:
+	uid = initial["uid"]
+	definition = unit_definition
+	is_enemy = enemy
 	custom_minimum_size = CARD_SIZE
 	size = CARD_SIZE
 
 	body = PanelContainer.new()
 	body.size = CARD_SIZE
 	body.pivot_offset = CARD_SIZE / 2
-	var style := StyleBoxFlat.new()
-	style.bg_color = Palette.PANEL
-	style.border_color = Palette.ENEMY_BORDER if is_enemy else Palette.SUIT_COLORS.get(definition.get("suit", ""), Palette.GOLD)
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(10)
-	style.content_margin_left = 5
-	style.content_margin_right = 5
-	style.content_margin_top = 5
-	style.content_margin_bottom = 5
-	body.add_theme_stylebox_override("panel", style)
+	body.mouse_filter = Control.MOUSE_FILTER_STOP
+	body.gui_input.connect(_on_body_input)
+	_style = StyleBoxFlat.new()
+	_style.bg_color = Palette.PANEL
+	_style.border_color = base_border_color()
+	_style.set_border_width_all(3)
+	_style.set_corner_radius_all(10)
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
+		_style.set_content_margin(side, 5)
+	body.add_theme_stylebox_override("panel", _style)
 	add_child(body)
 
 	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 2)
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	body.add_child(column)
 
 	var name_label := Label.new()
@@ -44,7 +62,18 @@ func setup(snapshot: Dictionary, definition: Dictionary, is_enemy: bool) -> void
 	name_label.add_theme_font_size_override("font_size", _fitting_font_size(name_label))
 	name_label.add_theme_color_override("font_color", Palette.PARCHMENT)
 	name_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	name_label.max_lines_visible = 2
 	column.add_child(name_label)
+
+	_level_label = _small_label(Palette.GOLD)
+	_level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(_level_label)
+
+	_chips = HBoxContainer.new()
+	_chips.alignment = BoxContainer.ALIGNMENT_CENTER
+	_chips.add_theme_constant_override("separation", 2)
+	_chips.custom_minimum_size = Vector2(0, 18)
+	column.add_child(_chips)
 
 	var stats := HBoxContainer.new()
 	column.add_child(stats)
@@ -55,14 +84,34 @@ func setup(snapshot: Dictionary, definition: Dictionary, is_enemy: bool) -> void
 	stats.add_child(spacer)
 	_health_label = _make_badge(Palette.HEALTH)
 	stats.add_child(_health_label)
-	set_stats(snapshot["attack"], snapshot["health"])
+
+	apply_snapshot(initial)
 
 
-func set_stats(new_attack: int, new_health: int) -> void:
-	attack = new_attack
-	health = new_health
-	_attack_label.text = str(attack)
-	_health_label.text = str(maxi(health, 0))
+func base_border_color() -> Color:
+	if is_enemy:
+		return Palette.ENEMY_BORDER
+	return Palette.SUIT_COLORS.get(definition.get("suit", ""), Palette.GOLD)
+
+
+func apply_snapshot(new_snapshot: Dictionary) -> void:
+	snapshot = new_snapshot
+	_attack_label.text = str(snapshot["effective_attack"])
+	_health_label.text = str(maxi(snapshot["health"], 0))
+	var level: int = snapshot.get("level", 1)
+	_level_label.text = tr("UI_LEVEL_SHORT") % level if level > 1 else ""
+	_rebuild_chips()
+
+
+## Short gold flash on the frame when this unit's ability fires.
+func flash_trigger(duration: float) -> void:
+	_style.border_color = Palette.GOLD
+	_style.set_border_width_all(5)
+	var tween := create_tween()
+	tween.tween_interval(duration)
+	tween.tween_callback(func() -> void:
+		_style.border_color = base_border_color()
+		_style.set_border_width_all(3))
 
 
 ## Center of the card in canvas coordinates (for floating numbers).
@@ -70,20 +119,73 @@ func center_position() -> Vector2:
 	return body.global_position + CARD_SIZE / 2
 
 
-## Largest font size (14 down to 9) at which every single word of the name
-## fits the card width, so long German words never break mid-word.
+func _rebuild_chips() -> void:
+	for child in _chips.get_children():
+		child.queue_free()
+	var statuses: Dictionary = snapshot.get("statuses", {})
+	for status in STATUS_ORDER:
+		if statuses.get(status, 0) > 0:
+			var text := "%s%d" % [tr("STATUS_%s_SHORT" % status.to_upper()), statuses[status]]
+			_chips.add_child(_make_chip(text, STATUS_COLORS[status]))
+	var multiplier: float = snapshot.get("multiplier", 1.0)
+	if absf(multiplier - 1.0) > 0.001:
+		_chips.add_child(_make_chip("×%s" % NumberFormat.decimal(multiplier), Palette.HEALTH))
+
+
+func _make_chip(text: String, color: Color) -> Label:
+	var chip := Label.new()
+	chip.text = text
+	chip.add_theme_font_size_override("font_size", 11)
+	chip.add_theme_color_override("font_color", Color.WHITE)
+	var style := StyleBoxFlat.new()
+	style.bg_color = color
+	style.set_corner_radius_all(4)
+	style.content_margin_left = 3
+	style.content_margin_right = 3
+	chip.add_theme_stylebox_override("normal", style)
+	return chip
+
+
+func _small_label(color: Color) -> Label:
+	var label := Label.new()
+	label.add_theme_font_size_override("font_size", 11)
+	label.add_theme_color_override("font_color", color)
+	return label
+
+
+func _on_body_input(event: InputEvent) -> void:
+	var released: bool = (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed) \
+		or (event is InputEventScreenTouch and not event.pressed)
+	if released:
+		tapped.emit(self)
+
+
+## Largest font size (14 down to 9) at which the name wraps into at most two
+## lines and no single word is wider than the card (no mid-word breaks).
 func _fitting_font_size(label: Label) -> int:
 	var font := label.get_theme_font("font")
 	var available := CARD_SIZE.x - 14.0
+	var words := label.text.split(" ")
 	for font_size in range(14, 8, -1):
-		var fits := true
-		for word in label.text.split(" "):
-			if font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > available:
-				fits = false
-				break
-		if fits:
+		if _wrapped_line_count(words, font, font_size, available) <= 2:
 			return font_size
 	return 9
+
+
+## Greedy word wrap; returns 99 if a single word does not fit at all.
+func _wrapped_line_count(words: PackedStringArray, font: Font, font_size: int, available: float) -> int:
+	var lines := 1
+	var line := ""
+	for word in words:
+		if font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > available:
+			return 99
+		var candidate := word if line.is_empty() else line + " " + word
+		if font.get_string_size(candidate, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > available:
+			lines += 1
+			line = word
+		else:
+			line = candidate
+	return lines
 
 
 func _make_badge(color: Color) -> Label:
