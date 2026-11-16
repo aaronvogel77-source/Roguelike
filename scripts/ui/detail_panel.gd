@@ -50,6 +50,10 @@ func _init() -> void:
 	_body.add_theme_font_size_override("bold_font_size", 20)
 	_body.add_theme_color_override("default_color", Palette.PARCHMENT)
 	column.add_child(_body)
+	# Taps go through the panel (to the cards underneath); only "close" reacts.
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for node: Control in [column, header, _title, _subtitle, _body]:
+		node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hide()
 
 

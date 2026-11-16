@@ -1,0 +1,217 @@
+extends GutTest
+## Run loop rules: start, shop, merging, levels, income, slots, rewards, end.
+
+var _db: ContentDb
+
+
+func before_all() -> void:
+	_db = ContentDb.load_default()
+
+
+func _run(seed_value := 11) -> RunState:
+	return RunState.new_run(_db, seed_value)
+
+
+func _planning_run() -> RunState:
+	var run := _run()
+	run.choose_enemy(0)
+	return run
+
+
+func _win() -> Dictionary:
+	return {"victory": true}
+
+
+func test_new_run_starts_with_one_page_and_ten_gold() -> void:
+	var run := _run()
+	assert_eq(run.gold, 10)
+	assert_eq(run.slot_count(), 3)
+	assert_not_null(run.row[0])
+	assert_eq(_db.figures[run.row[0]["def_id"]]["rank"], "page")
+	assert_eq(run.stage, RunState.Stage.ENEMY_CHOICE)
+	assert_eq(run.enemy_options.size(), 3, "easy / medium / hard")
+
+
+func test_choosing_an_enemy_opens_the_shop() -> void:
+	var run := _planning_run()
+	assert_eq(run.stage, RunState.Stage.PLANNING)
+	assert_eq(run.shop.size(), 3)
+
+
+func test_buy_into_empty_slot_costs_three() -> void:
+	var run := _planning_run()
+	assert_true(run.buy(0, 1))
+	assert_eq(run.gold, 7)
+	assert_not_null(run.row[1])
+	assert_eq(run.shop[0], "")
+
+
+func test_cannot_buy_onto_a_different_figure_or_without_gold() -> void:
+	var run := _planning_run()
+	run.shop[0] = "the_judge"
+	run.row[0] = {"uid": 99, "def_id": "coin_squire", "xp": 0}
+	assert_false(run.buy(0, 0))
+	run.gold = 2
+	assert_false(run.buy(0, 1))
+
+
+func test_duplicate_merges_and_levels_up_after_three() -> void:
+	var run := _planning_run()
+	run.gold = 100
+	run.row[0] = {"uid": 99, "def_id": "coin_squire", "xp": 0}
+	for i in 3:
+		run.shop[0] = "coin_squire"
+		assert_true(run.buy(0, 0))
+	assert_eq(run.figure_level(run.row[0]), 2)
+	for i in 3:
+		run.shop[0] = "coin_squire"
+		run.buy(0, 0)
+	assert_eq(run.figure_level(run.row[0]), 3)
+
+
+func test_sell_value_is_one_plus_level_bonus() -> void:
+	var run := _planning_run()
+	run.row[1] = {"uid": 50, "def_id": "the_judge", "xp": 9}
+	var before := run.gold
+	assert_true(run.sell(1))
+	assert_eq(run.gold, before + 2)
+	assert_null(run.row[1])
+
+
+func test_move_swaps_figures() -> void:
+	var run := _planning_run()
+	run.row[1] = {"uid": 50, "def_id": "the_judge", "xp": 0}
+	var first = run.row[0]
+	assert_true(run.move(0, 1))
+	assert_eq(run.row[0]["def_id"], "the_judge")
+	assert_eq(run.row[1], first)
+
+
+func test_reroll_price_rises() -> void:
+	var run := _planning_run()
+	assert_eq(run.reroll_price(), 1)
+	run.reroll()
+	assert_eq(run.gold, 9)
+	assert_eq(run.reroll_price(), 2)
+
+
+func test_slot_prices_six_eight_ten() -> void:
+	var run := _planning_run()
+	run.gold = 100
+	assert_eq(run.slot_price(), 6)
+	run.buy_slot()
+	assert_eq(run.slot_price(), 8)
+	run.buy_slot()
+	run.buy_slot()
+	assert_eq(run.slot_count(), 6)
+	assert_eq(run.slot_price(), -1, "max 6 slots")
+	assert_eq(run.gold, 100 - 24)
+
+
+func test_income_with_difficulty_bonus_and_interest() -> void:
+	var run := _run()
+	run.choose_enemy(2)  # hard: +4
+	run.gold = 12
+	run.apply_battle_result({"victory": true, "gold_after": 12})
+	# 12 gold -> interest 2; income 5 + 4 + 2 = 11.
+	assert_eq(run.gold, 23)
+	assert_eq(run.last_income, {"base": 5, "bonus": 4, "interest": 2})
+
+
+func test_interest_is_capped_at_five() -> void:
+	var run := _run()
+	run.gold = 80
+	assert_eq(run.interest(), 5)
+
+
+func test_win_gives_third_xp_and_opens_rewards() -> void:
+	var run := _planning_run()
+	run.apply_battle_result(_win())
+	assert_eq(run.row[0]["xp"], 1)
+	assert_eq(run.stage, RunState.Stage.REWARD)
+	assert_eq(run.rewards.size(), 3)
+
+
+func test_loss_ends_the_run() -> void:
+	var run := _planning_run()
+	run.apply_battle_result({"victory": false})
+	assert_eq(run.stage, RunState.Stage.LOST)
+
+
+func test_reward_goes_to_free_slot_or_merges() -> void:
+	var run := _planning_run()
+	run.apply_battle_result(_win())
+	run.rewards[0] = run.row[0]["def_id"]
+	assert_eq(run.reward_target(run.rewards[0]), 0, "merges into the matching figure")
+	assert_true(run.take_reward(0))
+	assert_eq(run.row[0]["xp"], 1 + 3)
+	assert_eq(run.stage, RunState.Stage.ENEMY_CHOICE)
+
+
+func test_skip_reward_gives_two_gold() -> void:
+	var run := _planning_run()
+	run.apply_battle_result(_win())
+	var before := run.gold
+	run.skip_reward()
+	assert_eq(run.gold, before + 2)
+
+
+func test_boss_win_adds_a_slot_and_two_acts_win_the_run() -> void:
+	var run := _run()
+	for i in 6:
+		assert_eq(run.stage, RunState.Stage.ENEMY_CHOICE)
+		if run.is_boss_fight():
+			assert_eq(run.enemy_options.size(), 1)
+		run.choose_enemy(0)
+		var slots_before := run.slot_count()
+		var was_boss := run.is_boss_fight()
+		run.apply_battle_result(_win())
+		if was_boss:
+			assert_eq(run.slot_count(), slots_before + 1)
+		if run.stage == RunState.Stage.REWARD:
+			run.skip_reward()
+	assert_eq(run.stage, RunState.Stage.WON)
+	assert_eq(run.battles_won, 6)
+
+
+func test_serialization_round_trip_keeps_rng_position() -> void:
+	var run := _planning_run()
+	run.reroll()
+	var copy := RunState.from_dict(_db, run.to_dict())
+	run.gold = 50
+	copy.gold = 50
+	run.reroll()
+	copy.reroll()
+	assert_eq(copy.shop, run.shop, "same rng position -> same shop")
+	assert_eq(JSON.stringify(copy.to_dict()), JSON.stringify(run.to_dict()))
+
+
+func test_same_seed_same_run() -> void:
+	var a := _run(77)
+	var b := _run(77)
+	assert_eq(JSON.stringify(a.to_dict()), JSON.stringify(b.to_dict()))
+
+
+func test_enemy_budget_grows_with_act_and_difficulty() -> void:
+	assert_lt(EnemyGenerator.budget(1, 0, 0), EnemyGenerator.budget(1, 0, 2))
+	assert_lt(EnemyGenerator.budget(1, 2, 2), EnemyGenerator.budget(2, 2, 2))
+
+
+func test_generated_team_respects_budget() -> void:
+	var rng := RngStreams.new(3).stream("t")
+	for b in [3, 5, 9, 20, 40]:
+		var team := EnemyGenerator.generate(_db, b, rng)
+		var spent := 0
+		for unit in team:
+			spent += int(_db.enemies[unit["def_id"]]["cost"]) * unit["level"]
+		assert_lte(spent, b)
+		assert_lte(team.size(), 6)
+		assert_gt(team.size(), 0)
+
+
+func test_rank_odds_sum_to_one_hundred() -> void:
+	for entry in RunState.RANK_ODDS:
+		var total := 0
+		for value in entry[1]:
+			total += value
+		assert_eq(total, 100)

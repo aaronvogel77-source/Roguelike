@@ -22,6 +22,15 @@ var _attack_label: Label
 var _health_label: Label
 
 
+## Card for a figure outside of battle (shop, row, rewards, previews).
+static func for_definition(unit_definition: Dictionary, level: int, enemy: bool) -> UnitCard:
+	var side := BattleSimulator.ENEMY if enemy else BattleSimulator.PLAYER
+	var unit := BattleUnit.from_definition(unit_definition, side, 0, level)
+	var card := UnitCard.new()
+	card.setup(unit.snapshot(), unit_definition, enemy)
+	return card
+
+
 func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> void:
 	uid = initial["uid"]
 	definition = unit_definition

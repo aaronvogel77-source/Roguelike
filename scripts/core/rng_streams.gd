@@ -19,3 +19,18 @@ func stream(stream_name: String) -> RandomNumberGenerator:
 		rng.seed = ("%d:%s" % [master_seed, stream_name]).hash()
 		_streams[stream_name] = rng
 	return _streams[stream_name]
+
+
+## Serializable state (seed + position of every stream) for save and undo.
+func to_dict() -> Dictionary:
+	var states := {}
+	for stream_name in _streams:
+		states[stream_name] = str(_streams[stream_name].state)
+	return {"seed": master_seed, "states": states}
+
+
+static func from_dict(data: Dictionary) -> RngStreams:
+	var streams := RngStreams.new(int(data["seed"]))
+	for stream_name in data["states"]:
+		streams.stream(stream_name).state = int(data["states"][stream_name])
+	return streams

@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0, M1 abgeschlossen. M2 (Fähigkeiten-Baukasten) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0–M2 abgeschlossen. M3 (Run-Schleife) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -400,6 +400,16 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 - **Figurenrunden:** **Vor dem Start von M0** werden alle 16 Figuren gemeinsam Figur für Figur entworfen (eine Runde pro Tarot-Farbe), dazu die Münzen-Gegner.
 - **Zusammenfassung:** Vom Nutzer übersprungen („direkt starten“). Sie steht unten im Dokument.
 
+### Detailentscheidungen vor M3
+- **Plätze:** +1 Platz gratis nach jedem besiegten Akt-Boss. Zusätzlich im Shop kaufbar für 6 → 8 → 10 Gold. Maximum 6.
+- **Belohnung nach Sieg:** Gratis **1 aus 3** wählen (bis M5 nur Figuren, danach auch Objekte). Wer überspringt oder keinen Platz hat, bekommt **+2 Gold**.
+- **Ränge im Shop (Bube / Ritter / Königin / König):** Akt 1: 68 / 25 / 5 / 2 % · Akt 2: 50 / 32 / 14 / 4 % · Akt 3–4: 40 / 33 / 20 / 7 % · Akt 5+: 30 / 33 / 25 / 12 %
+- **Start bis M7 (ohne Okkultisten):** ein zufälliger Bube + 10 Gold
+- **Ablauf eines Kampfzyklus:** Gegnerwahl (volle Vorschau) → Planung/Shop (der gewählte Gegner bleibt sichtbar) → Kampf → Belohnung → nächste Gegnerwahl
+- **Erfahrung intern in Dritteln:** Duplikat = 3, Kampfsieg = 1, Stufe 2 ab 9, Stufe 3 ab 18 (entspricht 3 bzw. 6 Erfahrung)
+- **Gegner-Budgets (vorläufig, per Bot-Simulation):** Akt 1 = klein 1,5 / groß 3 / Boss 4, ×1,5 pro Akt; Leicht ×0,75, Mittel ×1, Schwer ×1,35. Ein blinder Bot gewinnt ~27–36 % der Slice-Runs. Feinschliff in M4/M9.
+- **Duplikate:** Wird eine gekaufte Figur auf eine gleiche Figur gelegt, verschmilzt sie. Auf einen freien Platz gelegt, entsteht eine zweite eigenständige Kopie.
+
 ---
 
 ## Inhalte – Figuren (Vertical Slice)
@@ -489,7 +499,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ---
 
 ## Offene Fragen
-- Feedback zur M2-Überarbeitung (Embleme, fliegende Effekte, Blutung als Dauerschaden) einholen, dann M3
+- M3-Feedback einholen
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -556,3 +566,5 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | 2026-11-16 | M1 abgenommen. M2: Fähigkeiten-Baukasten (24 Fähigkeiten, 4 Status, Multiplikatoren, Stufen), Detail-Panel per Tippen, 40 Tests | Alle Slice-Inhalte kämpfen mit echten Regeln | – |
 | 2026-11-16 | M2-Feedback: Status als gezeichnete Embleme, Fähigkeiten fliegen als Emblem zum Ziel bzw. leuchten als Lichtkranz auf der eigenen Karte, Schwerter beim Zusammenstoß, Blutung = Dauerschaden für jede Figur (Stapel bleiben). Tempo und Regel-Präzisierungen bestätigt | Bessere Lesbarkeit, Blutung auch für hintere Figuren relevant | Kürzel; Blutung nur als Trefferbonus |
 | 2026-11-16 | v0.2.2: größere Status-Embleme auf dunklem Untergrund, Spielfeld skaliert auf breiten Handys bis ×1,3, sichtbare Versionsnummer, `?seed=` in der Adresse spielt einen bestimmten Kampf nach, Cache-Busting beim Deploy | Nutzer sah Embleme nicht (zu klein und/oder alte Version im Browser-Cache) | – |
+| 2026-11-16 | M2 abgenommen. M3-Details: Plätze nach Boss + kaufbar (6/8/10), Belohnung 1 aus 3 oder +2 Gold, Rang-Quoten mit 2 % König in Akt 1, Start mit zufälligem Buben + 10 Gold | Spar-Dilemma, frühe Glücksmomente | Nur kaufbar/nur Boss; nur Gold; keine Könige in Akt 1; leere Reihe |
+| 2026-11-16 | M3: RunState (Gold, Zinsen, Shop, Neuwürfeln, Plätze, Leveln, Belohnung, Rückgängig), Budget-Gegnergenerator, Bildschirme Gegnerwahl/Planung/Belohnung/Run-Ende, Tippen + Drag & Drop, 63 Tests | Erster komplett spielbarer Mini-Run | – |

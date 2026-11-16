@@ -86,3 +86,43 @@ RANK_PAGE,Bube,Page
 RANK_KNIGHT,Ritter,Knight
 RANK_QUEEN,Königin,Queen
 RANK_KING,König,King
+UI_CONTINUE,Weiter,Continue
+UI_INTEREST,Zinsen +%d,Interest +%d
+UI_SLOTS,Plätze %d/%d,Slots %d/%d
+UI_ACT_FIGHT,Akt %d · Kampf %d/%d · %s,Act %d · Fight %d/%d · %s
+UI_FIGHT_SMALL,Kleiner Kampf,Small fight
+UI_FIGHT_BIG,Großer Kampf,Big fight
+UI_FIGHT_BOSS,Boss,Boss
+UI_EASY,Leicht,Easy
+UI_MEDIUM,Mittel,Medium
+UI_HARD,Schwer,Hard
+UI_BONUS_GOLD,+%d Gold,+%d gold
+UI_BOSS_SLOT_NOTE,Sieg: +1 Platz,Victory: +1 slot
+UI_CHOOSE_ENEMY,"Wähle deinen nächsten Gegner – du siehst alles, was er kann.",Choose your next enemy – you can see everything it can do.
+UI_CHOOSE,Wählen,Choose
+UI_YOUR_TEAM_FRONT,Dein Team · vorne = rechts,Your team · front = right
+UI_NEXT_ENEMY,Nächster Gegner · vorne = links,Next enemy · front = left
+UI_SHOP,Shop,Shop
+UI_PRICE,%d Gold,%d gold
+UI_REROLL,Neu würfeln (%d),Reroll (%d)
+UI_BUY_SLOT,Platz +1 (%d),Slot +1 (%d)
+UI_SLOTS_MAX,Plätze voll,Slots maxed
+UI_SELL,Verkaufen,Sell
+UI_SELL_FOR,Verkaufen (+%d),Sell (+%d)
+UI_SELL_CONFIRM,Sicher? (+%d),Sure? (+%d)
+UI_UNDO,Rückgängig,Undo
+UI_FIGHT,Kampf!,Fight!
+UI_MAX_LEVEL,Max. Stufe,Max level
+UI_XP,EP %s/%s,XP %s/%s
+UI_INCOME,Einkommen +%d · Bonus +%d · Zinsen +%d,Income +%d · bonus +%d · interest +%d
+UI_NEW_SLOT,Neuer Platz!,New slot!
+UI_CHOOSE_REWARD,Wähle eine Belohnung,Choose a reward
+UI_TAKE,Nehmen,Take
+UI_TAKE_MERGE,Nehmen (verschmilzt),Take (merges)
+UI_NO_ROOM,Kein Platz,No room
+UI_SKIP_REWARD,Überspringen (+%d Gold),Skip (+%d gold)
+UI_RUN_WON,Sieg! Der Run ist geschafft.,Victory! The run is complete.
+UI_RUN_LOST,Niederlage,Defeat
+UI_RUN_REACHED,Erreicht: Akt %d · %s,Reached: act %d · %s
+UI_RUN_WINS,Gewonnene Kämpfe: %d,Battles won: %d
+UI_NEW_RUN,Neuer Run,New run

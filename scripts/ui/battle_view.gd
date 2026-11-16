@@ -1,10 +1,19 @@
 extends Control
-## M1 battle screen: shows two random placeholder teams and replays the
-## simulator's event list turn by turn (1x / 2x / 4x speed).
+## Battle screen: replays the simulator's event list turn by turn
+## (1x / 2x / 4x speed).
+##
+## Sandbox mode (scenes/battle.tscn on its own): random teams, "new battle".
+## Run mode (embedded by the run screen): play_battle() starts a given fight,
+## "continue" emits finished(result) when it is over.
+
+signal finished(result: Dictionary)
 
 const SPEEDS := [1.0, 2.0, 4.0]
 const ROW_GAP := 56
 const CARD_SPACING := 6
+
+## Run mode sets this to false before adding the node to the tree.
+var sandbox := true
 
 var _db: ContentDb
 var _rng_streams: RngStreams
@@ -32,10 +41,29 @@ var _field_holder: Control
 
 func _ready() -> void:
 	TranslationServer.set_locale("de")
+	theme = UiTheme.build()
 	_db = ContentDb.load_default()
 	_build_layout()
-	_new_battle()
+	if sandbox:
+		_new_battle()
 	_fit_field.call_deferred()
+
+
+## Run mode: shows the given fight and starts it right away.
+func play_battle(player_team: Array, enemy_team: Array, gold: int, info: String) -> void:
+	_playback_token += 1
+	_battle_gold = gold
+	_battle = BattleSimulator.simulate(player_team, enemy_team, gold)
+	_seed_label.text = info
+	_set_gold(gold)
+	_turn_label.text = ""
+	_banner.text = ""
+	_start_button.hide()
+	_new_button.text = tr("UI_CONTINUE")
+	_new_button.hide()
+	_show_start_state(_battle["events"][0])
+	await get_tree().create_timer(0.6).timeout
+	_start_battle()
 
 
 ## On wide screens (most phones in landscape) the battle field is scaled up so
@@ -149,7 +177,7 @@ func _build_bottom_bar() -> Control:
 	bar.add_child(_start_button)
 
 	_new_button = _make_button(tr("UI_NEW_BATTLE"), Vector2(260, 72))
-	_new_button.pressed.connect(_new_battle)
+	_new_button.pressed.connect(_on_new_button)
 	bar.add_child(_new_button)
 
 	var balance := Control.new()
@@ -195,6 +223,13 @@ func _make_button(text: String, min_size: Vector2) -> Button:
 
 
 # --- Battle setup -------------------------------------------------------------
+
+func _on_new_button() -> void:
+	if sandbox:
+		_new_battle()
+	else:
+		finished.emit(_battle)
+
 
 func _new_battle() -> void:
 	_playback_token += 1
@@ -310,6 +345,8 @@ func _play_events(token: int) -> void:
 				await _animate_removed(event)
 			"end":
 				_show_result(event)
+				if not sandbox:
+					_new_button.show()
 		i += 1
 
 
