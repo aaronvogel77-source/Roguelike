@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Planung – Phase 2, Runde 4 läuft
+**Status:** Planung – Phase 2 abgeschlossen, Phase 3 Runde 1 läuft
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -95,6 +95,17 @@ Ein kommerzieller Release ohne Programmiererfahrung ist ein sehr großes Vorhabe
 ### ⚠️ Risiko: Permadeath im Auto-Battler
 Weil der Kampf automatisch läuft, kann eine einzelne Niederlage als unfair empfunden werden („Ich konnte nichts tun“). Gegenmaßnahmen werden in Runde 4 entschieden, z. B. Gegner-Vorschau.
 
+### Runde 4 (beantwortet)
+- **Fairness/Vorschau:** Volle Vorschau auf die Gegner-Teams (Werte und Fähigkeiten). Zusätzlich **Wahl aus 2–3 Gegnern**: schwerer bedeutet mehr Belohnung.
+- **Run-Struktur:** **8 Akte à 3 Kämpfe** (Balatro-Antes-Prinzip: klein → groß → Boss), insgesamt 24 Kämpfe.
+- **Teamgröße:** Start mit **3 Plätzen**, wachsend bis **6** (kaufbar oder als Belohnung).
+- **Kampfende:** Zuglimit + Verderben. Ab Zug X (Vorschlag: 20) nehmen alle Figuren pro Zug wachsenden Schaden („Die Dunkelheit frisst“).
+
+### Pacing-Rechnung (zu prüfen im Prototyp)
+- 30–45 Min. ÷ 24 Kämpfe ≈ **75–110 Sek. pro Zyklus** (Gegnerwahl + Planung + Kampf + Belohnung).
+- Folge: Ein Kampf sollte bei 1× Tempo **~20–40 Sek.** dauern. Die Animationen müssen knackig sein.
+- „Wahl aus 2–3 Gegnern“ verdreifacht grob den Bedarf an Gegner-Teams pro Akt (→ Phase 3/7).
+
 ## Phase 3 – Welt und prozedurale Generierung
 _Noch nicht behandelt._
 
@@ -137,7 +148,7 @@ _Noch nicht behandelt._
 ---
 
 ## Offene Fragen
-- Phase 2, Runde 4: Fairness bei Permadeath (Gegner-Vorschau), Akt-/Kampfanzahl, Teamgröße, Kampfende-Regeln
+- Phase 3, Runde 1: Gegner-Generierung, Gebiete/Biome, Ereignisse zwischen Kämpfen, Seeds
 
 ## Später entscheiden
 - **Art der Synergie-Objekte** (Karten/Joker/Pakte sind Platzhalter) → Phase 8/9
@@ -158,3 +169,4 @@ _Noch nicht behandelt._
 | 2026-11-16 | 1280×720, KI-Test nach der Planung, Claude committet, Claude baut und Nutzer testet | Nutzer will testen statt programmieren lernen | 1080p, 360p; sofortiger KI-Test; Lernen am Projekt |
 | 2026-11-16 | Auto-Battler mit Team aus levelbaren, kombinierbaren Figuren; Loop Kampf → Belohnung → Shop → Boss | Synergien und Build sind der Kern, Angriffe laufen automatisch | Survivors-Echtzeit, Züge mit freier Position, Raster mit Auto-Angriff; Einzelheld |
 | 2026-11-16 | Eine Reihe, Schritt-für-Schritt-Kampf, eine Niederlage = Tod, Akte mit Bossen | Lesbarkeit, Synergien nachvollziehbar, maximaler Druck | Zwei Reihen, freies Feld; Echtzeit-Simulation; Leben-System, übertragene HP |
+| 2026-11-16 | Volle Vorschau + Wahl aus 2–3 Gegnern, 8 Akte à 3 Kämpfe, 3→6 Plätze, Zuglimit mit Verderben | Fairness trotz Permadeath, Balatro-Rhythmus, Kurve knapp → explosiv | Nur Boss-Vorschau, Leben-System; 3×5, 4×4; feste Teamgröße; Unentschieden = Niederlage/weiter |
