@@ -173,12 +173,16 @@ func test_chalice_revives_once_and_drowned_king_absorbs_twice() -> void:
 		[_unit(1, 1, null, "fodder"), _fig("chalice_of_return"), _fig("drowned_king")],
 		[_unit(1, 100)])
 	assert_eq(_events(result, "revive").size(), 1, "chalice revives only once")
-	# Fodder (1/1) dies twice -> drowned king absorbs its 1 max health twice.
-	var king_max := 0
-	for e in _events(result, "update"):
-		if e["unit"]["uid"] == 3:
-			king_max = maxi(king_max, e["unit"]["max_health"])
-	assert_gte(king_max, 8 + 2)
+	# The drowned king absorbs both deaths of the fodder (30 % at level 1).
+	var absorbs := _events(result, "trigger").filter(func(e): return e["uid"] == 3 and e["effect"] == "absorb")
+	assert_gte(absorbs.size(), 2, "the fodder feeds the king twice")
+
+
+func test_drowned_king_absorbs_a_share_of_attack_and_health() -> void:
+	var fodder := _unit(10, 10, null, "fodder")
+	var result := BattleSimulator.simulate([fodder, _fig("drowned_king", 2)], [_unit(50, 100)])
+	# Level 2 king (5/9) takes 60 %: +6 attack, +6 health.
+	assert_true(_ever(result, 2, func(u): return u["attack"] == 11 and u["max_health"] == 15))
 
 
 # --- Swords -------------------------------------------------------------------------

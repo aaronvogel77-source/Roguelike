@@ -9,7 +9,7 @@ var _body: RichTextLabel
 
 
 func _init() -> void:
-	custom_minimum_size = Vector2(620, 0)
+	custom_minimum_size = Vector2(720, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.08, 0.07, 0.1, 0.97)
 	style.border_color = Palette.GOLD
@@ -26,7 +26,7 @@ func _init() -> void:
 	var header := HBoxContainer.new()
 	column.add_child(header)
 	_title = Label.new()
-	_title.add_theme_font_size_override("font_size", 26)
+	_title.add_theme_font_size_override("font_size", 32)
 	_title.add_theme_color_override("font_color", Palette.GOLD)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(_title)
@@ -45,8 +45,8 @@ func _init() -> void:
 	_body.bbcode_enabled = true
 	_body.fit_content = true
 	_body.scroll_active = false
-	_body.add_theme_font_size_override("normal_font_size", 20)
-	_body.add_theme_font_size_override("bold_font_size", 20)
+	_body.add_theme_font_size_override("normal_font_size", 24)
+	_body.add_theme_font_size_override("bold_font_size", 24)
 	_body.add_theme_color_override("default_color", Palette.PARCHMENT)
 	column.add_child(_body)
 	# Taps go through the panel (to the cards underneath); only "close" reacts.
@@ -74,7 +74,7 @@ func show_card(card: UnitCard) -> void:
 	for i in kinds.size():
 		if i > 0:
 			_subtitle.add_child(_subtitle_text("·"))
-		var emblem := Emblem.create(kinds[i], 22)
+		var emblem := Emblem.create(kinds[i], 26)
 		if kinds[i] == "level":
 			emblem.count = level
 		_subtitle.add_child(emblem)
@@ -106,7 +106,7 @@ func show_card(card: UnitCard) -> void:
 func _subtitle_text(text: String) -> Label:
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_font_size_override("font_size", 21)
 	label.add_theme_color_override("font_color", Palette.MUTED)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label

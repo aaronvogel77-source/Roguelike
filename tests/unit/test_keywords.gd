@@ -20,3 +20,7 @@ func test_multiplier_is_colored() -> void:
 
 func test_plain_text_is_unchanged() -> void:
 	assert_eq(Keywords.colorize("nichts besonderes"), "nichts besonderes")
+
+
+func test_keywords_inside_other_words_stay_plain() -> void:
+	assert_eq(Keywords.colorize("Die Goldene Mauer"), "Die Goldene Mauer")

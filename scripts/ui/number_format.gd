@@ -13,6 +13,6 @@ static func decimal(value: float) -> String:
 
 ## Formats an ability value for its description text.
 static func ability_value(effect: String, value: float) -> String:
-	if effect == "lifesteal":
+	if effect in ["lifesteal", "absorb"]:
 		return str(int(round(value * 100)))
 	return decimal(value)

@@ -36,7 +36,7 @@ UI_ENEMIES,Gegner,Enemies
 ABIL_COIN_SQUIRE,Kampfbeginn: erhält Schild {v}.,Battle start: gains {v} shield.
 ABIL_GOLD_ARMORED,Kampfbeginn: +1 Leben pro {v} Gold im Besitz.,Battle start: +1 health per {v} gold you own.
 ABIL_GOLDEN_SCALES,Wenn eine eigene Figur stirbt: Die vorderste eigene Figur erhält ×{v} Angriff.,When an ally dies: your front figure gains ×{v} attack.
-ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold ÷ {v}).,Battle start: attack ×(1 + gold ÷ {v}).
+ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×(1 + gold / {v}).
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
 ABIL_ENRAGED_ONE,Wenn getroffen: +{v} Angriff.,When hit: +{v} attack.
 ABIL_MISTRESS_OF_EMBERS,Dauerhaft: Brennen-Schaden an Gegnern ×{v}.,Always: burn damage to enemies ×{v}.
@@ -44,7 +44,7 @@ ABIL_ASH_KING,"Wenn ein Gegner stirbt: Sein Brennen springt auf den nächsten Ge
 ABIL_ALTAR_SERVER,Zugbeginn: Heilt die Figur vor sich um {v}.,Turn start: heals the figure in front by {v}.
 ABIL_BLOOD_DRINKER,Nach dem Angriff: Heilt sich um {v} % des verursachten Schadens.,After attacking: heals {v} % of the damage dealt.
 ABIL_CHALICE_OF_RETURN,Wenn eine eigene Figur stirbt: Einmal pro Kampf kehrt sie mit {v} Leben zurück.,When an ally dies: once per battle it returns with {v} health.
-ABIL_DROWNED_KING,Wenn eine eigene Figur stirbt: erhält ×{v} ihres Angriffs und ihr volles Leben.,When an ally dies: gains ×{v} of its attack and all of its health.
+ABIL_DROWNED_KING,Wenn eine eigene Figur stirbt: erhält {v} % ihres Angriffs und ihres Lebens.,When an ally dies: gains {v} % of its attack and health.
 ABIL_BLADE_APPRENTICE,Nach dem Angriff: Das Ziel erhält Blutung {v}.,After attacking: the target gains {v} bleed.
 ABIL_EXECUTIONER,Nach dem Angriff: Ein Ziel mit höchstens {v} Leben stirbt sofort.,After attacking: a target with {v} health or less dies instantly.
 ABIL_CLEAR_BLADE,"Kampfbeginn (zuletzt): Entfernt alle gegnerischen Schilde, pro Schildpunkt Blutung {v}.","Battle start (last): removes all enemy shields, {v} bleed per shield point."
@@ -66,8 +66,8 @@ STATUS_BURN_SHORT,Br,Bu
 STATUS_CURSE_SHORT,Fl,Cu
 STATUS_BLEED_SHORT,Bl,Bl
 STATUS_SHIELD_DESC,Blockt so viele Schadenspunkte (nicht die Dunkelheit).,Blocks that many points of damage (not the darkness).
-STATUS_BURN_DESC,"Zugbeginn: so viel Schaden wie Stapel, danach −1 Stapel.","Turn start: damage equal to stacks, then −1 stack."
-STATUS_CURSE_DESC,"−Angriff in Höhe der Stapel, verfliegt nach 3 Zügen.","−attack equal to stacks, fades after 3 turns."
+STATUS_BURN_DESC,"Zugbeginn: so viel Schaden wie Stapel, danach -1 Stapel.","Turn start: damage equal to stacks, then -1 stack."
+STATUS_CURSE_DESC,"-Angriff in Höhe der Stapel, verfliegt nach 3 Zügen.","-attack equal to stacks, fades after 3 turns."
 STATUS_BLEED_DESC,"Zugbeginn: so viel Schaden wie Stapel, egal wo die Figur steht. Die Stapel bleiben.","Turn start: damage equal to stacks, wherever the figure stands. Stacks remain."
 UI_GOLD,Gold: %d,Gold: %d
 UI_LEVEL_SHORT,St. %d,Lv %d
@@ -129,9 +129,9 @@ UI_NEW_RUN,Neuer Run,New run
 UI_SELL_ZONE,Hierher ziehen zum Verkaufen,Drag here to sell
 UI_LEVEL_UP,Stufe %d!,Level %d!
 UI_MERGED,Verschmolzen!,Merged!
-UI_XP_GAIN,EP %s → %s,XP %s → %s
-UI_STAT_CHANGE_ATTACK,Angriff %d → %d,Attack %d → %d
-UI_STAT_CHANGE_HEALTH,Leben %d → %d,Health %d → %d
+UI_XP_GAIN,EP %s -> %s,XP %s -> %s
+UI_STAT_CHANGE_ATTACK,Angriff %d -> %d,Attack %d -> %d
+UI_STAT_CHANGE_HEALTH,Leben %d -> %d,Health %d -> %d
 REGION_COINS,Münzen-Gebiet,Coin region
 BLESSING_COINS,Gebiets-Segen: Münz-Figuren erhalten zu Kampfbeginn Schild 1.,Region blessing: coin figures gain 1 shield at battle start.
 THEME_GREED,Gierige Bande,Greedy gang
@@ -147,3 +147,9 @@ ENEMY_BOSS_GOLDEN_WALL,Die Goldene Mauer,The Golden Wall
 ABIL_BOSS_TAX_COLLECTOR,Nach dem Angriff: Stiehlt dir 1 Gold und erhält dafür +{v} Angriff (max. 3× pro Kampf).,After attacking: steals 1 gold from you and gains +{v} attack (max. 3× per battle).
 ABIL_BOSS_GOLDEN_WALL,Wenn getroffen: Schild +{v}.,When hit: +{v} shield.
 UI_BOSS_APPEARS,Boss,Boss
+UI_RARE,Selten!,Rare!
+UI_RARE_EPIC,Episch!,Epic!
+REGION_COINS_DESC,Gold glänzt in jedem Schatten – und jeder Schatten will es haben.,Gold gleams in every shadow – and every shadow wants it.
+UI_REGION_ENEMIES,Gegner: %s,Enemies: %s
+UI_REGION_BOSSES,Bosse: %s,Bosses: %s
+UI_ENTER_REGION,Betreten,Enter

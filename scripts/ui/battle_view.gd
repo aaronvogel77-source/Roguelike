@@ -113,7 +113,7 @@ func _fit_field() -> void:
 		return
 	_field.size = _field.get_combined_minimum_size()
 	var needed := _field.size.x + 40
-	var factor := clampf(_field_holder.size.x / needed, 1.0, 1.3)
+	var factor := clampf(_field_holder.size.x / needed, 0.7, 1.7)
 	factor = minf(factor, _field_holder.size.y / maxf(_field.size.y, 1.0))
 	_field.scale = Vector2(factor, factor)
 	_field.position = (_field_holder.size - _field.size * factor) / 2
@@ -305,12 +305,14 @@ func _show_start_state(start_event: Dictionary) -> void:
 		_player_row.add_child(_make_card(snapshot, false))
 	for snapshot in start_event["enemy"]:
 		_enemy_row.add_child(_make_card(snapshot, true))
-	# Rule bosses can field more than 6 card widths (boss figures are 2-3 wide).
+	# Rows are as wide as the units at battle start (boss figures are 2-3 wide),
+	# so small teams are drawn larger. The width stays fixed during the fight.
 	var enemy_slots := 0
 	for snapshot in start_event["enemy"]:
 		enemy_slots += int(_db.enemies[snapshot["def_id"]].get("width", 1))
-	enemy_slots = maxi(6, enemy_slots)
-	_enemy_row.custom_minimum_size.x = enemy_slots * (UnitCard.CARD_SIZE.x + CARD_SPACING)
+	var slot_width := UnitCard.CARD_SIZE.x + CARD_SPACING
+	_enemy_row.custom_minimum_size.x = maxi(enemy_slots, 3) * slot_width
+	_player_row.custom_minimum_size.x = maxi(start_event["player"].size(), 3) * slot_width
 	_fit_field.call_deferred()
 
 

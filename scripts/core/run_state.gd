@@ -13,7 +13,8 @@ const FIGHTS_PER_ACT := 3
 const START_GOLD := 8
 const START_SLOTS := 3
 const MAX_SLOTS := 6
-const FIGURE_PRICE := 3
+## Shop price by rank (page, knight, queen, king).
+const RANK_PRICES := {"page": 3, "knight": 4, "queen": 6, "king": 8}
 const SHOP_FIGURE_SLOTS := 3
 const BASE_INCOME := 5
 const GOLD_PER_INTEREST := 5
@@ -97,8 +98,13 @@ func slot_price() -> int:
 	return SLOT_PRICES[slots_bought]
 
 
+func price_of(def_id: String) -> int:
+	return RANK_PRICES[db.figures[def_id]["rank"]]
+
+
+## Half the rank price (rounded down) plus 1 per level above 1.
 func sell_value(figure: Dictionary) -> int:
-	return 1 + figure_level(figure) - 1
+	return price_of(figure["def_id"]) / 2 + figure_level(figure) - 1
 
 
 func interest() -> int:
@@ -149,23 +155,25 @@ func buy(shop_index: int, row_index: int) -> bool:
 	if stage != Stage.PLANNING or shop_index < 0 or shop_index >= shop.size():
 		return false
 	var def_id: String = shop[shop_index]
-	if def_id == "" or gold < FIGURE_PRICE or not can_place(def_id, row_index):
+	if def_id == "" or gold < price_of(def_id) or not can_place(def_id, row_index):
 		return false
-	gold -= FIGURE_PRICE
+	gold -= price_of(def_id)
 	shop[shop_index] = ""
 	_place(def_id, row_index)
 	return true
 
 
+## Selling works while planning and on the reward screen (to make room).
 func sell(row_index: int) -> bool:
-	if stage != Stage.PLANNING or row_index < 0 or row_index >= row.size() or row[row_index] == null:
+	if stage not in [Stage.PLANNING, Stage.REWARD] or row_index < 0 or row_index >= row.size() or row[row_index] == null:
 		return false
 	gold += sell_value(row[row_index])
 	row[row_index] = null
 	return true
 
 
-## Moves a figure; if the target holds a figure, the two swap places.
+## Moves a figure. Onto an equal figure below max level it merges (the moved
+## copy's experience plus one duplicate); onto another figure the two swap.
 func move(from_index: int, to_index: int) -> bool:
 	if stage != Stage.PLANNING or from_index == to_index:
 		return false
@@ -173,6 +181,12 @@ func move(from_index: int, to_index: int) -> bool:
 		return false
 	if row[from_index] == null:
 		return false
+	var target: Variant = row[to_index]
+	if target != null and target["def_id"] == row[from_index]["def_id"] and figure_level(target) < 3:
+		var combined := int(target["xp"]) + int(row[from_index]["xp"]) + XP_PER_DUPLICATE
+		target["xp"] = mini(combined, XP_FOR_LEVEL[2])
+		row[from_index] = null
+		return true
 	var moving: Variant = row[from_index]
 	row[from_index] = row[to_index]
 	row[to_index] = moving

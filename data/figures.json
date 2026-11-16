@@ -12,7 +12,7 @@
     {"id": "altar_server", "suit": "cups", "rank": "page", "attack": 1, "health": 3, "ability": {"trigger": "turn_start", "target": "ally_in_front", "effect": "heal", "values": [1, 2, 3]}},
     {"id": "blood_drinker", "suit": "cups", "rank": "knight", "attack": 3, "health": 4, "ability": {"trigger": "on_attack", "target": "self", "effect": "lifesteal", "values": [0.5, 0.75, 1.0]}},
     {"id": "chalice_of_return", "suit": "cups", "rank": "queen", "attack": 1, "health": 5, "ability": {"trigger": "on_ally_death", "target": "dying_unit", "effect": "revive", "values": [1, 2, 3]}},
-    {"id": "drowned_king", "suit": "cups", "rank": "king", "attack": 4, "health": 8, "ability": {"trigger": "on_ally_death", "target": "self", "effect": "absorb", "values": [0.5, 0.75, 1.0]}},
+    {"id": "drowned_king", "suit": "cups", "rank": "king", "attack": 4, "health": 8, "ability": {"trigger": "on_ally_death", "target": "self", "effect": "absorb", "values": [0.3, 0.6, 1.0]}},
     {"id": "blade_apprentice", "suit": "swords", "rank": "page", "attack": 2, "health": 2, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "apply_bleed", "values": [1, 2, 3]}},
     {"id": "executioner", "suit": "swords", "rank": "knight", "attack": 4, "health": 3, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "execute", "values": [3, 4, 5]}},
     {"id": "clear_blade", "suit": "swords", "rank": "queen", "attack": 4, "health": 4, "ability": {"trigger": "battle_start", "target": "all_enemies", "effect": "shields_to_bleed", "values": [1, 2, 3], "late": true}},

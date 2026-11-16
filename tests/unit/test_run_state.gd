@@ -38,10 +38,15 @@ func test_choosing_an_enemy_opens_the_shop() -> void:
 	assert_eq(run.shop.size(), 3)
 
 
-func test_buy_into_empty_slot_costs_three() -> void:
+func test_buy_costs_the_rank_price() -> void:
 	var run := _planning_run()
+	run.gold = 20
+	run.shop[0] = "the_judge"
 	assert_true(run.buy(0, 1))
-	assert_eq(run.gold, RunState.START_GOLD - 3)
+	assert_eq(run.gold, 20 - 8, "kings cost 8")
+	run.shop[1] = "coin_squire"
+	assert_true(run.buy(1, 2))
+	assert_eq(run.gold, 12 - 3, "pages cost 3")
 	assert_not_null(run.row[1])
 	assert_eq(run.shop[0], "")
 
@@ -69,12 +74,12 @@ func test_duplicate_merges_and_levels_up_after_three() -> void:
 	assert_eq(run.figure_level(run.row[0]), 3)
 
 
-func test_sell_value_is_one_plus_level_bonus() -> void:
+func test_sell_value_is_half_price_plus_level_bonus() -> void:
 	var run := _planning_run()
 	run.row[1] = {"uid": 50, "def_id": "the_judge", "xp": 9}
 	var before := run.gold
 	assert_true(run.sell(1))
-	assert_eq(run.gold, before + 2)
+	assert_eq(run.gold, before + 4 + 1, "king 8 / 2 + level 2 bonus")
 	assert_null(run.row[1])
 
 
@@ -226,3 +231,19 @@ func test_no_merging_beyond_max_level() -> void:
 	assert_false(run.buy(0, 0), "level 3 cannot merge")
 	assert_true(run.buy(0, 1), "a second copy in a free slot is fine")
 	assert_eq(run.reward_target("coin_squire"), 1, "rewards merge into the copy that can still level")
+
+
+func test_moving_onto_an_equal_figure_merges() -> void:
+	var run := _planning_run()
+	run.row[0] = {"uid": 1, "def_id": "coin_squire", "xp": 2}
+	run.row[1] = {"uid": 2, "def_id": "coin_squire", "xp": 1}
+	assert_true(run.move(1, 0))
+	assert_eq(run.row[0]["xp"], 2 + 1 + 3)
+	assert_null(run.row[1])
+
+
+func test_selling_is_allowed_on_the_reward_screen() -> void:
+	var run := _planning_run()
+	run.apply_battle_result({"victory": true})
+	assert_eq(run.stage, RunState.Stage.REWARD)
+	assert_true(run.sell(0))

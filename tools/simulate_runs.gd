@@ -44,7 +44,7 @@ func _shop(run: RunState) -> void:
 			run.buy_slot()
 		var bought := false
 		for i in run.shop.size():
-			if run.shop[i] == "" or run.gold < RunState.FIGURE_PRICE:
+			if run.shop[i] == "" or run.gold < run.price_of(run.shop[i]):
 				continue
 			var target := run.reward_target(run.shop[i])
 			if target >= 0 and run.buy(i, target):

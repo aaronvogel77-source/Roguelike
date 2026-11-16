@@ -45,6 +45,51 @@ func _new_run() -> void:
 	_run = RunState.new_run(_db, seed_value)
 	_undo.clear()
 	_show_stage()
+	_show_region_intro()
+
+
+## Interstitial before entering a region: background, name, mood, blessing,
+## enemy themes and bosses.
+func _show_region_intro() -> void:
+	var region: Dictionary = _db.regions[_run.region]
+	var key := "REGION_" + _run.region.to_upper()
+	var overlay := RegionBackdrop.new()
+	overlay.suit = _run.region
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+	var column := VBoxContainer.new()
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 14)
+	overlay.add_child(column)
+	var emblem := Emblem.create("suit_" + _run.region, 110)
+	var emblem_box := CenterContainer.new()
+	emblem_box.add_child(emblem)
+	column.add_child(emblem_box)
+	for line in [[tr(key), 56, Palette.GOLD], [tr(key + "_DESC"), 22, Palette.PARCHMENT]]:
+		var label := _label(line[0], line[1], line[2])
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.add_theme_color_override("font_outline_color", Color.BLACK)
+		label.add_theme_constant_override("outline_size", 6)
+		column.add_child(label)
+	var themes: Array = region.get("themes", []).map(func(t: String) -> String: return tr("THEME_" + t.to_upper()))
+	var bosses: Array = []
+	for boss in _db.bosses.values():
+		if boss["region"] == _run.region:
+			bosses.append(tr("BOSS_" + String(boss["id"]).to_upper()))
+	for text in [tr("BLESSING_" + _run.region.to_upper()), tr("UI_REGION_ENEMIES") % ", ".join(themes), tr("UI_REGION_BOSSES") % ", ".join(bosses)]:
+		var line := _rich_line(text, 22)
+		line.custom_minimum_size = Vector2(900, 0)
+		var line_box := CenterContainer.new()
+		line_box.add_child(line)
+		column.add_child(line_box)
+	var enter := _button(tr("UI_ENTER_REGION"), Vector2(280, 72), overlay.queue_free)
+	enter.add_theme_font_size_override("font_size", 28)
+	enter.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	column.add_child(enter)
+	overlay.modulate.a = 0.0
+	create_tween().tween_property(overlay, "modulate:a", 1.0, 0.4)
 
 
 func _show_stage() -> void:
@@ -71,13 +116,13 @@ func _top_bar(title: String) -> HBoxContainer:
 	bar.custom_minimum_size = Vector2(0, 60)
 	bar.add_theme_constant_override("separation", 28)
 	bar.add_child(_spacer(8))
-	bar.add_child(_label(title, 26, Palette.GOLD))
+	bar.add_child(_label(title, 30, Palette.GOLD))
 	var fill := Control.new()
 	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_child(fill)
-	bar.add_child(_label(tr("UI_GOLD") % _run.gold, 26, Palette.GOLD))
-	bar.add_child(_label(tr("UI_INTEREST") % _run.interest(), 18, Palette.MUTED))
-	bar.add_child(_label(tr("UI_SLOTS") % [_filled_slots(), _run.slot_count()], 20, Palette.PARCHMENT))
+	bar.add_child(_label(tr("UI_GOLD") % _run.gold, 30, Palette.GOLD))
+	bar.add_child(_label(tr("UI_INTEREST") % _run.interest(), 20, Palette.MUTED))
+	bar.add_child(_label(tr("UI_SLOTS") % [_filled_slots(), _run.slot_count()], 22, Palette.PARCHMENT))
 	if _url_flag("debug"):
 		bar.add_child(_button("+10 Gold", Vector2(110, 44), _debug_gold))
 		bar.add_child(_button("Zum Boss", Vector2(130, 44), _debug_to_boss))
@@ -331,40 +376,25 @@ func _build_planning() -> void:
 	column.add_child(_top_bar(_stage_title()))
 	column.add_child(_info_line())
 
-	# Battle field preview: own slots (front next to the middle) and the chosen enemy.
+	# Battle field preview: own slots (front next to the middle) and the chosen
+	# enemy. Scaled up to fill the free space, so cards are as large as possible.
 	var field := HBoxContainer.new()
 	field.alignment = BoxContainer.ALIGNMENT_CENTER
 	field.add_theme_constant_override("separation", ROW_GAP)
-	field.size_flags_vertical = Control.SIZE_EXPAND_FILL
-
 	var own_box := VBoxContainer.new()
 	own_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	own_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	own_box.add_child(_label(tr("UI_YOUR_TEAM_FRONT"), 18, Palette.MUTED))
-	var own_row := HBoxContainer.new()
-	own_row.add_theme_constant_override("separation", CARD_SPACING)
-	_row_slots.clear()
-	for i in range(_run.slot_count() - 1, -1, -1):  # back on the left, front on the right
-		var slot := SlotView.new("row", i)
-		var figure: Variant = _run.row[i]
-		if figure != null:
-			slot.set_card(UnitCard.for_definition(_db.figures[figure["def_id"]], _run.figure_level(figure), false))
-		slot.tapped.connect(_on_slot_tapped)
-		slot.dropped.connect(_on_slot_dropped)
-		own_row.add_child(slot)
-		_row_slots.append(slot)
-	own_box.add_child(own_row)
+	own_box.add_child(_label(tr("UI_YOUR_TEAM_FRONT"), 16, Palette.MUTED))
+	own_box.add_child(_own_row_slots())
 	own_box.add_child(_xp_hint_row())
 	field.add_child(own_box)
-
 	var enemy_box := VBoxContainer.new()
 	enemy_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	enemy_box.add_child(_label(tr("UI_NEXT_ENEMY"), 18, Palette.MUTED))
+	enemy_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	enemy_box.add_child(_label(tr("UI_NEXT_ENEMY"), 16, Palette.MUTED))
 	enemy_box.add_child(_card_row(_run.chosen_enemy["team"], true, false))
-	var enemy_holder := _scaled(enemy_box, 0.8)
-	enemy_holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	field.add_child(enemy_holder)
-	column.add_child(field)
+	field.add_child(enemy_box)
+	column.add_child(_fitted(field, 1.7))
 
 	# Shop and actions.
 	var bottom := HBoxContainer.new()
@@ -378,10 +408,11 @@ func _build_planning() -> void:
 		var slot := SlotView.new("shop", i)
 		if _run.shop[i] != "":
 			slot.set_card(UnitCard.for_definition(_db.figures[_run.shop[i]], 1, false))
+			_add_rarity_effect(slot, _run.shop[i])
 		slot.accepts_drops = false
 		slot.tapped.connect(_on_slot_tapped)
 		shop_box.add_child(slot)
-		var price := _label(tr("UI_PRICE") % RunState.FIGURE_PRICE if _run.shop[i] != "" else "", 18, Palette.GOLD)
+		var price := _label(tr("UI_PRICE") % _run.price_of(_run.shop[i]) if _run.shop[i] != "" else "", 20, Palette.GOLD)
 		price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		shop_box.add_child(price)
 		bottom.add_child(shop_box)
@@ -414,6 +445,41 @@ func _build_planning() -> void:
 	bottom.add_child(fight)
 	column.add_child(bottom)
 	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+
+
+## The player's row as interactive slots (back on the left, front on the right).
+func _own_row_slots() -> HBoxContainer:
+	var own_row := HBoxContainer.new()
+	own_row.add_theme_constant_override("separation", CARD_SPACING)
+	_row_slots.clear()
+	for i in range(_run.slot_count() - 1, -1, -1):
+		var slot := SlotView.new("row", i)
+		var figure: Variant = _run.row[i]
+		if figure != null:
+			slot.set_card(UnitCard.for_definition(_db.figures[figure["def_id"]], _run.figure_level(figure), false))
+		slot.tapped.connect(_on_slot_tapped)
+		slot.dropped.connect(_on_slot_dropped)
+		own_row.add_child(slot)
+		_row_slots.append(slot)
+	return own_row
+
+
+## A holder that fills the free space and scales its content to fit
+## (up to max_factor). Containers would reset the scale, so it is done by hand.
+func _fitted(content: Control, max_factor: float) -> Control:
+	var holder := Control.new()
+	holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	holder.add_child(content)
+	var fit := func() -> void:
+		content.size = content.get_combined_minimum_size()
+		var factor := minf(holder.size.x / maxf(content.size.x + 24.0, 1.0), holder.size.y / maxf(content.size.y, 1.0))
+		factor = clampf(factor, 0.6, max_factor)
+		content.scale = Vector2(factor, factor)
+		content.position = (holder.size - content.size * factor) / 2
+	holder.resized.connect(fit)
+	fit.call_deferred()
+	return holder
 
 
 ## Small "XP" bars under the row slots (front on the right, like the slots).
@@ -482,8 +548,7 @@ func _on_slot_tapped(slot: SlotView) -> void:
 	if _selected.get("kind") == "shop":
 		_buy(_selected["index"], slot.index)
 	elif _selected.get("kind") == "row" and _selected["index"] != slot.index:
-		var from: int = _selected["index"]
-		_apply_action(func() -> bool: return _run.move(from, slot.index))
+		_move(_selected["index"], slot.index)
 	elif _selected.get("kind") == "row":
 		_clear_selection()
 	elif slot.card != null:
@@ -494,7 +559,18 @@ func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 	if data["kind"] == "shop":
 		_buy(data["index"], slot.index)
 	elif data["kind"] == "row":
-		_apply_action(func() -> bool: return _run.move(data["index"], slot.index))
+		_move(data["index"], slot.index)
+
+
+## Moves (or swaps) row figures; dropping onto an equal figure merges them.
+func _move(from_index: int, to_index: int) -> void:
+	var target: Variant = _run.row[to_index] if to_index < _run.row.size() else null
+	var source: Variant = _run.row[from_index] if from_index < _run.row.size() else null
+	var merging: bool = target != null and source != null and target["def_id"] == source["def_id"]
+	var before_xp := int(target["xp"]) if merging else -1
+	_apply_action(func() -> bool: return _run.move(from_index, to_index))
+	if merging and _run.row[from_index] == null:
+		_show_merge(_run.row[to_index]["def_id"], before_xp, int(_run.row[to_index]["xp"]))
 
 
 ## Buys a shop figure; shows the merge screen when it joined an equal figure.
@@ -570,6 +646,45 @@ func _on_battle_finished(result: Dictionary) -> void:
 	_show_stage()
 
 
+# --- Rarity effect (queens and kings) ------------------------------------------------
+
+func _rarity(def_id: String) -> String:
+	var rank: String = _db.figures[def_id]["rank"]
+	return rank if rank in ["queen", "king"] else ""
+
+
+## Rotating golden rays behind rare cards plus a "Rare!/Epic!" tag, popping in.
+func _add_rarity_effect(host: Control, def_id: String) -> void:
+	var rarity := _rarity(def_id)
+	if rarity == "":
+		return
+	var shine := RareShine.new()
+	shine.epic = rarity == "king"
+	shine.size = UnitCard.CARD_SIZE + Vector2(80, 80)
+	shine.position = -Vector2(40, 40)
+	host.add_child(shine)
+	host.move_child(shine, 0)
+	var tag := _label(tr("UI_RARE_EPIC") if rarity == "king" else tr("UI_RARE"), 16, Palette.GOLD)
+	tag.add_theme_color_override("font_outline_color", Color.BLACK)
+	tag.add_theme_constant_override("outline_size", 6)
+	tag.position = Vector2(0, -26)
+	tag.size = Vector2(UnitCard.CARD_SIZE.x, 22)
+	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	host.add_child(tag)
+	host.pivot_offset = UnitCard.CARD_SIZE / 2
+	host.scale = Vector2(0.6, 0.6)
+	create_tween().tween_property(host, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+## Reward card wrapped with the rarity effect.
+func _with_rarity(card: UnitCard, def_id: String) -> Control:
+	var host := Control.new()
+	host.custom_minimum_size = UnitCard.CARD_SIZE
+	host.add_child(card)
+	_add_rarity_effect(host, def_id)
+	return host
+
+
 # --- Reward ---------------------------------------------------------------------------
 
 func _build_reward() -> void:
@@ -589,8 +704,7 @@ func _build_reward() -> void:
 	var choices := HBoxContainer.new()
 	choices.alignment = BoxContainer.ALIGNMENT_CENTER
 	choices.add_theme_constant_override("separation", 40)
-	choices.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(choices)
+	column.add_child(_fitted(choices, 1.6))
 	for i in _run.rewards.size():
 		var def_id: String = _run.rewards[i]
 		var box := VBoxContainer.new()
@@ -599,7 +713,7 @@ func _build_reward() -> void:
 		var card := UnitCard.for_definition(_db.figures[def_id], 1, false)
 		card.tapped.connect(_detail_panel.show_card)
 		var holder := CenterContainer.new()
-		holder.add_child(_scaled(card, 1.25))
+		holder.add_child(_with_rarity(card, def_id))
 		box.add_child(holder)
 		var target := _run.reward_target(def_id)
 		var text := tr("UI_TAKE")
@@ -612,12 +726,17 @@ func _build_reward() -> void:
 		box.add_child(take)
 		choices.add_child(box)
 
+	# Own row with a sell field, to make room for a better reward.
 	var bottom := HBoxContainer.new()
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
-	bottom.add_theme_constant_override("separation", 24)
+	bottom.add_theme_constant_override("separation", 20)
 	bottom.add_child(_label(tr("UI_YOUR_TEAM"), 18, Palette.MUTED))
-	bottom.add_child(_scaled(_card_row(_own_team_entries(), false, true), 0.55))
-	bottom.add_child(_button(tr("UI_SKIP_REWARD") % RunState.REWARD_SKIP_GOLD, Vector2(260, 60), _on_skip_reward))
+	bottom.add_child(_scaled(_own_row_slots(), 0.8))
+	_sell_zone = SellZone.new()
+	_sell_zone.tapped.connect(_on_sell_zone_tapped)
+	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
+	bottom.add_child(_scaled(_sell_zone, 0.8))
+	bottom.add_child(_button(tr("UI_SKIP_REWARD") % RunState.REWARD_SKIP_GOLD, Vector2(240, 60), _on_skip_reward))
 	column.add_child(bottom)
 	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
 
@@ -703,7 +822,7 @@ func _show_merge(def_id: String, old_xp: int, new_xp: int) -> void:
 		var lines := [
 			Keywords.colorize(tr("UI_STAT_CHANGE_ATTACK") % [old_unit.attack, new_unit.attack]),
 			Keywords.colorize(tr("UI_STAT_CHANGE_HEALTH") % [old_unit.health, new_unit.health]),
-			Keywords.colorize(tr("ABIL_" + def_id.to_upper()).replace("{v}", "%s → [b]%s[/b]" % [old_value, new_value])),
+			Keywords.colorize(tr("ABIL_" + def_id.to_upper()).replace("{v}", "%s -> [b]%s[/b]" % [old_value, new_value])),
 		]
 		details.text = "\n".join(lines)
 		details.modulate.a = 0.0

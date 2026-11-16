@@ -53,7 +53,8 @@ static func _ensure_built() -> void:
 	# Longest first so "Kampfbeginn (zuletzt)" wins over "Kampfbeginn".
 	words.sort_custom(func(a: String, b: String) -> bool: return a.length() > b.length())
 	var escaped := words.map(func(w: String) -> String: return _escape(w))
-	_regex = RegEx.create_from_string("(" + "|".join(escaped) + "|×\\d+(?:[,.]\\d+)?)")
+	# Whole words only: "Gold" must not light up inside "Goldene".
+	_regex = RegEx.create_from_string("(?<![\\p{L}])(" + "|".join(escaped) + "|×\\d+(?:[,.]\\d+)?)(?![\\p{L}])")
 
 
 static func _escape(word: String) -> String:

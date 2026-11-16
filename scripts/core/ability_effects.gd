@@ -170,12 +170,14 @@ static func _revive(battle: BattleSimulator, owner: BattleUnit, health: int, tar
 	return true
 
 
-## Drowned King: takes a share of a fallen ally's attack and all of its health.
+## Drowned King: takes a share of a fallen ally's attack and health.
 static func _absorb(battle: BattleSimulator, owner: BattleUnit, share: float, context: Dictionary) -> bool:
 	var dying: BattleUnit = context["dying_unit"]
+	# Both attack and health are absorbed only partly (30 / 60 / 100 %).
+	var gained_health := int(floor(dying.max_health * share))
 	owner.attack += int(floor(dying.attack * share))
-	owner.health += dying.max_health
-	owner.max_health += dying.max_health
+	owner.health += gained_health
+	owner.max_health += gained_health
 	battle.emit_update(owner)
 	return true
 

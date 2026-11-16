@@ -270,7 +270,7 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - Startgold: ~~10~~ → **8** (M3-Feedback)
   - Einkommen pro Kampf: 5 + Schwierigkeitsbonus der gewählten Gegner (0 / 2 / 4)
   - **Zinsen:** +1 Gold pro 5 gesparte Gold, max. +5 pro Runde
-  - Figur kaufen: 3 · Verkaufen: 1 (+1 pro Stufe) · Objekte: 3–8 je nach Seltenheit
+  - Figur kaufen: ~~3~~ → **nach Rang: Bube 3 · Ritter 4 · Königin 6 · König 8** (M4-Feedback) · Verkaufen: ~~1 (+1 pro Stufe)~~ → **halber Rangpreis (abgerundet) + 1 je Stufe über 1** · Objekte: 3–8 je nach Seltenheit
   - Übersprungene Kämpfe geben kein Gold (Phase 3)
 - **Tarot-Karten:** **2 Kartenplätze**, um Karten aufzuheben. Einsatz jederzeit in der Planungsphase.
 
@@ -442,7 +442,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | Bube | **Messdiener** | 1/3 | *Zugbeginn:* heilt die Figur vor sich um 1 / 2 / 3 |
 | Ritter | **Bluttrinker** | 3/4 | *Bei Angriff:* heilt sich um 50 % / 75 % / 100 % des verursachten Schadens |
 | Königin | **Kelch der Wiederkehr** | 1/5 | *Bei Tod einer eigenen Figur:* einmal pro Kampf kehrt diese mit 1 / 2 / 3 Leben zurück |
-| König | **Der Ertrunkene König** | 4/8 | *Bei Tod einer eigenen Figur:* erhält deren Angriff ×0,5 / ×0,75 / ×1 und deren Leben für den Kampf |
+| König | **Der Ertrunkene König** | 4/8 | *Bei Tod einer eigenen Figur:* erhält **30 / 60 / 100 %** von deren Angriff **und** Leben für den Kampf (abgeschwächt nach M4-Feedback, vorher ×0,5/0,75/1 Angriff + volles Leben) |
 
 *Profil:* Ein Sustain- und Opfer-Team. Wiederkehr + Ertrunkener König: Die zurückgekehrte Figur stirbt ein zweites Mal und füttert den König doppelt.
 ⚠️ *Lücke:* Keine Spieler-Figur nutzt den Kelch-Status **Fluch**. Fluch kommt vorerst über Gegner, Ausrüstung und Relikte (prüfen in Inhaltsrunde 5 / M5).
@@ -491,7 +491,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 
 | Akt | Name | Regel | Boss-Figur (gewählt → aktuell nach Simulation) |
 |---|---|---|---|
-| 1 | **Der Steuereintreiber** | Im Kampf gilt dein Gold als 0 (Fähigkeiten sehen 0, Diebstahl trifft echtes Gold) | „Pfänder“, 2 breit. *Nach dem Angriff:* stiehlt 1 Gold und erhält +X Angriff (max. 3× pro Kampf). Gewählt 6/14, +2 → **aktuell 3/10, +1** |
+| 1 | **Der Steuereintreiber** | Im Kampf gilt dein Gold als 0 (Fähigkeiten sehen 0, Diebstahl trifft echtes Gold) | „Pfänder“, 2 breit. *Nach dem Angriff:* stiehlt 1 Gold und erhält +X Angriff (max. 3× pro Kampf). Gewählt 6/14, +2 → **aktuell 3/12, +1** |
 | 2 | **Die Goldene Mauer** | Das Gegner-Team hat 7 Plätze (Boss belegt 3) | „Bollwerk“, 3 breit. *Wenn getroffen:* Schild +X. Gewählt 4/30, +2 → **aktuell 3/20, +1** |
 
 - **Ablauf:** Der Boss wird nicht gewählt. Nach der letzten Belohnung des Akts geht es direkt in den Boss-Shop, dann in den Kampf (Überspringen folgt mit M5).
@@ -515,7 +515,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 ---
 
 ## Offene Fragen
-- Feedback zu Boss-Figuren und Boss-Stärke einholen (Debug: `?debug=1` → „+10 Gold“, „Zum Boss“)
+- Feedback zur v0.4.2 einholen, dann M5 (Objekte) mit Inhaltsrunden
 - Balancing-Notiz (M9): Der Ertrunkene König gewinnt in der Zufallssimulation > 90 %
 - Zum Prüfen in M5: Fluch-Lücke (kein Spieler/Gegner nutzt Fluch) über Ausrüstung/Relikte schließen
 
@@ -588,3 +588,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-16 | Symbole für Rang (Kappe/Helm/Krone), Farbe (Münze/Stab/Kelch/Schwert) und Stufe (Winkel) im Detail-Panel und auf Karten; Angriff als roter Zackenstern, Leben als grünes Herz mit Zahl in der Mitte. M3 abgenommen | Platzhalter-Symbole, werden in M8 verfeinert | – |
 | 2026-11-16 | M4: thematische Gegner-Teams (3 Themen, Rollen-Aufstellung), Regel-Bosse Steuereintreiber (Gold im Kampf = 0, echtes Gold bleibt) und Goldene Mauer (7 Gegner-Plätze), Gebiets-Segen Münzen (+1 Schild für Münz-Figuren), Anzeige in Gegnerwahl/Planung/Kampf, Debug-Werkzeuge per `?debug=1` | Slice-Inhalte vollständig spielbar | – |
 | 2026-11-16 | M4-Feedback: Boss ohne Gegnerwahl direkt nach dem Shop, Ankündigungs-Streifen zu Kampfbeginn, echte Boss-Figuren (2–3 Plätze breit), kein Verschmelzen auf Max. Stufe; Boss-Werte per Simulation stark abgeschwächt (Nutzerwahl war zu stark) | Bosse spürbar, aber schaffbar | Reine Regel-Bosse; Boss-Karte nur als Darstellung; Ankündigung beim Shop |
+| 2026-11-16 | M4-Feedback 2: größere Karten/Schriften (Spielfeld skaliert nach Inhalt bis ×1,7), Gebiets-Einführung vor Gebietsbeginn, Glanz-Effekt für Königinnen/Könige ("Selten!"/"Episch!"), Verkaufen auf dem Belohnungsbildschirm, nachträgliches Verschmelzen durch Ziehen, Rangpreise 3/4/6/8, Verkauf = halber Preis + Stufe, Ertrunkener König 30/60/100 %, Steuereintreiber 12 Leben, fehlende Glyphen ersetzt, Schlüsselwörter nur als ganze Wörter. Boss-Grafik folgt in M8 | Lesbarkeit, Belohnungsgefühl, Balance | – |
