@@ -9,13 +9,14 @@ extends RefCounted
 
 ## Budget per fight in act 1: small, big, boss.
 ## The boss budget pays only for the retinue; the boss figure comes on top.
-const FIGHT_BUDGET := [2.6, 5.4, 2.0]
+## (static vars, not consts: tools/auto_tune.gd tries other values.)
+static var FIGHT_BUDGET := [2.6, 5.4, 2.0]
 ## Budget grows exponentially per act.
-const ACT_GROWTH := 3.4
+static var ACT_GROWTH := 3.4
 ## Retinue budget of the boss fight per act (act 1 kept small: the boss itself is strong).
-const BOSS_RETINUE := [2.0, 16.0]
+static var BOSS_RETINUE := [2.0, 16.0]
 ## Easy / medium / hard options in the enemy choice.
-const DIFFICULTY_FACTOR := [0.75, 1.0, 1.35]
+static var DIFFICULTY_FACTOR := [0.75, 1.0, 1.35]
 ## Extra gold for winning against easy / medium / hard (and bosses).
 const DIFFICULTY_BONUS := [0, 3, 5]
 const BOSS_BONUS := 4

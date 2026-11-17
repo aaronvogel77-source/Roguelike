@@ -48,6 +48,11 @@ static func create(strategy: String, seed_value: int) -> BalanceBot:
 ## Plays the run to its end. Returns the finished RunState.
 func play(db: ContentDb, seed_value: int, options: Dictionary = {}) -> RunState:
 	run = RunState.new_run(db, seed_value, options)
+	# Balancing tools: a relic or pact from the very start ("with this card").
+	for id in options.get("start_relics", []):
+		run.relics.append(id)
+	for id in options.get("start_pacts", []):
+		run.pacts.append(id)
 	var guard := 0
 	while run.stage != RunState.Stage.WON and run.stage != RunState.Stage.LOST and guard < 400:
 		guard += 1

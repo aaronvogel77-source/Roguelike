@@ -25,6 +25,8 @@ var fusion: Dictionary = {}
 var meta: Dictionary = {}
 ## Content not yet unlocked in the vault (only set on a run's own copy).
 var locked_figures: Array = []
+## Figures taken out of the game entirely (balancing tools: "without this card").
+var banned_figures: Array = []
 
 
 static func load_default() -> ContentDb:
@@ -48,13 +50,14 @@ static func load_default() -> ContentDb:
 
 ## Figures that can appear in the shop (no legendary aces, no recipe figures).
 func regular_figures() -> Array:
-	return figures.values().filter(func(f: Dictionary) -> bool: return f["rank"] != LEGEND_RANK)
+	return figures.values().filter(func(f: Dictionary) -> bool: return f["rank"] != LEGEND_RANK and not f["id"] in banned_figures)
 
 
 ## Legendary aces from arcana packs (secret recipe figures never appear there).
 func legendary_figures(include_locked: bool = false) -> Array:
 	var result := figures.values().filter(func(f: Dictionary) -> bool:
-		return f["rank"] == LEGEND_RANK and not f.get("recipe", false) and (include_locked or not f["id"] in locked_figures))
+		return f["rank"] == LEGEND_RANK and not f.get("recipe", false) and not f["id"] in banned_figures \
+			and (include_locked or not f["id"] in locked_figures))
 	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	return result
 
@@ -72,6 +75,7 @@ func for_run(locked: Dictionary, pack_luck: int = 0) -> ContentDb:
 	copy.meta = meta
 	copy.items = items.duplicate(true)
 	copy.locked_figures = locked.get("figures", []).duplicate()
+	copy.banned_figures = locked.get("banned_figures", []).duplicate()
 	var locked_relics: Array = locked.get("relics", [])
 	copy.items["relics"] = copy.items["relics"].filter(func(r: Dictionary) -> bool: return not r["id"] in locked_relics)
 	copy.items["tarot"] = copy.items["tarot"].filter(func(id: String) -> bool: return not id in locked.get("tarot", []))
