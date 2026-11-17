@@ -96,11 +96,8 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 		_subtitle.add_child(emblem)
 		_subtitle.add_child(_subtitle_text(texts[i]))
 
+	# Short and to the point: what it does first, then the numbers, then where bonuses come from.
 	var lines: Array[String] = []
-	lines.append(Keywords.colorize(tr("UI_STATS") % [snapshot["effective_attack"], maxi(snapshot["health"], 0), snapshot["max_health"]]))
-	var multiplier: float = snapshot.get("multiplier", 1.0)
-	if absf(multiplier - 1.0) > 0.001:
-		lines.append(tr("UI_MULTIPLIER") % NumberFormat.decimal(multiplier))
 	if definition.has("fusion"):
 		lines.append_array(_fusion_lines(definition["fusion"], level))
 	elif definition.has("ability"):
@@ -108,19 +105,27 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 		var values: Array = ability["values"]
 		var value: float = values[mini(level, values.size()) - 1]
 		var text := tr("ABIL_" + String(definition["id"]).to_upper())
-		lines.append(_tag("UI_CAT_ABILITY", CATEGORY_COLORS["ability"]) + " [b]" + Keywords.colorize(text.replace("{v}", NumberFormat.ability_value(ability["effect"], value))) + "[/b]")
+		lines.append("[b]" + Keywords.colorize(text.replace("{v}", NumberFormat.ability_value(ability["effect"], value))) + "[/b]")
+	var stats := tr("UI_STATS") % [snapshot["effective_attack"], maxi(snapshot["health"], 0), snapshot["max_health"]]
+	var multiplier: float = snapshot.get("multiplier", 1.0)
+	if absf(multiplier - 1.0) > 0.001:
+		stats += " · ×" + NumberFormat.decimal(multiplier)
+	if extras.has("base_attack") and (int(extras["base_attack"]) != int(snapshot["effective_attack"])
+			or int(extras["base_health"]) != int(snapshot["max_health"])):
+		stats += "  [color=#%s]%s[/color]" % [Palette.MUTED.to_html(false), tr("UI_STATS_BASE") % [extras["base_attack"], extras["base_health"]]]
+	lines.append(Keywords.colorize(stats))
 	var statuses: Dictionary = snapshot.get("statuses", {})
+	var status_parts: Array = []
 	for status in UnitCard.STATUS_ORDER:
 		if statuses.get(status, 0) > 0:
-			var color := Emblem.COLORS[status] as Color
-			lines.append("[color=#%s]%s %d[/color] – %s" % [
-				color.to_html(false), tr("STATUS_" + status.to_upper()), statuses[status],
-				Keywords.colorize(tr("STATUS_%s_DESC" % status.to_upper())),
-			])
+			status_parts.append("[color=#%s]%s %d[/color]" % [(Emblem.COLORS[status] as Color).to_html(false),
+				tr("STATUS_" + status.to_upper()), statuses[status]])
+	if not status_parts.is_empty():
+		lines.append(" · ".join(status_parts))
 	var figure: Dictionary = extras.get("figure", {})
 	if not figure.is_empty():
 		# Every category in its own color; equipment also shows its rarity.
-		if figure.has("xp"):  # own row figures: how many object slots are used
+		if figure.has("xp") and RunState.objects_on(figure) > 0:  # object slots only when something is equipped
 			lines.append("[color=#%s]%s[/color]" % [Palette.MUTED.to_html(false),
 				tr("UI_OBJECT_SLOTS") % [RunState.objects_on(figure), RunState.slots_for(figure)]])
 		if figure.has("equipment"):
@@ -140,18 +145,20 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 				Keywords.colorize(tr("UI_BONUS_STATS") % [figure.get("bonus_attack", 0), figure.get("bonus_health", 0)])])
 		var relic_names: Array = []
 		var pact_names: Array = []
+		var suit_names: Array = []
 		for source in extras.get("sources", []):
 			if source == "tarot_strength":
 				continue
 			elif source in ["plague", "curse_fog"]:
 				lines.append("%s %s" % [_tag("UI_CAT_DANGER", Color(0.7, 0.45, 0.85)), Keywords.colorize(tr("SOURCE_" + String(source).to_upper()))])
 			elif String(source).begins_with("suit_"):
-				lines.append("%s %s" % [_tag("UI_CAT_SUIT_BONUS", CATEGORY_COLORS["ability"]),
-					Keywords.colorize(tr("SUITBONUS_" + String(source).substr(5).to_upper()))])
+				suit_names.append(tr("SUIT_" + String(source).substr(5).to_upper()))
 			elif source in extras["db"].items["pacts"]:
 				pact_names.append(tr("PACT_" + String(source).to_upper()))
 			else:
 				relic_names.append(ItemText.relic_name(source))
+		if not suit_names.is_empty():
+			lines.append("%s %s" % [_tag("UI_CAT_SUIT_BONUS", CATEGORY_COLORS["ability"]), ", ".join(suit_names)])
 		if not relic_names.is_empty():
 			lines.append("%s [color=#%s]%s[/color]" % [_tag("UI_CAT_RELICS", CATEGORY_COLORS["relic"]),
 				CATEGORY_COLORS["relic"].to_html(false), ", ".join(relic_names)])

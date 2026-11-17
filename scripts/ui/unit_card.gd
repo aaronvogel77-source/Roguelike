@@ -123,8 +123,6 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	body.add_child(_overlay)
 	# Level seal top centre in the rarity colour.
 	_level_seal = _seal_label(Vector2(card_size.x / 2 - 15, 6))
-	# What the figure does at a glance: its ability as a symbol with the number.
-	_add_ability_badge(unit_definition, int(initial.get("level", 1)))
 	# Fusions show no seal: the vortex behind the figure marks them.
 
 	# No name on the card (it is in the info panel); the level seal sits on top.
@@ -195,14 +193,35 @@ func apply_snapshot(new_snapshot: Dictionary) -> void:
 	_style.border_color = base_border_color()
 	_attack_label.text = str(snapshot["effective_attack"])
 	_health_label.text = str(maxi(snapshot["health"], 0))
-	# Values raised by equipment, tarot or relics glow gold.
+	# Values raised by equipment, tarot, relics or suit bonuses glow green with
+	# a "+", lowered ones (plague, curse) red with a "-"; the info panel names the sources.
 	if extras.has("base_attack"):
-		var attack_up: bool = snapshot["effective_attack"] > extras["base_attack"]
-		var health_up: bool = snapshot["max_health"] > extras["base_health"]
-		_attack_label.add_theme_color_override("font_color", Color("ffe84a") if attack_up else Color.WHITE)
-		_health_label.add_theme_color_override("font_color", Color("ffe84a") if health_up else Color.WHITE)
+		_mark_change(_attack_label, int(snapshot["effective_attack"]) - int(extras["base_attack"]))
+		_mark_change(_health_label, int(snapshot["max_health"]) - int(extras["base_health"]))
 	_rebuild_identity(snapshot.get("level", 1))
 	_rebuild_chips()
+
+
+func _mark_change(label: Label, delta: int) -> void:
+	var color := Color.WHITE
+	if delta > 0:
+		color = Color("7dff8a")
+	elif delta < 0:
+		color = Color("ff6a5a")
+	label.add_theme_color_override("font_color", color)
+	label.tooltip_text = ""
+	var marker: Label = label.get_meta("marker") if label.has_meta("marker") else null
+	if marker == null:
+		marker = Label.new()
+		marker.add_theme_font_size_override("font_size", 12)
+		marker.add_theme_color_override("font_outline_color", Color.BLACK)
+		marker.add_theme_constant_override("outline_size", 3)
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		marker.position = Vector2(label.size.x - 10, -4)
+		label.add_child(marker)
+		label.set_meta("marker", marker)
+	marker.text = ("+%d" % delta) if delta > 0 else (str(delta) if delta < 0 else "")
+	marker.add_theme_color_override("font_color", color)
 
 
 ## F3: the glow slowly cycles through the fused suits' colors.

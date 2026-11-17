@@ -10,7 +10,7 @@ signal dropped(data: Dictionary, slot: SlotView)
 signal inserted(data: Dictionary, slot: SlotView, side: String)
 
 ## Outer share of the card that counts as "between two cards".
-const EDGE_ZONE := 0.24
+const EDGE_ZONE := 0.2
 
 const TAP_TOLERANCE := 12.0
 
@@ -26,7 +26,7 @@ var _hover_zone := ""  # "", "left", "right", "center" while a drag hovers
 ## Set by the run screen: (drag data, slot index) -> "merge", "free", "swap", "no" or "".
 var drop_check: Callable
 var _drop_state := ""
-const DROP_COLORS := {"merge": Color(0.35, 0.95, 0.45), "free": Color(1.0, 0.82, 0.35),
+const DROP_COLORS := {"merge": Color(1.0, 0.84, 0.3), "free": Color(0.45, 0.9, 1.0),
 	"swap": Color(0.85, 0.85, 0.95), "no": Color(0.95, 0.25, 0.25)}
 
 
@@ -144,15 +144,30 @@ func _draw() -> void:
 		draw_rect(Rect2(Vector2(-5, -5), size + Vector2(10, 10)), Color(color, 0.18 * pulse))
 		draw_rect(Rect2(Vector2(-5, -5), size + Vector2(10, 10)), Color(color, pulse), false, 4.0)
 		var font := ThemeDB.fallback_font
-		var text: String = {"merge": "+1", "no": "×"}.get(_drop_state, "")
+		var merging := _drop_state == "merge" and _hover_zone == "center"
+		if merging:
+			# Over the card: it glows gold and promises the level-up.
+			for ring in 3:
+				var grow := 6.0 + ring * 5.0
+				draw_rect(Rect2(Vector2(-grow, -grow), size + Vector2(grow, grow) * 2), Color(color, 0.22 * pulse / (ring + 1)), false, 5.0)
+		var text: String = {"merge": "+1 Stufe" if merging else "+1", "no": "×"}.get(_drop_state, "")
 		if text != "":
-			draw_string(font, Vector2(size.x / 2 - 14, size.y / 2 + 14), text, HORIZONTAL_ALIGNMENT_CENTER, 28, 34,
-				Color(color, 0.95))
+			var font_size := 26 if merging else 34
+			var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+			# Below the card while merging (the dragged card covers the middle).
+			var at := Vector2((size.x - width) / 2, size.y + 34.0 if merging else size.y / 2 + font_size / 2.0)
+			if merging:
+				draw_rect(Rect2(at + Vector2(-10, -font_size - 4), Vector2(width + 20, font_size + 14)), Color(0.25, 0.15, 0.02, 0.85))
+			draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(color, 0.95))
 		queue_redraw()  # keeps the pulse going while dragging
+	# Edges: a glowing line where the figure will be placed beside this one.
+	var line := Color(0.55, 0.95, 1.0)
 	match _hover_zone:
 		"left":
-			draw_rect(Rect2(-7, -6, 6, size.y + 12), Palette.GOLD)
+			draw_rect(Rect2(-14, -10, 14, size.y + 20), Color(line, 0.25))
+			draw_rect(Rect2(-10, -10, 6, size.y + 20), line)
 		"right":
-			draw_rect(Rect2(size.x + 1, -6, 6, size.y + 12), Palette.GOLD)
+			draw_rect(Rect2(size.x, -10, 14, size.y + 20), Color(line, 0.25))
+			draw_rect(Rect2(size.x + 4, -10, 6, size.y + 20), line)
 		"center":
 			draw_rect(Rect2(Vector2(-3, -3), size + Vector2(6, 6)), Palette.GOLD, false, 3.0)

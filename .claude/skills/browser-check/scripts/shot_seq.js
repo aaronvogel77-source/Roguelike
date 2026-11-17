@@ -1,6 +1,7 @@
 // Plays a tap sequence against the local Arcana web build and saves screenshots.
 // Usage: node shot_seq.js <out_dir> '<url query>' '<steps json>'
 // Steps: ["tap", x, y, wait, shot] or ["drag", x, y, wait, shot, to_x, to_y] (CSS pixels).
+// Hover checks while dragging: ["press", x, y, wait, shot], ["move", x, y, wait, shot], ["release", 0, 0, wait, shot].
 // Only talks to http://localhost:8765 (the locally served build).
 const { chromium, devices } = require('playwright');
 (async () => {
@@ -23,6 +24,9 @@ const { chromium, devices } = require('playwright');
       await page.waitForTimeout(150);
       await page.mouse.up();
     }
+    if (s[0] === 'press') { await page.mouse.move(s[1], s[2]); await page.mouse.down(); }
+    if (s[0] === 'move') await page.mouse.move(s[1], s[2], { steps: 15 });
+    if (s[0] === 'release') await page.mouse.up();
     await page.waitForTimeout(s[3] || 300);
     if (s[4]) await page.screenshot({ path: `${out}/${String(n++).padStart(2, '0')}.png` });
   }

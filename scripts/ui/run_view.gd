@@ -251,7 +251,7 @@ func _on_fusion_finished(title: String, text: String) -> void:
 
 # --- Shared building blocks ----------------------------------------------------------
 
-func _top_bar(title: String) -> HBoxContainer:
+func _top_bar(title: String) -> Control:
 	var bar := HBoxContainer.new()
 	bar.custom_minimum_size = Vector2(0, 60)
 	bar.set_meta("text_fixed", true)  # the bar is full: its numbers keep their size
@@ -261,17 +261,12 @@ func _top_bar(title: String) -> HBoxContainer:
 	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(0, 44), _show_menu)
 	menu.add_theme_font_size_override("font_size", 18)
 	bar.add_child(menu)
-	bar.add_child(_label(title, 26, Palette.GOLD))
+
 	var fill := Control.new()
 	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_child(fill)
-	# Resources as symbols with numbers; a tap explains each one.
-	bar.add_child(_resource_chip("coin", str(_run.gold), Palette.GOLD, tr("UI_RES_GOLD") % [_run.gold, _run.interest()],
-		"+%d" % _run.interest() if _run.interest() > 0 else ""))
-	bar.add_child(_resource_chip("soul", str(_run.souls), Emblem.COLORS["soul"], tr("UI_RES_SOULS") % _run.souls))
-	bar.add_child(_resource_chip("level", "%d/%d" % [_filled_slots(), _run.slot_count()], Palette.PARCHMENT,
-		tr("UI_RES_SLOTS") % [_filled_slots(), _run.slot_count()]))
-	bar.add_child(_resource_chip("star", "", Palette.SUIT_COLORS.get(_run.region, Palette.GOLD), _info_text()))
+	# Resources as symbols with numbers; a tap explains each one (planning shows them as boxes).
+	_add_resource_chips(bar)
 
 	if _url_flag("debug"):
 		# One "Debug" button opens the tools as a column (the bar is full).
@@ -282,12 +277,88 @@ func _top_bar(title: String) -> HBoxContainer:
 		bar.add_child(toggle)
 		_show_debug_tools.call_deferred()
 	bar.add_child(_spacer(8))
-	return bar
+	# The title (event name, stage) sits exactly in the middle of the screen.
+	var center := CenterContainer.new()
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var title_label := _label(title, 28, Palette.GOLD)
+	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.add_child(title_label)
+	var holder := Control.new()
+	holder.custom_minimum_size = Vector2(0, 60)
+	holder.set_meta("text_fixed", true)
+	holder.add_child(bar)
+	bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	holder.add_child(center)
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	return holder
 
 
 var _debug_open := false
-## The item drawer (relics, tarot, pacts) at the left edge is open.
-var _items_open := false
+
+
+
+func _add_resource_chips(bar: Control) -> void:
+	bar.add_child(_resource_chip("coin", str(_run.gold), Palette.GOLD, tr("UI_RES_GOLD") % [_run.gold, _run.interest()],
+		"+%d" % _run.interest() if _run.interest() > 0 else ""))
+	bar.add_child(_resource_chip("soul", str(_run.souls), Emblem.COLORS["soul"], tr("UI_RES_SOULS") % _run.souls))
+	bar.add_child(_resource_chip("level", "%d/%d" % [_filled_slots(), _run.slot_count()], Palette.PARCHMENT,
+		tr("UI_RES_SLOTS") % [_filled_slots(), _run.slot_count()]))
+
+
+## Resources as their own boxes in planning: symbol, big number, name, extra line.
+func _resource_boxes(columns: int = 3) -> Control:
+	var grid := GridContainer.new()
+	grid.columns = columns
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
+	grid.add_child(_resource_box("coin", str(_run.gold), tr("UI_BOX_GOLD"), Palette.GOLD,
+		tr("UI_BOX_INTEREST") % _run.interest(), tr("UI_RES_GOLD") % [_run.gold, _run.interest()]))
+	grid.add_child(_resource_box("soul", str(_run.souls), tr("UI_BOX_SOULS"), Emblem.COLORS["soul"], "",
+		tr("UI_RES_SOULS") % _run.souls))
+	grid.add_child(_resource_box("level", "%d/%d" % [_filled_slots(), _run.slot_count()], tr("UI_BOX_SLOTS"), Palette.PARCHMENT, "",
+		tr("UI_RES_SLOTS") % [_filled_slots(), _run.slot_count()]))
+	return grid
+
+
+func _resource_box(kind: String, value: String, name: String, color: Color, extra: String, explanation: String) -> Control:
+	var panel := _elegant_panel(0.6)
+	panel.custom_minimum_size = Vector2(130, 0)
+	panel.get_theme_stylebox("panel").set_content_margin_all(5)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var emblem := Emblem.create(kind, 30)
+	emblem.color = color
+	emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(emblem)
+	var texts := VBoxContainer.new()
+	texts.alignment = BoxContainer.ALIGNMENT_CENTER
+	texts.add_theme_constant_override("separation", 0)
+	texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 6)
+	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if value != "":
+		var number := _label(value, 24, color)
+		number.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		top.add_child(number)
+	var title := _label(name, 14, Palette.PARCHMENT)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	top.add_child(title)
+	texts.add_child(top)
+	if extra != "":
+		var small := _label(extra, 11, Palette.MUTED)
+		small.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		texts.add_child(small)
+	row.add_child(texts)
+	panel.add_child(row)
+	panel.gui_input.connect(func(event: InputEvent) -> void:
+		if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) \
+				or (event is InputEventScreenTouch and event.pressed):
+			_detail_panel.show_message(name if value == "" else tr("UI_RES_TITLE"), explanation))
+	return panel
 
 
 ## One resource in the top bar: symbol, number, a small extra (interest); tap = explanation.
@@ -324,42 +395,18 @@ func _info_text() -> String:
 	return text
 
 
-## The shop counter: a framed panel with a title bar (reroll, undo) and two
-## clearly separated shelves - figures with their prices, packs.
+## The shop counter: figure offers and packs as two framed shelves, the
+## actions (fight, enemy, reroll, undo) as a column at the right end.
 func _shop_counter() -> Control:
 	var panel := _elegant_panel(0.85)
 	_hint_targets["shop"] = panel
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 6)
-	panel.add_child(column)
-	var title_row := HBoxContainer.new()
-	title_row.add_theme_constant_override("separation", 14)
-	title_row.add_child(_label(tr("UI_SHOP"), 18, Palette.GOLD))
-	var fill := Control.new()
-	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_row.add_child(fill)
-	var reroll_text := tr("UI_REROLL_FREE") % _run.free_rerolls if _run.free_rerolls > 0 else tr("UI_REROLL_BUTTON") % _run.reroll_price()
-	var reroll := _button(reroll_text, Vector2(0, 40), _on_reroll)
-	reroll.add_theme_font_size_override("font_size", 16)
-	reroll.disabled = _run.gold < _run.reroll_price() and _run.free_rerolls <= 0
-	title_row.add_child(reroll)
-	_undo_button = _button(tr("UI_UNDO"), Vector2(0, 40), _on_undo)
-	_undo_button.add_theme_font_size_override("font_size", 16)
-	_undo_button.disabled = _undo.is_empty()
-	title_row.add_child(_undo_button)
-	if _run.can_skip_boss():
-		var skip_boss := _button(tr("UI_SKIP_BOSS"), Vector2(0, 40), _on_skip_boss)
-		skip_boss.add_theme_font_size_override("font_size", 16)
-		title_row.add_child(skip_boss)
-	column.add_child(title_row)
-	var shelves := HBoxContainer.new()
-	shelves.add_theme_constant_override("separation", 22)
-	shelves.add_theme_constant_override("separation", 22)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 16)
+	panel.add_child(row)
 	# Figures shelf
-	var figures := VBoxContainer.new()
-	figures.add_child(_label(tr("UI_SHOP_FIGURES"), 15, Palette.PARCHMENT))
+	var figures := _shelf(tr("UI_SHOP_FIGURES"))
 	var figure_row := HBoxContainer.new()
-	figure_row.add_theme_constant_override("separation", 10)
+	figure_row.add_theme_constant_override("separation", 14)
 	_shop_slots.clear()
 	for i in _run.shop.size():
 		var slot := SlotView.new("shop", i)
@@ -373,14 +420,12 @@ func _shop_counter() -> Control:
 		slot.tapped.connect(_on_slot_tapped)
 		figure_row.add_child(_with_price(slot, _run.price_of(_run.shop[i]) if _run.shop[i] != "" else -1, false))
 		_shop_slots.append(slot)
-	figures.add_child(figure_row)
-	shelves.add_child(figures)
-	shelves.add_child(VSeparator.new())
+	figures.get_child(0).add_child(figure_row)
+	row.add_child(figures)
 	# Packs shelf
-	var packs := VBoxContainer.new()
-	packs.add_child(_label(tr("UI_SHOP_PACKS"), 15, Palette.PARCHMENT))
+	var packs := _shelf(tr("UI_SHOP_PACKS"))
 	var pack_row := HBoxContainer.new()
-	pack_row.add_theme_constant_override("separation", 10)
+	pack_row.add_theme_constant_override("separation", 14)
 	for i in _run.packs.size():
 		var pack_view := _pack_view(i)
 		pack_row.add_child(pack_view)
@@ -390,9 +435,50 @@ func _shop_counter() -> Control:
 	pack_row.add_child(soul_view)
 	if _run.souls > 0:
 		_hint_targets["souls"] = soul_view
-	packs.add_child(pack_row)
-	shelves.add_child(packs)
-	column.add_child(_scaled(shelves, 0.8))  # shop cards a little smaller than the team
+	packs.get_child(0).add_child(pack_row)
+	row.add_child(packs)
+	# Actions: fight first, then the enemy look, reroll and undo.
+	var actions := VBoxContainer.new()
+	actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	actions.add_theme_constant_override("separation", 10)
+	var fight := _seal(tr("UI_FIGHT"), 132, "red", _on_fight)
+	_hint_targets["fight"] = fight
+	fight.add_theme_font_size_override("font_size", 28)
+	fight.disabled = _filled_slots() == 0
+	actions.add_child(_centered(fight))
+	var peek := _button(tr("UI_SHOW_ENEMY"), Vector2(190, 44), _show_enemy_popup)
+	peek.add_theme_font_size_override("font_size", 16)
+	actions.add_child(peek)
+	var reroll_text := tr("UI_REROLL_FREE") % _run.free_rerolls if _run.free_rerolls > 0 else tr("UI_REROLL_BUTTON") % _run.reroll_price()
+	var reroll := _button(reroll_text, Vector2(190, 48), _on_reroll)
+	reroll.add_theme_font_size_override("font_size", 16)
+	reroll.add_theme_color_override("font_color", Palette.GOLD)
+	reroll.disabled = _run.gold < _run.reroll_price() and _run.free_rerolls <= 0
+	actions.add_child(reroll)
+	var small := HBoxContainer.new()
+	small.add_theme_constant_override("separation", 8)
+	_undo_button = _button(tr("UI_UNDO"), Vector2(0, 38), _on_undo)
+	_undo_button.add_theme_font_size_override("font_size", 14)
+	_undo_button.disabled = _undo.is_empty()
+	_undo_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	small.add_child(_undo_button)
+	if _run.can_skip_boss():
+		var skip_boss := _button(tr("UI_SKIP_BOSS"), Vector2(0, 38), _on_skip_boss)
+		skip_boss.add_theme_font_size_override("font_size", 14)
+		small.add_child(skip_boss)
+	actions.add_child(small)
+	row.add_child(actions)
+	return panel
+
+
+## A framed shelf inside the shop counter with a small heading.
+func _shelf(title: String) -> Control:
+	var panel := _elegant_panel(0.45)
+	var column := VBoxContainer.new()
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 6)
+	column.add_child(_label(title, 16, Palette.GOLD))
+	panel.add_child(column)
 	return panel
 
 
@@ -426,21 +512,23 @@ func _with_price(content: Control, price: int, soul: bool) -> Control:
 	return box
 
 
-## Relics, tarot and pacts on their own shelf beside the team: roomy slots.
+## Relics, tarot and pacts as one slim bar of small places (no headings):
+## each kind has its own tint, a tap on a filled place explains it.
 func _item_shelf() -> Control:
 	var panel := _elegant_panel(0.55)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 4)
-	panel.add_child(column)
-	for group in [["UI_RELICS", "relic", RunState.MAX_RELICS, _run.relics], ["UI_TAROTS", "tarot", RunState.MAX_TAROTS, _run.tarots],
-			["UI_PACTS", "pact", RunState.MAX_PACTS, _run.pacts]]:
-		column.add_child(_label(tr(group[0]), 14, Emblem.COLORS[group[1]]))
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 8)
-		for i in int(group[2]):
-			var list: Array = group[3]
-			row.add_child(_strip_slot(group[1], i, list[i] if i < list.size() else ""))
-		column.add_child(row)
+	panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	panel.add_child(row)
+	var first := true
+	for group in [["relic", RunState.MAX_RELICS, _run.relics], ["tarot", RunState.MAX_TAROTS, _run.tarots],
+			["pact", RunState.MAX_PACTS, _run.pacts]]:
+		if not first:
+			row.add_child(_spacer(6))
+		first = false
+		for i in int(group[1]):
+			var list: Array = group[2]
+			row.add_child(_strip_slot(group[0], i, list[i] if i < list.size() else "", 40))
 	return panel
 
 
@@ -463,30 +551,6 @@ func _show_enemy_popup() -> void:
 	column.add_child(_centered(_button(tr("UI_CLOSE"), Vector2(240, 56), overlay.queue_free)))
 
 
-## The item drawer at the left edge: relics, tarot and pacts stacked.
-func _item_drawer() -> Control:
-	var panel := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.03, 0.07, 0.95)
-	style.border_color = Palette.GOLD.darkened(0.3)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(10)
-	style.set_content_margin_all(10)
-	panel.add_theme_stylebox_override("panel", style)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 6)
-	panel.add_child(column)
-	for group in [["UI_RELICS", "relic", RunState.MAX_RELICS, _run.relics], ["UI_TAROTS", "tarot", RunState.MAX_TAROTS, _run.tarots],
-			["UI_PACTS", "pact", RunState.MAX_PACTS, _run.pacts]]:
-		column.add_child(_label(tr(group[0]), 18, Emblem.COLORS[group[1]]))
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 6)
-		for i in int(group[2]):
-			var list: Array = group[3]
-			row.add_child(_strip_slot(group[1], i, list[i] if i < list.size() else ""))
-		column.add_child(row)
-	column.add_child(_label(tr("UI_ITEMS_HINT"), 14, Palette.MUTED))
-	return panel
 var _debug_panel: Control
 
 
@@ -680,6 +744,16 @@ func _button(text: String, min_size: Vector2, callback: Callable) -> Button:
 	button.add_theme_font_size_override("font_size", 22)
 	button.pressed.connect(callback)
 	return button
+
+
+## A control with some room around it (left/right, top).
+func _with_margin(content: Control, side: int, top: int) -> MarginContainer:
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", side)
+	margin.add_theme_constant_override("margin_right", side)
+	margin.add_theme_constant_override("margin_top", top)
+	margin.add_child(content)
+	return margin
 
 
 func _spacer(width: float) -> Control:
@@ -885,59 +959,53 @@ var _undo_button: Button
 func _build_planning() -> void:
 	_screen.add_child(_velvet())
 	var column := _column()
-	column.add_child(_top_bar(_stage_title()))
 	_strip_cards.clear()
-	if _rule_text() != "":  # a boss rule matters for planning: it stays in sight
-		column.add_child(_rich_line(_rule_text(), 17))
+	_suit_label = null
 
-	# Middle: your team alone (front on the right) and the item shelf beside it.
-	var middle := HBoxContainer.new()
-	middle.alignment = BoxContainer.ALIGNMENT_CENTER
-	middle.add_theme_constant_override("separation", 28)
-	var own_box := VBoxContainer.new()
-	own_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	own_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	own_box.add_theme_constant_override("separation", 4)
-	var head := HBoxContainer.new()
-	head.add_theme_constant_override("separation", 16)
-	head.add_child(_label(tr("UI_YOUR_TEAM"), 16, Palette.GOLD))
-	var head_fill := Control.new()
-	head_fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	head.add_child(head_fill)
-	var peek := _button(tr("UI_SHOW_ENEMY"), Vector2(0, 34), _show_enemy_popup)
-	peek.add_theme_font_size_override("font_size", 13)
-	head.add_child(peek)
-	head.add_child(_label(tr("UI_FRONT_ARROW"), 14, Palette.MUTED))
-	own_box.add_child(head)
+	# Upper half: info column (menu, gold, souls, places), the team, the item bar.
+	var upper := HBoxContainer.new()
+	upper.add_theme_constant_override("separation", 16)
+	upper.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	upper.size_flags_stretch_ratio = 1.1
+	var info := VBoxContainer.new()
+	info.add_theme_constant_override("separation", 8)
+	info.set_meta("text_fixed", true)
+	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(150, 44), _show_menu)
+	menu.add_theme_font_size_override("font_size", 18)
+	info.add_child(menu)
+	info.add_child(_resource_boxes(1))
+	if _url_flag("debug"):
+		var toggle := _button("Debug", Vector2(150, 40), func() -> void:
+			_debug_open = not _debug_open
+			_show_debug_tools())
+		toggle.add_theme_font_size_override("font_size", 16)
+		info.add_child(toggle)
+		_show_debug_tools.call_deferred()
+	upper.add_child(_with_margin(info, 12, 8))
+	var team := VBoxContainer.new()
+	team.alignment = BoxContainer.ALIGNMENT_CENTER
+	team.add_theme_constant_override("separation", 6)
 	var stage := _elegant_panel(0.55)
 	var stage_box := VBoxContainer.new()
 	stage_box.add_theme_constant_override("separation", 2)
 	stage_box.add_child(_own_row_slots())
 	stage_box.add_child(_xp_hint_row())
 	stage.add_child(stage_box)
-	own_box.add_child(stage)
-	var suit_line := _suit_bonus_text()
-	if suit_line != "":
-		var suit_label := _rich_line(suit_line, 13)
-		own_box.add_child(suit_label)
-		_hint_targets["suit"] = suit_label
-	middle.add_child(own_box)
-	middle.add_child(_item_shelf())
-	var middle_fit := _fitted(middle, 1.9)
-	middle_fit.size_flags_stretch_ratio = 1.6  # the team gets most of the height
-	column.add_child(middle_fit)
+	team.add_child(stage)
+	if _rule_text() != "":  # a boss rule matters for planning: it stays in sight
+		team.add_child(_rich_line(_rule_text(), 16))
+	upper.add_child(_fitted(team, 1.6))
+	upper.add_child(_with_margin(_item_shelf(), 0, 8))
+	upper.add_child(_spacer(4))
+	column.add_child(upper)
 
-	# Bottom: the shop as one framed counter - figures, packs, actions - and the fight seal.
-	var bottom := HBoxContainer.new()
-	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
-	bottom.add_theme_constant_override("separation", 18)
-	bottom.add_child(_shop_counter())
-	var fight := _seal(tr("UI_FIGHT"), 132, "red", _on_fight)
-	_hint_targets["fight"] = fight
-	fight.add_theme_font_size_override("font_size", 28)
-	fight.disabled = _filled_slots() == 0
-	bottom.add_child(fight)
-	column.add_child(bottom)
+	# Lower half: the shop counter with the actions at its right end.
+	var shop := _fitted(_centered(_shop_counter()), 1.5)
+	shop.size_flags_stretch_ratio = 1.0
+	column.add_child(shop)
+	var bottom_gap := Control.new()
+	bottom_gap.custom_minimum_size = Vector2(0, 8)
+	column.add_child(bottom_gap)
 
 	# The sell zone only shows up while a figure or object is held or selected.
 	_sell_zone = SellZone.new()
@@ -996,6 +1064,8 @@ func _fitted(content: Control, max_factor: float) -> Control:
 		content.scale = Vector2(factor, factor)
 		content.position = (holder.size - content.size * factor) / 2
 	holder.resized.connect(fit)
+	# Text grows after the build (UiText): fit again whenever the content does.
+	content.minimum_size_changed.connect(func() -> void: fit.call_deferred())
 	fit.call_deferred()
 	return holder
 
@@ -1129,12 +1199,8 @@ func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 ## front is on the right, so "left of a card" means behind it.
 func _on_slot_inserted(data: Dictionary, slot: SlotView, side: String) -> void:
 	var from: int = data["index"]
-	# An equal figure always merges, wherever on the card it was dropped.
-	var source: Variant = _run.row[from] if from < _run.row.size() else null
-	var target: Variant = _run.row[slot.index] if slot.index < _run.row.size() else null
-	if source != null and target != null and source["def_id"] == target["def_id"]:
-		_move(from, slot.index)
-		return
+	# The edges always place the figure beside it (the glowing line shows it);
+	# merging happens on the card itself, where it lights up gold.
 	var after_index := slot.index if side == "left" else slot.index - 1
 	_apply_action(func() -> bool: return _run.insert_between(from, after_index))
 
@@ -1267,7 +1333,120 @@ func _on_reroll() -> void:
 		_show_stage()
 
 
+## Before a battle: a warning when places are free and gold would buy a figure.
 func _on_fight() -> void:
+	var cheapest := 999
+	for id in _run.shop:
+		if id != "":
+			cheapest = mini(cheapest, _run.price_of(id))
+	var free := _run.slot_count() - _filled_slots()
+	if free > 0 and _run.gold >= cheapest and not _fight_confirmed:
+		_confirm(tr("UI_FIGHT_WARN_TITLE"), tr("UI_FIGHT_WARN") % [free, _run.gold], tr("UI_FIGHT_ANYWAY"), func() -> void:
+			_fight_confirmed = true
+			_on_fight())
+		return
+	_fight_confirmed = false
+	_start_fight()
+
+
+var _fight_confirmed := false
+var _suit_label: RichTextLabel
+
+
+## While a new figure is dragged onto a free place, the suit line shows the
+## bonuses the row would have with it.
+func _notification(what: int) -> void:
+	if not is_instance_valid(_suit_label) or _run == null:
+		return
+	if what == NOTIFICATION_DRAG_BEGIN:
+		var data: Variant = get_viewport().gui_get_drag_data()
+		var def_id := ""
+		if data is Dictionary:
+			match String(data.get("kind", "")):
+				"shop": def_id = _run.shop[data["index"]] if int(data["index"]) < _run.shop.size() else ""
+				"reward": def_id = _run.rewards[data["index"]] if int(data["index"]) < _run.rewards.size() else ""
+		if def_id != "" and _run.reward_target(def_id) >= 0 and _run.row[_run.reward_target(def_id)] == null:
+			var preview := _suit_bonus_text(String(_db.figures[def_id]["suit"]))
+			_suit_label.text = "[center]" + tr("UI_SUIT_PREVIEW") + " " + preview + "[/center]"
+	elif what == NOTIFICATION_DRAG_END:
+		var line := _suit_bonus_text()
+		_suit_label.text = "[center]" + line + "[/center]" if line != "" else ""
+
+
+## A small question window: text, a confirm button and "Zurück".
+func _confirm(title_text: String, text: String, ok_text: String, on_ok: Callable) -> void:
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.75)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_screen.add_child(overlay)
+	var panel := _elegant_panel(0.95)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 14)
+	panel.add_child(column)
+	column.add_child(_label(title_text, 26, Palette.GOLD))
+	var body := _label(text, 20, Palette.PARCHMENT)
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.custom_minimum_size = Vector2(520, 0)
+	column.add_child(body)
+	var buttons := HBoxContainer.new()
+	buttons.add_theme_constant_override("separation", 16)
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_child(_button(tr("UI_BACK"), Vector2(200, 54), overlay.queue_free))
+	buttons.add_child(_button(ok_text, Vector2(240, 54), func() -> void:
+		overlay.queue_free()
+		on_ok.call()))
+	column.add_child(buttons)
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.add_child(panel)
+	overlay.add_child(center)
+
+
+## Win chance from a test battle (the simulator is deterministic): a win with
+## plenty of health left is "high", a close win "close", a loss "low".
+func _win_chance() -> String:
+	var team := _run.player_battle_team()
+	if team.is_empty() or _run.chosen_enemy.is_empty():
+		return ""
+	var result := BattleSimulator.simulate(team, _run.enemy_battle_team(), _run.gold, _run.battle_options())
+	var start := 0
+	var left := {}
+	for e in result["events"]:
+		if e["type"] == "start":
+			for u in e["player"]:
+				start += int(u["health"])
+				left[u["uid"]] = int(u["health"])
+		elif e["type"] == "update" and left.has(e["unit"]["uid"]):
+			left[e["unit"]["uid"]] = maxi(int(e["unit"]["health"]), 0)
+		elif e["type"] == "removed" and left.has(e["uid"]):
+			left[e["uid"]] = 0
+	var remaining := 0
+	for uid in left:
+		remaining += left[uid]
+	if not result["victory"]:
+		return "low"
+	return "high" if remaining * 2 >= start else "close"
+
+
+func _chance_badge() -> Control:
+	var chance := _win_chance()
+	if chance == "":
+		return Control.new()
+	var colors := {"high": Color(0.4, 0.9, 0.45), "close": Color(1.0, 0.8, 0.3), "low": Color(0.95, 0.35, 0.3)}
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 0)
+	var title := _label(tr("UI_CHANCE"), 13, Palette.MUTED)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(title)
+	var value := _label(tr("UI_CHANCE_" + chance.to_upper()), 20, colors[chance])
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(value)
+	return box
+
+
+func _start_fight() -> void:
 	_undo.clear()
 	Sound.music("boss" if _run.is_boss_fight() else "battle")
 	if _run.is_boss_fight():
@@ -1316,18 +1495,18 @@ func _object_strip() -> Control:
 	return strip
 
 
-func _strip_slot(kind: String, index: int, id: String) -> Control:
+func _strip_slot(kind: String, index: int, id: String, side: float = 52.0) -> Control:
 	if id == "":
 		var empty := Panel.new()
-		empty.custom_minimum_size = Vector2(52, 52)
+		empty.custom_minimum_size = Vector2(side, side)
 		var style := StyleBoxFlat.new()
-		style.bg_color = Color(1, 1, 1, 0.03)
-		style.border_color = Color(1, 1, 1, 0.15)
+		style.bg_color = Color(Emblem.COLORS.get(kind, Color.WHITE), 0.06)
+		style.border_color = Color(Emblem.COLORS.get(kind, Color.WHITE), 0.45)
 		style.set_border_width_all(2)
 		style.set_corner_radius_all(8)
 		empty.add_theme_stylebox_override("panel", style)
 		return empty
-	var card := ObjectCard.create(_db, {"kind": kind, "id": id}, Vector2(52, 52), true)
+	var card := ObjectCard.create(_db, {"kind": kind, "id": id}, Vector2(side, side), true)
 	card.tapped.connect(func(c: ObjectCard) -> void: _on_strip_tapped(kind, index, c))
 	_strip_cards.append(card)
 	return card
@@ -2260,64 +2439,129 @@ func _with_rarity(card: UnitCard, def_id: String) -> Control:
 
 func _build_reward() -> void:
 	var column := _column()
-	column.add_child(_top_bar(tr("UI_VICTORY")))
-	var income := _run.last_income
-	var summary := tr("UI_INCOME") % [income.get("base", 0), income.get("bonus", 0), income.get("interest", 0)]
-	if int(income.get("souls", 0)) > 0:
-		summary += "  ·  " + tr("UI_INCOME_SOULS") % income["souls"]
-	if income.get("slot", false):
-		summary += "  ·  " + tr("UI_NEW_SLOT")
-	if income.get("loot", false):
-		summary += "  ·  " + tr("UI_LOOT_NEXT_SHOP")
-	var summary_label := _label(summary, 20, Palette.PARCHMENT)
-	summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	column.add_child(summary_label)
-	var title := _label(tr("UI_CHOOSE_REWARD"), 24, Palette.GOLD)
+	column.add_theme_constant_override("separation", 6)
+	# A big, centred "Victory!" - no resource bar on this screen.
+	var title := _label(tr("UI_VICTORY"), 60, Palette.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.2, 0.45))
+	title.add_theme_constant_override("shadow_outline_size", 14)
+	title.add_theme_constant_override("outline_size", 6)
+	title.add_theme_color_override("font_outline_color", Color(0.25, 0.1, 0.02))
+	title.set_meta("text_fixed", true)
 	column.add_child(title)
 
+	# Middle: the reward ledger on the left, the rewards to drag in the middle.
+	var middle := HBoxContainer.new()
+	middle.alignment = BoxContainer.ALIGNMENT_CENTER
+	middle.add_theme_constant_override("separation", 48)
 	var choices := HBoxContainer.new()
 	choices.alignment = BoxContainer.ALIGNMENT_CENTER
-	choices.add_theme_constant_override("separation", 40)
-	column.add_child(_fitted(choices, 1.6))
+	choices.add_theme_constant_override("separation", 36)
 	_hint_targets["reward"] = choices
 	for i in _run.rewards.size():
 		var def_id: String = _run.rewards[i]
-		var box := VBoxContainer.new()
-		box.alignment = BoxContainer.ALIGNMENT_CENTER
-		box.add_theme_constant_override("separation", 10)
 		var card := UnitCard.for_definition(_db.figures[def_id], 1, false)
 		card.tapped.connect(_detail_panel.show_card)
-		var holder := CenterContainer.new()
+		var holder := Control.new()
+		holder.custom_minimum_size = UnitCard.CARD_SIZE + Vector2(0, 30)
 		var reward_visual := _with_rarity(card, def_id)
 		holder.add_child(reward_visual)
-		box.add_child(holder)
 		var target := _run.reward_target(def_id)
-		# Can also be dragged onto a chosen slot (sell a figure first to make room).
-		_make_draggable(reward_visual, {"kind": "reward", "index": i}, def_id)
-		var text := tr("UI_TAKE")
 		if target >= 0 and _run.row[target] != null:
-			text = tr("UI_TAKE_MERGE")
+			var badge := _merge_badge()
+			badge.position.y = UnitCard.CARD_SIZE.y + 2
+			holder.add_child(badge)
 		elif target < 0:
-			text = tr("UI_NO_ROOM")
-		var take := _button(text, Vector2(180, 56), _on_take_reward.bind(i))
-		take.disabled = target < 0
-		box.add_child(take)
-		choices.add_child(box)
+			card.modulate = Color(1, 1, 1, 0.5)  # no room: sell a figure first
+		# Taking a reward = dragging it onto a place in the team.
+		_make_draggable(reward_visual, {"kind": "reward", "index": i}, def_id)
+		choices.add_child(holder)
+	middle.add_child(choices)
+	column.add_child(_fitted(middle, 1.5))
+	# The ledger floats at the left edge, so the three rewards stay exactly centred.
+	var ledger := _scaled(_reward_ledger(), 1.35)
+	_screen.add_child(ledger)
+	ledger.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT, Control.PRESET_MODE_MINSIZE, 24)
+	ledger.position.y -= 60
 
-	# Own row with a sell field, to make room for a better reward.
+	# Bottom: your team (drop target), the skip button at the right.
 	var bottom := HBoxContainer.new()
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
-	bottom.add_theme_constant_override("separation", 20)
-	bottom.add_child(_label(tr("UI_YOUR_TEAM"), 18, Palette.MUTED))
-	bottom.add_child(_scaled(_own_row_slots(), 0.8))
+	bottom.add_theme_constant_override("separation", 40)
+	var arrow := _label(tr("UI_DRAG_INTO_TEAM"), 18, Palette.MUTED)
+	arrow.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bottom.add_child(arrow)
+	var stage := _elegant_panel(0.55)
+	stage.add_child(_own_row_slots())
+	bottom.add_child(stage)
+	var skip := _button(tr("UI_SKIP_REWARD") % RunState.REWARD_SKIP_GOLD, Vector2(220, 64), _on_skip_reward)
+	skip.add_theme_font_size_override("font_size", 18)
+	skip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bottom.add_child(skip)
+	column.add_child(_fitted(bottom, 1.2))
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0, 8)
+	column.add_child(gap)
+	# The sell field only appears while one of your figures is dragged.
 	_sell_zone = SellZone.new()
+	_sell_zone.custom_minimum_size = Vector2(300, 110)
+	_sell_zone.set_auto_hide(true)
 	_sell_zone.tapped.connect(_on_sell_zone_tapped)
 	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
-	bottom.add_child(_scaled(_sell_zone, 0.8))
-	bottom.add_child(_button(tr("UI_SKIP_REWARD") % RunState.REWARD_SKIP_GOLD, Vector2(240, 60), _on_skip_reward))
-	column.add_child(bottom)
-	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+	_screen.add_child(_sell_zone)
+	_sell_zone.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_KEEP_SIZE)
+	_sell_zone.position += Vector2(-24, 24)
+
+
+## What the battle paid, as a small ledger: one line per income with its
+## symbol and amount, then the total.
+func _reward_ledger() -> Control:
+	var income := _run.last_income
+	var panel := _elegant_panel(0.75)
+	panel.custom_minimum_size = Vector2(220, 0)
+	panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 8)
+	var gold := 0
+	for entry in [["UI_LEDGER_WIN", int(income.get("base", 0))], ["UI_LEDGER_BONUS", int(income.get("bonus", 0))],
+			["UI_LEDGER_INTEREST", int(income.get("interest", 0))], ["UI_LEDGER_EXTRA", int(income.get("extra", 0))]]:
+		if int(entry[1]) == 0:
+			continue
+		gold += int(entry[1])
+		_ledger_line(grid, "coin", Palette.GOLD, tr(entry[0]), "%+d" % int(entry[1]))
+	if int(income.get("souls", 0)) > 0:
+		_ledger_line(grid, "soul", Emblem.COLORS["soul"], tr("UI_BOX_SOULS"), "+%d" % int(income["souls"]))
+	if income.get("slot", false):
+		_ledger_line(grid, "level", Palette.PARCHMENT, tr("UI_LEDGER_SLOT"), "+1")
+	if income.get("loot", false):
+		_ledger_line(grid, "pack", Emblem.COLORS["pack"], tr("UI_LEDGER_LOOT"), "")
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 8)
+	column.add_child(grid)
+	column.add_child(HSeparator.new())
+	var total := HBoxContainer.new()
+	total.add_child(_label(tr("UI_LEDGER_TOTAL"), 18, Palette.PARCHMENT))
+	var fill := Control.new()
+	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	total.add_child(fill)
+	total.add_child(_label("%+d Gold" % gold, 22, Palette.GOLD))
+	column.add_child(total)
+	panel.add_child(column)
+	return panel
+
+
+func _ledger_line(grid: GridContainer, kind: String, color: Color, text: String, value: String) -> void:
+	var emblem := Emblem.create(kind, 24)
+	emblem.color = color
+	grid.add_child(emblem)
+	var label := _label(text, 16, Palette.PARCHMENT)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_child(label)
+	var amount := _label(value, 18, color)
+	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	grid.add_child(amount)
 
 
 func _on_take_reward(index: int) -> void:
@@ -2458,10 +2702,10 @@ func _stage_name_at_end(won: bool) -> String:
 
 
 ## Active suit bonuses of the row, e.g. "Münzen: Zins-Grenze +2 · Stäbe: 3 Brennen".
-func _suit_bonus_text() -> String:
+func _suit_bonus_text(extra_suit: String = "") -> String:
 	var parts: Array = []
 	for suit in ["coins", "cups", "swords", "wands"]:
-		var count := _run.suit_count(suit)
+		var count := _run.suit_count(suit) + (1 if suit == extra_suit else 0)
 		var amount := 0
 		match suit:
 			"coins": amount = count if _run.interest_cap() > 0 else 0

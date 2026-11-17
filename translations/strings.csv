@@ -33,26 +33,26 @@ UI_DEFEAT,Niederlage – der Run wäre vorbei,Defeat – the run would be over
 UI_DRAW,Gleichstand – zählt als Sieg,Draw – counts as victory
 UI_YOUR_TEAM,Dein Team,Your team
 UI_ENEMIES,Gegner,Enemies
-"ABIL_COIN_SQUIRE","Kampfbeginn: erhält Schild {v}. Nach jedem Sieg: +1 Gold (Stufe 3: +2).","Battle start: gains {v} shield. After every win: +1 gold (level 3: +2)."
+ABIL_COIN_SQUIRE,Kampfbeginn: Schild {v}. Nach Sieg: +1 Gold (Stufe III: +2).,Battle start: {v} shield. After a win: +1 gold (level III: +2).
 ABIL_GOLD_ARMORED,Kampfbeginn: Schild 1 pro {v} Gold im Besitz.,Battle start: 1 shield per {v} gold you own.
-"ABIL_GOLDEN_SCALES","Kampfbeginn: erhält Schild {v} je Münzfigur im Team. Die hinterste Figur erhält ×0,05 Angriff je 5 Gold.","Battle start: gains {v} shield per coin figure in the team. Your rearmost figure gains ×0.05 attack per 5 gold."
+ABIL_GOLDEN_SCALES,"Kampfbeginn: Schild {v} je Münzfigur. Hinterste Figur ×0,05 Angriff je 5 Gold.",Battle start: {v} shield per coin figure. Rearmost figure ×0.05 attack per 5 gold.
 ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×(1 + gold / {v}).
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
 ABIL_ENRAGED_ONE,Wenn getroffen: Der Angreifer erhält Brennen {v}.,When hit: the attacker gains {v} burn.
 ABIL_MISTRESS_OF_EMBERS,Dauerhaft: Brennen-Schaden an Gegnern ×{v}.,Always: burn damage to enemies ×{v}.
-ABIL_ASH_KING,"Nach dem Angriff: Das Ziel erhält Brennen 3. Stirbt ein Gegner, springt sein Brennen auf den nächsten, und dieser König erhält ×{v} Angriff.","After attacking: the target gains 3 burn. When an enemy dies, its burn jumps to the next one and this king gains ×{v} attack."
+ABIL_ASH_KING,"Treffer: Brennen 3. Stirbt ein Gegner: sein Brennen springt weiter, Angriff ×{v}.","Hit: 3 burn. An enemy dies: its burn jumps on, attack ×{v}."
 ABIL_ALTAR_SERVER,Zugbeginn: Heilt die Figur vor sich um {v}.,Turn start: heals the figure in front by {v}.
-ABIL_BLOOD_DRINKER,Nach dem Angriff: Heilt sich um {v} % des verursachten Schadens.,After attacking: heals {v} % of the damage dealt.
-ABIL_CHALICE_OF_RETURN,Wenn eine eigene Figur stirbt: Einmal pro Kampf kehrt sie mit {v} Leben zurück.,When an ally dies: once per battle it returns with {v} health.
-ABIL_DROWNED_KING,Wenn eine eigene Figur stirbt: erhält {v} % ihres Angriffs und ihres Lebens.,When an ally dies: gains {v} % of its attack and health.
+ABIL_BLOOD_DRINKER,Treffer: heilt sich um {v} % des Schadens.,Hit: heals {v} % of the damage dealt.
+ABIL_CHALICE_OF_RETURN,Eigene Figur stirbt: kehrt einmal pro Kampf mit {v} Leben zurück.,Ally dies: returns once per battle with {v} health.
+ABIL_DROWNED_KING,Eigene Figur stirbt: erhält {v} % ihres Angriffs und Lebens.,Ally dies: gains {v} % of its attack and health.
 ABIL_BLADE_APPRENTICE,Nach dem Angriff: Das Ziel erhält Blutung {v}.,After attacking: the target gains {v} bleed.
-ABIL_EXECUTIONER,Nach dem Angriff: Ein Ziel mit höchstens {v} Leben stirbt sofort.,After attacking: a target with {v} health or less dies instantly.
-ABIL_CLEAR_BLADE,"Kampfbeginn (zuletzt): Entfernt alle gegnerischen Schilde, pro Schildpunkt Blutung {v}.","Battle start (last): removes all enemy shields, {v} bleed per shield point."
-ABIL_THE_JUDGE,Nach dem Angriff: Die Blutung des Ziels richtet sofort ×{v} Schaden an.,After attacking: the target's bleed deals ×{v} damage at once.
+ABIL_EXECUTIONER,Treffer: Ziel mit höchstens {v} Leben stirbt sofort.,Hit: a target with {v} health or less dies.
+ABIL_CLEAR_BLADE,"Kampfbeginn: entfernt gegnerische Schilde, je Schildpunkt Blutung {v}.","Battle start: removes enemy shields, {v} bleed per shield point."
+ABIL_THE_JUDGE,Treffer: Blutung des Ziels schlägt sofort ×{v} zu.,Hit: the target's bleed strikes at once ×{v}.
 ABIL_BEGGAR_GHOST,Wenn getroffen: Stiehlt dir {v} Gold (max. 3 pro Kampf).,When hit: steals {v} gold from you (max. 3 per battle).
 ABIL_DEBT_COLLECTOR,"Kampfbeginn: +{v} Angriff je 10 Gold, die du besitzt.",Battle start: +{v} attack for every 10 gold you own.
-ABIL_THE_CHANGER,Kampfbeginn: Tauscht Angriff und Leben deiner vordersten Figur.,Battle start: swaps attack and health of your front figure.
-ABIL_GREEDMAW,Nach dem Angriff: Frisst den Schild des Ziels und heilt sich um dessen Wert.,After attacking: eats the target's shield and heals by its value.
+ABIL_THE_CHANGER,Kampfbeginn: tauscht Angriff und Leben deiner vordersten Figur.,Battle start: swaps attack and health of your front figure.
+ABIL_GREEDMAW,Treffer: frisst den Schild des Ziels und heilt sich darum.,Hit: eats the target's shield and heals by it.
 ABIL_VAULT_WARDEN,Kampfbeginn: Schild {v}. Wenn getroffen: Schild +1.,Battle start: {v} shield. When hit: +1 shield.
 ABIL_COIN_THROWER,Zugbeginn: {v} Schaden an deine hinterste Figur.,Turn start: {v} damage to your rearmost figure.
 ABIL_GREEDY_DRAGON,Wenn eine deiner Figuren stirbt: +{v}/+{v}.,When one of your figures dies: +{v}/+{v}.
@@ -120,7 +120,7 @@ UI_CHOOSE_REWARD,Wähle eine Belohnung,Choose a reward
 UI_TAKE,Nehmen,Take
 UI_TAKE_MERGE,Nehmen (verschmilzt),Take (merges)
 UI_NO_ROOM,Kein Platz,No room
-UI_SKIP_REWARD,Überspringen (+%d Gold),Skip (+%d gold)
+UI_SKIP_REWARD,Weiter (+%d Gold),Continue (+%d gold)
 UI_RUN_WON,Sieg! Der Run ist geschafft.,Victory! The run is complete.
 UI_RUN_LOST,Niederlage,Defeat
 UI_RUN_REACHED,Erreicht: Akt %d · %s,Reached: act %d · %s
@@ -144,7 +144,7 @@ BOSS_GOLDEN_WALL_RULE,Das Gegner-Team hat 7 Plätze statt 6.,The enemy team has 
 UI_BOSS_RULE,Boss-Regel: %s,Boss rule: %s
 ENEMY_BOSS_TAX_COLLECTOR,Der Steuereintreiber,The Tax Collector
 ENEMY_BOSS_GOLDEN_WALL,Die Goldene Mauer,The Golden Wall
-ABIL_BOSS_TAX_COLLECTOR,Nach dem Angriff: Stiehlt dir 1 Gold und erhält dafür +{v} Angriff (max. 3× pro Kampf).,After attacking: steals 1 gold from you and gains +{v} attack (max. 3× per battle).
+ABIL_BOSS_TAX_COLLECTOR,"Treffer: stiehlt 1 Gold, +{v} Angriff (max. 3× pro Kampf).","Hit: steals 1 gold, +{v} attack (max. 3× per battle)."
 ABIL_BOSS_GOLDEN_WALL,Wenn getroffen: Schild +{v}.,When hit: +{v} shield.
 UI_BOSS_APPEARS,Boss,Boss
 UI_RARE,Selten!,Rare!
@@ -157,10 +157,10 @@ FIG_ACE_OF_COINS,Goldene Quelle,Golden Spring
 FIG_ACE_OF_WANDS,Flammenkrone,Crown of Flames
 FIG_ACE_OF_CUPS,Tränenquelle,Fount of Tears
 FIG_ACE_OF_SWORDS,Klinge der Wahrheit,Blade of Truth
-ABIL_ACE_OF_COINS,Kampfbeginn: Alle eigenen Figuren erhalten Schild in Höhe deiner Zinsen ×{v}.,Battle start: all your figures gain shield equal to your interest ×{v}.
+ABIL_ACE_OF_COINS,Kampfbeginn: alle eigenen Figuren Schild = Zinsen ×{v}.,Battle start: all allies get shield = interest ×{v}.
 ABIL_ACE_OF_WANDS,Nach dem Angriff: Alle Gegner erhalten Brennen {v}.,After attacking: all enemies gain {v} burn.
-ABIL_ACE_OF_CUPS,Wenn eine eigene Figur stirbt: Sie kehrt mit halbem Leben zurück (einmal pro Kampf).,When an ally dies: it returns with half its health (once per battle).
-ABIL_ACE_OF_SWORDS,Angriffe ignorieren Schild. Nach dem Angriff: Die Blutung des Ziels verdoppelt sich.,Attacks ignore shield. After attacking: the target's bleed doubles.
+ABIL_ACE_OF_CUPS,Eigene Figur stirbt: kehrt mit halbem Leben zurück (einmal pro Kampf).,Ally dies: returns with half health (once per battle).
+ABIL_ACE_OF_SWORDS,Durchbohrt Schild. Treffer: Blutung des Ziels verdoppelt sich.,Pierces shield. Hit: the target's bleed doubles.
 RANK_LEGEND,Ass (legendär),Ace (legendary)
 RARITY_0,Gewöhnlich,Common
 RARITY_1,Magisch,Magic
@@ -202,7 +202,7 @@ RELIC_WHETSTONE_DESC,Blutung deiner Schwert-Figuren +2 Stapel.,Bleed from your s
 RELIC_VANGUARD_BANNER,Vorhut-Banner,Vanguard Banner
 RELIC_VANGUARD_BANNER_DESC,"Deine vorderste Figur erhält ×1,5 Angriff.",Your front figure gains ×1.5 attack.
 RELIC_DEATH_BELL,Totenglocke,Death Bell
-RELIC_DEATH_BELL_DESC,Wenn eine eigene Figur stirbt: Deine hinterste Figur +1 Angriff.,When an ally dies: your rearmost figure +1 attack.
+RELIC_DEATH_BELL_DESC,Eigene Figur stirbt: hinterste Figur +1 Angriff.,Ally dies: rearmost figure +1 attack.
 RELIC_BEGGARS_BOWL,Bettelschale,Beggar's Bowl
 RELIC_BEGGARS_BOWL_DESC,Nach jedem Sieg +2 Gold.,After every victory +2 gold.
 RELIC_ROYAL_COURT,Hofstaat,Royal Court
@@ -216,7 +216,7 @@ TAROT_STAR_DESC,Segen: Die Figur erhält zu jedem Kampfbeginn Schild 3.,Blessing
 TAROT_SUN,Die Sonne,The Sun
 TAROT_SUN_DESC,"Segen: Die Figur erhält ×1,25 Angriff.",Blessing: the figure gains ×1.25 attack.
 TAROT_HANGED_MAN,Der Gehängte,The Hanged Man
-TAROT_HANGED_MAN_DESC,Opfert eine Figur. Du erhältst ihren vollen Kaufpreis als Gold.,Sacrifice a figure. You gain its full price in gold.
+TAROT_HANGED_MAN_DESC,Opfert eine Figur: ihr voller Kaufpreis als Gold.,Sacrifice a figure: its full price as gold.
 TAROT_WHEEL_OF_FORTUNE,Das Rad des Schicksals,Wheel of Fortune
 TAROT_WHEEL_OF_FORTUNE_DESC,Eine Figur wechselt zufällig in eine andere Tarot-Farbe.,A figure switches to a random other tarot suit.
 PACK_EQUIPMENT,Schmiede-Pack,Forge Pack
@@ -273,16 +273,16 @@ PACT_BLADE_OATH,Klingenschwur,Blade Oath
 PACT_BLADE_OATH_DESC,Blutung deiner Figuren: doppelt so viele Stapel.,Bleed from your figures: twice the stacks.
 PACT_BLADE_OATH_COST,Heilung bei dir -25 %.,Your healing -25 %.
 PACT_DEATH_PACT,Totenpakt,Death Pact
-PACT_DEATH_PACT_DESC,"Wenn eine eigene Figur stirbt: alle anderen ×1,1 Angriff (stapelt).",When an ally dies: all others ×1.1 attack (stacks).
+PACT_DEATH_PACT_DESC,"Eigene Figur stirbt: alle anderen ×1,1 Angriff (stapelt).",Ally dies: all others ×1.1 attack (stacks).
 PACT_DEATH_PACT_COST,-1 Gold nach jedem Sieg.,-1 gold after every victory.
 PACT_RETURN_PACT,Wiederkehr-Pakt,Return Pact
-PACT_RETURN_PACT_DESC,Die erste gefallene Figur pro Kampf kehrt mit halbem Leben zurück.,The first fallen figure per battle returns with half health.
+PACT_RETURN_PACT_DESC,Erste gefallene Figur pro Kampf kehrt mit halbem Leben zurück.,First fallen figure per battle returns with half health.
 PACT_RETURN_PACT_COST,Zinsen max. +3.,Interest max. +3.
 PACT_VANGUARD_PACT,Pakt der Vorhut,Vanguard Pact
 PACT_VANGUARD_PACT_DESC,Vorderste Figur ×1,5 Angriff und erhält alle Schilde des Teams.,Front figure ×1.5 attack and takes all shields of the team.
 PACT_VANGUARD_PACT_COST,Hinterste Figur -1 Angriff.,Rearmost figure -1 attack.
 PACT_SOUL_HUNGER,Seelenhunger,Soul Hunger
-PACT_SOUL_HUNGER_DESC,"Pro getötetem Gegner: deine Figuren +1/+1 bis Kampfende, 25 % Chance auf +1 Seele.","Per enemy killed: your figures +1/+1 until the end of battle, 25 % chance of +1 soul."
+PACT_SOUL_HUNGER_DESC,"Gegner getötet: alle Figuren +1/+1, 25 % Chance auf 1 Seele.","Enemy killed: all figures +1/+1, 25 % chance of 1 soul."
 PACT_SOUL_HUNGER_COST,Seelen-Pack kostet +1.,Soul packs cost +1.
 PACT_COST_PREFIX,Preis: %s,Price: %s
 EVENT_ALTAR,Opferaltar,Sacrificial Altar
@@ -353,9 +353,9 @@ UI_BUY,Kaufen,Buy
 UI_SOLD,Verkauft,Sold
 UI_MARKET_FIGURE_HINT,Ziehe die Figur auf einen freien Platz oder tippe Kaufen und dann einen Platz an,"Drag the figure onto a free slot, or tap Buy and then a slot"
 OFFER_SACRIFICE_ONE,Einzelopfer,Single offering
-"OFFER_SACRIFICE_ONE_DESC","Eine Figur geht für immer. Du erhältst Seelen: Rangwert (Bube 1 … König 4) + Stufe. Seelen kaufen Pakte.","One figure is gone for good. You gain souls: rank value (page 1 … king 4) + level. Souls buy pacts."
+OFFER_SACRIFICE_ONE_DESC,Eine Figur geht für immer. Du erhältst Seelen: Rangwert (Bube 1 … König 4) + Stufe. Seelen kaufen Pakte.,One figure is gone for good. You gain souls: rank value (page 1 … king 4) + level. Souls buy pacts.
 OFFER_SACRIFICE_TWO,Doppelopfer,Double offering
-"OFFER_SACRIFICE_TWO_DESC","Zwei Figuren gehen für immer. Du wählst 1 von 3 Pakten: ein starker Vorteil für den ganzen Run, aber jeder Pakt hat einen Preis. Höchstens 3 Pakte.","Two figures are gone for good. Choose 1 of 3 pacts: a strong boon for the whole run, but every pact has a price. At most 3 pacts."
+OFFER_SACRIFICE_TWO_DESC,"Zwei Figuren gehen für immer. Du wählst 1 von 3 Pakten: ein starker Vorteil für den ganzen Run, aber jeder Pakt hat einen Preis. Höchstens 3 Pakte.","Two figures are gone for good. Choose 1 of 3 pacts: a strong boon for the whole run, but every pact has a price. At most 3 pacts."
 OFFER_THROW_3,Kupfer,Copper
 OFFER_THROW_3_DESC,Eine magische Ausrüstung (1 Zusatz).,One magic equipment piece (1 bonus).
 OFFER_THROW_6,Silber,Silver
@@ -406,24 +406,24 @@ UNIQUE_WARLORD,"Kriegsherr – ×1,5 Angriff",Warlord – ×1.5 attack
 UNIQUE_SOUL_HARVEST,Seelenernte – tötet er mit seinem Angriff: 15 % Chance auf +1 Seele,Soul Harvest – kills with its attack: 15 % chance for +1 soul
 FIG_MIDAS_SCALES,Waage des Midas,Scales of Midas
 FIG_ASH_FLOOD_KING,König aus Asche und Flut,King of Ash and Flood
-ABIL_MIDAS_SCALES,"Kampfbeginn: Angriff aller Verbündeten ×{v}, dazu ×0,1 pro 10 Gold.","Battle start: all allies' attack ×{v}, plus ×0.1 per 10 gold."
-ABIL_ASH_FLOOD_KING,"Stirbt ein Verbündeter: alle Gegner erhalten Brennen {v}, und er nimmt 50 % von dessen Angriff und Leben auf.","When an ally dies: all enemies gain {v} burn, and he absorbs 50 % of its attack and health."
+ABIL_MIDAS_SCALES,"Kampfbeginn: alle Verbündeten Angriff ×{v}, +0,1 je 10 Gold.","Battle start: all allies attack ×{v}, +0.1 per 10 gold."
+ABIL_ASH_FLOOD_KING,"Verbündeter stirbt: alle Gegner Brennen {v}, er nimmt 50 % von Angriff und Leben auf.","Ally dies: all enemies {v} burn, he takes 50 % of its attack and health."
 FUSION_PREFIX_COINS,Gold-,Gold-
 FUSION_PREFIX_WANDS,Glut-,Ember-
 FUSION_PREFIX_CUPS,Tränen-,Tear-
 FUSION_PREFIX_SWORDS,Klingen-,Blade-
 MASTER_GOLDEN_FORTRESS,Goldene Festung,Golden Fortress
-MASTER_GOLDEN_FORTRESS_DESC,"Kampfbeginn: alle Verbündeten erhalten Schild 1 pro 5 Gold (max. 8). Nach einem Sieg +1 Gold pro übrigem Schild (max. 3).","Battle start: all allies gain 1 shield per 5 gold (max 8). After a win +1 gold per remaining shield (max 3)."
+MASTER_GOLDEN_FORTRESS_DESC,Kampfbeginn: alle Verbündeten Schild 1 je 5 Gold (max. 8). Nach Sieg +1 Gold je übrigem Schild (max. 3).,Battle start: all allies 1 shield per 5 gold (max. 8). After a win +1 gold per shield left (max. 3).
 MASTER_EMBER_CORE,Glutkern,Ember Core
-MASTER_EMBER_CORE_DESC,"Brennen-Schaden an Gegnern ×2, und jedes Brennen-Ticken bei Gegnern heilt diese Figur um 1.","Burn damage to enemies ×2, and every enemy burn tick heals this figure by 1."
+MASTER_EMBER_CORE_DESC,Brennen an Gegnern ×2. Jedes Brennen-Ticken heilt diese Figur um 1.,Burn on enemies ×2. Every burn tick heals this figure by 1.
 MASTER_ETERNAL_SPRING,Ewige Quelle,Eternal Spring
-MASTER_ETERNAL_SPRING_DESC,"Die ersten zwei gefallenen Verbündeten kehren mit vollem Leben zurück, der zweite mit +2/+2.","The first two fallen allies return at full health, the second with +2/+2."
+MASTER_ETERNAL_SPRING_DESC,"Die ersten 2 gefallenen Verbündeten kehren voll zurück, der zweite +2/+2.","The first 2 fallen allies return at full health, the second +2/+2."
 MASTER_EXECUTION,Hinrichtung,Execution
-MASTER_EXECUTION_DESC,"Angriffe durchdringen Schild und verursachen Blutung 3. Gegner unter 30 % Leben sterben sofort.","Attacks pierce shields and cause 3 bleed. Enemies below 30 % health die instantly."
+MASTER_EXECUTION_DESC,"Durchbohrt Schild, Blutung 3. Gegner unter 30 % Leben sterben.","Pierces shield, 3 bleed. Enemies below 30 % health die."
 MASTER_GOLD_EMBER,Goldglut,Gold Ember
 MASTER_GOLD_EMBER_DESC,Kampfbeginn: alle Gegner erhalten Brennen 1 pro 10 Gold (max. 3).,Battle start: all enemies gain 1 burn per 10 gold (max 3).
 MASTER_OVERFLOW,Überfluss,Overflow
-MASTER_OVERFLOW_DESC,Heilung über das volle Leben hinaus wird bei allen Verbündeten zu Schild.,Healing beyond full health becomes shield for all allies.
+MASTER_OVERFLOW_DESC,Überschüssige Heilung wird zu Schild.,Excess healing becomes shield.
 MASTER_PAID_BLADE,Bezahlte Klinge,Paid Blade
 MASTER_PAID_BLADE_DESC,Kampfbeginn: +1 Angriff pro 5 Gold (max. +5).,Battle start: +1 attack per 5 gold (max +5).
 MASTER_STEAM_CLOUD,Dampfwolke,Steam Cloud
@@ -543,10 +543,10 @@ UI_CAT_STRENGTH,Kraft,Strength
 UI_CAT_RELICS,Relikte,Relics
 UI_CAT_PACTS,Pakte,Pacts
 UI_CAT_SUIT_BONUS,Farbbonus,Suit bonus
-SUITBONUS_COINS,"Zins-Obergrenze +1 je Münzfigur.","Interest cap +1 per coin figure."
-SUITBONUS_CUPS,"+2 Leben je Kelchfigur in der Reihe.","+2 health per cup figure in the row."
-SUITBONUS_SWORDS,"Kampfbeginn: 1 Blutung auf jeden Gegner je 2 Schwertfiguren.","Battle start: 1 bleed on every enemy per 2 sword figures."
-SUITBONUS_WANDS,"Kampfbeginn: 1 Brennen auf den vordersten Gegner je Stabfigur.","Battle start: 1 burn on the front enemy per wand figure."
+SUITBONUS_COINS,Zins-Obergrenze +1 je Münzfigur.,Interest cap +1 per coin figure.
+SUITBONUS_CUPS,+2 Leben je Kelchfigur in der Reihe.,+2 health per cup figure in the row.
+SUITBONUS_SWORDS,Kampfbeginn: 1 Blutung auf jeden Gegner je 2 Schwertfiguren.,Battle start: 1 bleed on every enemy per 2 sword figures.
+SUITBONUS_WANDS,Kampfbeginn: Brennen 1 je Stabfigur auf den vordersten Gegner.,Battle start: 1 burn per wand figure on the front enemy.
 UI_CAT_ABILITY,Fähigkeit,Ability
 UI_CAT_TAROT,Tarot,Tarot
 UI_CAT_RELIC,Relikt,Relic
@@ -669,22 +669,22 @@ ENEMY_WOUND_SEALER,Wundversiegler,Wound Sealer
 ENEMY_VAULT_CARDINAL,Tresorkardinal,Vault Cardinal
 ENEMY_CLOCKWORK_WARDEN,Uhrwerk-Wächter,Clockwork Warden
 ABIL_CURSE_WEAVER,Kampfbeginn: Deine vorderste Figur erhält Fluch {v}.,Battle start: your front figure gains {v} curse.
-ABIL_CANDLE_BEARER,"Zugbeginn: Heilt den vordersten Gegner um {v} (nicht sich selbst).","Turn start: heals its front ally by {v} (never itself)."
+ABIL_CANDLE_BEARER,Zugbeginn: heilt den vordersten Gegner um {v} (nie sich selbst).,Turn start: heals its front ally by {v} (never itself).
 ABIL_SALT_GOLEM,Immun gegen Brennen.,Immune to burn.
 ABIL_BAN_PRIOR,"Solange er lebt, können deine Figuren nicht geheilt werden.","While it lives, your figures cannot be healed."
 ABIL_SHIELD_BREAKER,Kampfbeginn (zuletzt): Zerstört alle Schilde deiner Figuren.,Battle start (last): destroys every shield of your figures.
-ABIL_WOUND_SEALER,Zugbeginn: Entfernt bis zu {v} Blutung von sich und seinen Verbündeten.,Turn start: removes up to {v} bleed from itself and each of its allies.
+ABIL_WOUND_SEALER,Zugbeginn: entfernt bis zu {v} Blutung je Verbündetem.,Turn start: removes up to {v} bleed from each ally.
 ABIL_VAULT_CARDINAL,Kampfbeginn: Alle Gegner erhalten Schild {v}.,Battle start: all of its allies gain {v} shield.
-ABIL_CLOCKWORK_WARDEN,"Zugbeginn: +{v} Angriff (insgesamt höchstens +6 / +8 / +10 je Stufe).","Turn start: +{v} attack (at most +6 / +8 / +10 in total by level)."
+ABIL_CLOCKWORK_WARDEN,Zugbeginn: +{v} Angriff (max. +6 / +8 / +10).,Turn start: +{v} attack (max. +6 / +8 / +10).
 UI_ELITE,Elite (ab Akt 2),Elite (act 2 on)
 EVENT_TAX_RAID,Steuerrazzia,Tax Raid
 EVENT_TAX_RAID_DESC,Die Steuertruppe des Eintreibers stellt dich. Zahl oder wehr dich.,The collector's tax squad corners you. Pay up or fight back.
 EVENT_PLAGUE,Seuche,Plague
-EVENT_PLAGUE_DESC,"Ein fauliger Wind zieht durch das Lager. Ohne Heilmittel erkrankt eine deiner Figuren.","A foul wind blows through the camp. Without a cure one of your figures falls ill."
+EVENT_PLAGUE_DESC,Ein fauliger Wind zieht durch das Lager. Ohne Heilmittel erkrankt eine deiner Figuren.,A foul wind blows through the camp. Without a cure one of your figures falls ill.
 EVENT_AMBUSH,Hinterhalt,Ambush
 EVENT_AMBUSH_DESC,Eine Bande springt aus dem Dunkel – keine Zeit zum Einkaufen. Kämpfen oder fliehen?,A band leaps out of the dark – no time to shop. Fight or flee?
 EVENT_CURSE_FOG,Fluchnebel,Curse Fog
-EVENT_CURSE_FOG_DESC,"Violetter Nebel kriecht heran. Wer ihn atmet, kämpft verflucht – es sei denn, du opferst etwas.","Violet fog creeps in. Whoever breathes it fights cursed – unless you sacrifice something."
+EVENT_CURSE_FOG_DESC,"Violetter Nebel kriecht heran. Wer ihn atmet, kämpft verflucht – es sei denn, du opferst etwas.",Violet fog creeps in. Whoever breathes it fights cursed – unless you sacrifice something.
 OFFER_PAY_TAX,Steuer zahlen,Pay the tax
 OFFER_PAY_TAX_DESC,Du verlierst 30 % deines Golds.,You lose 30 % of your gold.
 OFFER_FIGHT_TAX,Gegen die Steuertruppe kämpfen,Fight the tax squad
@@ -732,17 +732,17 @@ HINT_OK,Verstanden,Got it
 HINT_CHOICE_TITLE,Wähle deinen Gegner,Choose your enemy
 HINT_CHOICE,"Drei Banden stehen zur Wahl: leicht, mittel und schwer. Schwerere bringen mehr Gold, die schwerste dazu ein Gratis-Beutepack.","Three bands to choose from: easy, medium and hard. Harder ones pay more gold, the hardest also a free loot pack."
 HINT_BOSS_TITLE,Ein Boss!,A boss!
-HINT_BOSS,"Bosse haben eine Sonderregel – lies sie oben nach. Ein Sieg öffnet die Schatzkammer und gibt einen neuen Platz.","Bosses have a special rule – read it above. A win opens the treasury and gives a new slot."
+HINT_BOSS,Bosse haben eine Sonderregel – lies sie oben nach. Ein Sieg öffnet die Schatzkammer und gibt einen neuen Platz.,Bosses have a special rule – read it above. A win opens the treasury and gives a new slot.
 HINT_SHOP_TITLE,Der Shop,The shop
-HINT_SHOP,"Kaufe Figuren und zieh sie in deine Reihe. Lege eine gleiche Figur auf eine andere: Sie verschmelzen und steigen auf.","Buy figures and drag them into your row. Put an equal figure onto another: they merge and level up."
+HINT_SHOP,Kaufe Figuren und zieh sie in deine Reihe. Lege eine gleiche Figur auf eine andere: Sie verschmelzen und steigen auf.,Buy figures and drag them into your row. Put an equal figure onto another: they merge and level up.
 HINT_FIGHT_TITLE,Bereit zum Kampf,Ready to fight
 HINT_FIGHT,"Nur die vorderste Figur kämpft, die anderen rücken nach. Stelle deine Reihe um, dann drück auf Kampf.","Only the front figure fights, the others move up. Rearrange your row, then press Fight."
 HINT_PACK_TITLE,Packs,Packs
-HINT_PACK,"Packs enthalten Ausrüstung oder Tarot-Karten (und ganz selten ein Ass). Tippe ein Pack an, um es zu kaufen und zu öffnen.","Packs hold equipment or tarot cards (and very rarely an ace). Tap a pack to buy and open it."
+HINT_PACK,"Packs enthalten Ausrüstung oder Tarot-Karten (und ganz selten ein Ass). Tippe ein Pack an, um es zu kaufen und zu öffnen.",Packs hold equipment or tarot cards (and very rarely an ace). Tap a pack to buy and open it.
 HINT_SUIT_TITLE,Farbboni,Suit bonuses
-HINT_SUIT,"Mehrere Figuren einer Farbe stärken sich gegenseitig. Hier siehst du, was deine Reihe gerade bekommt.","Several figures of one suit strengthen each other. Here you see what your row gets right now."
+HINT_SUIT,"Mehrere Figuren einer Farbe stärken sich gegenseitig. Hier siehst du, was deine Reihe gerade bekommt.",Several figures of one suit strengthen each other. Here you see what your row gets right now.
 HINT_SOULS_TITLE,Seelen und Pakte,Souls and pacts
-HINT_SOULS,"Mit Seelen kaufst du Pakte: mächtige Vorteile, die aber immer einen Preis haben.","Souls buy pacts: powerful boons that always come at a price."
+HINT_SOULS,"Mit Seelen kaufst du Pakte: mächtige Vorteile, die aber immer einen Preis haben.",Souls buy pacts: powerful boons that always come at a price.
 HINT_REWARD_TITLE,Belohnung,Reward
 HINT_REWARD,Nach jedem Sieg darfst du eine Figur gratis nehmen – oder verzichten und 2 Gold bekommen.,After every win you may take one figure for free – or skip it for 2 gold.
 HINT_EVENT_TITLE,Ein Ereignis,An event
@@ -750,19 +750,19 @@ HINT_EVENT,"Ereignisse bieten seltene Gelegenheiten. Manche kosten etwas, du kan
 HINT_DANGER_TITLE,Gefahr!,Danger!
 HINT_DANGER,"Einer Gefahr entkommst du nicht umsonst: zahlen, kämpfen oder den Nachteil tragen.","A danger is never free to escape: pay, fight or bear the drawback."
 HINT_FUSION_TITLE,Fusion,Fusion
-HINT_FUSION,"Wähle zwei Figuren: Sie verschmelzen zu einer stärkeren, die Fähigkeiten beider behält. Ab der dritten Fusion erwacht eine Meisterfähigkeit.","Choose two figures: they fuse into a stronger one that keeps both abilities. From the third fusion a master ability awakens."
+HINT_FUSION,"Wähle zwei Figuren: Sie verschmelzen zu einer stärkeren, die Fähigkeiten beider behält. Ab der dritten Fusion erwacht eine Meisterfähigkeit.",Choose two figures: they fuse into a stronger one that keeps both abilities. From the third fusion a master ability awakens.
 HINT_TREASURY_TITLE,Die Schatzkammer,The treasury
 HINT_TREASURY,Für jeden besiegten Boss darfst du einen Schatz wählen: ein Relikt, ein Ass-Pack oder Gold.,For every defeated boss you choose one treasure: a relic, an ace pack or gold.
 UI_SET_TEXT,Schriftgröße,Text size
-UI_MERGE_MAX,"Diese Figur hat schon Stufe 3 (Maximum) – die beiden haben nur den Platz getauscht.","This figure is already at level 3 (maximum) – the two only swapped places."
-UI_MERGE_FUSED,"Fusionen und Rezeptfiguren verschmelzen nicht mit Duplikaten – die beiden haben nur den Platz getauscht.","Fusions and recipe figures do not merge with duplicates – the two only swapped places."
+UI_MERGE_MAX,Diese Figur hat schon Stufe 3 (Maximum) – die beiden haben nur den Platz getauscht.,This figure is already at level 3 (maximum) – the two only swapped places.
+UI_MERGE_FUSED,Fusionen und Rezeptfiguren verschmelzen nicht mit Duplikaten – die beiden haben nur den Platz getauscht.,Fusions and recipe figures do not merge with duplicates – the two only swapped places.
 UI_ABILITY_LEVEL,(Stufe %s),(level %s)
 UI_ITEMS,Gegenstände (%d),Items (%d)
 UI_ITEMS_HINT,"Tarot: antippen, dann eine Figur antippen.","Tarot: tap it, then tap a figure."
 UI_RES_TITLE,Übersicht,Overview
-UI_RES_GOLD,"Gold: %d. Nach jedem Sieg bekommst du Einkommen und Zinsen (+%d jetzt: 1 je 5 Gold).","Gold: %d. After every win you get income and interest (+%d now: 1 per 5 gold)."
-UI_RES_SOULS,"Seelen: %d. Damit kaufst du Pakte (Seelen-Pack) und zahlst Opfer und Altäre.","Souls: %d. They buy pacts (soul pack) and pay for offerings and altars."
-UI_RES_SLOTS,"Plätze: %d von %d belegt. Jeder besiegte Boss gibt einen Platz mehr (bis 6).","Slots: %d of %d used. Every defeated boss adds a slot (up to 6)."
+UI_RES_GOLD,Gold: %d. Nach jedem Sieg bekommst du Einkommen und Zinsen (+%d jetzt: 1 je 5 Gold).,Gold: %d. After every win you get income and interest (+%d now: 1 per 5 gold).
+UI_RES_SOULS,Seelen: %d. Damit kaufst du Pakte (Seelen-Pack) und zahlst Opfer und Altäre.,Souls: %d. They buy pacts (soul pack) and pay for offerings and altars.
+UI_RES_SLOTS,Plätze: %d von %d belegt. Jeder besiegte Boss gibt einen Platz mehr (bis 6).,Slots: %d of %d used. Every defeated boss adds a slot (up to 6).
 UI_SHOW_ENEMY,Gegner ansehen,View enemy
 UI_SHOP_FIGURES,Figuren,Figures
 UI_SHOP_PACKS,Packs,Packs
@@ -770,3 +770,25 @@ UI_REROLL_BUTTON,Neu würfeln (%d Gold),Reroll (%d gold)
 UI_SOLD_OUT,verkauft,sold
 UI_SOULS_SHORT,Seelen,souls
 UI_FRONT_ARROW,vorne = rechts,front = right
+UI_FIGHT_WARN_TITLE,Noch nicht fertig?,Not done yet?
+UI_FIGHT_WARN,Du hast noch %d freie Plätze und %d Gold. Eine weitere Figur macht dein Team stärker – trotzdem kämpfen?,You still have %d free places and %d gold. Another figure makes your team stronger – fight anyway?
+UI_FIGHT_ANYWAY,Trotzdem kämpfen,Fight anyway
+UI_CHANCE,Siegchance,Win chance
+UI_CHANCE_HIGH,hoch,high
+UI_CHANCE_CLOSE,knapp,close
+UI_CHANCE_LOW,gering,low
+UI_SUIT_PREVIEW,Mit dieser Figur:,With this figure:
+UI_STATS_BASE,(ohne Boni %d / %d),(without bonuses %d / %d)
+UI_BOX_GOLD,Gold,Gold
+UI_BOX_INTEREST,+%d Zinsen nach Sieg,+%d interest after a win
+UI_BOX_SOULS,Seelen,Souls
+UI_BOX_SLOTS,Plätze,Slots
+UI_BOX_BLESSING,Segen: antippen,Blessing: tap
+UI_LEDGER_WIN,Sieg,Victory
+UI_LEDGER_BONUS,Bonus,Bonus
+UI_LEDGER_INTEREST,Zinsen,Interest
+UI_LEDGER_EXTRA,Relikte & Ausrüstung,Relics & equipment
+UI_LEDGER_SLOT,Neuer Platz,New place
+UI_LEDGER_LOOT,Beutepack,Loot pack
+UI_LEDGER_TOTAL,Gesamt,Total
+UI_DRAG_INTO_TEAM,Ins Team ziehen,Drag into your team
