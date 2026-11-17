@@ -162,7 +162,8 @@ func _gui_input(event: InputEvent) -> void:
 ## The object's own hand-drawn icon (each relic and tarot card has one), else
 ## the emblem of its kind. Icons are scaled by whole pixels so they stay crisp.
 func _symbol(emblem_kind: String, symbol_size: float) -> Control:
-	var icon := HandmadeArt.icon("icon_" + String(entry.get("id", "")))
+	var id := String(entry["item"]["base"]) if entry.get("kind", "") == "equipment" else String(entry.get("id", ""))
+	var icon := HandmadeArt.icon("icon_" + id)
 	if icon == null:
 		return Emblem.create(emblem_kind, symbol_size)
 	var rect := TextureRect.new()

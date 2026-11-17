@@ -1,0 +1,27 @@
+kind = icon
+[palette]
+i = 3e434c
+I = 8e98a8
+W = 94683f
+a = 6a4210
+c = a8741c
+G = e0aa30
+T = fff0a0
+w = 4a2e1c
+[icon]
+................
+.....IIIIII.....
+...IIWWWWWWII...
+..IWWiiiiiiWWi..
+..IWiWWWWWWiWi..
+.IWiWWWGGWWWiWi.
+.IWiWWGTTGWWiWi.
+.IWiWWGTTGWWiWi.
+.IWiWWWGGWWWiWi.
+..IWiWWWWWWiWi..
+..IWWiiiiiiWWi..
+...iiWWWWWWii...
+.....iiiiii.....
+................
+................
+................
