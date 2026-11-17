@@ -259,3 +259,10 @@ func test_all_content_abilities_run_without_errors() -> void:
 		var enemy := DebugTeams.random_enemy_team(_db, rng, rng.randi_range(1, 6), 3)
 		var result := BattleSimulator.simulate(player, enemy, rng.randi_range(0, 40))
 		assert_lt(result["turns"], BattleSimulator.MAX_TURNS)
+
+
+func test_ash_king_burns_his_target() -> void:
+	var result := BattleSimulator.simulate([_fig("ash_king")], [_unit(0, 30)])
+	var burns := _events(result, "damage").filter(func(e): return e["source"] == "burn")
+	assert_gt(burns.size(), 0, "the ash king sets his target on fire")
+	assert_eq(burns[0]["amount"], 3)

@@ -40,7 +40,7 @@ ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
 ABIL_ENRAGED_ONE,Wenn getroffen: Der Angreifer erhält Brennen {v}.,When hit: the attacker gains {v} burn.
 ABIL_MISTRESS_OF_EMBERS,Dauerhaft: Brennen-Schaden an Gegnern ×{v}.,Always: burn damage to enemies ×{v}.
-ABIL_ASH_KING,"Wenn ein Gegner stirbt: Sein Brennen springt auf den nächsten Gegner, und dieser König erhält ×{v} Angriff.",When an enemy dies: its burn jumps to the next enemy and this king gains ×{v} attack.
+ABIL_ASH_KING,"Nach dem Angriff: Das Ziel erhält Brennen 3. Stirbt ein Gegner, springt sein Brennen auf den nächsten, und dieser König erhält ×{v} Angriff.","After attacking: the target gains 3 burn. When an enemy dies, its burn jumps to the next one and this king gains ×{v} attack."
 ABIL_ALTAR_SERVER,Zugbeginn: Heilt die Figur vor sich um {v}.,Turn start: heals the figure in front by {v}.
 ABIL_BLOOD_DRINKER,Nach dem Angriff: Heilt sich um {v} % des verursachten Schadens.,After attacking: heals {v} % of the damage dealt.
 ABIL_CHALICE_OF_RETURN,Wenn eine eigene Figur stirbt: Einmal pro Kampf kehrt sie mit {v} Leben zurück.,When an ally dies: once per battle it returns with {v} health.
