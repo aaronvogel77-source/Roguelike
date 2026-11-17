@@ -22,6 +22,8 @@ var body: PanelContainer
 var card_size := CARD_SIZE
 
 var _style: StyleBoxFlat
+var _overlay: Panel
+var _level_seal: Label
 var _identity: HBoxContainer
 var _chips: HFlowContainer
 var _attack_label: Label
@@ -62,21 +64,23 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	body.pivot_offset = card_size / 2
 	body.mouse_filter = Control.MOUSE_FILTER_STOP
 	body.gui_input.connect(_on_body_input)
+	# The card face: pixel frame and background by rarity (CardArt).
+	var face := StyleBoxTexture.new()
+	face.texture = CardArt.for_unit(unit_definition, enemy, String(initial.get("suit", "")), card_size)
+	body.add_theme_stylebox_override("panel", face)
+	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# Glow, flashes and highlights live on a transparent overlay above the face.
 	_style = StyleBoxFlat.new()
-	# Tarot look: player figures on parchment, enemies on dark red cloth.
-	_style.bg_color = Color("2e1a1e") if enemy else Color("e6d6b4")
+	_style.bg_color = Color(0, 0, 0, 0)
 	_style.border_color = base_border_color()
-	_style.set_border_width_all(5 if unit_definition.get("boss", false) else 3)
-	_style.set_corner_radius_all(10)
-	if unit_definition.get("boss", false):
-		_style.bg_color = Color(0.2, 0.06, 0.08)
+	_style.set_border_width_all(0)
+	_style.set_corner_radius_all(8)
 	# Fusions glow in their suits; every stage adds to the glow (F3 cycles).
 	var stage := int(unit_definition.get("fusion", {}).get("stage", 0))
 	if stage > 0:
 		var suits: Array = unit_definition["fusion"]["suits"]
 		_style.shadow_color = Color(Palette.SUIT_COLORS.get(suits[-1], Palette.GOLD), 0.75)
 		_style.shadow_size = 3 + 3 * stage
-		_style.set_border_width_all(3 + stage)
 		if stage >= 3:
 			_cycle_glow(suits)
 	# Legendary skins: a glowing frame in the skin's theme colour.
@@ -86,26 +90,37 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 		_style.border_color = theme_color
 		_style.shadow_color = Color(theme_color, 0.8)
 		_style.shadow_size = maxi(_style.shadow_size, 8)
-		_style.set_border_width_all(maxi(_style.border_width_left, 4))
-	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
-		_style.set_content_margin(side, 5)
-	body.add_theme_stylebox_override("panel", _style)
+		_style.set_border_width_all(2)
 	add_child(body)
 	_add_portrait(initial, unit_definition, enemy)
 
+	var margin := MarginContainer.new()
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 7)
+	body.add_child(margin)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 2)
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body.add_child(column)
+	margin.add_child(column)
+	_overlay = Panel.new()
+	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_overlay.add_theme_stylebox_override("panel", _style)
+	body.add_child(_overlay)
+	# Seals between attack and health: level as a roman numeral, fusion stage above.
+	_level_seal = _seal_label(Vector2(card_size.x / 2 - 12, card_size.y - 32))
+	if stage > 0:
+		_seal_label(Vector2(card_size.x / 2 - 12, card_size.y - 54)).text = "F%d" % stage
 
 	var name_label := Label.new()
 	name_label.text = ContentDb.display_name(definition)
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.add_theme_font_size_override("font_size", _fitting_font_size(name_label))
-	name_label.add_theme_color_override("font_color", Palette.PARCHMENT if enemy else Color("3a2414"))
+	var dark_face: bool = enemy or unit_definition.get("rank", "") == "legend" or unit_definition.get("recipe", false)
+	name_label.add_theme_color_override("font_color", Palette.PARCHMENT if dark_face else Color("3a2414"))
 	# An outline keeps the name readable on top of the figure.
-	name_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85) if enemy else Color("e6d6b4"))
+	name_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85) if dark_face else Color("efe4c8"))
 	name_label.add_theme_constant_override("outline_size", 5)
 	name_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	name_label.max_lines_visible = 2
@@ -199,7 +214,7 @@ func flash_trigger(duration: float) -> void:
 	tween.tween_interval(duration)
 	tween.tween_callback(func() -> void:
 		_style.border_color = base_border_color()
-		_style.set_border_width_all(5 if definition.get("boss", false) else 3))
+		_style.set_border_width_all(0))
 
 
 ## Colored halo pulse around the card (abilities that act on the unit itself).
@@ -313,17 +328,9 @@ func _wrapped_line_count(words: PackedStringArray, font: Font, font_size: int, a
 func _rebuild_identity(level: int) -> void:
 	for child in _identity.get_children():
 		child.queue_free()
-	for kind in identity_kinds(definition, is_enemy, snapshot.get("suit", "")):
-		_identity.add_child(Emblem.create(kind, 19))
-	var chevrons := Emblem.create("level", 19)
-	chevrons.count = level
-	_identity.add_child(chevrons)
-	var stage := int(definition.get("fusion", {}).get("stage", 0))
-	if stage > 0:
-		var badge := _small_label(Palette.GOLD)
-		badge.text = "F%d" % stage
-		badge.add_theme_font_size_override("font_size", 15)
-		_identity.add_child(badge)
+	# Rank, suit and enemy marks live in the info panel only; the card shows
+	# the level as a roman numeral seal and the objects on the figure.
+	_level_seal.text = ["I", "II", "III"][clampi(level, 1, 3) - 1]
 	# Equipment and blessing marks for row figures.
 	var figure: Dictionary = extras.get("figure", {})
 	if figure.has("equipment"):
@@ -347,6 +354,27 @@ static func identity_kinds(unit_definition: Dictionary, enemy: bool, suit: Strin
 	if suit == "":
 		suit = String(unit_definition.get("suit", "coins"))
 	return ["rank_" + rank, "suit_" + suit]
+
+
+func _seal_label(at: Vector2) -> Label:
+	var label := Label.new()
+	label.position = at
+	label.size = Vector2(24, 20)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 13)
+	var wax := StyleBoxFlat.new()  # a small wax seal behind the numeral
+	wax.bg_color = Color("7a1420")
+	wax.border_color = Color("d9a530")
+	wax.set_border_width_all(1)
+	wax.set_corner_radius_all(10)
+	label.add_theme_stylebox_override("normal", wax)
+	label.add_theme_color_override("font_color", Color("ffe08a"))
+	label.add_theme_color_override("font_outline_color", Color(0.1, 0.05, 0.02))
+	label.add_theme_constant_override("outline_size", 5)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_overlay.add_child(label)
+	return label
 
 
 ## Attack / health: the number sits in the middle of its emblem.
