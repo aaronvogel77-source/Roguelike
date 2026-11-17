@@ -1,0 +1,795 @@
+<title>Arcana – Shop-Vorlagen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Cinzel:wght@600;800&family=IM+Fell+English+SC&family=Silkscreen&display=swap">
+<style>
+/* Layout: dark gallery of five full planning-screen mockups (16:9 phone landscape), each with its notes. Single dark look. */
+:root {
+  --bg: #100d13; --panel: #19151d; --line: #2f2836; --fg: #ece6ef; --muted: #a59bb0; --gold: #e0b44a;
+  --atk: #ff7a6a; --hp: #7ee08a; --soul: #8fd8ff;
+  --font-display: "Pixelify Sans", "Courier New", monospace;
+  --font-body: "Spectral", Georgia, serif;
+  --font-label: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.wrap { max-width: 1120px; margin: 0 auto; }
+h1, h2, h3 { margin: 0; text-wrap: balance; font-family: var(--font-display); font-weight: 600; }
+p { margin: 0; }
+.label { font: 500 12px var(--font-label); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.intro { padding-block: 52px 28px; display: grid; gap: 16px; }
+.intro h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.05; color: var(--gold); }
+.intro p { max-width: 68ch; color: var(--muted); }
+.intro p b { color: var(--fg); }
+.toc { display: flex; flex-wrap: wrap; gap: 10px; }
+.toc a { color: var(--fg); text-decoration: none; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 7px 14px; font-size: 15px; }
+.toc a b { color: var(--gold); font: 500 12px var(--font-label); margin-right: 6px; }
+.toc a:hover { border-color: var(--gold); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.tpl { border-top: 1px solid var(--line); padding-block: 44px; display: grid; gap: 18px; }
+.tpl-head { display: grid; gap: 8px; }
+.tpl-head h2 { font-size: clamp(28px, 4.6vw, 42px); }
+.tpl-head p { max-width: 66ch; font-size: 18px; }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px; }
+.note { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.note h3 { font-size: 18px; color: var(--gold); }
+.note p, .note li { font-size: 15.5px; }
+.note ul { margin: 0; padding-left: 1.1em; }
+.next { margin-top: 36px; background: var(--panel); border: 1px solid var(--gold); border-radius: 10px; padding: 20px; display: grid; gap: 10px; }
+.next h2 { font-size: 26px; }
+
+/* ---------- Shared mockup frame (16:9, everything in container units) ---------- */
+.screen { position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; container-type: inline-size; box-shadow: 0 16px 40px rgba(0,0,0,.5); font-family: "Pixelify Sans", monospace; color: #f1e6cf; }
+canvas.fig { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+.num-a { color: var(--atk); } .num-h { color: var(--hp); }
+.ico { display: inline-block; width: 1em; height: 1em; vertical-align: -.12em; }
+.btn { font-family: inherit; cursor: pointer; border: 0; color: inherit; }
+
+/* ===================== 1  HÄNDLERTISCH ===================== */
+.t1 { background: radial-gradient(80% 60% at 50% 30%, #2a1c14, #120b08); }
+.t1 .top { position: absolute; inset: 0 0 auto 0; height: 6.5cqw; display: flex; align-items: center; gap: 2.4cqw; padding: 0 2cqw; background: linear-gradient(#3a2414, #24160c); border-bottom: .4cqw solid #a8742a; font-size: 1.9cqw; }
+.t1 .top .title { font-family: "IM Fell English SC", serif; font-size: 2.2cqw; color: #ffd98a; margin-right: auto; }
+.t1 .chip { display: flex; align-items: center; gap: .5cqw; background: #160c06; border: .2cqw solid #7a5428; border-radius: 1cqw; padding: .2cqw 1cqw; }
+.t1 .strip { position: absolute; top: 7.4cqw; left: 2cqw; right: 2cqw; display: flex; gap: 1.4cqw; align-items: center; font-size: 1.3cqw; color: #c9a77a; }
+.t1 .strip .sl { width: 3.6cqw; height: 3.6cqw; border: .2cqw dashed #6a4a2a; border-radius: .6cqw; display: grid; place-items: center; }
+.t1 .strip .sl.on { border: .2cqw solid #d9a530; background: #2a1a0c; }
+.t1 .stage { position: absolute; top: 12.2cqw; left: 2cqw; width: 58cqw; height: 18cqw; background: linear-gradient(#1a120e, #24180f); border: .3cqw solid #5a3a20; border-radius: 1cqw; display: flex; align-items: flex-end; justify-content: flex-end; gap: 1.2cqw; padding: 0 2cqw 1.2cqw; }
+.t1 .stage .lbl { position: absolute; top: .6cqw; left: 1.2cqw; font-size: 1.3cqw; color: #c9a77a; }
+.t1 .ped { display: grid; justify-items: center; gap: .3cqw; }
+.t1 .ped canvas { width: 7cqw; height: auto; }
+.t1 .ped .base { width: 7.5cqw; height: 1.4cqw; background: linear-gradient(#7a5428, #3c2414); border-radius: .4cqw; }
+.t1 .ped .st { font-size: 1.4cqw; display: flex; gap: .8cqw; }
+.t1 .ped.empty { width: 7.5cqw; height: 11cqw; border: .2cqw dashed #5a3a20; border-radius: .6cqw; opacity: .7; }
+.t1 .foe { position: absolute; top: 12.2cqw; right: 2cqw; width: 34cqw; height: 18cqw; background: #1a0e10; border: .3cqw solid #5a1c20; border-radius: 1cqw; display: flex; align-items: flex-end; justify-content: flex-start; gap: 1cqw; padding: 0 1.4cqw 1.2cqw; }
+.t1 .foe .lbl { position: absolute; top: .6cqw; left: 1.2cqw; font-size: 1.3cqw; color: #e08a80; }
+.t1 .foe canvas { width: 7cqw; }
+.t1 .table { position: absolute; left: 0; right: 0; bottom: 0; height: 24cqw; background: repeating-linear-gradient(90deg, #5a3a20 0 6cqw, #4e321c 6cqw 12cqw); border-top: .6cqw solid #8a5a2c; box-shadow: inset 0 2cqw 3cqw rgba(0,0,0,.5); }
+.t1 .wares { position: absolute; left: 2cqw; bottom: 3cqw; display: flex; gap: 1.3cqw; align-items: flex-end; }
+.t1 .ware { display: grid; justify-items: center; gap: .3cqw; position: relative; }
+.t1 .ware canvas { width: 7.5cqw; }
+.t1 .tag { position: absolute; top: -1cqw; right: -2cqw; background: #f0e2c0; color: #3a2414; font-size: 1.4cqw; padding: .2cqw .7cqw; border-radius: .3cqw; transform: rotate(8deg); box-shadow: .2cqw .2cqw 0 rgba(0,0,0,.4); }
+.t1 .ware .base { width: 8cqw; height: 1.2cqw; background: #2a1a0c; border-radius: 50%; }
+.t1 .chest { width: 8cqw; height: 6cqw; background: linear-gradient(#8a5a2c, #5a3a20); border: .3cqw solid #2a1a0c; border-radius: 1cqw 1cqw .4cqw .4cqw; position: relative; display: grid; place-items: center; font-size: 1.2cqw; color: #ffe08a; }
+.t1 .chest::before { content: ""; position: absolute; left: 0; right: 0; top: 35%; height: .5cqw; background: #2a1a0c; }
+.t1 .chest.soul { background: linear-gradient(#3a5a7a, #1e3048); }
+.t1 .plaques { position: absolute; right: 2cqw; bottom: 2.4cqw; display: grid; grid-template-columns: auto auto; gap: 1cqw; align-items: stretch; }
+.t1 .plaque { background: linear-gradient(#e8c060, #a87428); color: #2a1408; font-size: 1.7cqw; padding: .9cqw 1.6cqw; border-radius: .6cqw; border: .25cqw solid #4a2c0c; box-shadow: inset 0 .3cqw 0 rgba(255,255,255,.4), 0 .4cqw 0 #4a2c0c; text-align: center; }
+.t1 .plaque.dim { filter: saturate(.3) brightness(.7); }
+.t1 .plaque.fight { grid-row: span 2; background: radial-gradient(circle at 40% 35%, #e04040, #8a1414); color: #ffe8c8; border-radius: 50%; width: 11cqw; height: 11cqw; display: grid; place-items: center; font-family: "IM Fell English SC", serif; font-size: 2.2cqw; box-shadow: 0 .5cqw 0 #4a0808, inset 0 0 0 .5cqw #b02828; }
+.t1 .sell { position: absolute; left: 57.5cqw; bottom: 7cqw; width: 9cqw; height: 9cqw; border-radius: 50%; background: radial-gradient(circle, #ff8a2a 0 25%, #5a1c0c 60%, #24120a); display: grid; place-items: center; text-align: center; font-size: 1.2cqw; color: #ffe0a0; }
+
+/* ===================== 2  TAROT-LEGUNG ===================== */
+.t2 { background: radial-gradient(70% 70% at 50% 60%, #3a0e2a, #1a0614 70%, #0e030a); }
+.t2::before { content: ""; position: absolute; inset: 0; background: repeating-radial-gradient(circle at 50% 120%, rgba(255,255,255,.015) 0 .4cqw, transparent .4cqw .9cqw); }
+.t2 .top { position: absolute; inset: 1.4cqw 2cqw auto 2cqw; display: flex; align-items: center; gap: 2cqw; font-family: "Cinzel", serif; font-weight: 600; font-size: 1.8cqw; color: #f0d48a; }
+.t2 .top .title { margin-right: auto; font-weight: 800; letter-spacing: .1em; }
+.t2 .top .coin { display: flex; align-items: center; gap: .6cqw; }
+.t2 .top .coin i { width: 2.4cqw; height: 2.4cqw; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe08a, #a87428); display: inline-block; box-shadow: 0 0 0 .2cqw #4a3208; }
+.t2 .row { position: absolute; top: 6cqw; left: 3cqw; display: flex; gap: 1.4cqw; }
+.t2 .card { width: 8.6cqw; aspect-ratio: 2 / 3; background: linear-gradient(#f2e6c8, #d8c49a); border-radius: .8cqw; border: .25cqw solid #4a3208; box-shadow: inset 0 0 0 .5cqw #f2e6c8, inset 0 0 0 .7cqw #a87428, 0 .6cqw 1cqw rgba(0,0,0,.5); position: relative; display: grid; grid-template-rows: auto 1fr auto; padding: .8cqw .6cqw; color: #3a2414; }
+.t2 .card .rn { text-align: center; font: 600 1.1cqw "Cinzel", serif; letter-spacing: .1em; }
+.t2 .card canvas { width: 82%; margin: 0 auto; align-self: end; }
+.t2 .card .ft { display: flex; justify-content: space-between; font-size: 1.5cqw; font-weight: 700; }
+.t2 .card .nm { position: absolute; bottom: -2.2cqw; left: 0; right: 0; text-align: center; font: 600 1.1cqw "Cinzel", serif; color: #f0d48a; }
+.t2 .card.empty { background: none; border: .25cqw dashed rgba(240,212,138,.4); box-shadow: none; }
+.t2 .card.back { background: repeating-linear-gradient(45deg, #2a0e3a 0 .8cqw, #3a1a4e .8cqw 1.6cqw); box-shadow: inset 0 0 0 .5cqw #2a0e3a, inset 0 0 0 .7cqw #d9a530, 0 .6cqw 1cqw rgba(0,0,0,.5); display: grid; place-items: center; color: #ffe08a; font: 600 1.2cqw "Cinzel", serif; text-align: center; }
+.t2 .card .price { position: absolute; top: -2.6cqw; left: 50%; transform: translateX(-50%); width: 3.4cqw; height: 3.4cqw; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe08a, #a87428); color: #3a2408; display: grid; place-items: center; font-weight: 700; font-size: 1.4cqw; box-shadow: 0 0 0 .2cqw #4a3208; }
+.t2 .card .price.s { background: radial-gradient(circle at 35% 35%, #c8f0ff, #3a7aa8); }
+.t2 .spread { position: absolute; left: 3cqw; bottom: 3.5cqw; display: flex; gap: 2.2cqw; align-items: flex-end; }
+.t2 .spread .card:nth-child(1) { transform: rotate(-6deg) translateY(.6cqw); }
+.t2 .spread .card:nth-child(3) { transform: rotate(5deg) translateY(.4cqw); }
+.t2 .foe { position: absolute; top: 6cqw; right: 3cqw; width: 30cqw; height: 15cqw; border: .25cqw solid rgba(240,212,138,.35); border-radius: 1cqw; display: flex; align-items: flex-end; gap: .8cqw; padding: 0 1cqw 1cqw; }
+.t2 .foe .lbl { position: absolute; top: .4cqw; left: 1cqw; font: 600 1.2cqw "Cinzel", serif; color: #f08a8a; }
+.t2 .foe canvas { width: 6.4cqw; }
+.t2 .seals { position: absolute; right: 3cqw; bottom: 3.5cqw; display: flex; gap: 1.6cqw; align-items: center; }
+.t2 .seal { width: 8cqw; height: 8cqw; border-radius: 50%; background: radial-gradient(circle at 38% 35%, #c83838, #6a0c14 70%); box-shadow: 0 0 0 .3cqw #8a1a22, 0 .4cqw 0 #3a0408; display: grid; place-items: center; text-align: center; font: 600 1.25cqw "Cinzel", serif; color: #ffe0c8; clip-path: polygon(50% 0, 62% 6%, 76% 3%, 84% 14%, 96% 20%, 96% 34%, 100% 48%, 95% 62%, 97% 76%, 86% 84%, 78% 96%, 63% 95%, 50% 100%, 37% 95%, 22% 96%, 14% 84%, 3% 76%, 5% 62%, 0 48%, 4% 34%, 4% 20%, 16% 14%, 24% 3%, 38% 6%); }
+.t2 .seal.big { width: 12cqw; height: 12cqw; font-size: 2cqw; }
+.t2 .seal.gold { background: radial-gradient(circle at 38% 35%, #ffe08a, #8a5a14 70%); color: #3a2008; }
+.t2 .seal.grey { filter: grayscale(.8) brightness(.6); }
+.t2 .bowl { position: absolute; left: 50%; top: 23cqw; transform: translateX(-50%); width: 13cqw; height: 5.4cqw; border-radius: 0 0 6cqw 6cqw; background: linear-gradient(#5a3a7a, #2a1a3e); border-top: .3cqw solid #d9a530; display: grid; place-items: center; font: 600 1.1cqw "Cinzel", serif; color: #f0d48a; text-align: center; }
+.t2 .objs { position: absolute; top: 23.5cqw; right: 3cqw; display: flex; gap: .8cqw; }
+.t2 .objs .o { width: 3.6cqw; height: 5cqw; border-radius: .5cqw; border: .2cqw dashed rgba(240,212,138,.4); }
+.t2 .objs .o.on { border: .2cqw solid #d9a530; background: linear-gradient(#3a1a4e, #22102e); }
+
+/* ===================== 3  SCHATZKAMMER-REGAL ===================== */
+.t3 { background: #15100e; }
+.t3::before { content: ""; position: absolute; inset: 0; background:
+  repeating-linear-gradient(0deg, transparent 0 3.4cqw, rgba(0,0,0,.35) 3.4cqw 3.6cqw),
+  repeating-linear-gradient(90deg, transparent 0 6.8cqw, rgba(0,0,0,.25) 6.8cqw 7cqw), #241a1c; }
+.t3 .top { position: absolute; inset: 0 0 auto 0; height: 6cqw; background: #0c0809; border-bottom: .4cqw solid #3a2c22; display: flex; align-items: center; gap: 2cqw; padding: 0 2cqw; font-family: "Silkscreen", monospace; font-size: 1.5cqw; }
+.t3 .top .title { margin-right: auto; color: #ffd98a; }
+.t3 .heap { display: flex; align-items: flex-end; gap: .2cqw; }
+.t3 .heap i { width: 1.6cqw; height: .6cqw; background: #d9a530; border: .15cqw solid #4a3208; display: block; }
+.t3 .shelf { position: absolute; top: 7.5cqw; left: 2cqw; width: 60cqw; height: 22cqw; display: grid; grid-template-columns: repeat(6, 1fr); gap: 1cqw; }
+.t3 .niche { background: linear-gradient(#0a0708, #1a1214); border-radius: 4cqw 4cqw .4cqw .4cqw; border: .3cqw solid #3a2c22; box-shadow: inset 0 1cqw 2cqw rgba(0,0,0,.8); display: grid; grid-template-rows: 1fr auto auto; justify-items: center; padding: 1cqw .4cqw .6cqw; position: relative; }
+.t3 .niche canvas { width: 7cqw; align-self: end; }
+.t3 .plate { background: linear-gradient(#c8a050, #7a5428); color: #2a1408; font-size: 1.25cqw; padding: .1cqw .8cqw; border-radius: .3cqw; margin-top: .4cqw; }
+.t3 .niche .nm { font-size: 1cqw; color: #c9b08a; margin-top: .2cqw; }
+.t3 .niche .st { position: absolute; top: .6cqw; left: 0; right: 0; display: flex; justify-content: center; gap: .8cqw; font-size: 1.3cqw; }
+.t3 .niche.pack canvas { display: none; }
+.t3 .box { width: 6cqw; height: 6cqw; align-self: end; background: linear-gradient(#5a3a20, #3c2414); border: .25cqw solid #1e1208; display: grid; place-items: center; color: #ffe08a; font-size: 2.6cqw; }
+.t3 .box.soul { background: linear-gradient(#2a4a6a, #142436); color: #9ef0ff; }
+.t3 .lever { position: absolute; top: 8cqw; right: 3cqw; width: 30cqw; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2cqw; }
+.t3 .sbtn { background: #4a4a54; border: .3cqw solid #1a1a1e; box-shadow: inset .3cqw .3cqw 0 #6e6e7a, inset -.3cqw -.3cqw 0 #2a2a30, 0 .5cqw 0 #0a0a0c; font-family: "Silkscreen", monospace; font-size: 1.35cqw; padding: 1.2cqw .4cqw; text-align: center; color: #f0ece4; }
+.t3 .sbtn.gold { background: #b8862a; box-shadow: inset .3cqw .3cqw 0 #f0c860, inset -.3cqw -.3cqw 0 #6a4a10, 0 .5cqw 0 #2a1a04; color: #2a1408; }
+.t3 .sbtn.red { grid-column: span 2; background: #8a1e24; box-shadow: inset .3cqw .3cqw 0 #c8464a, inset -.3cqw -.3cqw 0 #4a0a0e, 0 .5cqw 0 #1a0204; font-size: 2.2cqw; padding: 1.6cqw; }
+.t3 .sbtn.dim { opacity: .5; }
+.t3 .foeplate { grid-column: span 2; background: #1a0e10; border: .3cqw solid #4a1c20; padding: .8cqw; display: flex; gap: .6cqw; align-items: flex-end; min-height: 9cqw; position: relative; }
+.t3 .foeplate .lbl { position: absolute; top: .3cqw; left: .8cqw; font-family: "Silkscreen", monospace; font-size: 1cqw; color: #e08a80; }
+.t3 .foeplate canvas { width: 5.5cqw; }
+.t3 .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 23cqw; background: linear-gradient(#1e1618, #120c0e); border-top: .4cqw solid #3a2c22; }
+.t3 .team { position: absolute; left: 2cqw; bottom: 2.2cqw; display: flex; gap: 1.4cqw; align-items: flex-end; }
+.t3 .team .m { display: grid; justify-items: center; gap: .3cqw; font-size: 1.3cqw; }
+.t3 .team .m canvas { width: 7.5cqw; }
+.t3 .team .m.empty { width: 7.5cqw; height: 13cqw; border: .25cqw dashed #4a3a30; }
+.t3 .relics { position: absolute; right: 2cqw; bottom: 2.4cqw; width: 30cqw; display: grid; grid-template-columns: repeat(4, 1fr); gap: .8cqw; }
+.t3 .relics .o { aspect-ratio: 1; background: #0c0809; border: .25cqw solid #3a2c22; display: grid; place-items: center; font-size: 1cqw; color: #8a7a6a; text-align: center; }
+.t3 .relics .o.on { border-color: #d9a530; color: #ffe08a; }
+.t3 .relics .o.sell { grid-column: span 4; aspect-ratio: auto; padding: .8cqw; border-color: #8a2a1a; color: #ff9a6a; background: #1e0a06; }
+
+/* ===================== 4  RELIQUIENSCHREIN ===================== */
+.t4 { background: radial-gradient(60% 80% at 50% 10%, #3a2a5a, #160e24 60%, #0a0612); }
+.t4 .top { position: absolute; inset: 1.2cqw 3cqw auto 3cqw; display: flex; align-items: center; gap: 2cqw; font-family: "Cinzel", serif; font-size: 1.7cqw; color: #e8d8b0; }
+.t4 .top .title { margin-right: auto; font-weight: 800; color: #f0c860; letter-spacing: .08em; }
+.t4 .rose { position: absolute; left: 50%; top: 6cqw; transform: translateX(-50%); width: 15cqw; height: 15cqw; border-radius: 50%;
+  background: conic-gradient(from 0deg, #8a1a2a, #2a3a8a, #1a6a4a, #8a6a1a, #6a1a6a, #8a1a2a); box-shadow: 0 0 0 .5cqw #d9a530, 0 0 3cqw rgba(240,200,96,.5); display: grid; place-items: center; }
+.t4 .rose b { width: 10cqw; height: 10cqw; border-radius: 50%; background: radial-gradient(circle, #3a1a14, #1a0a08); display: grid; place-items: center; font: 800 2.2cqw "Cinzel", serif; color: #ffe08a; border: .3cqw solid #d9a530; }
+.t4 .side { position: absolute; top: 6cqw; width: 38cqw; display: flex; gap: 1cqw; }
+.t4 .side.left { left: 3cqw; justify-content: flex-start; }
+.t4 .side.right { right: 3cqw; justify-content: flex-end; }
+.t4 .arch { width: 8.4cqw; height: 15cqw; border-radius: 4.2cqw 4.2cqw .4cqw .4cqw; background: linear-gradient(#22183a, #120c20); border: .3cqw solid #a8862a; box-shadow: inset 0 0 0 .3cqw #22183a, inset 0 0 0 .5cqw #5a4a2a; display: grid; grid-template-rows: 1fr auto; justify-items: center; padding: .6cqw .3cqw; position: relative; }
+.t4 .arch canvas { width: 6.6cqw; align-self: end; }
+.t4 .arch .st { font-size: 1.3cqw; display: flex; gap: .7cqw; }
+.t4 .arch.empty { opacity: .45; }
+.t4 .arch.foe { border-color: #8a2a3a; }
+.t4 .shrine { position: absolute; left: 3cqw; right: 3cqw; bottom: 2.4cqw; height: 22cqw; display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.2cqw; }
+.t4 .glass { border-radius: 5cqw 5cqw .6cqw .6cqw; border: .35cqw solid #d9a530; background: linear-gradient(160deg, rgba(120,90,200,.25), rgba(40,20,80,.5)); box-shadow: inset 0 0 2cqw rgba(160,120,255,.25); display: grid; grid-template-rows: auto 1fr auto auto; justify-items: center; padding: 1.4cqw .4cqw .8cqw; position: relative; }
+.t4 .glass canvas { width: 7cqw; }
+.t4 .glass .nm { font: 600 1cqw "Cinzel", serif; color: #e8d8b0; }
+.t4 .glass .pr { font: 800 1.6cqw "Cinzel", serif; color: #ffe08a; }
+.t4 .glass .rar { position: absolute; top: .6cqw; font: 600 .95cqw "Cinzel", serif; color: #f0c860; letter-spacing: .1em; }
+.t4 .glass.pack { border-color: #8a7aca; }
+.t4 .glass.pack .icon, .t4 .glass.soul .icon { width: 6cqw; height: 6cqw; border-radius: 1cqw; background: linear-gradient(#5a4a8a, #2a1a4a); border: .25cqw solid #d9a530; align-self: center; display: grid; place-items: center; color: #ffe08a; font: 800 2.4cqw "Cinzel", serif; }
+.t4 .glass.soul { border-color: #6ac8ff; }
+.t4 .glass.soul .icon { background: linear-gradient(#2a5a8a, #10243a); color: #c8f0ff; }
+.t4 .glass.act { border-color: #c8c8d8; background: rgba(20,14,36,.8); }
+.t4 .glass.act .icon { background: none; border: 0; font-size: 1.6cqw; }
+
+/* ===================== 5  KLAR & KOMPAKT ===================== */
+.t5 { background: #121018; font-family: "Pixelify Sans", monospace; }
+.t5 .top { position: absolute; inset: 0 0 auto 0; height: 5.4cqw; display: flex; align-items: center; gap: 1.2cqw; padding: 0 1.6cqw; background: #1a1622; border-bottom: .2cqw solid #e0b44a; font-size: 1.6cqw; }
+.t5 .top .title { margin-right: auto; color: #e0b44a; font-weight: 600; }
+.t5 .pill { background: #24202e; border-radius: 1.2cqw; padding: .3cqw 1cqw; display: flex; gap: .5cqw; align-items: center; }
+.t5 .pill b { font-weight: 700; }
+.t5 .grid { position: absolute; top: 6.6cqw; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; display: grid; grid-template-columns: 1fr 26cqw; grid-template-rows: auto 1fr auto; gap: 1.2cqw; }
+.t5 .panel { background: #1a1622; border: .2cqw solid #2e2838; border-radius: 1cqw; padding: .8cqw 1cqw; position: relative; }
+.t5 .panel h4 { margin: 0 0 .6cqw; font-size: 1.15cqw; letter-spacing: .12em; color: #a59bb0; text-transform: uppercase; font-weight: 400; }
+.t5 .cards { display: flex; gap: .8cqw; }
+.t5 .c { width: 8.2cqw; background: #24202e; border: .2cqw solid #3a3448; border-radius: .8cqw; display: grid; justify-items: center; padding: .4cqw; position: relative; }
+.t5 .c canvas { width: 6.6cqw; }
+.t5 .c .nm { font-size: 1cqw; color: #d8d0e0; }
+.t5 .c .st { display: flex; gap: .3cqw; width: 100%; justify-content: center; }
+.t5 .c .st span { font-weight: 700; font-size: 1.5cqw; padding: 0 .5cqw; border-radius: .4cqw; }
+.t5 .c .st .a { background: #4a1c20; color: #ff9a8a; }
+.t5 .c .st .h { background: #1c3a22; color: #9ef0aa; }
+.t5 .c .pr { position: absolute; top: -.8cqw; right: -.6cqw; background: #e0b44a; color: #1a1208; font-weight: 700; font-size: 1.2cqw; border-radius: .8cqw; padding: .1cqw .6cqw; }
+.t5 .c .pr.s { background: #8fd8ff; }
+.t5 .c.empty { border-style: dashed; background: none; min-height: 12cqw; }
+.t5 .c.pack .box { width: 5.6cqw; height: 5.6cqw; margin: .6cqw 0; border-radius: .8cqw; background: #3a2a5a; display: grid; place-items: center; font-size: 2.4cqw; color: #e0b44a; }
+.t5 .c.pack.soul .box { background: #1e3a5a; color: #8fd8ff; }
+.t5 .lvl { position: absolute; top: .3cqw; left: .4cqw; font-size: .9cqw; color: #e0b44a; }
+.t5 .objs { display: flex; gap: .6cqw; flex-wrap: wrap; }
+.t5 .objs .o { width: 3.2cqw; height: 3.2cqw; border-radius: .6cqw; background: #24202e; border: .2cqw dashed #3a3448; }
+.t5 .objs .o.on { border: .2cqw solid #e0b44a; background: #2e2840; }
+.t5 .objs .sep { width: .2cqw; background: #3a3448; margin: 0 .3cqw; }
+.t5 .actions { grid-column: 2; grid-row: 2 / span 2; display: grid; grid-template-rows: auto auto 1fr auto; gap: .9cqw; }
+.t5 .b { border-radius: 1cqw; font-size: 1.6cqw; font-weight: 600; padding: 1.2cqw; text-align: center; background: #2e2840; border: .2cqw solid #4a4260; }
+.t5 .b.gold { background: #e0b44a; color: #1a1208; border-color: #f0d080; }
+.t5 .b.go { background: #b8282e; border-color: #e8585e; font-size: 2.6cqw; padding: 1.8cqw; }
+.t5 .b.dim { opacity: .45; }
+.t5 .sellz { border: .25cqw dashed #b8282e; border-radius: 1cqw; display: grid; place-items: center; color: #ff9a8a; font-size: 1.3cqw; text-align: center; }
+</style>
+
+<main class="wrap">
+  <header class="intro">
+    <span class="label">Arcana · Shop &amp; Planung · Vorlagen zur Auswahl</span>
+    <h1>Fünf Shop-Vorlagen</h1>
+    <p>Jede Vorlage zeigt den <b>kompletten Planungsbildschirm</b> mit identischem Inhalt, damit man sie gut vergleichen kann: Gold, Zinsen, Plätze und Seelen, Relikte, Tarot und Pakte, dein Team mit Angriff und Leben, der nächste Gegner, drei Figuren, zwei Packs und das Seelen-Pack, dazu <b>Neu würfeln, Rückgängig, Verkaufen und Kampf</b>.</p>
+    <p>Die Figuren sind die echten Pixel-Figuren aus dem Spiel im Stil Prunk &amp; Reliquie. Mischen ist erlaubt, zum Beispiel der Aufbau von 5 mit den Knöpfen von 1.</p>
+    <nav class="toc" aria-label="Vorlagen"><a href="#v1"><b>1</b>Händlertisch</a><a href="#v2"><b>2</b>Tarot-Legung</a><a href="#v3"><b>3</b>Schatzkammer-Regal</a><a href="#v4"><b>4</b>Reliquienschrein</a><a href="#v5"><b>5</b>Klar &amp; Kompakt</a></nav>
+  </header>
+
+  <!-- ======================= 1 ======================= -->
+  <section class="tpl" id="v1">
+    <div class="tpl-head"><span class="label">Vorlage 1</span><h2>Händlertisch</h2>
+      <p>Ein Krämer breitet seine Ware auf einem Holztisch aus. Oben steht dein Team auf Sockeln wie auf einer kleinen Bühne, unten liegen die Angebote mit Preisschildern. Knöpfe sind Messingschilder, der Kampf ein rotes Siegel.</p></div>
+    <div class="screen t1" role="img" aria-label="Entwurf Händlertisch">
+      <div class="top"><span class="title">Akt I · Kampf 2/3</span><span class="chip">🪙 14 Gold</span><span class="chip">Zinsen +2</span><span class="chip">Plätze 3/4</span><span class="chip" style="color:#8fd8ff">Seelen 3</span></div>
+      <div class="strip">Relikte <span class="sl on">◆</span><span class="sl"></span><span class="sl"></span>&nbsp; Tarot <span class="sl on">✶</span><span class="sl"></span>&nbsp; Pakte <span class="sl on">✠</span><span class="sl"></span><span class="sl"></span></div>
+      <div class="stage"><span class="lbl">Dein Team · vorne = rechts</span>
+        <div class="ped empty"></div>
+        <div class="ped"><canvas class="fig" data-rank="2" data-suit="wands"></canvas><div class="base"></div><div class="st"><span class="num-a">3</span><span class="num-h">5</span></div></div>
+        <div class="ped"><canvas class="fig" data-rank="1" data-suit="coins"></canvas><div class="base"></div><div class="st"><span class="num-a">3</span><span class="num-h">4</span></div></div>
+        <div class="ped"><canvas class="fig" data-rank="0" data-suit="coins"></canvas><div class="base"></div><div class="st"><span class="num-a">2</span><span class="num-h">5</span></div></div>
+      </div>
+      <div class="foe"><span class="lbl">Nächster Gegner · Gierige Bande</span><canvas class="fig" data-enemy="ghost"></canvas><canvas class="fig" data-enemy="ghost"></canvas><canvas class="fig" data-enemy="ghost"></canvas></div>
+      <div class="table">
+        <div class="wares">
+          <div class="ware"><span class="tag">4 G</span><canvas class="fig" data-rank="1" data-suit="cups"></canvas><div class="base"></div></div>
+          <div class="ware"><span class="tag">6 G</span><canvas class="fig" data-rank="2" data-suit="swords"></canvas><div class="base"></div></div>
+          <div class="ware"><span class="tag">8 G</span><canvas class="fig" data-rank="3" data-suit="coins"></canvas><div class="base"></div></div>
+          <div class="ware"><span class="tag">4 G</span><div class="chest">Arkana</div></div>
+          <div class="ware"><span class="tag">4 G</span><div class="chest">Schmiede</div></div>
+          <div class="ware"><span class="tag" style="background:#c8f0ff">4 S</span><div class="chest soul">Seelen</div></div>
+        </div>
+        <div class="sell">Verkaufs-<br>feuer</div>
+        <div class="plaques">
+          <div class="plaque">Neu würfeln · 2</div><div class="plaque fight">Kampf!</div>
+          <div class="plaque dim">Rückgängig</div>
+        </div>
+      </div>
+    </div>
+    <div class="notes">
+      <div class="note"><h3>Aufbau</h3><p>Oben links das Team als kleine Bühne, oben rechts der Gegner. Die untere Hälfte ist der Verkaufstisch mit allen Angeboten nebeneinander.</p></div>
+      <div class="note"><h3>Knöpfe</h3><p>Messingschilder mit Prägung, „Kampf!“ als großes rotes Wachssiegel. Verkaufen über ein Kohlebecken, in das man Figuren zieht.</p></div>
+      <div class="note"><h3>Stärken</h3><p>Sehr stimmungsvoll, Figuren stehen frei statt auf Karten. Preisschilder sind sofort klar.</p></div>
+      <div class="note"><h3>Schwächen</h3><p>Viel Holz und Messing, die Bühne oben braucht Platz. Bei 6 Figuren wird der Tisch eng.</p></div>
+    </div>
+  </section>
+
+  <!-- ======================= 2 ======================= -->
+  <section class="tpl" id="v2">
+    <div class="tpl-head"><span class="label">Vorlage 2</span><h2>Tarot-Legung</h2>
+      <p>Die Wahrsagerin legt dir die Karten. Alles ist eine Tarot-Karte auf dunklem Samt: dein Team als Reihe, die Angebote als Legung, Packs als verdeckte Karten. Preise als Goldmünzen, Knöpfe als Wachssiegel.</p></div>
+    <div class="screen t2" role="img" aria-label="Entwurf Tarot-Legung">
+      <div class="top"><span class="title">AKT I · KAMPF II</span><span class="coin"><i></i>14</span><span>Zinsen +2</span><span>Plätze 3/4</span><span style="color:#8fd8ff">Seelen 3</span></div>
+      <div class="row">
+        <div class="card"><span class="rn">PAGE</span><canvas class="fig" data-rank="0" data-suit="coins"></canvas><span class="ft"><span class="num-a">2</span><span class="num-h">5</span></span><span class="nm">Münzknecht</span></div>
+        <div class="card"><span class="rn">CHEVALIER</span><canvas class="fig" data-rank="1" data-suit="coins"></canvas><span class="ft"><span class="num-a">3</span><span class="num-h">4</span></span><span class="nm">Goldgepanzerter</span></div>
+        <div class="card"><span class="rn">REINE</span><canvas class="fig" data-rank="2" data-suit="wands"></canvas><span class="ft"><span class="num-a">3</span><span class="num-h">5</span></span><span class="nm">Herrin der Glut</span></div>
+        <div class="card empty"></div>
+      </div>
+      <div class="foe"><span class="lbl">Gierige Bande</span><canvas class="fig" data-enemy="ghost"></canvas><canvas class="fig" data-enemy="ghost"></canvas><canvas class="fig" data-enemy="ghost"></canvas></div>
+      <div class="bowl">Verkaufen<br>in die Schale</div>
+      <div class="objs"><div class="o on"></div><div class="o"></div><div class="o"></div><div class="o on"></div><div class="o"></div><div class="o on"></div></div>
+      <div class="spread">
+        <div class="card"><span class="price">4</span><span class="rn">CHEVALIER</span><canvas class="fig" data-rank="1" data-suit="cups"></canvas><span class="ft"><span class="num-a">3</span><span class="num-h">4</span></span></div>
+        <div class="card"><span class="price">6</span><span class="rn">REINE</span><canvas class="fig" data-rank="2" data-suit="swords"></canvas><span class="ft"><span class="num-a">4</span><span class="num-h">4</span></span></div>
+        <div class="card"><span class="price">8</span><span class="rn">ROI</span><canvas class="fig" data-rank="3" data-suit="coins"></canvas><span class="ft"><span class="num-a">4</span><span class="num-h">6</span></span></div>
+        <div class="card back"><span class="price">4</span>ARKANA</div>
+        <div class="card back"><span class="price">4</span>SCHMIEDE</div>
+        <div class="card back" style="background:repeating-linear-gradient(45deg,#0e2a3a 0 .8cqw,#1a3a4e .8cqw 1.6cqw)"><span class="price s">4</span>SEELEN</div>
+      </div>
+      <div class="seals"><div class="seal gold">Neu<br>würfeln<br>2</div><div class="seal grey">Rück-<br>gängig</div><div class="seal big">KAMPF</div></div>
+    </div>
+    <div class="notes">
+      <div class="note"><h3>Aufbau</h3><p>Oben dein Team als Kartenreihe, rechts der Gegner. Unten die Legung mit Figuren und verdeckten Packs, rechts die Siegel-Knöpfe.</p></div>
+      <div class="note"><h3>Knöpfe</h3><p>Runde Wachssiegel: Gold für Neu würfeln, Grau wenn nicht möglich, groß und rot für den Kampf. Verkaufen in eine Opferschale.</p></div>
+      <div class="note"><h3>Stärken</h3><p>Am stärksten beim Tarot-Thema. Karten tragen Rangnamen wie auf echten Tarot-Karten. Seltenheit über den Kartenrahmen gut darstellbar.</p></div>
+      <div class="note"><h3>Schwächen</h3><p>Figuren erscheinen kleiner, weil sie auf Karten sitzen. Leicht unruhig durch die schräg gelegten Karten.</p></div>
+    </div>
+  </section>
+
+  <!-- ======================= 3 ======================= -->
+  <section class="tpl" id="v3">
+    <div class="tpl-head"><span class="label">Vorlage 3</span><h2>Schatzkammer-Regal</h2>
+      <p>Der Shop ist eine Wand voller Nischen in der Schatzkammer, in jeder steht ein Angebot mit Messingschild. Unten auf dem Steinboden steht dein Team wie im Kampf. Knöpfe sind dicke Pixel-Steinblöcke.</p></div>
+    <div class="screen t3" role="img" aria-label="Entwurf Schatzkammer-Regal">
+      <div class="top"><span class="title">AKT I · KAMPF 2/3</span><span class="heap"><i></i><i style="height:.9cqw"></i><i style="height:1.2cqw"></i></span><span style="color:#ffd98a">14 GOLD</span><span>ZINS +2</span><span>PLATZ 3/4</span><span style="color:#8fd8ff">SEELEN 3</span></div>
+      <div class="shelf">
+        <div class="niche"><span class="st"><span class="num-a">3</span><span class="num-h">4</span></span><canvas class="fig" data-rank="1" data-suit="cups"></canvas><span class="plate">4 Gold</span><span class="nm">Bluttrinker</span></div>
+        <div class="niche"><span class="st"><span class="num-a">4</span><span class="num-h">4</span></span><canvas class="fig" data-rank="2" data-suit="swords"></canvas><span class="plate">6 Gold</span><span class="nm">Klare Klinge</span></div>
+        <div class="niche"><span class="st"><span class="num-a">4</span><span class="num-h">6</span></span><canvas class="fig" data-rank="3" data-suit="coins"></canvas><span class="plate">8 Gold</span><span class="nm">König Midas</span></div>
+        <div class="niche pack"><div class="box">✶</div><span class="plate">4 Gold</span><span class="nm">Arkana-Pack</span></div>
+        <div class="niche pack"><div class="box">⚒</div><span class="plate">4 Gold</span><span class="nm">Schmiede-Pack</span></div>
+        <div class="niche pack"><div class="box soul">✠</div><span class="plate" style="background:linear-gradient(#a8e0ff,#3a7aa8)">4 Seelen</span><span class="nm">Seelen-Pack</span></div>
+      </div>
+      <div class="lever">
+        <div class="foeplate"><span class="lbl">NÄCHSTER GEGNER</span><canvas class="fig" data-enemy="ghost"></canvas><canvas class="fig" data-enemy="ghost"></canvas><canvas class="fig" data-enemy="ghost"></canvas></div>
+        <div class="sbtn gold">NEU WÜRFELN 2</div><div class="sbtn dim">RÜCKGÄNGIG</div>
+        <div class="sbtn red">KAMPF!</div>
+      </div>
+      <div class="floor">
+        <div class="team">
+          <div class="m empty"></div>
+          <div class="m"><canvas class="fig" data-rank="2" data-suit="wands"></canvas><span><span class="num-a">3</span> <span class="num-h">5</span></span></div>
+          <div class="m"><canvas class="fig" data-rank="1" data-suit="coins"></canvas><span><span class="num-a">3</span> <span class="num-h">4</span></span></div>
+          <div class="m"><canvas class="fig" data-rank="0" data-suit="coins"></canvas><span><span class="num-a">2</span> <span class="num-h">5</span></span></div>
+        </div>
+        <div class="relics"><div class="o on">Relikt</div><div class="o"></div><div class="o on">Tarot</div><div class="o on">Pakt</div><div class="o sell">▼ Hierher ziehen zum Verkaufen</div></div>
+      </div>
+    </div>
+    <div class="notes">
+      <div class="note"><h3>Aufbau</h3><p>Oben die Regalwand mit sechs Nischen (3 Figuren, 2 Packs, Seelen-Pack). Rechts Gegner und Knöpfe, unten der Boden mit deinem Team, so wie es gleich kämpft.</p></div>
+      <div class="note"><h3>Knöpfe</h3><p>Dicke Pixel-Blöcke mit Licht- und Schattenkante: Gold für Neu würfeln, Stein für Rückgängig, rot und breit für den Kampf.</p></div>
+      <div class="note"><h3>Stärken</h3><p>Passt nahtlos zur Kampfbühne: gleiche Schatzkammer, gleiche Figuren. Sehr aufgeräumt, jede Ware hat ihren festen Platz.</p></div>
+      <div class="note"><h3>Schwächen</h3><p>Etwas weniger Tarot-Gefühl. Die Nischen haben feste Plätze, ein erweiterter Shop braucht mehr Regal.</p></div>
+    </div>
+  </section>
+
+  <!-- ======================= 4 ======================= -->
+  <section class="tpl" id="v4">
+    <div class="tpl-head"><span class="label">Vorlage 4</span><h2>Reliquienschrein</h2>
+      <p>Eine gotische Kapelle: Angebote stehen in gläsernen Reliquienschreinen mit Spitzbögen, dein Team in Kirchenfenstern. In der Mitte die Fensterrose als Kampf-Knopf. Feierlich und prunkvoll.</p></div>
+    <div class="screen t4" role="img" aria-label="Entwurf Reliquienschrein">
+      <div class="top"><span class="title">AKT I · KAMPF II</span><span style="color:#ffe08a">14 Gold</span><span>Zinsen +2</span><span>Plätze 3/4</span><span style="color:#8fd8ff">Seelen 3</span></div>
+      <div class="side left">
+        <div class="arch empty"></div>
+        <div class="arch"><canvas class="fig" data-rank="2" data-suit="wands"></canvas><span class="st"><span class="num-a">3</span><span class="num-h">5</span></span></div>
+        <div class="arch"><canvas class="fig" data-rank="1" data-suit="coins"></canvas><span class="st"><span class="num-a">3</span><span class="num-h">4</span></span></div>
+        <div class="arch"><canvas class="fig" data-rank="0" data-suit="coins"></canvas><span class="st"><span class="num-a">2</span><span class="num-h">5</span></span></div>
+      </div>
+      <div class="rose"><b>KAMPF</b></div>
+      <div class="side right">
+        <div class="arch foe"><canvas class="fig" data-enemy="ghost"></canvas><span class="st"><span class="num-a">1</span><span class="num-h">3</span></span></div>
+        <div class="arch foe"><canvas class="fig" data-enemy="ghost"></canvas><span class="st"><span class="num-a">1</span><span class="num-h">3</span></span></div>
+        <div class="arch foe"><canvas class="fig" data-enemy="ghost"></canvas><span class="st"><span class="num-a">1</span><span class="num-h">3</span></span></div>
+      </div>
+      <div class="shrine">
+        <div class="glass"><span class="rar">RITTER</span><canvas class="fig" data-rank="1" data-suit="cups"></canvas><span class="nm">Bluttrinker</span><span class="pr">4 G</span></div>
+        <div class="glass"><span class="rar">KÖNIGIN</span><canvas class="fig" data-rank="2" data-suit="swords"></canvas><span class="nm">Klare Klinge</span><span class="pr">6 G</span></div>
+        <div class="glass"><span class="rar">KÖNIG</span><canvas class="fig" data-rank="3" data-suit="coins"></canvas><span class="nm">König Midas</span><span class="pr">8 G</span></div>
+        <div class="glass pack"><span class="rar">PACK</span><span class="icon">✶</span><span class="nm">Arkana</span><span class="pr">4 G</span></div>
+        <div class="glass soul"><span class="rar">SEELEN</span><span class="icon">✠</span><span class="nm">Pakte</span><span class="pr" style="color:#c8f0ff">4 S</span></div>
+        <div class="glass act"><span class="rar">AKTIONEN</span><span class="icon" style="color:#ffe08a">⟳ Neu würfeln · 2</span><span class="icon" style="color:#8a8aa0">↶ Rückgängig</span><span class="nm" style="color:#ff9a8a">Verkaufen: hierher ziehen</span></div>
+      </div>
+    </div>
+    <div class="notes">
+      <div class="note"><h3>Aufbau</h3><p>Symmetrisch: Team und Gegner in Spitzbogenfenstern links und rechts, Fensterrose als Kampf-Knopf in der Mitte, unten die Reihe der Schreine mit den Angeboten.</p></div>
+      <div class="note"><h3>Knöpfe</h3><p>Die Rose ist der zentrale Kampf-Knopf. Neu würfeln, Rückgängig und Verkaufen sitzen gemeinsam im letzten Schrein.</p></div>
+      <div class="note"><h3>Stärken</h3><p>Am prunkvollsten, passt perfekt zu „Reliquie“. Rang und Seltenheit lassen sich im Rahmen der Schreine schön zeigen.</p></div>
+      <div class="note"><h3>Schwächen</h3><p>Die Symmetrie begrenzt den Platz für Team und Gegner auf je etwa 4 Fenster. Bei 6 Figuren braucht es kleinere Bögen.</p></div>
+    </div>
+  </section>
+
+  <!-- ======================= 5 ======================= -->
+  <section class="tpl" id="v5">
+    <div class="tpl-head"><span class="label">Vorlage 5</span><h2>Klar &amp; Kompakt</h2>
+      <p>Für das Handy gemacht: ruhige dunkle Felder, klare Gruppen (Team, Gegner, Shop, Aktionen), große Knöpfe und dicke Zahlen. Wenig Verzierung, die Pixel-Figuren sind der einzige Schmuck.</p></div>
+    <div class="screen t5" role="img" aria-label="Entwurf Klar und Kompakt">
+      <div class="top"><span class="title">Akt I · Kampf 2/3</span><span class="pill">🪙 <b>14</b></span><span class="pill">Zinsen <b>+2</b></span><span class="pill">Plätze <b>3/4</b></span><span class="pill" style="color:#8fd8ff">Seelen <b>3</b></span>
+        <span class="objs" style="margin-left:1cqw"><span class="o on"></span><span class="o"></span><span class="o"></span><span class="sep"></span><span class="o on"></span><span class="o"></span><span class="sep"></span><span class="o on"></span><span class="o"></span><span class="o"></span></span></div>
+      <div class="grid">
+        <div class="panel"><h4>Dein Team · vorne = rechts</h4><div class="cards">
+          <div class="c empty"></div>
+          <div class="c"><span class="lvl">St. 1</span><canvas class="fig" data-rank="2" data-suit="wands"></canvas><span class="nm">Herrin der Glut</span><span class="st"><span class="a">3</span><span class="h">5</span></span></div>
+          <div class="c"><span class="lvl">St. 1</span><canvas class="fig" data-rank="1" data-suit="coins"></canvas><span class="nm">Goldgepanzerter</span><span class="st"><span class="a">3</span><span class="h">4</span></span></div>
+          <div class="c"><span class="lvl">St. 2</span><canvas class="fig" data-rank="0" data-suit="coins"></canvas><span class="nm">Münzknecht</span><span class="st"><span class="a">2</span><span class="h">5</span></span></div>
+        </div></div>
+        <div class="panel"><h4>Gegner</h4><div class="cards">
+          <div class="c"><canvas class="fig" data-enemy="ghost"></canvas><span class="st"><span class="a">1</span><span class="h">3</span></span></div>
+          <div class="c"><canvas class="fig" data-enemy="ghost"></canvas><span class="st"><span class="a">1</span><span class="h">3</span></span></div>
+        </div></div>
+        <div class="panel"><h4>Shop</h4><div class="cards">
+          <div class="c"><span class="pr">4</span><canvas class="fig" data-rank="1" data-suit="cups"></canvas><span class="nm">Bluttrinker</span><span class="st"><span class="a">3</span><span class="h">4</span></span></div>
+          <div class="c"><span class="pr">6</span><canvas class="fig" data-rank="2" data-suit="swords"></canvas><span class="nm">Klare Klinge</span><span class="st"><span class="a">4</span><span class="h">4</span></span></div>
+          <div class="c"><span class="pr">8</span><canvas class="fig" data-rank="3" data-suit="coins"></canvas><span class="nm">König Midas</span><span class="st"><span class="a">4</span><span class="h">6</span></span></div>
+          <div class="c pack"><span class="pr">4</span><span class="box">✶</span><span class="nm">Arkana-Pack</span></div>
+          <div class="c pack"><span class="pr">4</span><span class="box">⚒</span><span class="nm">Schmiede-Pack</span></div>
+          <div class="c pack soul"><span class="pr s">4</span><span class="box">✠</span><span class="nm">Seelen-Pack</span></div>
+        </div></div>
+        <div class="actions">
+          <div class="b gold">⟳ Neu würfeln · 2</div>
+          <div class="b dim">↶ Rückgängig</div>
+          <div class="sellz">Hierher ziehen<br>zum Verkaufen</div>
+          <div class="b go">KAMPF!</div>
+        </div>
+      </div>
+    </div>
+    <div class="notes">
+      <div class="note"><h3>Aufbau</h3><p>Links drei klar beschriftete Felder (Team, Gegner, Shop), rechts eine feste Spalte mit allen Aktionen. Relikte, Tarot und Pakte als kleine Plätze in der Kopfzeile.</p></div>
+      <div class="note"><h3>Knöpfe</h3><p>Große, flache Knöpfe mit Symbol und Text. Farbe nach Wichtigkeit: Gold für Neu würfeln, Rot für den Kampf, ausgegraut wenn nicht möglich.</p></div>
+      <div class="note"><h3>Stärken</h3><p>Am besten lesbar und am schnellsten zu bedienen. Platz für 6 Figuren und spätere Erweiterungen.</p></div>
+      <div class="note"><h3>Schwächen</h3><p>Am wenigsten Atmosphäre. Wirkt eher wie eine App als wie ein okkulter Ort.</p></div>
+    </div>
+  </section>
+
+  <section class="next">
+    <span class="label">Wie geht es weiter?</span>
+    <h2>Welche Vorlage gefällt dir?</h2>
+    <p>Sag mir die Nummer oder eine Mischung (z. B. „Aufbau von 5, Knöpfe von 1, Nischen von 3“). Ich baue den Shop dann in diesem Stil ins Spiel, inklusive Pack-Öffnen, Verkaufen und Ziehen &amp; Ablegen.</p>
+  </section>
+</main>
+<script>
+(() => {
+"use strict";
+// ---------- Palettes ----------
+const OUT = "#120a0e";
+const R = {
+  skin:   ["#3a2418", "#7a4a32", "#b47a52", "#e0aa80"],
+  gold:   ["#4a3208", "#9a6a14", "#d9a530", "#ffe08a"],
+  iron:   ["#1e2024", "#3e434c", "#6b7380", "#a9b2bf"],
+  steel:  ["#24303c", "#4c5c6e", "#8094aa", "#c8d6e6"],
+  silver: ["#28324a", "#5a6c8c", "#9db0d0", "#e2ecff"],
+  leather:["#24160e", "#4a2e1c", "#704a2e", "#94683f"],
+  green:  ["#0e1e14", "#1e3c26", "#2f5e3a", "#4c8456"],
+  red:    ["#2a0c10", "#5a1820", "#8c2a30", "#b8464a"],
+  purple: ["#140a1c", "#2a173a", "#43275c", "#634086"],
+  shadow: ["#0a080d", "#1b1722", "#2b2535", "#3d3449"],
+  ghost:  ["#1c2630", "#3a5060", "#6a8a9a", "#b8d8e0"],
+  fur:    ["#3a3430", "#8a8278", "#d8d0c4", "#ffffff"],
+  hair:   ["#1a100a", "#3a2414", "#5c3a20", "#7a5230"],
+  beard:  ["#2a2420", "#6a625a", "#a8a096", "#d8d2c8"],
+  wood:   ["#1e1208", "#3c2414", "#5c3a20", "#7e5430"],
+  mud:    ["#1a1612", "#2e2820", "#463c30", "#5e5242"],
+};
+const RARITY = ["#8a7f70", "#4f8cff", "#ffc23a", null];
+const HUES = 8;
+function hsl(h, s, l) { return `hsl(${h},${s}%,${l}%)`; }
+function hueRamp(h) { return [hsl(h, 55, 18), hsl(h, 70, 38), hsl(h, 85, 58), hsl(h, 100, 82)]; }
+function rarityColor(r, k) { return r < 3 ? RARITY[r] : hsl((k * 360 / HUES) | 0, 95, 62); }
+function metalFor(r, k) { return [R.iron, R.steel, R.silver, R.gold][r]; }
+let GEM = ["#178a4a", "#7cf0a8", "#0b4a26"];
+
+// ---------- Pixel painter ----------
+function mk(w, h) { const c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); x.imageSmoothingEnabled = false; return { c, x, w, h }; }
+function P(g, col, X, Y, w = 1, h = 1) { g.x.fillStyle = col; g.x.fillRect(X, Y, w, h); }
+function shade(g, X, Y, w, h, r) {
+  if (w <= 0 || h <= 0) return;
+  P(g, r[1], X, Y, w, h);
+  if (w > 1) P(g, r[0], X + w - 1, Y, 1, h);
+  if (h > 2) P(g, r[0], X, Y + h - 1, w, 1);
+  P(g, r[2], X, Y, 1, h - 1);
+  P(g, r[2], X, Y, w - 1, 1);
+  P(g, r[3], X, Y, 1, 1);
+}
+function blob(g, cx, cy, rx, ry, r) {
+  for (let y = -ry; y <= ry; y++) for (let x = -rx; x <= rx; x++) {
+    const d = (x * x) / (rx * rx + .5) + (y * y) / (ry * ry + .5);
+    if (d > 1) continue;
+    const v = -x / (rx + .5) - y / (ry + .5) + (1 - d) * .6;
+    P(g, r[v > 1.0 ? 3 : v > .25 ? 2 : v > -.55 ? 1 : 0], cx + x, cy + y);
+  }
+}
+function outline(g) {
+  const d = g.x.getImageData(0, 0, g.w, g.h), a = d.data, w = g.w, h = g.h;
+  const solid = (x, y) => x >= 0 && y >= 0 && x < w && y < h && a[(y * w + x) * 4 + 3] > 40;
+  const marks = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+    if (!solid(x, y) && (solid(x - 1, y) || solid(x + 1, y) || solid(x, y - 1) || solid(x, y + 1))) marks.push([x, y]);
+  for (const [x, y] of marks) P(g, OUT, x, y);
+  return g;
+}
+const part = (g, px, py) => ({ c: g.c, px, py });
+
+// ---------- Figure builder ----------
+// variant 0 heraldry · 1 occult · 2 mercenary · 3 relic · 4 shadow
+// rank 0 page · 1 knight · 2 queen · 3 king ; rarity 0..3 ; k = hue step (legendary)
+const DIM = [
+  { H: 44, leg: 14, torso: 13, tw: 11, arm: 12, head: 11, legW: 4 },
+  { H: 52, leg: 17, torso: 16, tw: 16, arm: 14, head: 12, legW: 5 },
+  { H: 56, leg: 18, torso: 17, tw: 13, arm: 14, head: 12, legW: 4 },
+  { H: 62, leg: 20, torso: 19, tw: 17, arm: 16, head: 13, legW: 5 },
+];
+function cloth(v, rank, rar, k) {
+  switch (v) {
+    case 0: return R.green;
+    case 1: return R.purple;
+    case 2: return [R.leather, R.iron, R.iron, R.iron][rank];
+    case 3: return metalFor(rar, k);
+    default: return R.shadow;
+  }
+}
+function rimColor(v, rar, k) { return v === 4 ? (rar === 3 ? rarityColor(3, k) : "#e0b44a") : null; }
+
+// Rounded torso seen from the side: broad shoulders, narrower waist.
+function torsoShape(g, X, Y, w, h, r) {
+  for (let y = 0; y < h; y++) {
+    const q = y / h;
+    const ww = q < .12 ? w - 2 : q < .45 ? w : q < .7 ? w - 2 : w - 1;
+    const x0 = X + Math.floor((w - ww) / 2);
+    for (let x = 0; x < ww; x++) {
+      const u = x / Math.max(1, ww - 1);
+      let tone = u < .18 ? 2 : u > .82 ? 0 : 1;
+      if (y === 0 || (q < .12 && u < .5)) tone = Math.min(3, tone + 1);
+      if (y === h - 1) tone = 0;
+      P(g, r[tone], x0 + x, Y + y);
+    }
+  }
+  P(g, r[3], X + 2, Y + 1);
+}
+
+function buildFigure(v, rank, rar, k) {
+  const d = DIM[rank];
+  const body = cloth(v, rank, rar, k);
+  const rim = rimColor(v, rar, k);
+  const trim = rarityColor(rar, k);
+  const skin = v === 4 ? R.shadow : R.skin;
+  const metal = v === 3 ? metalFor(rar, k) : v === 4 ? R.shadow : R.iron;
+  const parts = { dim: d };
+
+  // Legs (thigh + boot with cuff and toe)
+  for (const side of ["B", "F"]) {
+    const lw = d.legW, g = mk(lw + 5, d.leg + 3);
+    const pants = v === 1 ? R.purple : v === 4 ? R.shadow : v === 3 ? metalFor(rar, k) : v === 2 && rank >= 1 ? R.iron : R.leather;
+    const back = side === "B";
+    const tone = r => back ? [r[0], r[0], r[1], r[1]] : r;
+    shade(g, 1, 1, lw, d.leg - 5, tone(pants));
+    if (!back) P(g, pants[2], 2, Math.round(d.leg * .45), lw - 2, 1); // knee
+    const boot = v === 3 ? metalFor(rar, k) : v === 4 ? R.shadow : v === 2 ? R.mud : R.leather;
+    shade(g, 1, d.leg - 5, lw, 4, tone(boot));
+    shade(g, 1, d.leg - 2, lw + 2, 2, tone(boot)); // toe points forward
+    P(g, tone(boot)[3], 1, d.leg - 5, lw, 1); // cuff
+    if (rim && !back) P(g, rim, lw, 1, 1, d.leg - 2);
+    parts["leg" + side] = part(outline(g), 1 + (lw >> 1), 1);
+  }
+
+  // Torso (robes reach down over the legs)
+  {
+    const w = d.tw, robe = v === 1 ? d.leg - 3 : 0, h = d.torso + robe;
+    const g = mk(w + 4, h + 4), X = 2, Y = 2;
+    torsoShape(g, X, Y, w, h, body);
+    const belt = Y + d.torso - 3;
+    if (v === 0) { // tabard with trim and coin crest
+      const tx = X + 2, tw = w - 4;
+      for (let y = 1; y < h; y++) { P(g, R.green[y < 2 ? 2 : 1], tx, Y + y, tw, 1); P(g, R.green[2], tx, Y + y); P(g, R.green[0], tx + tw - 1, Y + y); }
+      P(g, trim, tx, Y + 1, 1, h - 1); P(g, trim, tx + tw - 1, Y + 1, 1, h - 1); P(g, trim, tx, Y + h - 1, tw, 1);
+      const cx = X + (w >> 1) - 2, cy = Y + 4;
+      P(g, R.gold[1], cx, cy, 4, 4); P(g, R.gold[2], cx, cy, 3, 3); P(g, R.gold[3], cx, cy); P(g, R.gold[0], cx + 3, cy + 1, 1, 3);
+      P(g, R.leather[0], X, belt, w, 1); P(g, R.gold[2], X + (w >> 1), belt);
+      if (rank !== 0) P(g, R.iron[2], X, Y, w, 1); // mail collar
+    } else if (v === 1) { // robe: rune hem, rope belt, front seam
+      for (let i = 1; i < w - 1; i += 2) P(g, "#ffd25a", X + i, Y + h - 3);
+      for (let i = 2; i < w - 1; i += 2) P(g, "#a87828", X + i, Y + h - 2);
+      P(g, R.gold[1], X, belt, w, 1); for (let i = 1; i < w; i += 3) P(g, R.gold[3], X + i, belt);
+      P(g, R.purple[0], X + (w >> 1) + 1, Y + 2, 1, h - 4);
+      P(g, R.purple[3], X + 1, Y + 2, 1, h - 6);
+    } else if (v === 2) { // mercenary: leather, mail, plates, fur
+      if (rank === 0) { P(g, R.leather[3], X + 2, Y + 3, 1, d.torso - 6); for (let y = 4; y < d.torso - 3; y += 3) P(g, R.leather[0], X + 3, Y + y, w - 5, 1); }
+      if (rank === 1) for (let y = 1; y < h - 1; y++) for (let x = 1 + (y & 1); x < w - 1; x += 2) P(g, R.iron[y < 3 ? 3 : 2], X + x, Y + y);
+      if (rank >= 2) { shade(g, X + 1, Y + 2, w - 2, 7, R.iron); P(g, R.iron[3], X + 2, Y + 3, w - 5, 1); P(g, R.iron[0], X + 1, Y + 8, w - 2, 1); }
+      if (rank === 3) shade(g, X - 1, Y - 1, w + 2, 4, R.fur);
+      P(g, R.green[2], X + (w >> 1), Y + 9, 2, d.torso - 11); // suit strip
+      for (const [dx, dy] of [[2, 6], [w - 3, 10], [4, d.torso - 2]]) P(g, R.mud[2], X + dx, Y + dy);
+      P(g, R.leather[0], X, belt, w, 1); P(g, R.iron[3], X + 2, belt);
+    } else if (v === 3) { // relic: filigree bands, gem on the chest
+      const m = metalFor(rar, k);
+      for (let y = 3; y < h - 1; y += 3) for (let x = 2; x < w - 2; x += 2) P(g, m[3], X + x, Y + y);
+      const cx = X + (w >> 1) - 1;
+      P(g, m[0], cx - 1, Y + 4, 5, 5); P(g, GEM[0], cx, Y + 5, 3, 3); P(g, GEM[1], cx, Y + 5); P(g, GEM[2], cx + 2, Y + 7);
+      P(g, m[0], X, belt, w, 1); P(g, m[3], X + 1, belt);
+    } else { // shadow: faint inner lines, rim light
+      for (let y = 4; y < h - 2; y += 4) P(g, "rgba(224,180,74,.3)", X + 3, Y + y, w - 6, 1);
+      for (let y = 1; y < h; y++) P(g, rim, X + w - 1 - (y / h < .12 || (y / h >= .45 && y / h < .7) ? 1 : 0), Y + y);
+    }
+    parts.torso = part(outline(g), X + (w >> 1), Y + d.torso);
+    parts.torsoH = d.torso;
+  }
+
+  // Head: three-quarter view to the right, headgear on top; pivot at the neck
+  {
+    const S = d.head, g = mk(30, 34);
+    const cx = 14, cy = 34 - 3 - (S >> 1), rr = S >> 1, top = cy - rr;
+    blob(g, cx, cy, rr, rr, skin);
+    if (v !== 4 && v !== 1) {
+      P(g, skin[0], cx - rr + 1, cy, 2, 3); // ear shadow
+      P(g, skin[1], cx - rr + 2, cy + 1);
+      P(g, "#f4ece0", cx + 2, cy - 1, 2, 1); P(g, "#1a0e08", cx + 3, cy - 1); // eye
+      P(g, skin[0], cx + 1, cy - 3, 3, 1); // brow
+      P(g, skin[2], cx + rr, cy, 1, 2); // nose
+      P(g, skin[0], cx + 2, cy + 3, 2, 1); // mouth
+      P(g, skin[0], cx - 1, cy + rr, 4, 1); // jaw shadow
+    }
+    const crown = (col, tall, gems) => {
+      shade(g, cx - rr, top - 2, S, 3, col);
+      for (let i = 0; i < S; i += 2) { P(g, col[2], cx - rr + i, top - 2 - tall, 1, tall); P(g, col[3], cx - rr + i, top - 2 - tall); }
+      if (gems) for (let i = 1; i < S - 1; i += 3) P(g, i % 2 ? "#e8284a" : "#3a9aff", cx - rr + i, top - 1);
+    };
+    if (v === 1) { // hood with shadowed face and glowing eyes
+      blob(g, cx - 1, cy - 1, rr + 2, rr + 2, R.purple);
+      blob(g, cx + 2, cy + 1, rr - 1, rr - 1, R.shadow);
+      P(g, R.purple[3], cx - rr, top, 3, 1);
+      const eye = "#ffd25a"; P(g, eye, cx + 1, cy); P(g, eye, cx + 4, cy); P(g, "#fff6c8", cx + 4, cy);
+    } else if (v === 4) { // shadow head, glowing eyes, rank silhouette
+      P(g, "#ffe08a", cx + 2, cy - 1, 2, 1); P(g, "#ffffff", cx + 3, cy - 1);
+      for (let y = -rr + 1; y < rr; y++) P(g, rim, cx + rr - (Math.abs(y) > rr - 2 ? 1 : 0), cy + y);
+      if (rank === 1) { shade(g, cx - rr - 1, top - 1, S + 2, rr + 2, R.shadow); P(g, rim, cx + rr + 1, top, 1, rr + 1); }
+      if (rank === 2) for (let i = -2; i <= 2; i += 2) P(g, R.shadow[3], cx + i, top - 4, 1, 4);
+      if (rank === 3) crown(R.shadow, 3, false);
+    } else {
+      const hair = R.hair;
+      if (rank !== 1) { // hair: covers top and back of the head
+        for (let y = top - 1; y < top + 4; y++) for (let x = cx - rr; x <= cx + rr - 2; x++) if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= (rr + 1) * (rr + 1)) P(g, hair[y === top - 1 ? 2 : 1], x, y);
+        P(g, hair[1], cx - rr, cy - 2, 3, 6); P(g, hair[3], cx - 2, top - 1, 2, 1);
+      }
+      if (rank === 2) { P(g, hair[1], cx - rr - 1, cy - 2, 3, S + 2); P(g, hair[2], cx - rr - 1, cy - 2, 1, S); }
+      if (rank === 3) { shade(g, cx - 1, cy + 2, 6, 6, R.beard); P(g, R.beard[0], cx + 1, cy + 3, 3, 1); }
+      if (rank === 0) { // cap with feather
+        const capCol = v === 3 ? metalFor(rar, k) : v === 2 ? R.leather : R.green;
+        shade(g, cx - rr, top - 2, S + 1, 4, capCol); P(g, capCol[0], cx + rr - 1, top + 1, 3, 1);
+        const fe = v === 0 ? "#e8e0d0" : v === 3 ? "#ff5a6a" : "#c8a060";
+        P(g, fe, cx - rr - 1, top - 3, 4, 1); P(g, fe, cx - rr - 3, top - 4, 3, 1); P(g, fe, cx - rr - 4, top - 5, 2, 1);
+      }
+      if (rank === 1) { // great helm with visor slit and rivets
+        shade(g, cx - rr - 1, top - 2, S + 2, S + 1, metal);
+        P(g, OUT, cx, cy - 1, rr + 2, 1); P(g, OUT, cx + 2, cy + 2, rr, 1);
+        P(g, metal[3], cx - rr + 1, top, 1, S - 3);
+        for (const yy of [top + 1, top + S - 3]) P(g, metal[3], cx + rr - 1, yy);
+        if (v === 3) { for (let i = 0; i < 5; i++) P(g, i % 2 ? "#ff5a6a" : "#c8284a", cx - 2 + i, top - 4 - (i & 1)); }
+        if (v === 2) { P(g, R.mud[2], cx - 2, top + 2); P(g, metal[0], cx - rr + 2, top + 4, 2, 1); }
+        if (v === 0) { P(g, "#e8e0d0", cx - rr - 2, top - 3, 3, 1); P(g, "#e8e0d0", cx - rr - 3, top - 4, 2, 1); }
+      }
+      if (rank === 2) {
+        if (v === 0) { P(g, "rgba(232,224,208,.75)", cx - rr - 2, top - 1, 3, S + 5); }
+        if (v === 2) { blob(g, cx - 2, cy - 2, rr + 1, rr + 1, R.mud); blob(g, cx + 1, cy + 1, rr - 1, rr - 1, skin); P(g, "#1a0e08", cx + 3, cy - 1); }
+        crown(v === 3 ? metalFor(rar, k) : R.gold, 1, v === 3);
+      }
+      if (rank === 3) crown(v === 3 ? metalFor(rar, k) : v === 2 ? [R.gold[0], R.gold[1], R.gold[1], R.gold[2]] : R.gold, v === 3 ? 4 : 2, v !== 2);
+    }
+    parts.head = part(outline(g), cx - 1, 34 - 3);
+  }
+
+  // Arms with hands
+  for (const side of ["B", "F"]) {
+    const g = mk(6, d.arm + 3);
+    const sleeve = v === 1 ? R.purple : v === 4 ? R.shadow : v === 3 ? metalFor(rar, k) : v === 2 ? (rank === 0 ? R.leather : R.iron) : (rank === 1 ? R.iron : R.green);
+    const back = side === "B";
+    const s = back ? [sleeve[0], sleeve[0], sleeve[1], sleeve[1]] : sleeve;
+    shade(g, 1, 1, 4, d.arm - 4, s);
+    P(g, s[3], 1, d.arm - 5, 4, 1); // cuff
+    shade(g, 1, d.arm - 4, 4, 4, back ? [skin[0], skin[0], skin[1], skin[1]] : skin);
+    if (rim && !back) P(g, rim, 4, 1, 1, d.arm - 4);
+    parts["arm" + side] = part(outline(g), 3, 2);
+  }
+  parts.armLen = d.arm - 3;
+
+  // Weapon (pivot = grip in the hand)
+  {
+    const glow = v === 2 && rar > 0 ? rarityColor(rar, k) : null;
+    const goldish = v === 4 ? R.shadow : R.gold;
+    let g, px, py;
+    if (rank === 0) { // coin pouch
+      g = mk(12, 12); blob(g, 6, 7, 4, 3, v === 4 ? R.shadow : R.leather); P(g, R.leather[0], 4, 4, 5, 1); P(g, goldish[3], 5, 3, 2, 1); P(g, goldish[2], 7, 3); px = 6; py = 3;
+    } else if (rank === 1) { // flanged mace
+      g = mk(12, 26); shade(g, 5, 8, 2, 17, R.wood); P(g, R.leather[2], 5, 18, 2, 4);
+      blob(g, 6, 5, 4, 4, metal); for (const [fx, fy] of [[1, 5], [11, 5], [6, 0], [6, 10]]) P(g, metal[2], fx, fy); P(g, metal[3], 4, 3);
+      if (glow) { P(g, glow, 0, 4); P(g, glow, 11, 3); P(g, glow, 6, 0); P(g, glow, 9, 1); } px = 6; py = 20;
+    } else if (rank === 2) { // golden scales on a staff
+      g = mk(22, 30); shade(g, 10, 5, 2, 24, goldish); P(g, goldish[2], 2, 6, 18, 1); P(g, goldish[3], 2, 6, 6, 1);
+      for (const x of [3, 18]) { P(g, goldish[3], x, 7, 1, 5); shade(g, x - 3, 12, 7, 2, goldish); P(g, goldish[3], x - 2, 12, 2, 1); }
+      blob(g, 11, 3, 2, 2, goldish); if (glow) { P(g, glow, 11, 0); P(g, glow, 7, 3); P(g, glow, 15, 3); } px = 11; py = 23;
+    } else { // scepter with a coin orb and cross
+      g = mk(14, 28); shade(g, 6, 10, 2, 17, goldish); blob(g, 7, 7, 4, 4, goldish); P(g, goldish[0], 6, 6, 3, 3); P(g, goldish[3], 6, 6);
+      P(g, goldish[2], 7, 0, 1, 3); P(g, goldish[2], 6, 1, 3, 1); P(g, "#e8284a", 7, 7);
+      if (glow) { P(g, glow, 1, 7); P(g, glow, 13, 7); P(g, glow, 7, 0); } px = 7; py = 22;
+    }
+    parts.weapon = part(outline(g), px, py);
+    if (glow) parts.weaponGlow = glow;
+  }
+  // Knight shield on the back arm
+  if (rank === 1) {
+    const g = mk(12, 15); const m = v === 3 ? metalFor(rar, k) : v === 4 ? R.shadow : v === 2 ? R.wood : R.green;
+    shade(g, 1, 1, 10, 10, m); P(g, m[1], 2, 11, 8, 1); P(g, m[1], 3, 12, 6, 1); P(g, m[0], 5, 13, 2, 1);
+    if (v === 0 || v === 3) { P(g, R.gold[1], 4, 3, 4, 4); P(g, R.gold[2], 4, 3, 3, 3); P(g, R.gold[3], 4, 3); }
+    if (v === 0) { P(g, trim, 1, 1, 10, 1); P(g, trim, 1, 1, 1, 10); }
+    if (v === 2) { P(g, R.iron[2], 1, 5, 10, 1); P(g, R.mud[2], 7, 8); }
+    if (rim) P(g, rim, 10, 1, 1, 10);
+    parts.shield = part(outline(g), 6, 5);
+  }
+  // Capes hang behind the back shoulder and peek out on the left
+  const capeLen = v === 3 ? [0, 12, 24, 32][rank] : v === 4 ? [10, 16, 24, 30][rank] : v === 1 ? [0, 0, 0, 0][rank] : rank >= 2 ? (rank === 3 ? 30 : 24) : 0;
+  if (capeLen) {
+    const g = mk(18, capeLen + 3);
+    const capeCol = v === 4 ? R.shadow : v === 2 ? R.mud : R.red;
+    for (let y = 0; y < capeLen; y++) {
+      const w = 6 + Math.min(9, y >> 1), x0 = 16 - w;
+      for (let x = 0; x < w; x++) P(g, capeCol[x === 0 ? 0 : x < 2 ? 1 : (x + y) % 7 === 0 ? 1 : 2], x0 + x, 1 + y);
+    }
+    if (v === 3 || (rank === 3 && v !== 4)) { for (let y = 0; y < capeLen; y++) { const x0 = 16 - (6 + Math.min(9, y >> 1)); P(g, "#f2ece4", x0, 1 + y, 2, 1); if (y % 3 === 1) P(g, "#141012", x0, 1 + y); } P(g, R.fur[2], 9, 1, 8, 2); P(g, R.fur[3], 9, 1, 4, 1); }
+    if (rim) for (let y = 0; y < capeLen; y++) P(g, rim, 16 - (6 + Math.min(9, y >> 1)), 1 + y);
+    parts.cape = part(outline(g), 14, 1);
+  }
+  return parts;
+}
+
+function buildGhost() {
+  const g = mk(30, 44);
+  for (let y = 0; y < 34; y++) {
+    const w = Math.min(16, 7 + y);
+    for (let x = 0; x < w; x++) {
+      const rx = 15 - (w >> 1) + x;
+      if (y > 27 && ((x * 3 + y) % 4 === 0)) continue;
+      const u = x / (w - 1);
+      P(g, R.ghost[y < 3 ? 3 : u < .2 ? 2 : u > .8 ? 0 : 1], rx, 3 + y);
+    }
+  }
+  for (let y = 12; y < 30; y += 5) P(g, R.ghost[0], 9, 3 + y, 2, 1);
+  blob(g, 14, 11, 5, 5, R.shadow);
+  P(g, "#9ef0ff", 11, 11); P(g, "#9ef0ff", 15, 11); P(g, "#ffffff", 15, 11);
+  shade(g, 2, 22, 8, 3, R.wood); P(g, R.wood[3], 3, 22, 6, 1); P(g, R.gold[3], 5, 21); P(g, R.gold[2], 6, 21);
+  shade(g, 9, 22, 3, 3, R.ghost); // bony hand
+  return part(outline(g), 15, 37);
+}
+
+// Cache: figures per (variant, rank, rarity) with hue frames for legendary
+const cache = new Map();
+function figure(v, rank, rar, frame) {
+  const k = rar === 3 ? frame % HUES : 0;
+  const key = v + "-" + rank + "-" + rar + "-" + k;
+  if (!cache.has(key)) cache.set(key, buildFigure(v, rank, rar, k));
+  return cache.get(key);
+}
+const GHOST = buildGhost();
+
+// ---------- Drawing a rigged figure ----------
+const SNAP = Math.PI / 12;
+const snap = a => Math.round(a / SNAP) * SNAP;
+function drawPart(ctx, p, x, y, a = 0, flip = 1) {
+  ctx.save(); ctx.translate(Math.round(x), Math.round(y)); ctx.scale(flip, 1); if (a) ctx.rotate(snap(a));
+  ctx.drawImage(p.c, -p.px, -p.py); ctx.restore();
+}
+// pose: {bob, arm, step, flash, alpha}. Facing right; positive arm angles swing backwards.
+const TMP = mk(100, 110);
+const ARM_REST = -0.35;
+function drawFigure(ctx, f, x, y, pose = {}) {
+  const t = TMP; t.x.clearRect(0, 0, t.w, t.h);
+  const ox = 50, oy = 104, d = f.dim, c = t.x;
+  const bob = pose.bob || 0, step = pose.step || 0;
+  const hipY = oy - d.leg + bob, neckY = hipY - f.torsoH;
+  const half = d.tw >> 1;
+  if (f.cape) drawPart(c, f.cape, ox - half + 4, neckY + 1, .05 + step * .06);
+  const ab = .25 - step * .5;
+  drawPart(c, f.armB, ox - half + 3, neckY + 3, ab);
+  if (f.shield) { const sa = snap(ab); drawPart(c, f.shield, ox - half + 3 - Math.sin(sa) * (f.armLen - 2), neckY + 3 + Math.cos(sa) * (f.armLen - 2), 0); }
+  drawPart(c, f.legB, ox - 2, hipY, step * .5);
+  drawPart(c, f.legF, ox + 1, hipY, -step * .5);
+  drawPart(c, f.torso, ox, hipY);
+  drawPart(c, f.head, ox + 1, neckY + 1);
+  const shoulderX = ox + half - 2, shoulderY = neckY + 3;
+  const a = ARM_REST + (pose.arm || 0) + step * .45, sa = snap(a);
+  const hx = shoulderX - Math.sin(sa) * f.armLen, hy = shoulderY + Math.cos(sa) * f.armLen;
+  drawPart(c, f.armF, shoulderX, shoulderY, a);
+  drawPart(c, f.weapon, hx, hy, a - ARM_REST);
+  if (pose.flash) { c.save(); c.globalCompositeOperation = "source-atop"; c.fillStyle = "rgba(255,255,255,.85)"; c.fillRect(0, 0, t.w, t.h); c.restore(); }
+  ctx.save(); ctx.globalAlpha = pose.alpha == null ? 1 : pose.alpha;
+  ctx.drawImage(t.c, Math.round(x) - ox, Math.round(y) - oy);
+  ctx.restore();
+  return { hand: [x + (hx - ox), y + (hy - oy)] };
+}
+
+
+// ---------- Render the pixel figures into every mockup canvas ----------
+const GEMS = { coins: ["#1e9a4e", "#7cf0a8", "#0b4a26"], wands: ["#e0402a", "#ffb08a", "#6a1408"], cups: ["#2a7ae0", "#a8d4ff", "#0e2a5a"], swords: ["#a65ae0", "#e0c0ff", "#3a1a5a"] };
+const figCache = new Map();
+function figFor(rank, suit) {
+  const key = rank + suit;
+  if (!figCache.has(key)) { GEM = GEMS[suit]; figCache.set(key, buildFigure(3, rank, rank, 0)); }
+  return figCache.get(key);
+}
+for (const cv of document.querySelectorAll("canvas.fig")) {
+  cv.width = 60; cv.height = 76;
+  const g = { c: cv, x: cv.getContext("2d"), w: 60, h: 76 };
+  g.x.imageSmoothingEnabled = false;
+  if (cv.dataset.enemy) {
+    cv.width = 40; cv.height = 50; g.w = 40; g.h = 50;
+    g.x.imageSmoothingEnabled = false;
+    g.x.drawImage(GHOST.c, 20 - GHOST.px, 46 - GHOST.py);
+  } else {
+    drawFigure(g.x, figFor(+cv.dataset.rank, cv.dataset.suit), 30, 72, {});
+  }
+}
+})();
+</script>
