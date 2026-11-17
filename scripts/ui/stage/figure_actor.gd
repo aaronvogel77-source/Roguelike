@@ -324,7 +324,12 @@ func _draw_fx() -> void:
 		var width := 18.0
 		_fx.draw_rect(Rect2(-width / 2 - 1, 2, width + 2, 3), PixelCanvas.OUTLINE)
 		_fx.draw_rect(Rect2(-width / 2, 3, width * health / max_health, 1), Color("c0303a") if is_enemy else Color("3fbf5a"))
-		_draw_stats(int(snapshot.get("effective_attack", 0)), health)
+		# Values raised by positive effects (equipment, relics, abilities) glow yellow.
+		var level := int(snapshot.get("level", 1))
+		var base_attack := int(definition.get("attack", 0)) + level - 1
+		var base_health := int(definition.get("health", 0)) + level - 1
+		_draw_stats(int(snapshot.get("effective_attack", 0)), health,
+			int(snapshot.get("effective_attack", 0)) > base_attack, max_health > base_health)
 		_draw_statuses(statuses, h)
 		if int(statuses.get("shield", 0)) > 0:  # light bowl in front
 			var dir := -1.0 if is_enemy else 1.0
@@ -428,17 +433,17 @@ func _draw_icon(kind: String, at: Vector2, color: Color) -> void:
 
 
 ## Attack (red) and health (green) under the feet, each with a tiny icon.
-func _draw_stats(attack: int, health: int) -> void:
+func _draw_stats(attack: int, health: int, attack_up := false, health_up := false) -> void:
 	var attack_w := 4 + _number_width(attack)
 	var health_w := 4 + _number_width(health)
 	var total := attack_w + 3 + health_w
 	var x := -float(total) / 2.0
 	_fx.draw_rect(Rect2(x - 2, 6, total + 4, 8), Color(0.03, 0.02, 0.04, 0.85))
 	_draw_icon("attack", Vector2(x, 8), Color("ff6a5a"))
-	_draw_number(attack, Vector2(x + 4, 7), Color("ff8a7a"))
+	_draw_number(attack, Vector2(x + 4, 7), Color("ffe84a") if attack_up else Color("ff8a7a"))
 	x += attack_w + 3
 	_draw_icon("health", Vector2(x, 8), Color("5fd06a"))
-	_draw_number(health, Vector2(x + 4, 7), Color("8ef09a"))
+	_draw_number(health, Vector2(x + 4, 7), Color("ffe84a") if health_up else Color("8ef09a"))
 
 
 ## Status icons with their stack count above the head.

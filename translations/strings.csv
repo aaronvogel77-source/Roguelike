@@ -38,7 +38,7 @@ ABIL_GOLD_ARMORED,Kampfbeginn: Schild 1 pro {v} Gold im Besitz.,Battle start: 1 
 ABIL_GOLDEN_SCALES,Wenn eine eigene Figur stirbt: Die hinterste eigene Figur erhält ×{v} Angriff.,When an ally dies: your rearmost figure gains ×{v} attack.
 ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×(1 + gold / {v}).
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
-ABIL_ENRAGED_ONE,Wenn getroffen: +{v} Angriff.,When hit: +{v} attack.
+ABIL_ENRAGED_ONE,Wenn getroffen: Der Angreifer erhält Brennen {v}.,When hit: the attacker gains {v} burn.
 ABIL_MISTRESS_OF_EMBERS,Dauerhaft: Brennen-Schaden an Gegnern ×{v}.,Always: burn damage to enemies ×{v}.
 ABIL_ASH_KING,"Wenn ein Gegner stirbt: Sein Brennen springt auf den nächsten Gegner, und dieser König erhält ×{v} Angriff.",When an enemy dies: its burn jumps to the next enemy and this king gains ×{v} attack.
 ABIL_ALTAR_SERVER,Zugbeginn: Heilt die Figur vor sich um {v}.,Turn start: heals the figure in front by {v}.

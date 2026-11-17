@@ -241,3 +241,24 @@ func test_selling_is_allowed_on_the_reward_screen() -> void:
 	run.apply_battle_result({"victory": true})
 	assert_eq(run.stage, RunState.Stage.REWARD)
 	assert_true(run.sell(0))
+
+
+func test_enemy_options_are_ordered_by_real_strength() -> void:
+	for seed_value in 20:
+		var rng := RngStreams.new(seed_value).stream("enemy_gen")
+		var options := EnemyGenerator.options(_db, "coins", 1, seed_value % 2, rng)
+		var powers: Array = options.map(func(o: Dictionary) -> float: return EnemyGenerator.power(_db, o["team"]))
+		assert_true(powers[0] <= powers[1] and powers[1] <= powers[2], "easy <= medium <= hard: %s" % str(powers))
+
+
+func test_first_boss_has_a_small_retinue() -> void:
+	assert_eq(EnemyGenerator.budget(1, 2, 2), 1)
+
+
+func test_figures_can_be_moved_in_events_but_not_at_the_grave() -> void:
+	var run := RunState.new_run(_db, 4)
+	run.row = [{"uid": 1, "def_id": "coin_squire", "xp": 0}, {"uid": 2, "def_id": "executioner", "xp": 0}, null]
+	run.start_event("mirror")
+	assert_true(run.move(0, 1))
+	run.start_event("grave_robber")
+	assert_false(run.move(0, 1), "the grave robber takes the rearmost figure")

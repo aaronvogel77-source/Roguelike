@@ -266,7 +266,7 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 
 ### Shop: Tarot-Legung (gewählt 2026-11-17)
 - Shop- und Planungsbildschirm im Stil **Tarot-Legung** (docs/shopvorlagen.html, Vorlage 2): Karten auf dunklem Samt, dein Team als Kartenreihe, Angebote als Legung, Packs als verdeckte Karten, Preise als Goldmünzen, Knöpfe als Wachssiegel (Neu würfeln gold, Rückgängig grau, Kampf groß und rot)
-- **Verkaufsfeld nur bei Bedarf (wie Balatro):** Es erscheint erst, wenn man eine Figur oder Karte gedrückt hält bzw. zieht; der freie Platz in der Mitte wird nicht dauerhaft belegt
+- **Verkaufsfeld nur bei Bedarf (wie Balatro):** Es erscheint erst, wenn man eine Figur oder Karte gedrückt hält bzw. zieht oder antippt – **unten rechts über den Siegeln**, nie in der Mitte, wo man Figuren ablegt (sonst verkauft man sie aus Versehen)
 
 ## Phase 6 – Kampfsystem
 
@@ -515,7 +515,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
 |---|---|---|---|
 | Bube | **Funkenträger** | 2/2 | *Bei Angriff:* Ziel erhält Brennen 1 / 2 / 3 |
-| Ritter | **Wutentbrannter** | 4/3 | *Bei Treffer (wird getroffen):* +1 / 2 / 3 Angriff (stapelt) |
+| Ritter | **Wutentbrannter** | 4/3 | *Wenn getroffen:* Der Angreifer erhält Brennen 1 / 2 / 3 (nach Feedback statt Angriff) |
 | Königin | **Herrin der Glut** | 3/5 | *Aura (dauerhaft):* Brennen-Schaden an Gegnern ×1,5 / ×2 / ×2,5 (Mult) |
 | König | **Aschekönig** | 6/4 | *Bei Tod eines Gegners:* dessen Brennen springt auf den nächsten Gegner, König erhält ×1,1 / ×1,2 / ×1,3 Angriff (Mult, stapelt) |
 
@@ -784,3 +784,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Fünf Shop-Vorlagen (docs/shopvorlagen.html): 1 Händlertisch (Messingschilder, Wachssiegel-Kampf, Verkaufsfeuer), 2 Tarot-Legung (Karten auf Samt, Wachssiegel), 3 Schatzkammer-Regal (Nischen, Pixel-Steinknöpfe), 4 Reliquienschrein (Spitzbögen, Fensterrose als Kampf-Knopf), 5 Klar & Kompakt (Felder, große flache Knöpfe) | Auswahl für die Shop-Überarbeitung | – |
 | 2026-11-17 | Eigenes Design je Figur/Monster passend zu Name und Fähigkeit (Goldgepanzerter-Rüstung wächst mit Gold, Henker mit Axt und Kappe, Midas mit goldener Hand); Meta-Währung + Lager vorgemerkt für M7; Shop-Stil Tarot-Legung gewählt, Verkaufsfeld nur beim Gedrückthalten | Spieler-Feedback | Händlertisch, Schatzkammer-Regal, Reliquienschrein, Klar & Kompakt |
 | 2026-11-17 | v0.8.2: Shop im Stil Tarot-Legung umgesetzt: Samt-Hintergrund, Karten als Pergament-Tarotkarten mit animierter Pixel-Figur (Gegner auf dunklem Tuch), Preise als Gold-/Seelenmünzen über den Karten, Packs als verdeckte Karten, Wachssiegel-Knöpfe (Neu würfeln gold, Rückgängig grau, Kampf groß rot); Verkaufsfeld erscheint nur beim Ziehen/Gedrückthalten oder bei Auswahl einer Figur bzw. eines Relikts | Shop-Wahl des Spielers | – |
+| 2026-11-17 | v0.8.3: Positiv beeinflusste Angriffs-/Lebenswerte gelb (Kampf und Karten); Figuren in Ereignissen verschiebbar, außer beim Grabräuber (nimmt die hinterste Figur); Preis-Münzen liegen nicht mehr über Infofenstern; Verkaufsfeld unten rechts; Gegneroptionen nach echter Stärke geordnet (schwerste = Schwer, Schwer bevorzugt teure Gegner); weniger Königinnen/Könige im Shop (Akt 1: 76/20/3/1 %); Wutentbrannter: wenn getroffen erhält der Angreifer Brennen 1/2/3; erstes Boss-Gefolge kleiner (Budget 1) | Spieler-Feedback | – |

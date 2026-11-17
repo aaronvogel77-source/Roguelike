@@ -525,15 +525,13 @@ func _build_planning() -> void:
 	_shop_slots.clear()
 	for i in _run.shop.size():
 		var shop_box := VBoxContainer.new()
-		shop_box.add_theme_constant_override("separation", -6)
-		shop_box.add_child(_coin_badge(str(_run.price_of(_run.shop[i])) if _run.shop[i] != "" else "", false))
 		var slot := SlotView.new("shop", i)
 		if _run.shop[i] != "":
 			slot.set_card(UnitCard.for_definition(_db.figures[_run.shop[i]], 1, false))
 			_add_rarity_effect(slot, _run.shop[i])
 		slot.accepts_drops = false
 		slot.tapped.connect(_on_slot_tapped)
-		shop_box.add_child(slot)
+		shop_box.add_child(_with_coin(slot, str(_run.price_of(_run.shop[i])) if _run.shop[i] != "" else "", false))
 		bottom.add_child(shop_box)
 		_shop_slots.append(slot)
 
@@ -571,8 +569,8 @@ func _build_planning() -> void:
 	_sell_zone.tapped.connect(_on_sell_zone_tapped)
 	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
 	_screen.add_child(_sell_zone)
-	_sell_zone.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM, Control.PRESET_MODE_KEEP_SIZE)
-	_sell_zone.position.y -= 250
+	_sell_zone.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_KEEP_SIZE)
+	_sell_zone.position += Vector2(-24, -40)
 
 
 ## The player's row as interactive slots (back on the left, front on the right).
@@ -924,7 +922,6 @@ func _velvet() -> Control:
 func _coin_badge(text: String, soul: bool) -> Control:
 	var center := CenterContainer.new()
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	center.z_index = 1
 	if text == "":
 		center.custom_minimum_size = Vector2(0, 40)
 		return center
@@ -942,6 +939,24 @@ func _coin_badge(text: String, soul: bool) -> Control:
 	coin.add_child(label)
 	center.add_child(coin)
 	return center
+
+
+## A card-sized control with its price coin overlapping the top edge. The coin
+## is drawn after the card inside the same holder, so overlays (detail panel,
+## pack and fusion screens) still cover it.
+func _with_coin(content: Control, text: String, soul: bool) -> Control:
+	var holder := Control.new()
+	holder.custom_minimum_size = UnitCard.CARD_SIZE + Vector2(0, 32)
+	holder.mouse_filter = Control.MOUSE_FILTER_PASS
+	holder.add_child(content)
+	content.position = Vector2(0, 32)
+	content.size = UnitCard.CARD_SIZE
+	if text != "":
+		var coin := _coin_badge(text, soul)
+		coin.position = Vector2(UnitCard.CARD_SIZE.x / 2.0 - 20.0, 0)
+		coin.size = Vector2(40, 40)
+		holder.add_child(coin)
+	return holder
 
 
 ## A round wax-seal button.
@@ -980,8 +995,6 @@ func _seal(text: String, diameter: float, color_kind: String, callback: Callable
 ## The soul pack (paid in souls): two pacts, pick one.
 func _soul_pack_view() -> Control:
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", -6)
-	box.add_child(_coin_badge(str(_run.soul_pack_price()), true))
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	var style := StyleBoxFlat.new()
@@ -1009,7 +1022,7 @@ func _soul_pack_view() -> Control:
 				_undo.clear()
 				_pack_pick = -1
 				_show_stage())
-	box.add_child(panel)
+	box.add_child(_with_coin(panel, str(_run.soul_pack_price()), true))
 	if _run.pacts.size() >= RunState.MAX_PACTS:
 		panel.modulate.a = 0.4
 	return box
@@ -1018,9 +1031,7 @@ func _soul_pack_view() -> Control:
 ## A pack in the shop: tap to buy and open it.
 func _pack_view(index: int) -> Control:
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", -6)
 	var pack: Dictionary = _run.packs[index]
-	box.add_child(_coin_badge(str(_run.pack_cost(pack)) if not pack.is_empty() else "", false))
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	var style := StyleBoxFlat.new()
@@ -1030,7 +1041,7 @@ func _pack_view(index: int) -> Control:
 	style.set_corner_radius_all(10)
 	style.set_content_margin_all(4)
 	panel.add_theme_stylebox_override("panel", style)
-	box.add_child(panel)
+	box.add_child(_with_coin(panel, str(_run.pack_cost(pack)) if not pack.is_empty() else "", false))
 	var price_text := ""
 	if not pack.is_empty():
 		var inner := VBoxContainer.new()

@@ -387,6 +387,9 @@ func _resolve_targets(owner: BattleUnit, target: String, context: Dictionary) ->
 			return [t] if t != null else []
 		"dying_unit":
 			return [context["dying_unit"]]
+		"attacker":
+			var attacker: BattleUnit = context.get("attacker")
+			return [attacker] if attacker != null and attacker.is_alive() else []
 		"front_ally":
 			return allies.slice(0, 1)
 		"back_ally":

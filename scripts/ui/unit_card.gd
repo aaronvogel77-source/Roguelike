@@ -166,8 +166,8 @@ func apply_snapshot(new_snapshot: Dictionary) -> void:
 	if extras.has("base_attack"):
 		var attack_up: bool = snapshot["effective_attack"] > extras["base_attack"]
 		var health_up: bool = snapshot["max_health"] > extras["base_health"]
-		_attack_label.add_theme_color_override("font_color", Palette.GOLD if attack_up else Color.WHITE)
-		_health_label.add_theme_color_override("font_color", Palette.GOLD if health_up else Color.WHITE)
+		_attack_label.add_theme_color_override("font_color", Color("ffe84a") if attack_up else Color.WHITE)
+		_health_label.add_theme_color_override("font_color", Color("ffe84a") if health_up else Color.WHITE)
 	_rebuild_identity(snapshot.get("level", 1))
 	_rebuild_chips()
 

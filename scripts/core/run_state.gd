@@ -39,10 +39,10 @@ const XP_FOR_LEVEL := [0, 9, 18]
 const RANKS := ["page", "knight", "queen", "king"]
 ## Shop rank odds in percent (page, knight, queen, king) from the given act on.
 const RANK_ODDS := [
-	[1, [68, 25, 5, 2]],
-	[2, [50, 32, 14, 4]],
-	[3, [40, 33, 20, 7]],
-	[5, [30, 33, 25, 12]],
+	[1, [76, 20, 3, 1]],
+	[2, [58, 30, 9, 3]],
+	[3, [45, 35, 15, 5]],
+	[5, [34, 36, 22, 8]],
 ]
 
 var db: ContentDb
@@ -248,10 +248,19 @@ func sell(row_index: int) -> bool:
 	return true
 
 
+## Whether figures may be moved now: while planning, on rewards and during
+## events - except events that take a figure by its place (the grave robber
+## keeps the rearmost one), where moving would dodge the price.
+func can_rearrange() -> bool:
+	if stage in [Stage.PLANNING, Stage.REWARD]:
+		return true
+	return stage == Stage.EVENT and event.get("id", "") not in ["grave_robber"] and not event.get("resolved", false)
+
+
 ## Moves a figure. Onto an equal figure below max level it merges (the moved
 ## copy's experience plus one duplicate); onto another figure the two swap.
 func move(from_index: int, to_index: int) -> bool:
-	if stage not in [Stage.PLANNING, Stage.REWARD] or from_index == to_index:
+	if not can_rearrange() or from_index == to_index:
 		return false
 	if from_index < 0 or to_index < 0 or from_index >= row.size() or to_index >= row.size():
 		return false
@@ -273,7 +282,7 @@ func move(from_index: int, to_index: int) -> bool:
 ## Inserts a figure between two others: it ends up directly behind the figure
 ## at after_index (-1 = at the very front); the figures in between shift.
 func insert_between(from_index: int, after_index: int) -> bool:
-	if stage not in [Stage.PLANNING, Stage.REWARD] or from_index < 0 or from_index >= row.size() or row[from_index] == null:
+	if not can_rearrange() or from_index < 0 or from_index >= row.size() or row[from_index] == null:
 		return false
 	if after_index < -1 or after_index >= row.size():
 		return false

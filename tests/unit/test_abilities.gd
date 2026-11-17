@@ -138,11 +138,9 @@ func test_golden_scales_multiplies_rearmost_ally_when_ally_dies() -> void:
 
 # --- Wands --------------------------------------------------------------------------
 
-func test_enraged_one_gains_attack_when_hit() -> void:
-	var result := BattleSimulator.simulate([_fig("enraged_one")], [_unit(1, 50)])
-	var hits := _events(result, "damage").filter(func(e): return e["source"] == "attack" and e["uid"] == 2)
-	assert_eq(hits[0]["amount"], 4)
-	assert_eq(hits[1]["amount"], 5)
+func test_enraged_one_burns_its_attacker() -> void:
+	var result := BattleSimulator.simulate([_fig("enraged_one", 2)], [_unit(1, 50)])
+	assert_true(_ever(result, 2, func(u): return u["statuses"].get("burn", 0) == 2), "level 2: burn 2 on the attacker")
 
 
 func test_ash_king_spreads_burn_and_gains_multiplier() -> void:
