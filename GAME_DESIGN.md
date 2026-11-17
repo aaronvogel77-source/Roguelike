@@ -182,6 +182,12 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - **Meta-Freischaltung:** Neue Fusionsmöglichkeiten werden dauerhaft durch Erfolge freigeschaltet (z. B. F3 erst nach dem ersten Sieg)
   - Verträglich mit Phase 4 („alles exakt“): Verborgen ist nur, *wie* man etwas freischaltet. Sobald eine Fusion sichtbar ist, sind ihre Werte exakt.
 
+### M6 – Fusion, Runde 1 (beantwortet 2026-11-17)
+- **Werte:** Bewusst **nicht zu stark**, es soll Luft nach oben bleiben → konkrete Formel in Runde 2
+- **Stufe:** Eine Fusion startet wieder auf **Stufe 1**
+- **Farbe:** Eine Fusion zählt für **alle enthaltenen Farben** (Gebiets-Segen, Farb-Relikte)
+- **Umfang:** **Alles in M6**, inklusive geheimer Rezepte und geheimer Anlässe
+
 ## Phase 6 – Kampfsystem
 
 ### Runde 1 (beantwortet)
@@ -680,3 +686,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.6.3: Neue Seltenheit **Einzigartig** (nur Verfluchter Brunnen, 10 Gold, 2,5 % Chance, dass eine der 3 Auswahlen einzigartig ist): Grundwirkung + 2 Zusätze + 1 einzigartiger Effekt, türkis-silberne Farbe, Strahlenglanz, Tag „Einzigartig!“. **Geheim:** Weder der Brunnen noch eine Beschreibung erwähnt die Chance. Pool: Phönixfeder (stirbt der Träger: 1× pro Kampf zurück mit halbem Leben), Blutdurst (heilt 50 % des verursachten Schadens), Kriegsherr (×1,5 Angriff), Seelenernte (Kill durch Angriff des Trägers: 15 % +1 Seele). Debug-Knopf „Unikat“ | Spieler-Wunsch: seltener besonderer Effekt beim Brunnen | 5/10/15 % Chance, Regenbogen-Glanz, Effekt ersetzt Zusatz |
 | 2026-11-17 | v0.6.4: Einzigartige Gegenstände bleiben eine geheime Belohnung (kein Hinweis im Brunnen). Ausrüstungs-Texte kürzer: Karte zeigt nur den Seltenheits-Namen, „Basis“ statt „Grundwirkung“, kurze Effekttexte („Nach Angriff: Brennen 1“), Unikat-Zeile „Einzigartig: Name – Wirkung“ | Feedback: geheim halten, kürzer, Unikat trotzdem erklären | – |
 | 2026-11-17 | v0.6.5: Überspringen-Marke gibt 2 garantierte Ritter statt Königinnen/Könige; Rad des Schicksals wieder mit knapper Beschreibung; Goldgepanzerter erhält zu Kampfbeginn Schild 1 pro 4/3/2 Gold statt Leben | Feedback: Marke zu stark, Text zu lang, Rüstung passt besser | Marke mit Rittern oder Königinnen |
+| 2026-11-17 | M6 Runde 1: Fusionswerte zurückhaltend, Neustart auf Stufe 1, Fusion zählt für alle enthaltenen Farben, geheime Rezepte und Anlässe direkt in M6 | Luft nach oben, Mischteams stärken | Summe + Bonus; höchste Stufe übernehmen; Geheimes erst mit M7 |
