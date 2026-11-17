@@ -97,12 +97,21 @@ func _add_actor(snapshot: Dictionary, enemy: bool) -> void:
 func _layout(duration: float) -> void:
 	for i in _player_order.size():
 		_move(_actors[_player_order[i]], PLAYER_FRONT - i * SLOT, duration)
-	var cursor := 0.0
+	# Enemies: wide creatures take more room; squeeze if the row gets too long.
+	var widths: Array = []
+	var total := 0.0
 	for uid in _enemy_order:
-		var actor: FigureActor = _actors[uid]
-		var width := float(actor.definition.get("width", 1))
-		_move(actor, ENEMY_FRONT + (cursor + (width - 1.0) / 2.0) * SLOT, duration)
-		cursor += width
+		var unit: FigureActor = _actors[uid]
+		var w := maxf(unit.footprint(), float(unit.definition.get("width", 1)) * SLOT)
+		widths.append(w)
+		total += w
+	var room := float(VIEW.x) - ENEMY_FRONT + SLOT / 2.0 - 6.0
+	var squeeze := minf(1.0, room / maxf(total, 1.0))
+	var cursor := ENEMY_FRONT - SLOT / 2.0
+	for i in _enemy_order.size():
+		var w: float = widths[i] * squeeze
+		_move(_actors[_enemy_order[i]], cursor + w / 2.0, duration)
+		cursor += w
 
 
 func _move(actor: FigureActor, x: float, duration: float) -> void:

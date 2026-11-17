@@ -49,6 +49,11 @@ var _material: ShaderMaterial
 var _time := 0.0
 var _height := 40.0
 var _sparkle := 0  # 0 none, 1 light (F3), 2 strong (recipes)
+## Creatures (enemies) are one sprite: where they throw from, whether they hover.
+var _creature_hand := Vector2(8, -20)
+var _floating := false
+var _wispy := false
+var _revive_time := -1.0
 
 
 func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) -> void:
@@ -58,8 +63,17 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 	uid = int(unit_snapshot["uid"])
 	suit = String(unit_snapshot.get("suit", unit_definition.get("suit", "coins")))
 	ranged = FigureArt.is_ranged(String(unit_definition.get("id", "")))
-	var look := FigureArt.look_for_enemy(unit_definition) if enemy else FigureArt.look_for_figure(unit_definition)
-	_parts = FigureArt.build(look)
+	var id := String(unit_definition.get("id", ""))
+	var look := {}
+	if enemy and CreatureArt.has_art(id):
+		var art := CreatureArt.build(id)
+		_parts = {"ghost": art["body"], "dim": {"H": art["H"], "tw": art["W"], "leg": 0}}
+		_creature_hand = art["hand"]
+		_floating = art["float"]
+		_wispy = id in ["beggar_ghost", "the_changer", "mirror_coin"]
+	else:
+		look = FigureArt.look_for_enemy(unit_definition) if enemy else FigureArt.look_for_figure(unit_definition)
+		_parts = FigureArt.build(look)
 	_ghost = _parts.has("ghost")
 	_height = float(_parts["dim"]["H"])
 	var stage := int(unit_definition.get("fusion", {}).get("stage", 0))
@@ -106,7 +120,13 @@ func _process(delta: float) -> void:
 
 func _pose() -> void:
 	if _ghost:
-		_sprites["ghost"].position = Vector2(0, round(sin(_time * 3.0 + home_x) * 1.5))
+		# One-sprite creatures: hover or hop, lean into attacks.
+		var sprite: Sprite2D = _sprites["ghost"]
+		var y: float = round(sin(_time * 3.0 + home_x) * 1.5) - 2.0 if _floating else bob
+		if walking:
+			y -= absf(step) * 2.0
+		sprite.position = Vector2(0, y)
+		sprite.rotation = _snap(clampf(-arm * 0.2, -0.35, 0.35))
 		return
 	var d: Dictionary = _parts["dim"]
 	var hip_y := -float(d["leg"]) + bob
@@ -144,9 +164,14 @@ func _snap(angle: float) -> float:
 ## Where projectiles start (the front hand, in stage coordinates).
 func hand_position() -> Vector2:
 	if _ghost or not _sprites.has("weapon"):
-		return position + Vector2(0, -_height * 0.6)
+		return position + Vector2(_creature_hand.x * _rig.scale.x, _creature_hand.y)
 	var local: Vector2 = _sprites["weapon"].position
 	return position + Vector2(local.x * _rig.scale.x, local.y)
+
+
+## How much room the figure needs in its row (wide creatures need more).
+func footprint() -> float:
+	return maxf(24.0, float(_parts["dim"]["tw"]) * 0.62) if _ghost else 24.0
 
 
 func center() -> Vector2:
@@ -158,7 +183,8 @@ func top() -> Vector2:
 
 
 func hit_rect() -> Rect2:
-	return Rect2(position + Vector2(-12, -_height - 4), Vector2(24, _height + 8))
+	var half := clampf(float(_parts["dim"]["tw"]) * 0.5, 10.0, 40.0) if _ghost else 12.0
+	return Rect2(position + Vector2(-half, -_height - 12), Vector2(half * 2.0, _height + 26))
 
 
 func apply_snapshot(new_snapshot: Dictionary) -> void:
@@ -247,11 +273,22 @@ func die(duration: float) -> void:
 	await tween.finished
 
 
+## Collapses, then a beam of light lifts the figure back up.
 func revive(duration: float) -> void:
+	var tween := create_tween()
+	tween.tween_property(_rig, "rotation", -1.3 if not is_enemy else 1.3, duration * 0.25)
+	tween.parallel().tween_property(_rig, "modulate", Color(0.35, 0.35, 0.4), duration * 0.25)
+	tween.tween_callback(func() -> void:
+		_revive_time = _time
+		_revive_duration = duration * 0.75)
+	tween.tween_property(_rig, "rotation", 0.0, duration * 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(_rig, "modulate", Color(2.0, 2.0, 1.8), duration * 0.3)
+	tween.tween_property(_rig, "modulate", Color.WHITE, duration * 0.3)
+	await tween.finished
 	dead = false
-	_rig.scale.y = 1.0
-	_rig.modulate = Color(2.0, 2.0, 2.0, 0.0)
-	create_tween().tween_property(_rig, "modulate", Color.WHITE, duration)
+
+
+var _revive_duration := 0.5
 
 
 var _death_time := -1.0
@@ -269,13 +306,22 @@ func _death_style() -> String:
 func _draw_fx() -> void:
 	var statuses: Dictionary = snapshot.get("statuses", {})
 	var h := _height
+	if _revive_time >= 0.0:
+		var q := (_time - _revive_time) / maxf(_revive_duration, 0.05)
+		if q < 1.0:  # beam of light and a soul sinking back in
+			var a := 1.0 - q
+			_fx.draw_rect(Rect2(-3, -140, 6, 140), Color(1.0, 0.95, 0.75, 0.35 * a))
+			_fx.draw_rect(Rect2(-1, -140, 2, 140), Color(1.0, 1.0, 0.9, 0.7 * a))
+			_fx.draw_rect(Rect2(Vector2(-1, -h - 30 + q * (h + 10)).round(), Vector2(2, 3)), Color(0.6, 0.85, 1.0, a))
 	if not dead:
-		# Thin health bar under the feet.
+		# Thin health bar, then attack and health as numbers under the feet.
 		var max_health: int = maxi(int(snapshot.get("max_health", 1)), 1)
 		var health: int = clampi(int(snapshot.get("health", max_health)), 0, max_health)
-		var width := 16.0
-		_fx.draw_rect(Rect2(-width / 2 - 1, 3, width + 2, 3), PixelCanvas.OUTLINE)
-		_fx.draw_rect(Rect2(-width / 2, 4, width * health / max_health, 1), Color("c0303a") if is_enemy else Color("3fbf5a"))
+		var width := 18.0
+		_fx.draw_rect(Rect2(-width / 2 - 1, 2, width + 2, 3), PixelCanvas.OUTLINE)
+		_fx.draw_rect(Rect2(-width / 2, 3, width * health / max_health, 1), Color("c0303a") if is_enemy else Color("3fbf5a"))
+		_draw_stats(int(snapshot.get("effective_attack", 0)), health)
+		_draw_statuses(statuses, h)
 		if int(statuses.get("shield", 0)) > 0:  # light bowl in front
 			var dir := -1.0 if is_enemy else 1.0
 			for i in 12:
@@ -319,7 +365,7 @@ func _draw_fx() -> void:
 			_:
 				for i in 14:
 					var p := Vector2(-8 + (i * 7) % 17 + sin(q * 6 + i) * 2, -6 - (i * 5) % int(maxf(h * 0.7, 1)) - q * 26)
-					_fx.draw_rect(Rect2(p.round(), Vector2(1, 2)), Color(0.62, 0.94, 1.0, 1.0 - q) if _ghost else Color(0.35, 0.3, 0.35, 1.0 - q))
+					_fx.draw_rect(Rect2(p.round(), Vector2(1, 2)), Color(0.62, 0.94, 1.0, 1.0 - q) if _wispy else Color(0.35, 0.3, 0.35, 1.0 - q))
 	# A soul rises from fallen player figures.
 	if dead and not is_enemy and _death_time >= 0.0:
 		var q := clampf((_time - _death_time) / 1.2, 0.0, 1.0)
@@ -334,3 +380,81 @@ func _flames(h: float) -> void:
 		var col := Color("fff2a0") if ph < 0.3 else (Color("ffa030") if ph < 0.6 else Color("d8401a"))
 		col.a = 1.0 - ph * 0.8
 		_fx.draw_rect(Rect2(p.round(), Vector2(2 if ph < 0.4 else 1, 2)), col)
+
+
+# --- Pixel numbers and status icons ---------------------------------------------------
+
+const DIGITS := {
+	"0": "111101101101111", "1": "010110010010111", "2": "111001111100111", "3": "111001111001111",
+	"4": "101101111001001", "5": "111100111001111", "6": "111100111101111", "7": "111001001001001",
+	"8": "111101111101111", "9": "111101111001111",
+}
+## 5x5 icons for statuses (rows top to bottom).
+const ICONS := {
+	"burn": ["00100", "01100", "01110", "11111", "01110"],
+	"bleed": ["00100", "00100", "01110", "01110", "00100"],
+	"curse": ["01110", "10001", "10101", "10001", "01110"],
+	"shield": ["11111", "10101", "11111", "01110", "00100"],
+	"attack": ["001", "010", "100"],
+	"health": ["101", "111", "010"],
+}
+const STATUS_COLORS := {"burn": Color("ff8a2a"), "bleed": Color("e0263a"), "curse": Color("b06ae8"), "shield": Color("a8c4ea")}
+
+
+func _number_width(value: int) -> int:
+	return str(value).length() * 4 - 1
+
+
+func _draw_number(value: int, at: Vector2, color: Color) -> void:
+	var x := at.x
+	for ch in str(value):
+		var pattern: String = DIGITS.get(ch, "")
+		for i in pattern.length():
+			if pattern[i] == "1":
+				_fx.draw_rect(Rect2(x + i % 3, at.y + i / 3, 1, 1), color)
+		x += 4
+
+
+func _draw_icon(kind: String, at: Vector2, color: Color) -> void:
+	var rows: Array = ICONS[kind]
+	for y in rows.size():
+		for x in String(rows[y]).length():
+			if rows[y][x] == "1":
+				_fx.draw_rect(Rect2(at.x + x, at.y + y, 1, 1), color)
+
+
+## Attack (red) and health (green) under the feet, each with a tiny icon.
+func _draw_stats(attack: int, health: int) -> void:
+	var attack_w := 4 + _number_width(attack)
+	var health_w := 4 + _number_width(health)
+	var total := attack_w + 3 + health_w
+	var x := -float(total) / 2.0
+	_fx.draw_rect(Rect2(x - 2, 6, total + 4, 8), Color(0.03, 0.02, 0.04, 0.85))
+	_draw_icon("attack", Vector2(x, 8), Color("ff6a5a"))
+	_draw_number(attack, Vector2(x + 4, 7), Color("ff8a7a"))
+	x += attack_w + 3
+	_draw_icon("health", Vector2(x, 8), Color("5fd06a"))
+	_draw_number(health, Vector2(x + 4, 7), Color("8ef09a"))
+
+
+## Status icons with their stack count above the head.
+func _draw_statuses(statuses: Dictionary, h: float) -> void:
+	var entries: Array = []
+	for kind in ["shield", "burn", "bleed", "curse"]:
+		if int(statuses.get(kind, 0)) > 0:
+			entries.append([kind, int(statuses[kind])])
+	if entries.is_empty():
+		return
+	var widths: Array = entries.map(func(e: Array) -> int: return 6 + _number_width(e[1]))
+	var total := 0
+	for w in widths:
+		total += w + 2
+	total -= 2
+	var x := -float(total) / 2.0
+	var y := -h - 11.0
+	_fx.draw_rect(Rect2(x - 2, y - 1, total + 4, 8), Color(0.03, 0.02, 0.04, 0.8))
+	for i in entries.size():
+		var kind: String = entries[i][0]
+		_draw_icon(kind, Vector2(x, y + 0), STATUS_COLORS[kind])
+		_draw_number(entries[i][1], Vector2(x + 6, y + 0), Color.WHITE)
+		x += widths[i] + 2
