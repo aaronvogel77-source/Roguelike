@@ -121,13 +121,9 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_overlay.add_theme_stylebox_override("panel", _style)
 	body.add_child(_overlay)
-	# Level seal top centre in the rarity colour; fusions show their stage beside it.
+	# Level seal top centre in the rarity colour.
 	_level_seal = _seal_label(Vector2(card_size.x / 2 - 15, 6))
-	if stage > 0:
-		var fusion_seal := _seal_label(Vector2(card_size.x / 2 + 17, 8))
-		fusion_seal.text = "F%d" % stage
-		fusion_seal.size = Vector2(22, 18)
-		fusion_seal.add_theme_font_size_override("font_size", 11)
+	# Fusions show no seal: the vortex behind the figure marks them.
 
 	# No name on the card (it is in the info panel); the level seal sits on top.
 	var top_space := Control.new()

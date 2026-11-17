@@ -172,8 +172,8 @@ static func _fusion(w: int, h: int, ranks: Array, suit: String, stage: int) -> D
 	# fused figures, and one small gold stone per fusion stage at the bottom.
 	_gradient(c, w, h, Color(main["bg"][0]), Color(main["bg"][1]))
 	_fibres(c, w, h, Color(main["bg"][1]))
-	_watermark(c, w, h, suit, Color(_colors(main["frame"])[1], 0.22), false)
 	var frames: Array = ranks.map(func(r: String) -> Array: return _colors(TIERS.get(r, TIERS["page"])["frame"]))
+	_vortex(c, w, h, frames.map(func(f: Array) -> Color: return f[1]), stage)
 	_frame(c, w, h, frames)
 	var gold := _colors(TIERS["king"]["frame"])
 	for x in range(5, w - 5):  # a fine gold inner line
@@ -285,6 +285,30 @@ static func _rays(c: PixelCanvas, w: int, h: int, color: Color, count: int) -> v
 				if d < 1.0:
 					var base: Color = c.image.get_pixel(x, y)
 					c.image.set_pixel(x, y, base.lerp(Color(color.r, color.g, color.b), color.a * (1.0 - d)))
+
+
+## The fusion vortex behind the figure: spiral arms in the colours of the
+## fused figures turning into a bright core; more arms per fusion stage.
+static func _vortex(c: PixelCanvas, w: int, h: int, colors: Array, stage: int) -> void:
+	var center := Vector2(w / 2.0, h * 0.44)
+	var reach := minf(w, h) * 0.8
+	var arms := 2 + clampi(stage, 1, 3)
+	for y in h:
+		for x in w:
+			var d := Vector2(x, y) - center
+			var r := d.length() / reach
+			if r > 1.0:
+				continue
+			var a := atan2(d.y, d.x)
+			var spiral := fposmod(a * arms / TAU + log(r + 0.05) * 1.6, 1.0)
+			var arm := int(floor(fposmod(a / TAU * arms + log(r + 0.05) * 1.6 / 1.0, float(arms)))) % colors.size()
+			var strength := 1.0 - r * r
+			var band := 1.0 - absf(spiral - 0.5) * 2.0  # brightest in the middle of each arm
+			var tint: Color = colors[arm]
+			var base: Color = c.image.get_pixel(x, y)
+			var mixed := base.lerp(tint, clampf(band * strength * 0.85, 0.0, 0.8))
+			mixed = mixed.lerp(Color("fff6e0"), clampf((0.18 - r) * 4.0, 0.0, 0.6))  # bright core
+			c.image.set_pixel(x, y, mixed)
 
 
 static func _circle(c: PixelCanvas, cx: int, cy: int, r: int, color: Color) -> void:
