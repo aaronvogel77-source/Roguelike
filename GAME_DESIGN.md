@@ -249,6 +249,13 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Effekte:** Geschosse und Partikel, Treffer-Wucht (kurzes Einfrieren, Wackeln, Zurückstoßen, Schadenszahlen), Spezialangriff-Szene (Zoom, Porträt, Fähigkeitsname) bei Königen, Legenden, Bossen und Meisterfähigkeiten, Status sichtbar an der Figur (Brennen brennt, Blutung tropft, Fluch als violetter Schleier, Schild als Lichtschale)
 - **Tempo:** ×1 / ×2 / ×3 und Überspringen, Einstellung bleibt gespeichert
 
+### Figuren-Stil: Prunk & Reliquie (gewählt 2026-11-17)
+- **Material nach Rang:** Bube Eisen, Ritter Stahl, Königin Silber, König Gold, Ass Gold mit Edelsteinen. **Fusion obendrauf:** Vergoldung und Steine je Stufe, F3 leichtes Leuchten. **Schillernd (polychrom) nur bei geheimen Rezept-Figuren** – der Glanz erreicht erst mit Fusion und Rezepten seinen Höhepunkt
+- **Funkeln:** Nur F3-Fusionen (leicht) und Rezept-Figuren (deutlich); normale Figuren funkeln nicht
+- **Kleidung:** Verzierte Rüstungen und Gewänder mit Filigran; ein Edelstein auf der Brust in der Tarot-Farbe
+- **Rang:** zusätzlich über Umhang (Bube keiner bis König bodenlanger Hermelin) und Kronenhöhe
+- **Ausrüstung & Segen im Aussehen:** Nur besondere Gegenstände (selten, verflucht, einzigartig) und später besonders starke Segen verändern das Aussehen
+
 ## Phase 6 – Kampfsystem
 
 ### Runde 1 (beantwortet)
@@ -758,3 +765,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Fünf Designrichtungen ausgearbeitet (docs/designrichtungen.html): 1 Das Alte Blatt (Holzschnitt, umgekehrte Karten), 2 Neon-Séance (CRT, Ekstase-Mult), 3 Lebendes Grimoire (Buch, Siegel-Schrift), 4 Totentanz-Theater (Marionetten, Rampenlicht + 1 Eingriff), 5 Astrolabium (Sternenring, Konstellationen + Planetenstunde) | Auf Wunsch zur Auswahl vor M7/M8; nichts davon gebaut | – |
 | 2026-11-17 | Figuren & Kampfbühne: Seitenansicht, 64-px-Pixelkunst von Claude im Code (später ersetzbar), Gliederpuppen-Animation, Karten nur in Shop/Planung, minimale Werteanzeige, Pixel-Landschaften, Bewegung je Waffe, Tod je Farbe, Körper nach Rang, Fusionsgestalt mit erkennbaren Teilen, Gegner als Kreaturen mit riesigen Bossen, düster mit leuchtenden Effekten, Tempo ×1/×2/×3 + Überspringen | Spieler will echte Figuren statt Karten; ersetzt KI-Holzschnitt-Planung | 5 Designrichtungen; Isometrie/Frontal; handgemalt/3D/Comic; Einzelbild-Animation; KI-Bilder vom Spieler, Asset-Pakete |
 | 2026-11-17 | Fünf Pixel-Stilproben (docs/stilproben.html, animiert): 1 Heraldik (Wappenrock, Rang per Kopfbedeckung, Seltenheit als Borte), 2 Okkulter Orden (Roben, Rang = kreisende Siegel, Seltenheit = Bannkreis, Nebel-Aura), 3 Söldner (Rang = Rüstung, Seltenheit an der Waffe), 4 Prunk & Reliquie (Seltenheit = Material, Rang = Umhang/Krone, Glitzer), 5 Schattengestalten (Silhouette mit Lichtkante, Rang = schwebende Karte, Seltenheit = Heiligenschein, Rauch) | Auswahl vor Schritt 1 der Kampfbühne | – |
+| 2026-11-17 | Stil Prunk & Reliquie gewählt: Material nach Rang, Fusion obendrauf, Schillern nur bei Rezepten, Funkeln nur F3/Rezepte, nur besondere Gegenstände verändern das Aussehen | Seltenheit soll erst mit Fusion/Rezepten den Höhepunkt erreichen | Heraldik, Okkulter Orden, Söldner, Schattengestalten; Material nur nach Stufe/Fusion; Ausrüstung immer sichtbar |
