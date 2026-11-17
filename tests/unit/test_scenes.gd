@@ -166,7 +166,10 @@ func test_legendary_skin_in_a_chest_gets_its_reveal() -> void:
 	var face := Label.new()
 	var opening := PackOpening.create([{"face": face, "rarity": 5, "skin": "skin_frost_king"}], "Test")
 	add_child_autofree(opening)
-	await wait_seconds(1.2)
+	# Shake (~0.7 s) + dealing (~0.5 s); wait generously, CI machines are slower.
+	await wait_seconds(2.5)
+	assert_eq(opening._slots.size(), 1)
+	opening._ready_to_flip = true
 	opening._flip(opening._slots[0])
 	await wait_frames(2)
 	var reveals := opening.get_children().filter(func(c: Node) -> bool: return c is LegendaryReveal)
