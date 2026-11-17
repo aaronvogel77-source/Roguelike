@@ -70,7 +70,7 @@ func test_golden_oath_interest_and_doubled_gold() -> void:
 	run.pacts = ["golden_oath"]
 	run.gold = 60
 	assert_eq(run.interest(), 10)
-	assert_eq(run.reroll_price(), 2)
+	assert_eq(run.reroll_price(), 6)
 	assert_eq(run.battle_options()["gold_factor"], 2)
 	var midas := {"def": _db.figures["king_midas"], "level": 3}
 	var result := BattleSimulator.simulate([midas], [{"def": _db.enemies["vault_warden"], "level": 3}], 10, {"gold_factor": 2})

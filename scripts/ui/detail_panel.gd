@@ -8,6 +8,17 @@ var _subtitle: HBoxContainer
 var _body: RichTextLabel
 var _figures: Dictionary = {}  # figure definitions for fusion texts (loaded once)
 
+## Colors of the object categories, used everywhere the category is named.
+const CATEGORY_COLORS := {
+	"equipment": Color("b8c8dc"), "blessing": Color("ffd25a"), "tarot": Color(0.8, 0.65, 0.95),
+	"relic": Color(0.4, 0.85, 0.8), "pact": Color(0.9, 0.3, 0.38), "ability": Color("e0b44a"),
+}
+
+
+## A category label in its color, e.g. "Ausrüstung:".
+func _tag(key: String, color: Color) -> String:
+	return "[b][color=#%s]%s:[/color][/b]" % [color.to_html(false), tr(key)]
+
 
 func _init() -> void:
 	custom_minimum_size = Vector2(720, 0)
@@ -96,7 +107,7 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 		var values: Array = ability["values"]
 		var value: float = values[mini(level, values.size()) - 1]
 		var text := tr("ABIL_" + String(definition["id"]).to_upper())
-		lines.append("[b]" + Keywords.colorize(text.replace("{v}", NumberFormat.ability_value(ability["effect"], value))) + "[/b]")
+		lines.append(_tag("UI_CAT_ABILITY", CATEGORY_COLORS["ability"]) + " [b]" + Keywords.colorize(text.replace("{v}", NumberFormat.ability_value(ability["effect"], value))) + "[/b]")
 	var statuses: Dictionary = snapshot.get("statuses", {})
 	for status in UnitCard.STATUS_ORDER:
 		if statuses.get(status, 0) > 0:
@@ -107,27 +118,37 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 			])
 	var figure: Dictionary = extras.get("figure", {})
 	if not figure.is_empty():
-		if int(figure.get("bonus_attack", 0)) != 0 or int(figure.get("bonus_health", 0)) != 0:
-			lines.append(Keywords.colorize(tr("UI_BONUS_STATS") % [figure.get("bonus_attack", 0), figure.get("bonus_health", 0)]))
+		# Every category in its own color; equipment also shows its rarity.
 		if figure.has("equipment"):
 			var item: Dictionary = figure["equipment"]
-			var color: Color = ItemText.RARITY_COLORS[int(item["rarity"])]
-			lines.append("[color=#%s]%s[/color]" % [color.to_html(false),
-				tr("UI_EQUIPMENT") % ("%s (%s)" % [ItemText.equipment_name(item), ItemText.rarity_line(int(item["rarity"]))])])
+			var rarity := int(item["rarity"])
+			var rarity_color: Color = ItemText.RARITY_COLORS[rarity]
+			lines.append("%s [color=#%s][b]%s[/b] · %s[/color]" % [_tag("UI_CAT_EQUIPMENT", CATEGORY_COLORS["equipment"]),
+				rarity_color.to_html(false), ItemText.equipment_name(item), ItemText.rarity_line(rarity)])
 			for line in ItemText.equipment_lines(extras["db"], item):
 				lines.append("   " + Keywords.colorize(line))
-		var names: Array = []
+		if figure.has("blessing"):
+			lines.append("%s [color=#%s][b]%s[/b][/color] – %s" % [_tag("UI_CAT_BLESSING", CATEGORY_COLORS["blessing"]),
+				CATEGORY_COLORS["blessing"].to_html(false), ItemText.tarot_name(figure["blessing"]),
+				Keywords.colorize(ItemText.tarot_text(figure["blessing"]))])
+		if int(figure.get("bonus_attack", 0)) != 0 or int(figure.get("bonus_health", 0)) != 0:
+			lines.append("%s %s" % [_tag("UI_CAT_STRENGTH", CATEGORY_COLORS["tarot"]),
+				Keywords.colorize(tr("UI_BONUS_STATS") % [figure.get("bonus_attack", 0), figure.get("bonus_health", 0)])])
+		var relic_names: Array = []
+		var pact_names: Array = []
 		for source in extras.get("sources", []):
 			if source == "tarot_strength":
-				names.append(ItemText.tarot_name("strength"))
+				continue
 			elif source in extras["db"].items["pacts"]:
-				names.append(tr("PACT_" + String(source).to_upper()))
+				pact_names.append(tr("PACT_" + String(source).to_upper()))
 			else:
-				names.append(ItemText.relic_name(source))
-		if not names.is_empty():
-			lines.append("[color=#%s]%s[/color]" % [Emblem.COLORS["relic"].to_html(false), tr("UI_AFFECTED_BY") % ", ".join(names)])
-		if figure.has("blessing"):
-			lines.append(Keywords.colorize(tr("UI_BLESSING") % ItemText.tarot_name(figure["blessing"]) + " – " + ItemText.tarot_text(figure["blessing"])))
+				relic_names.append(ItemText.relic_name(source))
+		if not relic_names.is_empty():
+			lines.append("%s [color=#%s]%s[/color]" % [_tag("UI_CAT_RELICS", CATEGORY_COLORS["relic"]),
+				CATEGORY_COLORS["relic"].to_html(false), ", ".join(relic_names)])
+		if not pact_names.is_empty():
+			lines.append("%s [color=#%s]%s[/color]" % [_tag("UI_CAT_PACTS", CATEGORY_COLORS["pact"]),
+				CATEGORY_COLORS["pact"].to_html(false), ", ".join(pact_names)])
 	_body.text = "\n".join(lines)
 	show()
 

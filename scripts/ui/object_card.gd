@@ -34,7 +34,7 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 			emblem_kind = Emblem.EQUIPMENT_KINDS.get(item["base"], "sword")
 			title = ItemText.equipment_name(item)
 			border = ItemText.RARITY_COLORS[int(item["rarity"])]
-			subtitle = ItemText.rarity_name(int(item["rarity"]))  # short; the lines show the rest
+			subtitle = ItemText.rarity_name(int(item["rarity"]))  # rarity in its color under the name
 			lines = ItemText.equipment_lines(db, item)
 		"tarot":
 			emblem_kind = "tarot"
@@ -81,6 +81,11 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	emblem_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	emblem_box.add_child(Emblem.create(emblem_kind, 48))
 	column.add_child(emblem_box)
+	# Category label in the category color above the name.
+	var category_keys := {"equipment": "UI_CAT_EQUIPMENT", "tarot": "UI_CAT_TAROT", "relic": "UI_CAT_RELIC", "pact": "UI_CAT_PACT"}
+	if category_keys.has(kind):
+		var category_color: Color = DetailPanel.CATEGORY_COLORS[kind] if kind != "tarot" else Emblem.COLORS["tarot"]
+		column.add_child(_label(TranslationServer.translate(category_keys[kind]).to_upper(), 12, category_color))
 	column.add_child(_label(title, 18, Palette.PARCHMENT))
 	if subtitle != "":
 		column.add_child(_label(subtitle, 14, border))

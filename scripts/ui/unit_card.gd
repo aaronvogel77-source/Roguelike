@@ -316,7 +316,9 @@ func _rebuild_identity(level: int) -> void:
 	# Equipment and blessing marks for row figures.
 	var figure: Dictionary = extras.get("figure", {})
 	if figure.has("equipment"):
-		_identity.add_child(Emblem.create(Emblem.EQUIPMENT_KINDS.get(figure["equipment"]["base"], "sword"), 19))
+		var gear := Emblem.create(Emblem.EQUIPMENT_KINDS.get(figure["equipment"]["base"], "sword"), 19)
+		gear.color = ItemText.RARITY_COLORS[int(figure["equipment"]["rarity"])]  # rarity at a glance
+		_identity.add_child(gear)
 	if figure.has("blessing"):
 		_identity.add_child(Emblem.create("blessing_" + String(figure["blessing"]), 19))
 	var sources: Array = extras.get("sources", [])

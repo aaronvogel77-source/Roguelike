@@ -532,3 +532,16 @@ SPECIAL_MIDAS_SCALES,Goldenes Gleichgewicht,Golden Balance
 SPECIAL_ASH_FLOOD_KING,Asche und Flut,Ash and Flood
 SPECIAL_BOSS_TAX_COLLECTOR,Pfändung,Seizure
 SPECIAL_BOSS_GOLDEN_WALL,Goldener Wall,Golden Rampart
+MARK_FREE_REROLLS,Marke: 2× gratis neu würfeln im nächsten Shop,Mark: 2 free rerolls in the next shop
+UI_REROLL_FREE,"Neu würfeln
+gratis (%d)","Reroll
+free (%d)"
+UI_CAT_EQUIPMENT,Ausrüstung,Equipment
+UI_CAT_BLESSING,Segen,Blessing
+UI_CAT_STRENGTH,Kraft,Strength
+UI_CAT_RELICS,Relikte,Relics
+UI_CAT_PACTS,Pakte,Pacts
+UI_CAT_ABILITY,Fähigkeit,Ability
+UI_CAT_TAROT,Tarot,Tarot
+UI_CAT_RELIC,Relikt,Relic
+UI_CAT_PACT,Pakt,Pact

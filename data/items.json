@@ -277,7 +277,8 @@
     "mega_pack",
     "souls",
     "royal_shop",
-    "experience"
+    "experience",
+    "free_rerolls"
   ],
   "events": {
     "chance": 0.5,

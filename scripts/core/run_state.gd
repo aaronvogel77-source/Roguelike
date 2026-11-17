@@ -16,6 +16,7 @@ const MAX_SLOTS := 6
 ## Shop price by rank (page, knight, queen, king).
 const RANK_PRICES := {"page": 3, "knight": 4, "queen": 6, "king": 8, "legend": 10}
 const SHOP_FIGURE_SLOTS := 3
+const REROLL_BASE := 5
 const BASE_INCOME := 4
 const GOLD_PER_INTEREST := 5
 const MAX_INTEREST := 5
@@ -77,6 +78,8 @@ var fusion_offer: Dictionary = {}
 var event: Dictionary = {}
 var fights_since_event := 0
 var reroll_count := 0
+## Free rerolls left in this shop (skip mark "free_rerolls").
+var free_rerolls := 0
 var enemy_options: Array = []
 var chosen_enemy: Dictionary = {}
 var rewards: Array = []
@@ -116,8 +119,12 @@ func figure_level(figure: Dictionary) -> int:
 	return level_for_xp(int(figure["xp"]))
 
 
+## Rerolling the shop: 5 gold, +1 per reroll this visit (free while a skip
+## mark's free rerolls last).
 func reroll_price() -> int:
-	return 1 + reroll_count + (1 if "golden_oath" in pacts else 0)
+	if free_rerolls > 0:
+		return 0
+	return REROLL_BASE + reroll_count + (1 if "golden_oath" in pacts else 0)
 
 
 ## Objects on a figure: equipment, blessing and every Strength card.
@@ -303,8 +310,11 @@ func insert_between(from_index: int, after_index: int) -> bool:
 func reroll() -> bool:
 	if stage != Stage.PLANNING or gold < reroll_price():
 		return false
-	gold -= reroll_price()
-	reroll_count += 1
+	if free_rerolls > 0:
+		free_rerolls -= 1
+	else:
+		gold -= reroll_price()
+		reroll_count += 1
 	shop.clear()
 	for i in SHOP_FIGURE_SLOTS:
 		shop.append(_random_figure_id(rng.stream("shop")))
@@ -376,7 +386,7 @@ func skip_fight() -> bool:
 			for figure in row:
 				if figure != null:
 					figure["xp"] = mini(int(figure["xp"]) + XP_PER_DUPLICATE, XP_FOR_LEVEL[2])
-		"mega_pack", "royal_shop":
+		"mega_pack", "royal_shop", "free_rerolls":
 			next_shop.append(enemy_options[0]["skip_mark"])
 	_advance_fight()
 	_next_enemy_choice()
@@ -1004,6 +1014,7 @@ func _roll_shop() -> void:
 		var knights := _figure_ids_of_rank("knight")
 		for i in 2:
 			shop[i] = knights[rng.stream("shop").randi_range(0, knights.size() - 1)]
+	free_rerolls = 2 if "free_rerolls" in next_shop else 0
 	next_shop.clear()
 
 
@@ -1048,7 +1059,7 @@ func to_dict() -> Dictionary:
 		"open_pack": open_pack.duplicate(true), "relics": relics.duplicate(), "tarots": tarots.duplicate(),
 		"pacts": pacts.duplicate(), "souls": souls, "next_shop": next_shop.duplicate(), "flags": flags.duplicate(),
 		"event": event.duplicate(true), "fights_since_event": fights_since_event,
-		"reroll_count": reroll_count, "enemy_options": enemy_options.duplicate(true),
+		"reroll_count": reroll_count, "free_rerolls": free_rerolls, "enemy_options": enemy_options.duplicate(true),
 		"chosen_enemy": chosen_enemy.duplicate(true), "rewards": rewards.duplicate(),
 		"next_uid": next_uid, "battles_won": battles_won, "last_income": last_income.duplicate(),
 		"fusion_offer": fusion_offer.duplicate(true),
@@ -1077,6 +1088,7 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.row = data["row"].duplicate(true)
 	run.shop = data["shop"].duplicate()
 	run.reroll_count = int(data["reroll_count"])
+	run.free_rerolls = int(data.get("free_rerolls", 0))
 	run.enemy_options = data["enemy_options"].duplicate(true)
 	run.chosen_enemy = data["chosen_enemy"].duplicate(true)
 	run.rewards = data["rewards"].duplicate()

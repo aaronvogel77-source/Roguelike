@@ -339,6 +339,20 @@ func _card_row(entries: Array, enemy: bool, reverse: bool) -> HBoxContainer:
 	return row
 
 
+## The own team as cards with all their data (equipment, blessing, fusion,
+## relic effects), back on the left and front on the right.
+func _own_team_row() -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", CARD_SPACING)
+	var team := _run.player_battle_team()
+	team.reverse()
+	for entry in team:
+		var card := UnitCard.for_entry(entry, entry["figure"], _db)
+		card.tapped.connect(_detail_panel.show_card)
+		row.add_child(card)
+	return row
+
+
 func _own_team_entries() -> Array:
 	var entries: Array = []
 	for figure in _run.row:
@@ -383,7 +397,7 @@ func _build_enemy_choice() -> void:
 	own.alignment = BoxContainer.ALIGNMENT_CENTER
 	own.add_theme_constant_override("separation", 16)
 	own.add_child(_label(tr("UI_YOUR_TEAM"), 20, Palette.MUTED))
-	own.add_child(_scaled(_card_row(_own_team_entries(), false, true), 0.62))
+	own.add_child(_scaled(_own_team_row(), 0.62))
 	column.add_child(own)
 	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
 
@@ -544,7 +558,8 @@ func _build_planning() -> void:
 	var seals := HBoxContainer.new()
 	seals.add_theme_constant_override("separation", 12)
 	seals.alignment = BoxContainer.ALIGNMENT_CENTER
-	var reroll := _seal(tr("UI_REROLL_SEAL") % _run.reroll_price(), 104, "gold", _on_reroll)
+	var reroll_text := tr("UI_REROLL_FREE") % _run.free_rerolls if _run.free_rerolls > 0 else tr("UI_REROLL_SEAL") % _run.reroll_price()
+	var reroll := _seal(reroll_text, 104, "gold", _on_reroll)
 	reroll.disabled = _run.gold < _run.reroll_price()
 	seals.add_child(reroll)
 	_undo_button = _seal(tr("UI_UNDO"), 104, "grey", _on_undo)
@@ -1859,7 +1874,7 @@ func _build_run_end() -> void:
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(label)
 	var own := CenterContainer.new()
-	own.add_child(_scaled(_card_row(_own_team_entries(), false, true), 0.8))
+	own.add_child(_scaled(_own_team_row(), 0.8))
 	column.add_child(own)
 	var again := _button(tr("UI_NEW_RUN"), Vector2(280, 72), _new_run)
 	again.size_flags_horizontal = Control.SIZE_SHRINK_CENTER

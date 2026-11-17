@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M6 abgeschlossen, Kampfbühne Schritt 1 abgeschlossen. Schritt 2 (eigenes Design je Figur, Fähigkeits-Effekte, Spezialangriff-Szene) gebaut (v0.9.0), wartet auf Feedback.
+**Status:** Umsetzung – M0–M6 abgeschlossen, Kampfbühne Schritt 1 abgeschlossen. Schritt 2 (eigenes Design je Figur, Fähigkeits-Effekte, Spezialangriff-Szene) gebaut (v0.9.0), Feedback-Runde v0.9.1 umgesetzt, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -350,7 +350,7 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 ### Runde 2 (beantwortet)
 - **Relikte:** **Beides.** Pro Figur 1 Segen-Slot, dazu **3 globale Relikt-Slots** für Joker-artige Team-Effekte.
 - **Shop nach jedem Kampf:** **3 Figuren + 2 Objekte** (Ausrüstung, Relikt oder Tarot-Karte)
-  - Neu würfeln: 1 Gold, +1 Gold je weiterem Neuwürfeln im selben Shop
+  - Neu würfeln: 5 Gold, +1 Gold je weiterem Neuwürfeln im selben Shop; Überspringen-Marke „Freies Würfeln“: 2× gratis im nächsten Shop; später sollen Relikte das Würfeln verbilligen
   - Seltene Angebote kosten **Seelen** statt Gold
 - **Gold-Wirtschaft (Startpunkt für den Prototyp):**
   - Startgold: ~~10~~ → **8** (M3-Feedback)
@@ -787,3 +787,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.8.3: Positiv beeinflusste Angriffs-/Lebenswerte gelb (Kampf und Karten); Figuren in Ereignissen verschiebbar, außer beim Grabräuber (nimmt die hinterste Figur); Preis-Münzen liegen nicht mehr über Infofenstern; Verkaufsfeld unten rechts; Gegneroptionen nach echter Stärke geordnet (schwerste = Schwer, Schwer bevorzugt teure Gegner); weniger Königinnen/Könige im Shop (Akt 1: 76/20/3/1 %); Wutentbrannter: wenn getroffen erhält der Angreifer Brennen 1/2/3; erstes Boss-Gefolge kleiner (Budget 1) | Spieler-Feedback | – |
 | 2026-11-17 | v0.8.4: Ereignis-Bildschirme teilen die Höhe zwischen Szene und eigener Reihe (Figuren deutlich größer), größere Schrift in den Angeboten; Karten insgesamt größer (112×164, größere Namen, Werte und Symbole); Ausrüstung und Segen im Kampf per Antippen sichtbar; „Nach dem Angriff“-Fähigkeiten wirken auch, wenn der Angreifer im selben Schlagabtausch fällt (gleichzeitige Treffer); Funkenträger Brennen 2/3/4 | Spieler-Feedback | Funkenträger mit mehr Leben |
 | 2026-11-17 | Kampfbühne Schritt 2 (v0.9.0): Eigenes Design für alle 16 Hofkarten, 4 Asse und 2 Rezept-Figuren (z. B. Münzknecht mit Lederweste und Geldbeutel, Goldgepanzerter mit Goldrüstung, die mit dem Gold von schlank bis massiv mit Stacheln wächst, König Midas mit goldenem Gewand, goldener Hand und Goldapfel, Funkenträger mit Kapuze und Fackel, Wutentbrannter mit Flammenhaar und Keule, Herrin der Glut mit Flammenkrone und Glutstab, Aschekönig mit Aschekrone und Flammenschwert, Messdiener in Leinen mit Weihrauchfass, Bluttrinker bleich mit Kelch und Vampirkragen, Kelch der Wiederkehr mit Schleier, Ertrunkener König mit Seetangkrone und Dreizack, Klingenlehrling mit Stirnband und Wurfmessern, Henker mit schwarzer Kapuze und Axt, Klare Klinge mit Federhut und Rapier, Richter mit Perücke und Zweihänder; Asse als Geister ihrer Farbe mit Heiligenschein); Fähigkeits-Effekte als Pixel-Geschosse und Funken in der Farbe der Wirkung; Spezialangriff-Szene (Abdunkeln, Kamera-Zoom, Name groß) für Könige, Asse, Rezept-Figuren, Bosse und Meisterfähigkeiten, einmal pro Figur und Kampf; Vorschau-Werkzeug tools/render_figures.gd | Schritt 2 | – |
+| 2026-11-17 | v0.9.1: Neu würfeln kostet 5 Gold (+1 je Wurf), neue Überspringen-Marke „2× gratis neu würfeln“, Relikte zum Verbilligen vorgemerkt; eigene Truppe in Gegnerauswahl und Run-Ende zeigt beim Antippen alle Infos (Ausrüstung, Segen, Fusion, Relikt-Wirkungen); Oberkategorien überall in fester Farbe (Ausrüstung hellstahl, Segen gold, Tarot violett, Relikt türkis, Pakt rot, Fähigkeit bernstein) mit Kategorie-Schild auf Objektkarten und farbigen Labels im Info-Fenster; Seltenheit als Farbe des Ausrüstungs-Symbols auf der Karte und farbiger Seltenheitsname | Spieler-Feedback | Reroll 3 Gold; Seltenheit als Sterne |

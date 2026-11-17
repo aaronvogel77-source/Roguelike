@@ -94,10 +94,17 @@ func test_move_swaps_figures() -> void:
 
 func test_reroll_price_rises() -> void:
 	var run := _planning_run()
-	assert_eq(run.reroll_price(), 1)
+	run.gold = 20
+	assert_eq(run.reroll_price(), 5)
 	run.reroll()
-	assert_eq(run.gold, RunState.START_GOLD - 1)
-	assert_eq(run.reroll_price(), 2)
+	assert_eq(run.gold, 15)
+	assert_eq(run.reroll_price(), 6)
+	run.free_rerolls = 2
+	assert_eq(run.reroll_price(), 0)
+	run.reroll()
+	run.reroll()
+	assert_eq(run.gold, 15, "two free rerolls")
+	assert_eq(run.reroll_price(), 6)
 
 
 func test_slots_cannot_be_bought() -> void:
