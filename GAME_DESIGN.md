@@ -419,11 +419,11 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
 |---|---|---|---|
 | Bube | **Münzknecht** | 1/4 | *Kampfbeginn:* erhält Schild 2 / 4 / 6 |
-| Ritter | **Goldgepanzerter** | 3/4 | *Kampfbeginn:* erhält +1 Leben pro 4 / 3 / 2 Gold im Besitz |
+| Ritter | **Goldgepanzerter** | 3/4 | *Kampfbeginn:* erhält Schild 1 pro 4 / 3 / 2 Gold im Besitz (nach Feedback statt Leben) |
 | Königin | **Goldene Waage** | 3/4 | *Bei Tod einer eigenen Figur:* **hinterste** eigene Figur erhält ×1,2 / ×1,35 / ×1,5 Angriff (Mult, stapelt) – geändert nach M5a-Feedback, vorher vorderste |
 | König | **König Midas** | 4/6 | *Kampfbeginn:* erhält ×(1 + Gold/20) / ×(1 + Gold/15) / ×(1 + Gold/10) Angriff (Mult) |
 
-*Profil:* Ein starker Spar-Build (Goldgepanzerter + Midas) steht gegen das Kaufen. Schild kommt nur vom Buben. Die Waage bringt Multiplikatoren für Opfer-Builds und verbindet sich mit Kelchen (Opfer).
+*Profil:* Ein starker Spar-Build (Goldgepanzerter + Midas) steht gegen das Kaufen. Schild kommt vom Buben und (goldabhängig) vom Goldgepanzerten. Die Waage bringt Multiplikatoren für Opfer-Builds und verbindet sich mit Kelchen (Opfer).
 
 ### Stäbe (Feuer) – Thema Brennen, Aggression
 | Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
@@ -555,7 +555,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | Duell | Sofortkampf gegen Elite: Sieg → Relikt + 2 Seelen, Niederlage → vorderste Figur verloren (kein Run-Ende) · ablehnen |
 | Seelenhändler | 1 Seele ↔ 5 Gold (beliebig oft) · Pakt zurückgeben (+2 Seelen) |
 
-**Überspringen:** Normale Kämpfe → **Marke** (in der Gegnerwahl vorher sichtbar): gratis Mega-Pack im nächsten Shop · +4 Seelen · 2 garantierte Königinnen/Könige im nächsten Shop · alle Figuren +1 Erfahrung. Kein Gold, keine Erfahrung, kein Ereignis. Akt-Boss überspringen: eine Figur opfern, kein Platz, keine Seelen. Der letzte Boss des Slice ist nicht überspringbar.
+**Überspringen:** Normale Kämpfe → **Marke** (in der Gegnerwahl vorher sichtbar): gratis Mega-Pack im nächsten Shop · +2 Seelen · 2 garantierte Ritter im nächsten Shop (nach Feedback: Königinnen/Könige zu stark) · alle Figuren +1 Erfahrung. Kein Gold, keine Erfahrung, kein Ereignis. Akt-Boss überspringen: eine Figur opfern, kein Platz, keine Seelen. Der letzte Boss des Slice ist nicht überspringbar.
 
 ### Regel-Bosse (Vertical Slice)
 **Geändert nach M4-Feedback:** Bosse sind jetzt **Regel + echte Boss-Figur** (Phase-3-Entscheidung „Regel-Bosse“ erweitert zu „Beides kombiniert“). Die Boss-Figur ist 2–3 Kartenplätze breit, steht vorne, und ihr Gefolge füllt die restlichen Plätze.
@@ -679,3 +679,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.6.2: Alle Ereignisse als eigene Szene (Themenfarbe, großes Emblem, ein Fach pro Angebot mit Beschreibung, Kosten, Wählen-Knopf; Duell zeigt das Champion-Team). Verfluchter Brunnen hielt sich nicht an die Seltenheit (10 Gold gab 3 Zusätze) → jetzt 3 Gold magisch, 6 Gold selten, 10 Gold Wahl 1 aus 3 seltenen. Ausrüstung allgemein: Zusätze wiederholen sich nicht und doppeln nie die Grundwirkung (Fackel ohne Extra-Brand); Test prüft alle Seltenheitsregeln | Feedback: Ereignisse besser darstellen, seltene Fackel mit 3 Zusätzen | – |
 | 2026-11-17 | v0.6.3: Neue Seltenheit **Einzigartig** (nur Verfluchter Brunnen, 10 Gold, 2,5 % Chance, dass eine der 3 Auswahlen einzigartig ist): Grundwirkung + 2 Zusätze + 1 einzigartiger Effekt, türkis-silberne Farbe, Strahlenglanz, Tag „Einzigartig!“. **Geheim:** Weder der Brunnen noch eine Beschreibung erwähnt die Chance. Pool: Phönixfeder (stirbt der Träger: 1× pro Kampf zurück mit halbem Leben), Blutdurst (heilt 50 % des verursachten Schadens), Kriegsherr (×1,5 Angriff), Seelenernte (Kill durch Angriff des Trägers: 15 % +1 Seele). Debug-Knopf „Unikat“ | Spieler-Wunsch: seltener besonderer Effekt beim Brunnen | 5/10/15 % Chance, Regenbogen-Glanz, Effekt ersetzt Zusatz |
 | 2026-11-17 | v0.6.4: Einzigartige Gegenstände bleiben eine geheime Belohnung (kein Hinweis im Brunnen). Ausrüstungs-Texte kürzer: Karte zeigt nur den Seltenheits-Namen, „Basis“ statt „Grundwirkung“, kurze Effekttexte („Nach Angriff: Brennen 1“), Unikat-Zeile „Einzigartig: Name – Wirkung“ | Feedback: geheim halten, kürzer, Unikat trotzdem erklären | – |
+| 2026-11-17 | v0.6.5: Überspringen-Marke gibt 2 garantierte Ritter statt Königinnen/Könige; Rad des Schicksals wieder mit knapper Beschreibung; Goldgepanzerter erhält zu Kampfbeginn Schild 1 pro 4/3/2 Gold statt Leben | Feedback: Marke zu stark, Text zu lang, Rüstung passt besser | Marke mit Rittern oder Königinnen |

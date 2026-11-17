@@ -116,9 +116,11 @@ func test_curse_lowers_attack_and_wears_off() -> void:
 
 # --- Coins ------------------------------------------------------------------------
 
-func test_gold_armored_gains_health_per_gold() -> void:
+func test_gold_armored_gains_shield_per_gold() -> void:
 	var result := BattleSimulator.simulate([_fig("gold_armored")], [_unit(0, 1)], 12)
-	assert_eq(_final(result, 1)["max_health"], 4 + 3, "12 gold / 4 = +3")
+	var shields := _events(result, "update").filter(func(e): return e["unit"]["uid"] == 1)
+	assert_eq(shields[0]["unit"]["statuses"].get("shield", 0), 3, "12 gold / 4 = shield 3")
+	assert_eq(_final(result, 1)["max_health"], 4, "health unchanged")
 
 
 func test_king_midas_multiplier_from_gold() -> void:

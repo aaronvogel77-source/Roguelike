@@ -49,6 +49,12 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			return not targets.is_empty()
 		"health_per_gold":
 			return _health_per_gold(battle, owner, int(value))
+		"shield_per_gold":
+			# Gold-Armored: +1 shield per N gold owned.
+			var shield := battle.gold / maxi(int(value), 1)
+			if shield <= 0:
+				return false
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_SHIELD, shield)
 		"midas":
 			return _midas(battle, owner, value)
 		"spread_burn_and_mult":

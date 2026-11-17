@@ -34,7 +34,7 @@ UI_DRAW,Gleichstand – zählt als Sieg,Draw – counts as victory
 UI_YOUR_TEAM,Dein Team,Your team
 UI_ENEMIES,Gegner,Enemies
 ABIL_COIN_SQUIRE,Kampfbeginn: erhält Schild {v}.,Battle start: gains {v} shield.
-ABIL_GOLD_ARMORED,Kampfbeginn: +1 Leben pro {v} Gold im Besitz.,Battle start: +1 health per {v} gold you own.
+ABIL_GOLD_ARMORED,Kampfbeginn: Schild 1 pro {v} Gold im Besitz.,Battle start: 1 shield per {v} gold you own.
 ABIL_GOLDEN_SCALES,Wenn eine eigene Figur stirbt: Die hinterste eigene Figur erhält ×{v} Angriff.,When an ally dies: your rearmost figure gains ×{v} attack.
 ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×(1 + gold / {v}).
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
@@ -218,7 +218,7 @@ TAROT_SUN_DESC,"Segen: Die Figur erhält ×1,25 Angriff.",Blessing: the figure g
 TAROT_HANGED_MAN,Der Gehängte,The Hanged Man
 TAROT_HANGED_MAN_DESC,Opfert eine Figur. Du erhältst ihren vollen Kaufpreis als Gold.,Sacrifice a figure. You gain its full price in gold.
 TAROT_WHEEL_OF_FORTUNE,Das Rad des Schicksals,Wheel of Fortune
-TAROT_WHEEL_OF_FORTUNE_DESC,"Eine Figur wechselt zufällig in eine andere Tarot-Farbe. Die Farbe zählt für Gebiets-Segen, Farb-Relikte und ab der Fusion für die Meisterfähigkeit.","A figure switches to a random other tarot suit. The suit counts for region blessings, suit relics and, with fusion, the master ability."
+TAROT_WHEEL_OF_FORTUNE_DESC,Eine Figur wechselt zufällig in eine andere Tarot-Farbe.,A figure switches to a random other tarot suit.
 PACK_EQUIPMENT,Schmiede-Pack,Forge Pack
 PACK_ARCANA,Arkana-Pack,Arcana Pack
 PACK_RELIC,Reliquien-Pack,Reliquary Pack
@@ -256,7 +256,7 @@ UI_SKIP_BOSS_HINT,"Tippe die Figur an, die geopfert wird",Tap the figure to sacr
 UI_INCOME_SOULS,+%d Seelen,+%d souls
 MARK_MEGA_PACK,Marke: gratis Mega-Pack im nächsten Shop,Mark: free mega pack in the next shop
 MARK_SOULS,Marke: +2 Seelen,Mark: +2 souls
-MARK_ROYAL_SHOP,Marke: 2 garantierte Königinnen/Könige im nächsten Shop,Mark: 2 guaranteed queens/kings in the next shop
+MARK_ROYAL_SHOP,Marke: 2 garantierte Ritter im nächsten Shop,Mark: 2 guaranteed knights in the next shop
 MARK_EXPERIENCE,Marke: alle Figuren +1 Erfahrung,Mark: all figures +1 experience
 PACT_BLOOD_PACT,Blutpakt,Blood Pact
 PACT_BLOOD_PACT_DESC,"Alle Figuren ×1,5 Angriff.",All figures ×1.5 attack.

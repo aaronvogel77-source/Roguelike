@@ -845,13 +845,13 @@ func _roll_shop() -> void:
 	packs.clear()
 	for i in SHOP_PACK_SLOTS:
 		packs.append(Items.roll_pack(db, rng.stream("packs")))
-	# Skip marks: a free mega pack / two guaranteed queens or kings.
+	# Skip marks: a free mega pack / two guaranteed knights.
 	if "mega_pack" in next_shop:
 		packs[0] = {"type": packs[0]["type"], "size": "mega", "free": true}
-	if "royal_shop" in next_shop:
-		var royals := _figure_ids_of_rank("queen") + _figure_ids_of_rank("king")
+	if "royal_shop" in next_shop:  # at most knights (queens/kings were too strong)
+		var knights := _figure_ids_of_rank("knight")
 		for i in 2:
-			shop[i] = royals[rng.stream("shop").randi_range(0, royals.size() - 1)]
+			shop[i] = knights[rng.stream("shop").randi_range(0, knights.size() - 1)]
 	next_shop.clear()
 
 
