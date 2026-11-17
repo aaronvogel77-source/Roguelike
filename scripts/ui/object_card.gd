@@ -70,7 +70,7 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	if compact:
 		var holder := CenterContainer.new()
 		holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		holder.add_child(Emblem.create(emblem_kind, card_size.y * 0.7))
+		holder.add_child(_symbol(emblem_kind, card_size.y * 0.7))
 		add_child(holder)
 		return
 	var column := VBoxContainer.new()
@@ -79,7 +79,7 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	add_child(column)
 	var emblem_box := CenterContainer.new()
 	emblem_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	emblem_box.add_child(Emblem.create(emblem_kind, 48))
+	emblem_box.add_child(_symbol(emblem_kind, 56))
 	column.add_child(emblem_box)
 	# Category label in the category color above the name.
 	var category_keys := {"equipment": "UI_CAT_EQUIPMENT", "tarot": "UI_CAT_TAROT", "relic": "UI_CAT_RELIC", "pact": "UI_CAT_PACT"}
@@ -157,3 +157,20 @@ func _label(text: String, font_size: int, color: Color) -> Label:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 		tapped.emit(self)
+
+
+## The object's own hand-drawn icon (each relic and tarot card has one), else
+## the emblem of its kind. Icons are scaled by whole pixels so they stay crisp.
+func _symbol(emblem_kind: String, symbol_size: float) -> Control:
+	var icon := HandmadeArt.icon("icon_" + String(entry.get("id", "")))
+	if icon == null:
+		return Emblem.create(emblem_kind, symbol_size)
+	var rect := TextureRect.new()
+	rect.texture = icon
+	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	var side := maxf(18.0, floorf(symbol_size / 18.0) * 18.0)
+	rect.custom_minimum_size = Vector2(side, side)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return rect
+
