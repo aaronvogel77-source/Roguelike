@@ -188,6 +188,12 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Farbe:** Eine Fusion zählt für **alle enthaltenen Farben** (Gebiets-Segen, Farb-Relikte)
 - **Umfang:** **Alles in M6**, inklusive geheimer Rezepte und geheimer Anlässe
 
+### M6 – Fusion, Runde 2 (beantwortet 2026-11-17)
+- **Werte:** Von Angriff und Leben jeweils der **höhere Wert + 1/1** (Beispiel: 2/2 + 4/3 → 5/4)
+- **Leveln nach Neustart:** Nur über **Kampfsiege und den Magier**, keine Duplikate mehr
+- **Fusions-Altar:** kostet **F1 2 · F2 3 · F3 4 Seelen**
+- **Ritualkerze:** seltene Karte in **Arcana-Packs (ca. 5 % pro Karte)**, manchmal auch im Schwarzmarkt-Mantel
+
 ## Phase 6 – Kampfsystem
 
 ### Runde 1 (beantwortet)
@@ -687,3 +693,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.6.4: Einzigartige Gegenstände bleiben eine geheime Belohnung (kein Hinweis im Brunnen). Ausrüstungs-Texte kürzer: Karte zeigt nur den Seltenheits-Namen, „Basis“ statt „Grundwirkung“, kurze Effekttexte („Nach Angriff: Brennen 1“), Unikat-Zeile „Einzigartig: Name – Wirkung“ | Feedback: geheim halten, kürzer, Unikat trotzdem erklären | – |
 | 2026-11-17 | v0.6.5: Überspringen-Marke gibt 2 garantierte Ritter statt Königinnen/Könige; Rad des Schicksals wieder mit knapper Beschreibung; Goldgepanzerter erhält zu Kampfbeginn Schild 1 pro 4/3/2 Gold statt Leben | Feedback: Marke zu stark, Text zu lang, Rüstung passt besser | Marke mit Rittern oder Königinnen |
 | 2026-11-17 | M6 Runde 1: Fusionswerte zurückhaltend, Neustart auf Stufe 1, Fusion zählt für alle enthaltenen Farben, geheime Rezepte und Anlässe direkt in M6 | Luft nach oben, Mischteams stärken | Summe + Bonus; höchste Stufe übernehmen; Geheimes erst mit M7 |
+| 2026-11-17 | M6 Runde 2: Fusion = Höchstwerte + 1/1, Leveln nur über Kampfsiege/Magier, Altar 2/3/4 Seelen, Ritualkerze selten in Arcana-Packs (+ Schwarzmarkt) | Zurückhaltende Werte, Seelen knapp | Hauptfigur + halber Partner; Duplikate; 1/2/3 oder fix 3; nur Schwarzmarkt/Ereignisse |
