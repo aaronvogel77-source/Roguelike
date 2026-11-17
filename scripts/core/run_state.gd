@@ -409,9 +409,13 @@ func _next_enemy_choice() -> void:
 func _roll_event() -> bool:
 	var rules: Dictionary = db.items["events"]
 	fights_since_event += 1
-	var stream := rng.stream("events")
-	if stream.randf() >= float(rules["chance"]) and fights_since_event < int(rules["pity_after"]):
+	# Events stay special: at most one per act, 50 % chance after a fight.
+	if int(flags.get("event_act", 0)) == act:
 		return false
+	var stream := rng.stream("events")
+	if stream.randf() >= float(rules["chance"]):
+		return false
+	flags["event_act"] = act
 	fights_since_event = 0
 	# The secret Blood Moon replaces an event now and then.
 	if stream.randf() < float(db.fusion["blood_moon_chance"]):
@@ -808,7 +812,8 @@ func fuse(main_index: int, partner_index: int, keep: Array = []) -> bool:
 				return false
 		result = _new_figure(main["def_id"])
 		result["fusion"] = {"parts": preview["parts"], "suits": preview["suits"], "abilities": kept,
-			"attack": preview["attack"], "health": preview["health"]}
+			"attack": preview["attack"], "health": preview["health"],
+			"partner": row[partner_index]["def_id"]}
 	for key in ["equipment", "blessing", "bonus_attack", "bonus_health", "strength", "cursed"]:
 		if main.has(key):
 			result[key] = main[key]

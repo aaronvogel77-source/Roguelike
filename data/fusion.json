@@ -1,7 +1,7 @@
 {
   "version": 1,
   "max_parts": 4,
-  "max_abilities": 3,
+  "max_abilities": 2,
   "stat_bonus": 1,
   "altar_costs": [
     0,

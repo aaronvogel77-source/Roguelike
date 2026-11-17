@@ -43,10 +43,10 @@ func test_fusion_takes_higher_stats_plus_one_and_restarts_at_level_one() -> void
 	assert_eq(entry["def"]["attack"], 5)
 	assert_eq(entry["abilities"].size(), 2)
 	assert_eq(entry["suits"], ["wands", "swords"])
-	assert_eq(entry["def"]["fusion_name"], tr("FUSION_PREFIX_SWORDS") + tr("FIG_SPARK_BEARER"))
+	assert_eq(entry["def"]["fusion_name"], tr("NAME_STEM_EXECUTIONER") + "-" + tr("NAME_CORE_SPARK_BEARER"))
 
 
-func test_more_than_three_abilities_need_a_choice() -> void:
+func test_more_than_two_abilities_need_a_choice() -> void:
 	var run := _run_with([_fig("spark_bearer"), _fig("executioner"), _fig("blood_drinker"), _fig("coin_squire")], "blood_moon")
 	run.fusion_offer = {"source": "blood_moon", "left": 2, "total": 2}
 	assert_true(run.fuse(0, 1))
@@ -54,12 +54,13 @@ func test_more_than_three_abilities_need_a_choice() -> void:
 	assert_true(run.fusion_offer.is_empty())
 	var preview := Fusion.preview(run, 0, 2)
 	assert_eq(preview["candidates"].size(), 4)
-	assert_eq(preview["keep"], 3)
+	assert_eq(preview["keep"], 2)
 	assert_eq(preview["stage"], 3, "two F1 make F3")
 	run.fusion_offer = {"source": "boss", "left": 1, "total": 1}
-	assert_false(run.fuse(0, 2), "a choice of 3 is needed")
+	assert_false(run.fuse(0, 2), "a choice of 2 is needed")
 	assert_false(run.fuse(0, 2, ["spark_bearer"]), "too few")
-	assert_true(run.fuse(0, 2, ["spark_bearer", "blood_drinker", "coin_squire"]))
+	assert_true(run.fuse(0, 2, ["spark_bearer", "blood_drinker"]))
+	assert_eq(run.row[0]["fusion"]["abilities"], ["spark_bearer", "blood_drinker"])
 	assert_eq(Fusion.stage_of(run.row[0]), 3)
 
 
@@ -67,9 +68,9 @@ func test_no_more_than_four_figures_and_no_duplicate_merge() -> void:
 	var run := _run_with([_fig("spark_bearer"), _fig("executioner"), _fig("coin_squire"), _fig("altar_server"), _fig("blade_apprentice")])
 	run.fusion_offer = {"source": "blood_moon", "left": 2, "total": 2}
 	assert_true(run.fuse(0, 1))
-	assert_true(run.fuse(0, 2))
+	assert_true(run.fuse(0, 2, ["spark_bearer", "coin_squire"]))
 	run.fusion_offer = {"source": "boss", "left": 1, "total": 1}
-	assert_true(run.fuse(0, 3, ["spark_bearer", "executioner", "coin_squire"]))
+	assert_true(run.fuse(0, 3, ["spark_bearer", "altar_server"]))
 	run.fusion_offer = {"source": "boss", "left": 1, "total": 1}
 	assert_eq(run.fusion_block(0, 4), "too_many")
 	assert_false(run.can_place("spark_bearer", 0), "duplicates do not merge into fusions")

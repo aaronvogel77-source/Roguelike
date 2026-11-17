@@ -20,20 +20,26 @@ func _event_run(id: String) -> RunState:
 	return run
 
 
-func test_events_appear_and_pity_guarantees_one() -> void:
-	var run := RunState.new_run(_db, 4)
-	var seen := false
-	for i in 3:
-		if run.stage == RunState.Stage.ENEMY_CHOICE:
-			run.choose_enemy(0)
-		if run.stage == RunState.Stage.PLANNING:
-			run.apply_battle_result({"victory": true})
-		if run.stage == RunState.Stage.REWARD:
-			run.skip_reward()
-		if run.stage == RunState.Stage.EVENT:
-			seen = true
-			break
-	assert_true(seen, "at the latest after 3 battles")
+func test_at_most_one_event_per_act() -> void:
+	var events_per_act := {}
+	for seed_value in 30:
+		var run := RunState.new_run(_db, seed_value)
+		var guard := 0
+		while run.stage not in [RunState.Stage.WON, RunState.Stage.LOST] and guard < 40:
+			guard += 1
+			if run.stage == RunState.Stage.ENEMY_CHOICE:
+				run.choose_enemy(0)
+			elif run.stage == RunState.Stage.PLANNING:
+				run.apply_battle_result({"victory": true})
+			elif run.stage == RunState.Stage.REWARD:
+				run.skip_reward()
+			elif run.stage == RunState.Stage.EVENT:
+				var key := "%d-%d" % [seed_value, run.act]
+				events_per_act[key] = int(events_per_act.get(key, 0)) + 1
+				run.resolve_event("leave")
+	assert_false(events_per_act.is_empty(), "events still happen")
+	for key in events_per_act:
+		assert_eq(events_per_act[key], 1, "never two events in one act")
 
 
 func test_altar_sacrifice_gives_souls() -> void:

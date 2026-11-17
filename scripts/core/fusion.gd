@@ -131,14 +131,16 @@ static func definition(db: ContentDb, figure: Dictionary) -> Dictionary:
 	var main: Dictionary = db.figures[figure["def_id"]]
 	var stage: int = data["parts"].size() - 1
 	var master := master_for(db, data["suits"]) if stage >= 3 else {}
-	var last_suit: String = data["suits"][-1]
+	# Name: first part from the (latest) partner, second from the main figure,
+	# e.g. Henker + Bluttrinker -> "Blut-Henker".
+	var partner: String = data.get("partner", data["parts"][1])
 	return {
 		"id": figure["def_id"], "rank": main["rank"], "suit": data["suits"][0],
 		"attack": int(data["attack"]), "health": int(data["health"]),
 		"fusion": {"stage": stage, "suits": data["suits"].duplicate(), "parts": data["parts"].duplicate(),
 			"abilities": data["abilities"].duplicate(), "master": master.get("id", "")},
-		"fusion_name": TranslationServer.translate("FUSION_PREFIX_" + last_suit.to_upper())
-			+ TranslationServer.translate(ContentDb.name_key(main)),
+		"fusion_name": TranslationServer.translate("NAME_STEM_" + partner.to_upper()) + "-"
+			+ TranslationServer.translate("NAME_CORE_" + String(figure["def_id"]).to_upper()),
 	}
 
 

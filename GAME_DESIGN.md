@@ -218,9 +218,9 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 ### M6 – Umsetzungsplan (freigegeben und umgesetzt in v0.7.0)
 - **Ablauf einer Fusion:** Hauptfigur + Partner aus der Reihe wählen. Die Fusion steht auf dem Platz der Hauptfigur, der Partnerplatz wird frei. Vorschau mit Werten, Fähigkeiten und Kosten, dann eine Bestätigung (unumkehrbar)
 - **Fusionsstufe** = Anzahl enthaltener Figuren − 1 (F1 = 2, F2 = 3, F3 = 4). Zwei F1 ergeben direkt F3. Mehr als 4 Figuren geht nicht. Legenden können fusioniert werden
-- **Fähigkeiten:** Sind es zusammen mehr als 3, wählt man 3 aus. Die Meisterfähigkeit auf F3 kommt zusätzlich dazu
+- **Fähigkeiten:** Sind es zusammen mehr als **2**, wählt man 2 aus (nach Feedback von 3 gesenkt). Die Meisterfähigkeit auf F3 kommt zusätzlich dazu
 - **Werte:** höherer Angriff und höheres Leben der beiden (ohne Stufenbonus) + 1/1. Start auf Stufe 1, Leveln nur über Kampfsiege und Magier
-- **Name:** Vorsilbe nach Farbe des Partners + Name der Hauptfigur (Münzen „Gold-“, Stäbe „Glut-“, Kelche „Tränen-“, Schwerter „Klingen-“). Die Karte zeigt die F-Stufe als Ornament-Ringe, F3 leuchtet in den enthaltenen Farben
+- **Name (nach Feedback):** Beide Namen verbunden – erster Teil vom (zuletzt fusionierten) Partner, zweiter Teil von der Hauptfigur, z. B. Henker + Bluttrinker → „Blut-Henker“, Funkenträger + König Midas → „Midas-Träger“. Die Karte zeigt die F-Stufe als Abzeichen und leuchtet, F3 in allen enthaltenen Farben
 - **Objekte:** Die Hauptfigur behält ihre Ausrüstung und Segen. Die Objekte des Partners gehen verloren (Warnhinweis in der Vorschau)
 - **Verkaufswert:** Summe der Verkaufswerte der enthaltenen Figuren
 - **Anlässe:**
@@ -592,7 +592,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | Pakt der Vorhut | Vorderste Figur ×2 Angriff und erhält alle Schilde des Teams | Hinterste Figur −1 Angriff |
 | Seelenhunger | Pro getötetem Gegner: deine Figuren +1/+1 bis Kampfende, 25 % Chance +1 Seele | Seelen-Pack +1 |
 
-**Ereignisse** (~40 % nach gewonnenen Kämpfen, spätestens nach 3 Kämpfen):
+**Ereignisse** (nach Feedback: höchstens **1 pro Akt**, 50 % Chance nach jedem gewonnenen Kampf, keine Garantie):
 
 | Ereignis | Wahlen |
 |---|---|
@@ -737,3 +737,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | M6 Runde 5: Münz+Schwert Bezahlte Klinge, Stab+Kelch Dampfwolke, Stab+Schwert Glühhieb, Kelch+Schwert Aderlass – alle 10 Meisterfähigkeiten stehen | – | Kopfgeld, Schuldschnitt; Heißer Quell, Siedepunkt; Schmiedefeuer, Brandwunde; Opferklinge, Blutrausch |
 | 2026-11-17 | M6 Runde 6: Rezepte Waage des Midas und König aus Asche und Flut, endgültig, Hinweis „???“ am Altar; Umsetzungsplan M6 erstellt | Entdeckerfreude mit sanftem Hinweis | Goldener Koloss, Schatzwächter; Wiedergänger, Vampirfürst; Rezept als F1; Wahrsagerin/kein Hinweis |
 | 2026-11-17 | M6 umgesetzt (v0.7.0): Fusion F1–F3 mit Fähigkeitswahl, 10 Meisterfähigkeiten, 2 geheime Rezepte, Fusions-Altar, Gratis-Fusion nach Akt-Boss, Ritualkerze (Arcana-Packs, Schwarzmarkt), Blutmond; reine Kombination ab 3 gleichen Farben; Überfluss teamweit | Plan freigegeben | – |
+| 2026-11-17 | v0.7.1: Fusionsname aus beiden Namen (Partner-Teil + Hauptfigur-Teil), max. 2 behaltene Fähigkeiten, Ereignisse höchstens 1 pro Akt (50 % nach jedem Kampf, keine Garantie mehr) | Feedback: Namen, zu viele Fähigkeiten, Ereignisse zu häufig | Titel nach Farben, Fantasienamen; 20 % ohne Garantie, fest 1 pro Akt |

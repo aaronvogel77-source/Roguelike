@@ -280,8 +280,7 @@
     "experience"
   ],
   "events": {
-    "chance": 0.4,
-    "pity_after": 3,
+    "chance": 0.5,
     "ids": [
       "altar",
       "black_market",
@@ -292,7 +291,8 @@
       "duel",
       "soul_trader",
       "fusion_altar"
-    ]
+    ],
+    "max_per_act": 1
   },
   "uniques": [
     {
