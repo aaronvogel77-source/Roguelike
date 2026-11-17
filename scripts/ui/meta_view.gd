@@ -228,7 +228,8 @@ func _play_chest(id: String) -> void:
 	var cards: Array = []
 	for found in _last_chest:
 		cards.append({"face": _find_face(found), "rarity": FIND_RARITY.get(found["kind"], 1),
-			"skin": found["id"] if found["kind"] == "skins" and found["new"] else ""})
+			# Every legendary skin find gets its big reveal, also a duplicate.
+			"skin": found["id"] if found["kind"] == "skins" else ""})
 	var opening := PackOpening.create(cards, tr("CHEST_" + id.to_upper()))
 	add_child(opening)
 

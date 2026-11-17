@@ -161,3 +161,14 @@ func test_main_menu_vault_and_grimoire_pages_build() -> void:
 		await wait_frames(1)
 	assert_true(is_instance_valid(menu))
 
+
+func test_legendary_skin_in_a_chest_gets_its_reveal() -> void:
+	var face := Label.new()
+	var opening := PackOpening.create([{"face": face, "rarity": 5, "skin": "skin_frost_king"}], "Test")
+	add_child_autofree(opening)
+	await wait_seconds(1.2)
+	opening._flip(opening._slots[0])
+	await wait_frames(2)
+	var reveals := opening.get_children().filter(func(c: Node) -> bool: return c is LegendaryReveal)
+	assert_eq(reveals.size(), 1, "the legendary reveal opens")
+
