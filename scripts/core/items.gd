@@ -154,8 +154,8 @@ static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: Random
 			var chance: float = db.items["packs"]["legend_chance"][pack["size"]]
 			var cards: Array = []
 			for i in count:
-				if (force_legend and i == 0) or rng.randf() < chance:
-					var legends := db.legendary_figures()
+				var legends := db.legendary_figures()
+				if not legends.is_empty() and ((force_legend and i == 0) or rng.randf() < chance):
 					result.append({"kind": "figure", "def_id": legends[rng.randi_range(0, legends.size() - 1)]["id"]})
 					continue
 				# Rarely a ritual candle (one free fusion) instead of a tarot card.

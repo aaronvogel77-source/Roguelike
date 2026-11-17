@@ -87,18 +87,45 @@ var next_uid := 1
 var battles_won := 0
 ## Breakdown of the last payout, for the UI.
 var last_income: Dictionary = {}
+## Meta setup of this run: {"occultist", "locked", "upgrades"} (empty = all
+## content open, novice rules - used by tests and the arena).
+var meta_options: Dictionary = {}
+var occultist: Dictionary = {}
 
 
-static func new_run(content: ContentDb, seed_value: int) -> RunState:
+static func new_run(content: ContentDb, seed_value: int, options: Dictionary = {}) -> RunState:
 	var run := RunState.new()
-	run.db = content
+	run._apply_meta(content, options)
 	run.rng = RngStreams.new(seed_value)
-	run.row.resize(START_SLOTS)
+	var upgrades: Dictionary = options.get("upgrades", {})
+	run.gold = int(run.occultist.get("start_gold", START_GOLD)) + int(upgrades.get("start_gold", 0))
+	run.souls = int(upgrades.get("start_soul", 0))
+	run.row.resize(int(run.occultist.get("slots", START_SLOTS)))
+	var start_id := String(run.occultist.get("start", ""))
 	var pages := run._figure_ids_of_rank("page")
-	var start_id: String = pages[run.rng.stream("start").randi_range(0, pages.size() - 1)]
-	run.row[0] = run._new_figure(start_id)
+	var random_id: String = pages[run.rng.stream("start").randi_range(0, pages.size() - 1)]
+	run.row[0] = run._new_figure(random_id if start_id == "" else start_id)
 	run._roll_enemy_options()
 	return run
+
+
+## Occultist rules, locked content and upgrades from the vault.
+func _apply_meta(content: ContentDb, options: Dictionary) -> void:
+	meta_options = options.duplicate(true)
+	occultist = {}
+	var wanted := String(options.get("occultist", "novice"))
+	for entry in content.meta.get("occultists", []):
+		if entry["id"] == wanted:
+			occultist = entry
+	var upgrades: Dictionary = options.get("upgrades", {})
+	if options.has("locked") or int(upgrades.get("pack_luck", 0)) > 0:
+		db = content.for_run(options.get("locked", {}), int(upgrades.get("pack_luck", 0)))
+	else:
+		db = content
+
+
+func upgrade_level(id: String) -> int:
+	return int(meta_options.get("upgrades", {}).get(id, 0))
 
 
 # --- Queries ---------------------------------------------------------------------
@@ -124,7 +151,10 @@ func figure_level(figure: Dictionary) -> int:
 func reroll_price() -> int:
 	if free_rerolls > 0:
 		return 0
-	return REROLL_BASE + reroll_count + (1 if "golden_oath" in pacts else 0)
+	var price := REROLL_BASE + reroll_count + (1 if "golden_oath" in pacts else 0)
+	if reroll_count == 0:  # vault upgrade: the first reroll of each shop is cheaper
+		price -= upgrade_level("cheap_reroll")
+	return price
 
 
 ## Objects on a figure: equipment, blessing and every Strength card.
@@ -182,8 +212,8 @@ func sell_value(figure: Dictionary) -> int:
 
 
 func interest_cap() -> int:
-	var cap := MAX_INTEREST
-	if "golden_oath" in pacts:
+	var cap := int(occultist.get("interest_cap", MAX_INTEREST))
+	if "golden_oath" in pacts and cap > 0:  # the fencer never earns interest
 		cap = 10
 	if "return_pact" in pacts:
 		cap = mini(cap, 3)
@@ -1062,13 +1092,13 @@ func to_dict() -> Dictionary:
 		"reroll_count": reroll_count, "free_rerolls": free_rerolls, "enemy_options": enemy_options.duplicate(true),
 		"chosen_enemy": chosen_enemy.duplicate(true), "rewards": rewards.duplicate(),
 		"next_uid": next_uid, "battles_won": battles_won, "last_income": last_income.duplicate(),
-		"fusion_offer": fusion_offer.duplicate(true),
+		"fusion_offer": fusion_offer.duplicate(true), "meta_options": meta_options.duplicate(true),
 	}
 
 
 static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	var run := RunState.new()
-	run.db = content
+	run._apply_meta(content, data.get("meta_options", {}))
 	run.rng = RngStreams.from_dict(data["rng"])
 	run.stage = int(data["stage"]) as Stage
 	run.region = data.get("region", "coins")

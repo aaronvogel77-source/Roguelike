@@ -7,6 +7,7 @@ const ENEMIES_PATH := "res://data/enemies.json"
 const REGIONS_PATH := "res://data/regions.json"
 const ITEMS_PATH := "res://data/items.json"
 const FUSION_PATH := "res://data/fusion.json"
+const META_PATH := "res://data/meta.json"
 const SUITS := ["coins", "wands", "cups", "swords"]
 const RANKS := ["page", "knight", "queen", "king"]
 ## Legendary figures (aces) only come from court packs.
@@ -20,6 +21,10 @@ var bosses: Dictionary = {}  # id -> definition (region, act, rule)
 var items: Dictionary = {}
 ## Fusion rules, the 10 master abilities and the secret recipes.
 var fusion: Dictionary = {}
+## Meta progression: currency rules, locked content, chests, upgrades, occultists.
+var meta: Dictionary = {}
+## Content not yet unlocked in the vault (only set on a run's own copy).
+var locked_figures: Array = []
 
 
 static func load_default() -> ContentDb:
@@ -30,6 +35,7 @@ static func load_default() -> ContentDb:
 		db.enemies[entry["id"]] = entry
 	db.items = _read_json(ITEMS_PATH)
 	db.fusion = _read_json(FUSION_PATH)
+	db.meta = _read_json(META_PATH)
 	var region_data := _read_json(REGIONS_PATH)
 	for entry in region_data["regions"]:
 		db.regions[entry["id"]] = entry
@@ -48,9 +54,34 @@ func regular_figures() -> Array:
 ## Legendary aces from arcana packs (secret recipe figures never appear there).
 func legendary_figures() -> Array:
 	var result := figures.values().filter(func(f: Dictionary) -> bool:
-		return f["rank"] == LEGEND_RANK and not f.get("recipe", false))
+		return f["rank"] == LEGEND_RANK and not f.get("recipe", false) and not f["id"] in locked_figures)
 	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	return result
+
+
+## A copy for one run: locked content is taken out of every pool, and the
+## pack-luck upgrade raises the chance of legendary cards in arcana packs.
+## Figure/relic definitions stay, so saved runs and lookups keep working.
+func for_run(locked: Dictionary, pack_luck: int = 0) -> ContentDb:
+	var copy := ContentDb.new()
+	copy.figures = figures
+	copy.enemies = enemies
+	copy.regions = regions
+	copy.bosses = bosses
+	copy.fusion = fusion
+	copy.meta = meta
+	copy.items = items.duplicate(true)
+	copy.locked_figures = locked.get("figures", []).duplicate()
+	var locked_relics: Array = locked.get("relics", [])
+	copy.items["relics"] = copy.items["relics"].filter(func(r: Dictionary) -> bool: return not r["id"] in locked_relics)
+	copy.items["tarot"] = copy.items["tarot"].filter(func(id: String) -> bool: return not id in locked.get("tarot", []))
+	copy.items["pacts"] = copy.items["pacts"].filter(func(id: String) -> bool: return not id in locked.get("pacts", []))
+	copy.items["events"]["ids"] = copy.items["events"]["ids"].filter(func(id: String) -> bool: return not id in locked.get("events", []))
+	if pack_luck > 0:
+		var chances: Dictionary = copy.items["packs"]["legend_chance"]
+		for size in chances:
+			chances[size] = float(chances[size]) * (1.0 + 0.5 * pack_luck)
+	return copy
 
 
 ## Normal enemies (without boss figures) - the pool the generator draws from.
