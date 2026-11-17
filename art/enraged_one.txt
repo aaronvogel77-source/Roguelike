@@ -20,3 +20,20 @@ b = 2a1008
 ...ssmmmmms....
 ....sssss......
 .....sss.......
+[torso pivot=9,16]
+..llllllllllssdd..
+..lllmmmmmmmssdd..
+.llfmmmmmmmmsssdd.
+.llFmmsmmsmmsssdd.
+.llfFmmssmmmfssdd.
+.lllFmmmmmmmFfsdd.
+.lllmmmmmmmmsFsdd.
+.lllmssmssmmsssdd.
+..lllmmmmmmmssdd..
+..lllssmssmmssdd..
+..lllmmmmmmmssdd..
+..lllmmmmmmmssdd..
+.bbbbbbbiIbbbbbbb.
+.nNNNNNNNNNNNNNNn.
+.lllmmmmmmmmssdd..
+.lllmmmmmmmmssdd..

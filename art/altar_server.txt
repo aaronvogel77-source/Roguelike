@@ -1,5 +1,8 @@
 kind = figure
 [palette]
+v = b0a890
+V = f0e8d0
+w = 6a6458
 h = 6a4a30
 H = 8a6a48
 [head pivot=6,13]
@@ -14,3 +17,27 @@ H = 8a6a48
 ...ssmmmmm...
 ....sssss....
 .....sss.....
+[torso pivot=6,13]
+..VVVVVVwww..
+..VVvGvvwww..
+.VVvvGvvvwww.
+.VVvvGGGvwww.
+.VVvvGvvvwww.
+.VVvvGvvvwww.
+..VVvvvvwww..
+..VVvvvvwww..
+..VVvvvvwww..
+..VVvvvvwww..
+nnnnnnnnnnnnn
+.Vnvvvvvwww..
+.Vnvvvvvwww..
+.VNvvvvvvwww.
+.VVvvvvvvwww.
+.VVvvvvvvwww.
+.VVvvvvvvwww.
+.VVvvvvvvwww.
+.VVvvvvvvwww.
+.VVvvvvvvwww.
+.VVvvvvvvwww.
+GGGGGGGGGGGGG
+.VVvvvvvvwww.

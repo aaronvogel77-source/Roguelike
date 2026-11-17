@@ -1,5 +1,9 @@
 kind = figure
 [palette]
+A = 4a4048
+B = 2e282e
+a = 1a161c
+S = e04a50
 d = 4a3e44
 s = 8c7e86
 m = c8bcc2
@@ -23,3 +27,20 @@ R = 8a0c18
 ...h..ssmm....
 .......sss....
 .......ss.....
+[torso pivot=9,16]
+..AAAAAAAAAAaakk..
+..AAABRRRRRBaakk..
+.AAABBBRRRBBaaakk.
+.AAABBBBRBBBaaakk.
+.ABBBBBBBBBBBBakk.
+.AAABBBrSrBBaaakk.
+.ABBBBBrRrBBBBakk.
+.AAABBBrRrBBaaakk.
+..AAABBBrBBBaakk..
+..AAABBBBBBBaakk..
+..AAABBBBBBBaakk..
+..AAABBBBBBBaakk..
+.AAABBBBBBBBaakk..
+.rrrrrrrrrrrrrrrr.
+.AAABBBBBBBBaakk..
+.AAABBBBBBBBaakk..

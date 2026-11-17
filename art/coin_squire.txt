@@ -1,5 +1,7 @@
 kind = figure
 [palette]
+b = 24160e
+B = 94683f
 e = 2f8a3e
 E = 7ad07a
 o = 2a1a10
@@ -19,3 +21,17 @@ o = 2a1a10
 ...smmmssd...
 ....sssss....
 .....ss......
+[torso pivot=6,13]
+..NNNNNNbbb..
+..NNnnnnbbb..
+.NBnnnnnnbbb.
+.NBnnnnnnbbb.
+.NBnnennnbbb.
+.NBnnnnnnbbb.
+..BNnnnnbbb..
+..NNnnnnbbb..
+..NNnnnnbbb..
+NNNNnnnnbbb..
+NnNbbbIbbbbbb
+NnnNnnnnbbb..
+nGnnnnnnbbb..

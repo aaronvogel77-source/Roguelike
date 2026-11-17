@@ -1,5 +1,10 @@
 kind = figure
 [palette]
+Z = e2ecff
+Y = 9db0d0
+x = 5a6c8c
+v = 7a3aa0
+V = c080ff
 b = 342c4a
 B = 54487a
 p = 7a6ca8
@@ -24,3 +29,21 @@ H = 9a5a2c
 ..hhhhhh.sss...
 ...hhhh..ss....
 ....hh.........
+[torso pivot=7,17]
+..ZZZZZZZZxxx..
+..ZZYYYYYYxxx..
+..WWWWWWWWWxx..
+.ZZZYYYYYYxxxx.
+.ZZZYYYYYYxxxx.
+.ZZZYYYYYYxxxx.
+.ZWWWWWWWWWxxx.
+.ZZZYYvVvYxxxx.
+..ZZYYYvYYxxx..
+..ZZYYYYYYxxx..
+..ZZYYYYYYxxx..
+..ZZYYYYYYxxx..
+.bbbbbGGbbbbbb.
+.ZZBYYYYYxxxx..
+.ZZBYYYYYxxxx..
+.ZZBYYYYYxxxx..
+.ZZZYYYYYxxxx..

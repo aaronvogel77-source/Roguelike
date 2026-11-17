@@ -1,5 +1,8 @@
 kind = figure
 [palette]
+z = 0e2a34
+b = c8c0a8
+B = e8e0d0
 d = 1a3a3a
 s = 3a6a66
 m = 8ab8ac
@@ -29,3 +32,39 @@ y = 7ac8e8
 ...gLPLLLLL......
 ....gLLLyL.......
 .....ssss........
+[torso pivot=9,19]
+..PPPPPPPPPPPPPPP..
+..QPQSPSSPSSPzzPz..
+..QQQSSSSSSSSzzzz..
+.QQQQSSSSSSSSzzzzz.
+.QQQQSSSGSSSSzzzzz.
+.QQQQSSSGyGSSzzzzz.
+.QQQQSSSGSSSSzzzzz.
+.QQQQSSSSSSSSzzzzz.
+.QQbQSSSSSSSSzzzzz.
+..QQbSSSSSSSSzzzz..
+..QbQSSSSSSSSzzzz..
+..QQQSSSSSSSSzzzz..
+..QQQSSSSSSSSBzzz..
+..QQQSSSSSSSSbBzz..
+.QQQSSSSSSSSzzzzz..
+.QQQSSSSSSSSzzzzz..
+.QQQSSSSSSSSzzzzz..
+.gggggggggggggggggg
+.QQQSSSSSSSSzzzzz..
+.QQQQSSSSSSSSzzzzz.
+.QQQQSSSSSSSSzzzzz.
+.QQQQSSSSSSSSzzzzz.
+.QQQPSSSSSSSSzzzzz.
+.QQQPSSSSSSSSzzzzz.
+.QQQQPSSSSSSSzzzzz.
+.QQQPSSSSSSSSzzzzz.
+.QQQQSSSSSSSPzzzzz.
+.QQQQSSSSSSSSPzzzz.
+.QQQQSSSSSSSPzzzzz.
+.QQQQSSSSSSSSzzzzz.
+.QQQQSbSSBSSSzzzzz.
+.QQQQSSSSSSSSzzzzz.
+.QQQQSSSSSSSSzzzzz.
+.QQQQSSSSSSSSzzzzz.
+yyyyyyyyyyyyyyyyyyy

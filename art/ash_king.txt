@@ -27,3 +27,23 @@ b = 4a4446
 ...BBBBBBBBB.....
 ....BBBBBB.......
 .....ssss........
+[torso pivot=9,19]
+..AAAAAAAAAAAaakk..
+..AAABBBBBBBBaakk..
+..AAABBBBBBBBaakk..
+.ABBBBBBBBBBBBBBBk.
+.AAAABBkkkkkBaaakk.
+.ABBBBBkoookBBBBBk.
+.AAAABBkkekkBaaakk.
+.ABBBBBBkokBBBBBBk.
+.AAAABBBBBBBBaaakk.
+..AoABBBBBBBBaakk..
+..AAoBBBBBBBBaakk..
+..AAAeBBBBBBBoakk..
+..AAABBBBBBBBeakk..
+..AAABBBBBBBBaakk..
+.AAABBBBBBBBaaakk..
+.AAABBBBBBBBaaakk..
+.cccccccGeGcccccc..
+.AAABBBBBBBBaaakk..
+.AAABBBBBBBBaaakk..

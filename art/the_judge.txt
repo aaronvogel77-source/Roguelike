@@ -1,5 +1,7 @@
 kind = figure
 [palette]
+z = 0a080c
+v = a65ae0
 y = 6a625a
 Y = a8a096
 Z = e2dcd2
@@ -25,3 +27,39 @@ b = 2a1a10
 ...ZYZ...........
 ....Z............
 .......sss.......
+[torso pivot=9,19]
+..JZZZZZZZZZZZZzz..
+..JJZZjjjjjjZZzzz..
+..JJGjjjjjjjjGzzz..
+.JJJJGjjjjjjjGzzzz.
+.JJJJjGjjjjjjGzzzz.
+.JJJJjjGjjjjjGzzzz.
+.JJJJjjcGGcjjzzzzz.
+.JJJJjjGTvGjjzzzzz.
+.JJJJjjcGGcjjzzzzz.
+..JJJjjjjjjjjzzzz..
+..JJJjjjjjjjjzzzz..
+..JJJjjjjjjjjzzzz..
+..JJJjjjjjjjjzzzz..
+..JJJjjjjjjjjzzzz..
+.JJJjjjjjjjjzzzzz..
+.JJJjjjjjjjjzzzzz..
+.JJJjjjjjjjjzzzzz..
+.ccccccccccccccccc.
+.JJJjjjjGjjjzzzzz..
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjGjjjjzzzzz.
+.JJJJjjjjjjjjzzzzz.
+.JJJJjjjjjjjjzzzzz.
+.JJJJjjjjjjjjzzzzz.
