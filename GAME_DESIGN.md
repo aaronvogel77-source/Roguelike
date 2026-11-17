@@ -194,6 +194,13 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Fusions-Altar:** kostet **F1 2 · F2 3 · F3 4 Seelen**
 - **Ritualkerze:** seltene Karte in **Arcana-Packs (ca. 5 % pro Karte)**, manchmal auch im Schwarzmarkt-Mantel
 
+### M6 – Fusion, Runde 3 (beantwortet 2026-11-17)
+- **Geheime Rezepte:** **2** im Münzen-Slice (Inhalt folgt)
+- **Blutmond** (geheimer Anlass, sehr seltenes Ereignis ca. 3 %): **Doppelte Fusion**, zwei Fusionsschritte auf einmal (z. B. direkt F1 → F3)
+- **Meisterfähigkeiten:**
+  - Münzen + Münzen – **Goldene Mauer:** Kampfbeginn: alle Verbündeten erhalten Schild 1 pro 5 Gold im Besitz (max. 5)
+  - Stäbe + Stäbe – **Feuerspringen:** Stirbt ein brennender Gegner, springt sein Brennen **doppelt** auf den nächsten Gegner über (stärkere Form des Aschepakts)
+
 ## Phase 6 – Kampfsystem
 
 ### Runde 1 (beantwortet)
@@ -694,3 +701,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.6.5: Überspringen-Marke gibt 2 garantierte Ritter statt Königinnen/Könige; Rad des Schicksals wieder mit knapper Beschreibung; Goldgepanzerter erhält zu Kampfbeginn Schild 1 pro 4/3/2 Gold statt Leben | Feedback: Marke zu stark, Text zu lang, Rüstung passt besser | Marke mit Rittern oder Königinnen |
 | 2026-11-17 | M6 Runde 1: Fusionswerte zurückhaltend, Neustart auf Stufe 1, Fusion zählt für alle enthaltenen Farben, geheime Rezepte und Anlässe direkt in M6 | Luft nach oben, Mischteams stärken | Summe + Bonus; höchste Stufe übernehmen; Geheimes erst mit M7 |
 | 2026-11-17 | M6 Runde 2: Fusion = Höchstwerte + 1/1, Leveln nur über Kampfsiege/Magier, Altar 2/3/4 Seelen, Ritualkerze selten in Arcana-Packs (+ Schwarzmarkt) | Zurückhaltende Werte, Seelen knapp | Hauptfigur + halber Partner; Duplikate; 1/2/3 oder fix 3; nur Schwarzmarkt/Ereignisse |
+| 2026-11-17 | M6 Runde 3: 2 geheime Rezepte, Blutmond = doppelte Fusion, Meister Münzen+Münzen Goldene Mauer, Stäbe+Stäbe Feuerspringen | Entdeckerfreude, Spar-Build-Krönung, Feuer-Kettenreaktion | 1/4 Rezepte; Blutmond ohne Fähigkeitsgrenze/behält Stufe; Zinsmacht, Kriegskasse; Ewiges Feuer, Feuersturm |
