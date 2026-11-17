@@ -517,7 +517,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 | Bube | **Funkenträger** | 2/2 | *Bei Angriff:* Ziel erhält Brennen 2 / 3 / 4 (nach Feedback verstärkt) |
 | Ritter | **Wutentbrannter** | 4/3 | *Wenn getroffen:* Der Angreifer erhält Brennen 1 / 2 / 3 (nach Feedback statt Angriff) |
 | Königin | **Herrin der Glut** | 3/5 | *Aura (dauerhaft):* Brennen-Schaden an Gegnern ×1,5 / ×2 / ×2,5 (Mult) |
-| König | **Aschekönig** | 6/4 | *Bei Tod eines Gegners:* dessen Brennen springt auf den nächsten Gegner, König erhält ×1,1 / ×1,2 / ×1,3 Angriff (Mult, stapelt) |
+| König | **Aschekönig** | 6/4 | *Nach dem Angriff:* Ziel erhält Brennen 3. *Bei Tod eines Gegners:* dessen Brennen springt auf den nächsten Gegner, König erhält ×1,1 / ×1,2 / ×1,3 Angriff (Mult, stapelt) |
 
 *Profil:* Brennen-Motor (Bube → Königin → König) plus ein eskalierender Frontkämpfer.
 *Technik-Hinweis:* „Aura“ ist ein Dauer-Modifikator (keiner der vier Auslöser). Der Baukasten bekommt dafür den Typ `aura`.
