@@ -232,6 +232,23 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Debug:** Knopf „Fusion“ (Blutmond mit aufgefüllter Reihe inkl. Rezept-Paar); der Altar ist im Ereignis-Durchlauf
 - **Bei der Umsetzung festgelegt:** Eine Farbe, die 3- oder 4-mal enthalten ist, zählt als „rein“ (sonst wäre z. B. Münzen + Münzen nur mit 4 gleichen Farben möglich). **Überfluss** wirkt für das ganze Team des Trägers. Fusionen können nicht per Spiegelkammer kopiert und nicht mit Duplikaten verschmolzen werden.
 
+### Figuren & Kampfbühne (Planung 2026-11-17, ersetzt den Kartenkampf und die bisherige M8-Grafikplanung)
+Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gewünscht sind **echte, detaillierte Figuren, die sichtbar gegeneinander kämpfen**.
+- **Kamera:** Seitenansicht, eigene Figuren links, Gegner rechts
+- **Stil:** Detaillierte **Pixelkunst**, Figurenhöhe **64 Pixel**. Farbstimmung düster, Effekte (Feuer, Gold, Magie) leuchten hell heraus
+- **Animation:** Gliederpuppen-Technik (Figur aus Teilen: Kopf, Rumpf, Arme, Waffe, Umhang), Drehungen in groben Stufen, damit Pixel scharf bleiben
+- **Bilder-Quelle:** Claude zeichnet alle Figuren zunächst selbst Pixel für Pixel im Code (feste Palette); einzelne Figuren können später durch KI- oder Künstlerbilder ersetzt werden
+- **Karten:** Im Shop und in der Planung bleiben Tarot-Karten (mit der Figur als Bild). Im Kampf kämpfen die Figuren auf dem Schlachtfeld
+- **Werte im Kampf:** Minimal – dünner Lebensbalken, Status-Symbole; alle Zahlen per Antippen
+- **Hintergrund:** Pixel-Landschaft mit mehreren Ebenen je Gebiet (Münzen: verfallene Schatzkammer, Goldberge, Kerzen, Staub)
+- **Bewegung:** Je nach Waffe – Nahkämpfer laufen zur Mitte und schlagen zu, Fernkämpfer schießen von ihrem Platz. Nur Darstellung: Die Regel „vorderste gegen vorderste“ bleibt
+- **Tod:** Je nach Farbe – Münzen zerspringen zu Gold, Stäbe verbrennen, Kelche zerfließen, Schwerter zerbrechen
+- **Vielfalt:** Nach Rang gestaffelt – 4 Körper (Bube, Ritter, Königin, König), je Farbe eigene Kleidung und Waffe; Asse und Rezept-Figuren als Sondergestalten
+- **Fusion:** Eigene Fusionsgestalt je Farbkombination, aber Teile der enthaltenen Figuren (Waffe, Kopfbedeckung, Umhang) bleiben erkennbar
+- **Gegner:** Eigene Kreaturen der Gier (Geister, Eintreiber, Drache …); Bosse 2–3-mal so groß
+- **Effekte:** Geschosse und Partikel, Treffer-Wucht (kurzes Einfrieren, Wackeln, Zurückstoßen, Schadenszahlen), Spezialangriff-Szene (Zoom, Porträt, Fähigkeitsname) bei Königen, Legenden, Bossen und Meisterfähigkeiten, Status sichtbar an der Figur (Brennen brennt, Blutung tropft, Fluch als violetter Schleier, Schild als Lichtschale)
+- **Tempo:** ×1 / ×2 / ×3 und Überspringen, Einstellung bleibt gespeichert
+
 ## Phase 6 – Kampfsystem
 
 ### Runde 1 (beantwortet)
@@ -739,3 +756,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | M6 umgesetzt (v0.7.0): Fusion F1–F3 mit Fähigkeitswahl, 10 Meisterfähigkeiten, 2 geheime Rezepte, Fusions-Altar, Gratis-Fusion nach Akt-Boss, Ritualkerze (Arcana-Packs, Schwarzmarkt), Blutmond; reine Kombination ab 3 gleichen Farben; Überfluss teamweit | Plan freigegeben | – |
 | 2026-11-17 | v0.7.1: Fusionsname aus beiden Namen (Partner-Teil + Hauptfigur-Teil), max. 2 behaltene Fähigkeiten, Ereignisse höchstens 1 pro Akt (50 % nach jedem Kampf, keine Garantie mehr) | Feedback: Namen, zu viele Fähigkeiten, Ereignisse zu häufig | Titel nach Farben, Fantasienamen; 20 % ohne Garantie, fest 1 pro Akt |
 | 2026-11-17 | Fünf Designrichtungen ausgearbeitet (docs/designrichtungen.html): 1 Das Alte Blatt (Holzschnitt, umgekehrte Karten), 2 Neon-Séance (CRT, Ekstase-Mult), 3 Lebendes Grimoire (Buch, Siegel-Schrift), 4 Totentanz-Theater (Marionetten, Rampenlicht + 1 Eingriff), 5 Astrolabium (Sternenring, Konstellationen + Planetenstunde) | Auf Wunsch zur Auswahl vor M7/M8; nichts davon gebaut | – |
+| 2026-11-17 | Figuren & Kampfbühne: Seitenansicht, 64-px-Pixelkunst von Claude im Code (später ersetzbar), Gliederpuppen-Animation, Karten nur in Shop/Planung, minimale Werteanzeige, Pixel-Landschaften, Bewegung je Waffe, Tod je Farbe, Körper nach Rang, Fusionsgestalt mit erkennbaren Teilen, Gegner als Kreaturen mit riesigen Bossen, düster mit leuchtenden Effekten, Tempo ×1/×2/×3 + Überspringen | Spieler will echte Figuren statt Karten; ersetzt KI-Holzschnitt-Planung | 5 Designrichtungen; Isometrie/Frontal; handgemalt/3D/Comic; Einzelbild-Animation; KI-Bilder vom Spieler, Asset-Pakete |
