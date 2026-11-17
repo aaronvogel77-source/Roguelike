@@ -428,6 +428,23 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Fusionen:** verflochtener Rahmen aus den Materialien/Farben der enthaltenen Figuren, F-Stufe als Siegel, ab F3 leuchtend
 - Legendäre Skins behalten ihren leuchtenden Rahmen in der Themenfarbe
 
+### Balancing-Runde 2 – Münzen, Farb-Builds, härterer Anfang, Belohnungen (beantwortet 2026-11-17, Freigabe ausstehend)
+- **Münzfiguren:** König Midas ×(1 + Gold/10) / /7 / /5 (vorher /20 /15 /10); Münzknecht behält Schild 2/4/6 und bringt nach jedem Sieg +1 / +1 / +2 Gold; Goldene Waage gibt zusätzlich zu Kampfbeginn der hintersten Figur ×(1 + 0,05 je 5 Gold) Angriff
+- **Farbboni (je Figur der Farbe in der Reihe, im Team-Info sichtbar):**
+  - Münzen: Zins-Obergrenze +1 je Münzfigur
+  - Schwerter: zu Kampfbeginn 1 Blutung auf jeden Gegner je 2 Schwertfiguren
+  - Kelche: jede Kelchfigur +2 Leben je Kelchfigur im Team
+  - Stäbe: zu Kampfbeginn 1 Brennen auf den vordersten Gegner je Stabfigur
+- **Härterer Anfang:** Startgold 8 → 6; reicht das laut Bots nicht, Gegner in Akt 1 etwas stärker
+- **Boss-Sieg – Schatzkammer:** zusätzlich zur bisherigen Belohnung 1 von 3 Schätzen wählen: ein Relikt, ein Ass-Pack mit garantierter Legende oder +12 Gold, mit eigener Animation
+- **Relikte** nur noch aus der Schatzkammer oder sehr selten (5 %) als Zusatzwahl in Arkana-Packs; das Relikt-Pack im Shop entfällt
+- **Pakte seltener:** Seelen-Pack 7 statt 4 Seelen, „Der Teufel“ erscheint halb so oft; max. 3 Pakte bleibt
+- **Schwere Gegnerbanden:** mittel +3 Gold (vorher +2), schwer +5 Gold (vorher +4) und ein Gratis-Beutepack (Ausrüstung oder Arkana)
+- **Schwache Buben stärker:** Messdiener 1/3 → 1/4, Heilung 2/3/4; Funkenträger 2/2 → 2/3
+- **Starke Karten gedämpft:** Klinge der Klarheit 4/4 → 4/3, Richter 5/5 → 5/4, Ertrunkener König Aufnahme 30/60/100 % → 25/50/80 %
+- **Nicht gewählt:** Neu würfeln günstiger, Zins je 4 Gold
+- Danach Messung mit den 6 Bots (je 150 Runs) und Vergleich mit v0.25.0
+
 ## Phase 11 – Benutzeroberfläche und Bedienung
 
 ### Runde 1 (beantwortet)
@@ -865,3 +882,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.24.4: Fusionskarten dezenter und eleganter – ruhiger Hintergrund ohne Strahlen, nur leichter Glanz (kein Funkeln/Polychrom), geflochtener Rahmen, feine Goldlinie innen, je Fusionsstufe ein kleiner Goldstein unten, schmales weiches Leuchten hinter der Karte | Feedback: zu viel Lichteffekt | – |
 | 2026-11-17 | v0.24.5: Fusionskarten ohne F-Siegel; stattdessen ein Fusionswirbel als Figurenhintergrund (Spiralarme in den Farben der verschmolzenen Figuren, heller Kern, mehr Arme je Stufe); Goldsteine unten bleiben als dezenter Stufen-Hinweis | Spieler-Wunsch | – |
 | 2026-11-17 | v0.25.0 Balancing mit 6 Strategie-Bots (Verschwender, Sparer, Leveler, Farbspezialist, Fusionist, Taktiker; tools/bots.gd, tools/balance_report.gd, Skill balance), je 150 Runs: Akt-1-Boss bleibt bewusst eine Mauer (Bots 16 %, Spieler-Wahl „so lassen“); Akt 2 war zu leicht (100 % in normalen Kämpfen) → Wachstum der Gegnerbudgets ×1,5 → ×3,2, Akt-2-Boss-Gefolge 3 → 6, Goldene Mauer 3/20 → 3/23; Ergebnis Akt 2: klein 96 %, groß 65 %, Boss 59 % (Bots) | Spieler: Akt 2 deutlich stärker, auch der Boss | Boss Leben 12→9, ohne Gefolge, weniger Diebstahl; Akt 2 nur etwas stärker |
+| 2026-11-17 | Balancing-Runde 2 geplant (Münzfiguren, Farbboni für alle vier Farben, Startgold 6, Schatzkammer nach Bossen, Relikte/Pakte seltener, Beutepack für schwere Banden, Buben stärker, Top-Karten gedämpft) | Spieler: Münzen zu schwach, Anfang zu leicht, Boss/schwere Wahl zu wenig belohnend | Stufen-Sets 2/4/6; einfache +1/+1 je Farbe; günstigeres Neu würfeln |
