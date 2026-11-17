@@ -1,0 +1,809 @@
+<title>Arcana – Pixel-Stilproben</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a dark gallery – five pixel scenes stacked, each with its lineup and the four rules it varies. Single dark look. */
+:root {
+  --bg: #100d13;
+  --panel: #19151d;
+  --line: #2f2836;
+  --fg: #ece6ef;
+  --muted: #a59bb0;
+  --gold: #e0b44a;
+  --font-display: "Pixelify Sans", "Courier New", monospace;
+  --font-body: "Spectral", Georgia, serif;
+  --font-label: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.wrap { max-width: 1100px; margin: 0 auto; }
+h1, h2, h3 { margin: 0; text-wrap: balance; font-family: var(--font-display); font-weight: 600; }
+p { margin: 0; }
+.label { font: 500 12px var(--font-label); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.intro { padding-block: 52px 28px; display: grid; gap: 16px; }
+.intro h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.05; color: var(--gold); }
+.intro p { max-width: 66ch; color: var(--muted); }
+.intro p b { color: var(--fg); font-weight: 600; }
+.toc { display: flex; flex-wrap: wrap; gap: 10px; }
+.toc a { color: var(--fg); text-decoration: none; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 7px 14px; font-size: 15px; }
+.toc a b { color: var(--gold); font: 500 12px var(--font-label); margin-right: 6px; }
+.toc a:hover { border-color: var(--gold); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.sample { border-top: 1px solid var(--line); padding-block: 44px; display: grid; gap: 20px; }
+.sample-head { display: grid; gap: 8px; }
+.sample-head h2 { font-size: clamp(28px, 4.6vw, 42px); }
+.sample-head p { max-width: 64ch; font-size: 18px; }
+.stage { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: #000; }
+canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; image-rendering: crisp-edges; }
+.banner { position: absolute; left: 50%; top: 14%; transform: translateX(-50%); font: 600 clamp(14px, 2.6vw, 28px) var(--font-display); color: #ffe08a; text-shadow: 0 0 12px #ff9a1a, 2px 2px 0 #3a1a00; letter-spacing: .06em; white-space: nowrap; opacity: 0; transition: opacity .15s; pointer-events: none; }
+.banner small { display: block; text-align: center; font-size: .55em; color: #f3e4c0; letter-spacing: .2em; }
+.banner.on { opacity: 1; }
+.lineup { display: grid; gap: 8px; }
+.lineup .stage { background: #0b090d; }
+.names { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 4px; font: 400 13px var(--font-label); color: var(--muted); }
+.names b { display: block; color: var(--fg); font: 600 15px var(--font-display); }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 14px; }
+.rule { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.rule h3 { font-size: 18px; color: var(--gold); }
+.rule p { font-size: 15.5px; }
+.next { margin-top: 36px; background: var(--panel); border: 1px solid var(--gold); border-radius: 10px; padding: 20px; display: grid; gap: 10px; }
+.next h2 { font-size: 26px; }
+.next p { max-width: 70ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font: 400 13px var(--font-label); color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border-radius: 2px; }
+</style>
+
+<main class="wrap">
+  <header class="intro">
+    <span class="label">Arcana · Figuren &amp; Kampfbühne · Stilproben</span>
+    <h1>Fünf Stilproben</h1>
+    <p>Jede Probe zeigt dieselbe kurze Kampfszene in der Schatzkammer der Münzen: <b>Goldgepanzerter</b> (Ritter) stürmt vor, <b>Münzknecht</b> (Bube) wirft eine brennende Münze, <b>König Midas</b> setzt seinen Spezialangriff ein, der Bettlergeist zerfällt. Darunter stehen alle vier Ränge nebeneinander, jeweils in einer anderen Seltenheit.</p>
+    <p>Die Proben unterscheiden sich in <b>Kleidung, Rangdarstellung, Seltenheit und Aura</b>. Alles ist Pixel für Pixel im Code gezeichnet (Figuren 44–62 Pixel hoch) und mit der geplanten Gliederpuppen-Technik bewegt. Mischen ist ausdrücklich erlaubt.</p>
+    <div class="legend"><span><i style="background:#8a7f70"></i>Gewöhnlich</span><span><i style="background:#4f8cff"></i>Magisch</span><span><i style="background:#ffc23a"></i>Selten</span><span><i style="background:linear-gradient(90deg,#ff5a5a,#ffd84a,#5aff8a,#5ab8ff,#c45aff)"></i>Legendär</span></div>
+    <nav class="toc" aria-label="Stilproben">
+      <a href="#s1"><b>1</b>Heraldik</a><a href="#s2"><b>2</b>Okkulter Orden</a><a href="#s3"><b>3</b>Söldner</a><a href="#s4"><b>4</b>Prunk &amp; Reliquie</a><a href="#s5"><b>5</b>Schattengestalten</a>
+    </nav>
+  </header>
+
+  <section class="sample" id="s1" data-variant="0">
+    <div class="sample-head"><span class="label">Stilprobe 1</span><h2>Heraldik</h2>
+      <p>Mittelalterlicher Hofstaat. Jede Figur trägt einen Wappenrock in der Farbe ihrer Tarot-Farbe mit dem Münz-Wappen auf der Brust. Klar, ordentlich, sofort lesbar.</p></div>
+    <div class="stage"><canvas class="scene" width="320" height="150"></canvas><div class="banner">GOLDRAUSCH<small>KÖNIG MIDAS</small></div></div>
+    <div class="lineup"><div class="stage"><canvas class="line" width="240" height="84"></canvas></div>
+      <div class="names"><span><b>Bube</b>Gewöhnlich</span><span><b>Ritter</b>Magisch</span><span><b>Königin</b>Selten</span><span><b>König</b>Legendär</span></div></div>
+    <div class="rules">
+      <div class="rule"><h3>Kleidung</h3><p>Wappenrock über Leder oder Kettenhemd, Farbe nach Tarot-Farbe (Münzen grün, Stäbe rot, Kelche blau, Schwerter grau), Wappen auf der Brust.</p></div>
+      <div class="rule"><h3>Rang</h3><p>An der Kopfbedeckung: Bube Federkappe, Ritter Topfhelm, Königin Schleier mit Diadem, König Krone und Bart.</p></div>
+      <div class="rule"><h3>Seltenheit</h3><p>Als Borte am Wappenrock: Bronze, Blau, Gold, bei Legenden in allen Farben wechselnd.</p></div>
+      <div class="rule"><h3>Aura</h3><p>Keine. Die Wirkung kommt allein über Kleidung und Farbe, sehr ruhiges Bild.</p></div>
+    </div>
+  </section>
+
+  <section class="sample" id="s2" data-variant="1">
+    <div class="sample-head"><span class="label">Stilprobe 2</span><h2>Okkulter Orden</h2>
+      <p>Alle Figuren sind Mitglieder eines Geheimbunds: Kapuzenroben, verborgene Gesichter mit leuchtenden Augen, Runen am Saum. Unter jedem Fuß glüht ein Bannkreis.</p></div>
+    <div class="stage"><canvas class="scene" width="320" height="150"></canvas><div class="banner">GOLDRAUSCH<small>KÖNIG MIDAS</small></div></div>
+    <div class="lineup"><div class="stage"><canvas class="line" width="240" height="84"></canvas></div>
+      <div class="names"><span><b>Bube</b>Gewöhnlich</span><span><b>Ritter</b>Magisch</span><span><b>Königin</b>Selten</span><span><b>König</b>Legendär</span></div></div>
+    <div class="rules">
+      <div class="rule"><h3>Kleidung</h3><p>Lange Roben mit Kapuze, Runen in der Tarot-Farbe am Saum, Gürtel mit Münzen. Gesichter bleiben im Schatten.</p></div>
+      <div class="rule"><h3>Rang</h3><p>Zahl der Siegel, die um den Kopf kreisen: Bube 1, Ritter 2, Königin 3, König 4.</p></div>
+      <div class="rule"><h3>Seltenheit</h3><p>Farbe des Bannkreises unter den Füßen: grau, blau, gold, bei Legenden regenbogenfarben pulsierend.</p></div>
+      <div class="rule"><h3>Aura</h3><p>Aufsteigende Nebelfäden in der Seltenheitsfarbe. Sehr okkult, aber unruhiger.</p></div>
+    </div>
+  </section>
+
+  <section class="sample" id="s3" data-variant="2">
+    <div class="sample-head"><span class="label">Stilprobe 3</span><h2>Söldner</h2>
+      <p>Abgekämpfte Krieger statt Hofstaat. Gedeckte Farben, Dreck, Rost und Flicken. Je höher der Rang, desto mehr Rüstung. Nur gute Waffen glänzen.</p></div>
+    <div class="stage"><canvas class="scene" width="320" height="150"></canvas><div class="banner">GOLDRAUSCH<small>KÖNIG MIDAS</small></div></div>
+    <div class="lineup"><div class="stage"><canvas class="line" width="240" height="84"></canvas></div>
+      <div class="names"><span><b>Bube</b>Gewöhnlich</span><span><b>Ritter</b>Magisch</span><span><b>Königin</b>Selten</span><span><b>König</b>Legendär</span></div></div>
+    <div class="rules">
+      <div class="rule"><h3>Kleidung</h3><p>Leder, Kettenhemd, Plattenteile, Fellmantel. Abgenutzt und dreckig, die Tarot-Farbe nur als Stoffstreifen.</p></div>
+      <div class="rule"><h3>Rang</h3><p>Über die Rüstung: Bube nur Leder, Ritter Kettenhemd mit Schulterplatten, Königin Halbplatte mit Umhang, König volle Platte mit Fell und Krone.</p></div>
+      <div class="rule"><h3>Seltenheit</h3><p>Nur an der Waffe: Die Klinge oder der Kopf leuchtet blau, gold oder in allen Farben.</p></div>
+      <div class="rule"><h3>Aura</h3><p>Keine. Am realistischsten und düstersten, Seltenheit muss man genauer ansehen.</p></div>
+    </div>
+  </section>
+
+  <section class="sample" id="s4" data-variant="3">
+    <div class="sample-head"><span class="label">Stilprobe 4</span><h2>Prunk &amp; Reliquie</h2>
+      <p>Die Figuren sind kostbare Reliquien. Das Material selbst zeigt die Seltenheit: Eisen, Silber, Gold, bei Legenden schillerndes Perlmutt. Edelsteine und Funkeln.</p></div>
+    <div class="stage"><canvas class="scene" width="320" height="150"></canvas><div class="banner">GOLDRAUSCH<small>KÖNIG MIDAS</small></div></div>
+    <div class="lineup"><div class="stage"><canvas class="line" width="240" height="84"></canvas></div>
+      <div class="names"><span><b>Bube</b>Gewöhnlich</span><span><b>Ritter</b>Magisch</span><span><b>Königin</b>Selten</span><span><b>König</b>Legendär</span></div></div>
+    <div class="rules">
+      <div class="rule"><h3>Kleidung</h3><p>Verzierte Rüstungen und Gewänder mit Filigran und einem Edelstein auf der Brust. Die Tarot-Farbe zeigt der Stein.</p></div>
+      <div class="rule"><h3>Rang</h3><p>Über die Länge des Umhangs und die Höhe der Krone: Bube ohne Umhang, König mit bodenlangem Hermelin.</p></div>
+      <div class="rule"><h3>Seltenheit</h3><p>Das ganze Metall wechselt: Eisen, Silber, Gold, schillernd. Auf einen Blick erkennbar.</p></div>
+      <div class="rule"><h3>Aura</h3><p>Funkelnde Glitzerpunkte, mehr je seltener. Wirkt wertvoll und „sammelbar“.</p></div>
+    </div>
+  </section>
+
+  <section class="sample" id="s5" data-variant="4">
+    <div class="sample-head"><span class="label">Stilprobe 5</span><h2>Schattengestalten</h2>
+      <p>Die Figuren sind Geister aus den Tarot-Karten: dunkle Silhouetten mit Lichtkante in der Tarot-Farbe und glühenden Augen. Hinter jedem schwebt seine Karte.</p></div>
+    <div class="stage"><canvas class="scene" width="320" height="150"></canvas><div class="banner">GOLDRAUSCH<small>KÖNIG MIDAS</small></div></div>
+    <div class="lineup"><div class="stage"><canvas class="line" width="240" height="84"></canvas></div>
+      <div class="names"><span><b>Bube</b>Gewöhnlich</span><span><b>Ritter</b>Magisch</span><span><b>Königin</b>Selten</span><span><b>König</b>Legendär</span></div></div>
+    <div class="rules">
+      <div class="rule"><h3>Kleidung</h3><p>Nur als Umriss: Umhänge, Helme, Kronen sind schwarze Formen mit einer leuchtenden Kante. Sehr düster.</p></div>
+      <div class="rule"><h3>Rang</h3><p>Eine schwebende Tarot-Karte hinter dem Rücken, mit 1 bis 4 Zeichen für Bube bis König.</p></div>
+      <div class="rule"><h3>Seltenheit</h3><p>Ein Heiligenschein: keiner, ein Ring, zwei Ringe, ein strahlender Kranz in allen Farben.</p></div>
+      <div class="rule"><h3>Aura</h3><p>Dunkler Rauch, der von den Figuren aufsteigt. Effekte leuchten dadurch besonders stark.</p></div>
+    </div>
+  </section>
+
+  <section class="next">
+    <span class="label">Wie geht es weiter?</span>
+    <h2>Welche Probe, welche Teile?</h2>
+    <p>Sag mir, welche Probe dir am besten gefällt, oder kombiniere: zum Beispiel „Kleidung aus 3, Rang aus 1, Seltenheit aus 4, Aura aus 5“. Danach baue ich die Kampfbühne im Spiel mit diesem Stil, zuerst die vier Münzen-Figuren und die ersten Gegner.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+"use strict";
+// ---------- Palettes ----------
+const OUT = "#120a0e";
+const R = {
+  skin:   ["#3a2418", "#7a4a32", "#b47a52", "#e0aa80"],
+  gold:   ["#4a3208", "#9a6a14", "#d9a530", "#ffe08a"],
+  iron:   ["#1e2024", "#3e434c", "#6b7380", "#a9b2bf"],
+  silver: ["#28324a", "#5a6c8c", "#9db0d0", "#e2ecff"],
+  leather:["#24160e", "#4a2e1c", "#704a2e", "#94683f"],
+  green:  ["#0e1e14", "#1e3c26", "#2f5e3a", "#4c8456"],
+  red:    ["#2a0c10", "#5a1820", "#8c2a30", "#b8464a"],
+  purple: ["#140a1c", "#2a173a", "#43275c", "#634086"],
+  shadow: ["#0a080d", "#1b1722", "#2b2535", "#3d3449"],
+  ghost:  ["#1c2630", "#3a5060", "#6a8a9a", "#b8d8e0"],
+  fur:    ["#3a3430", "#8a8278", "#d8d0c4", "#ffffff"],
+  hair:   ["#1a100a", "#3a2414", "#5c3a20", "#7a5230"],
+  beard:  ["#2a2420", "#6a625a", "#a8a096", "#d8d2c8"],
+  wood:   ["#1e1208", "#3c2414", "#5c3a20", "#7e5430"],
+  mud:    ["#1a1612", "#2e2820", "#463c30", "#5e5242"],
+};
+const RARITY = ["#8a7f70", "#4f8cff", "#ffc23a", null];
+const HUES = 8;
+function hsl(h, s, l) { return `hsl(${h},${s}%,${l}%)`; }
+function hueRamp(h) { return [hsl(h, 55, 18), hsl(h, 70, 38), hsl(h, 85, 58), hsl(h, 100, 82)]; }
+function rarityColor(r, k) { return r < 3 ? RARITY[r] : hsl((k * 360 / HUES) | 0, 95, 62); }
+function metalFor(r, k) { return [R.iron, R.silver, R.gold, hueRamp((k * 360 / HUES) | 0)][r]; }
+
+// ---------- Pixel painter ----------
+function mk(w, h) { const c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); x.imageSmoothingEnabled = false; return { c, x, w, h }; }
+function P(g, col, X, Y, w = 1, h = 1) { g.x.fillStyle = col; g.x.fillRect(X, Y, w, h); }
+function shade(g, X, Y, w, h, r) {
+  if (w <= 0 || h <= 0) return;
+  P(g, r[1], X, Y, w, h);
+  if (w > 1) P(g, r[0], X + w - 1, Y, 1, h);
+  if (h > 2) P(g, r[0], X, Y + h - 1, w, 1);
+  P(g, r[2], X, Y, 1, h - 1);
+  P(g, r[2], X, Y, w - 1, 1);
+  P(g, r[3], X, Y, 1, 1);
+}
+function blob(g, cx, cy, rx, ry, r) {
+  for (let y = -ry; y <= ry; y++) for (let x = -rx; x <= rx; x++) {
+    const d = (x * x) / (rx * rx + .5) + (y * y) / (ry * ry + .5);
+    if (d > 1) continue;
+    const v = -x / (rx + .5) - y / (ry + .5) + (1 - d) * .6;
+    P(g, r[v > 1.0 ? 3 : v > .25 ? 2 : v > -.55 ? 1 : 0], cx + x, cy + y);
+  }
+}
+function outline(g) {
+  const d = g.x.getImageData(0, 0, g.w, g.h), a = d.data, w = g.w, h = g.h;
+  const solid = (x, y) => x >= 0 && y >= 0 && x < w && y < h && a[(y * w + x) * 4 + 3] > 40;
+  const marks = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+    if (!solid(x, y) && (solid(x - 1, y) || solid(x + 1, y) || solid(x, y - 1) || solid(x, y + 1))) marks.push([x, y]);
+  for (const [x, y] of marks) P(g, OUT, x, y);
+  return g;
+}
+const part = (g, px, py) => ({ c: g.c, px, py });
+
+// ---------- Figure builder ----------
+// variant 0 heraldry · 1 occult · 2 mercenary · 3 relic · 4 shadow
+// rank 0 page · 1 knight · 2 queen · 3 king ; rarity 0..3 ; k = hue step (legendary)
+const DIM = [
+  { H: 44, leg: 14, torso: 13, tw: 11, arm: 12, head: 11, legW: 4 },
+  { H: 52, leg: 17, torso: 16, tw: 16, arm: 14, head: 12, legW: 5 },
+  { H: 56, leg: 18, torso: 17, tw: 13, arm: 14, head: 12, legW: 4 },
+  { H: 62, leg: 20, torso: 19, tw: 17, arm: 16, head: 13, legW: 5 },
+];
+function cloth(v, rank, rar, k) {
+  switch (v) {
+    case 0: return R.green;
+    case 1: return R.purple;
+    case 2: return [R.leather, R.iron, R.iron, R.iron][rank];
+    case 3: return metalFor(rar, k);
+    default: return R.shadow;
+  }
+}
+function rimColor(v, rar, k) { return v === 4 ? (rar === 3 ? rarityColor(3, k) : "#e0b44a") : null; }
+
+// Rounded torso seen from the side: broad shoulders, narrower waist.
+function torsoShape(g, X, Y, w, h, r) {
+  for (let y = 0; y < h; y++) {
+    const q = y / h;
+    const ww = q < .12 ? w - 2 : q < .45 ? w : q < .7 ? w - 2 : w - 1;
+    const x0 = X + Math.floor((w - ww) / 2);
+    for (let x = 0; x < ww; x++) {
+      const u = x / Math.max(1, ww - 1);
+      let tone = u < .18 ? 2 : u > .82 ? 0 : 1;
+      if (y === 0 || (q < .12 && u < .5)) tone = Math.min(3, tone + 1);
+      if (y === h - 1) tone = 0;
+      P(g, r[tone], x0 + x, Y + y);
+    }
+  }
+  P(g, r[3], X + 2, Y + 1);
+}
+
+function buildFigure(v, rank, rar, k) {
+  const d = DIM[rank];
+  const body = cloth(v, rank, rar, k);
+  const rim = rimColor(v, rar, k);
+  const trim = rarityColor(rar, k);
+  const skin = v === 4 ? R.shadow : R.skin;
+  const metal = v === 3 ? metalFor(rar, k) : v === 4 ? R.shadow : R.iron;
+  const parts = { dim: d };
+
+  // Legs (thigh + boot with cuff and toe)
+  for (const side of ["B", "F"]) {
+    const lw = d.legW, g = mk(lw + 5, d.leg + 3);
+    const pants = v === 1 ? R.purple : v === 4 ? R.shadow : v === 3 ? metalFor(rar, k) : v === 2 && rank >= 1 ? R.iron : R.leather;
+    const back = side === "B";
+    const tone = r => back ? [r[0], r[0], r[1], r[1]] : r;
+    shade(g, 1, 1, lw, d.leg - 5, tone(pants));
+    if (!back) P(g, pants[2], 2, Math.round(d.leg * .45), lw - 2, 1); // knee
+    const boot = v === 3 ? metalFor(rar, k) : v === 4 ? R.shadow : v === 2 ? R.mud : R.leather;
+    shade(g, 1, d.leg - 5, lw, 4, tone(boot));
+    shade(g, 1, d.leg - 2, lw + 2, 2, tone(boot)); // toe points forward
+    P(g, tone(boot)[3], 1, d.leg - 5, lw, 1); // cuff
+    if (rim && !back) P(g, rim, lw, 1, 1, d.leg - 2);
+    parts["leg" + side] = part(outline(g), 1 + (lw >> 1), 1);
+  }
+
+  // Torso (robes reach down over the legs)
+  {
+    const w = d.tw, robe = v === 1 ? d.leg - 3 : 0, h = d.torso + robe;
+    const g = mk(w + 4, h + 4), X = 2, Y = 2;
+    torsoShape(g, X, Y, w, h, body);
+    const belt = Y + d.torso - 3;
+    if (v === 0) { // tabard with trim and coin crest
+      const tx = X + 2, tw = w - 4;
+      for (let y = 1; y < h; y++) { P(g, R.green[y < 2 ? 2 : 1], tx, Y + y, tw, 1); P(g, R.green[2], tx, Y + y); P(g, R.green[0], tx + tw - 1, Y + y); }
+      P(g, trim, tx, Y + 1, 1, h - 1); P(g, trim, tx + tw - 1, Y + 1, 1, h - 1); P(g, trim, tx, Y + h - 1, tw, 1);
+      const cx = X + (w >> 1) - 2, cy = Y + 4;
+      P(g, R.gold[1], cx, cy, 4, 4); P(g, R.gold[2], cx, cy, 3, 3); P(g, R.gold[3], cx, cy); P(g, R.gold[0], cx + 3, cy + 1, 1, 3);
+      P(g, R.leather[0], X, belt, w, 1); P(g, R.gold[2], X + (w >> 1), belt);
+      if (rank !== 0) P(g, R.iron[2], X, Y, w, 1); // mail collar
+    } else if (v === 1) { // robe: rune hem, rope belt, front seam
+      for (let i = 1; i < w - 1; i += 2) P(g, "#ffd25a", X + i, Y + h - 3);
+      for (let i = 2; i < w - 1; i += 2) P(g, "#a87828", X + i, Y + h - 2);
+      P(g, R.gold[1], X, belt, w, 1); for (let i = 1; i < w; i += 3) P(g, R.gold[3], X + i, belt);
+      P(g, R.purple[0], X + (w >> 1) + 1, Y + 2, 1, h - 4);
+      P(g, R.purple[3], X + 1, Y + 2, 1, h - 6);
+    } else if (v === 2) { // mercenary: leather, mail, plates, fur
+      if (rank === 0) { P(g, R.leather[3], X + 2, Y + 3, 1, d.torso - 6); for (let y = 4; y < d.torso - 3; y += 3) P(g, R.leather[0], X + 3, Y + y, w - 5, 1); }
+      if (rank === 1) for (let y = 1; y < h - 1; y++) for (let x = 1 + (y & 1); x < w - 1; x += 2) P(g, R.iron[y < 3 ? 3 : 2], X + x, Y + y);
+      if (rank >= 2) { shade(g, X + 1, Y + 2, w - 2, 7, R.iron); P(g, R.iron[3], X + 2, Y + 3, w - 5, 1); P(g, R.iron[0], X + 1, Y + 8, w - 2, 1); }
+      if (rank === 3) shade(g, X - 1, Y - 1, w + 2, 4, R.fur);
+      P(g, R.green[2], X + (w >> 1), Y + 9, 2, d.torso - 11); // suit strip
+      for (const [dx, dy] of [[2, 6], [w - 3, 10], [4, d.torso - 2]]) P(g, R.mud[2], X + dx, Y + dy);
+      P(g, R.leather[0], X, belt, w, 1); P(g, R.iron[3], X + 2, belt);
+    } else if (v === 3) { // relic: filigree bands, gem on the chest
+      const m = metalFor(rar, k);
+      for (let y = 3; y < h - 1; y += 3) for (let x = 2; x < w - 2; x += 2) P(g, m[3], X + x, Y + y);
+      const cx = X + (w >> 1) - 1;
+      P(g, m[0], cx - 1, Y + 4, 5, 5); P(g, "#178a4a", cx, Y + 5, 3, 3); P(g, "#7cf0a8", cx, Y + 5); P(g, "#0b4a26", cx + 2, Y + 7);
+      P(g, m[0], X, belt, w, 1); P(g, m[3], X + 1, belt);
+    } else { // shadow: faint inner lines, rim light
+      for (let y = 4; y < h - 2; y += 4) P(g, "rgba(224,180,74,.3)", X + 3, Y + y, w - 6, 1);
+      for (let y = 1; y < h; y++) P(g, rim, X + w - 1 - (y / h < .12 || (y / h >= .45 && y / h < .7) ? 1 : 0), Y + y);
+    }
+    parts.torso = part(outline(g), X + (w >> 1), Y + d.torso);
+    parts.torsoH = d.torso;
+  }
+
+  // Head: three-quarter view to the right, headgear on top; pivot at the neck
+  {
+    const S = d.head, g = mk(30, 34);
+    const cx = 14, cy = 34 - 3 - (S >> 1), rr = S >> 1, top = cy - rr;
+    blob(g, cx, cy, rr, rr, skin);
+    if (v !== 4 && v !== 1) {
+      P(g, skin[0], cx - rr + 1, cy, 2, 3); // ear shadow
+      P(g, skin[1], cx - rr + 2, cy + 1);
+      P(g, "#f4ece0", cx + 2, cy - 1, 2, 1); P(g, "#1a0e08", cx + 3, cy - 1); // eye
+      P(g, skin[0], cx + 1, cy - 3, 3, 1); // brow
+      P(g, skin[2], cx + rr, cy, 1, 2); // nose
+      P(g, skin[0], cx + 2, cy + 3, 2, 1); // mouth
+      P(g, skin[0], cx - 1, cy + rr, 4, 1); // jaw shadow
+    }
+    const crown = (col, tall, gems) => {
+      shade(g, cx - rr, top - 2, S, 3, col);
+      for (let i = 0; i < S; i += 2) { P(g, col[2], cx - rr + i, top - 2 - tall, 1, tall); P(g, col[3], cx - rr + i, top - 2 - tall); }
+      if (gems) for (let i = 1; i < S - 1; i += 3) P(g, i % 2 ? "#e8284a" : "#3a9aff", cx - rr + i, top - 1);
+    };
+    if (v === 1) { // hood with shadowed face and glowing eyes
+      blob(g, cx - 1, cy - 1, rr + 2, rr + 2, R.purple);
+      blob(g, cx + 2, cy + 1, rr - 1, rr - 1, R.shadow);
+      P(g, R.purple[3], cx - rr, top, 3, 1);
+      const eye = "#ffd25a"; P(g, eye, cx + 1, cy); P(g, eye, cx + 4, cy); P(g, "#fff6c8", cx + 4, cy);
+    } else if (v === 4) { // shadow head, glowing eyes, rank silhouette
+      P(g, "#ffe08a", cx + 2, cy - 1, 2, 1); P(g, "#ffffff", cx + 3, cy - 1);
+      for (let y = -rr + 1; y < rr; y++) P(g, rim, cx + rr - (Math.abs(y) > rr - 2 ? 1 : 0), cy + y);
+      if (rank === 1) { shade(g, cx - rr - 1, top - 1, S + 2, rr + 2, R.shadow); P(g, rim, cx + rr + 1, top, 1, rr + 1); }
+      if (rank === 2) for (let i = -2; i <= 2; i += 2) P(g, R.shadow[3], cx + i, top - 4, 1, 4);
+      if (rank === 3) crown(R.shadow, 3, false);
+    } else {
+      const hair = R.hair;
+      if (rank !== 1) { // hair: covers top and back of the head
+        for (let y = top - 1; y < top + 4; y++) for (let x = cx - rr; x <= cx + rr - 2; x++) if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= (rr + 1) * (rr + 1)) P(g, hair[y === top - 1 ? 2 : 1], x, y);
+        P(g, hair[1], cx - rr, cy - 2, 3, 6); P(g, hair[3], cx - 2, top - 1, 2, 1);
+      }
+      if (rank === 2) { P(g, hair[1], cx - rr - 1, cy - 2, 3, S + 2); P(g, hair[2], cx - rr - 1, cy - 2, 1, S); }
+      if (rank === 3) { shade(g, cx - 1, cy + 2, 6, 6, R.beard); P(g, R.beard[0], cx + 1, cy + 3, 3, 1); }
+      if (rank === 0) { // cap with feather
+        const capCol = v === 3 ? metalFor(rar, k) : v === 2 ? R.leather : R.green;
+        shade(g, cx - rr, top - 2, S + 1, 4, capCol); P(g, capCol[0], cx + rr - 1, top + 1, 3, 1);
+        const fe = v === 0 ? "#e8e0d0" : v === 3 ? "#ff5a6a" : "#c8a060";
+        P(g, fe, cx - rr - 1, top - 3, 4, 1); P(g, fe, cx - rr - 3, top - 4, 3, 1); P(g, fe, cx - rr - 4, top - 5, 2, 1);
+      }
+      if (rank === 1) { // great helm with visor slit and rivets
+        shade(g, cx - rr - 1, top - 2, S + 2, S + 1, metal);
+        P(g, OUT, cx, cy - 1, rr + 2, 1); P(g, OUT, cx + 2, cy + 2, rr, 1);
+        P(g, metal[3], cx - rr + 1, top, 1, S - 3);
+        for (const yy of [top + 1, top + S - 3]) P(g, metal[3], cx + rr - 1, yy);
+        if (v === 3) { for (let i = 0; i < 5; i++) P(g, i % 2 ? "#ff5a6a" : "#c8284a", cx - 2 + i, top - 4 - (i & 1)); }
+        if (v === 2) { P(g, R.mud[2], cx - 2, top + 2); P(g, metal[0], cx - rr + 2, top + 4, 2, 1); }
+        if (v === 0) { P(g, "#e8e0d0", cx - rr - 2, top - 3, 3, 1); P(g, "#e8e0d0", cx - rr - 3, top - 4, 2, 1); }
+      }
+      if (rank === 2) {
+        if (v === 0) { P(g, "rgba(232,224,208,.75)", cx - rr - 2, top - 1, 3, S + 5); }
+        if (v === 2) { blob(g, cx - 2, cy - 2, rr + 1, rr + 1, R.mud); blob(g, cx + 1, cy + 1, rr - 1, rr - 1, skin); P(g, "#1a0e08", cx + 3, cy - 1); }
+        crown(v === 3 ? metalFor(rar, k) : R.gold, 1, v === 3);
+      }
+      if (rank === 3) crown(v === 3 ? metalFor(rar, k) : v === 2 ? [R.gold[0], R.gold[1], R.gold[1], R.gold[2]] : R.gold, v === 3 ? 4 : 2, v !== 2);
+    }
+    parts.head = part(outline(g), cx - 1, 34 - 3);
+  }
+
+  // Arms with hands
+  for (const side of ["B", "F"]) {
+    const g = mk(6, d.arm + 3);
+    const sleeve = v === 1 ? R.purple : v === 4 ? R.shadow : v === 3 ? metalFor(rar, k) : v === 2 ? (rank === 0 ? R.leather : R.iron) : (rank === 1 ? R.iron : R.green);
+    const back = side === "B";
+    const s = back ? [sleeve[0], sleeve[0], sleeve[1], sleeve[1]] : sleeve;
+    shade(g, 1, 1, 4, d.arm - 4, s);
+    P(g, s[3], 1, d.arm - 5, 4, 1); // cuff
+    shade(g, 1, d.arm - 4, 4, 4, back ? [skin[0], skin[0], skin[1], skin[1]] : skin);
+    if (rim && !back) P(g, rim, 4, 1, 1, d.arm - 4);
+    parts["arm" + side] = part(outline(g), 3, 2);
+  }
+  parts.armLen = d.arm - 3;
+
+  // Weapon (pivot = grip in the hand)
+  {
+    const glow = v === 2 && rar > 0 ? rarityColor(rar, k) : null;
+    const goldish = v === 4 ? R.shadow : R.gold;
+    let g, px, py;
+    if (rank === 0) { // coin pouch
+      g = mk(12, 12); blob(g, 6, 7, 4, 3, v === 4 ? R.shadow : R.leather); P(g, R.leather[0], 4, 4, 5, 1); P(g, goldish[3], 5, 3, 2, 1); P(g, goldish[2], 7, 3); px = 6; py = 3;
+    } else if (rank === 1) { // flanged mace
+      g = mk(12, 26); shade(g, 5, 8, 2, 17, R.wood); P(g, R.leather[2], 5, 18, 2, 4);
+      blob(g, 6, 5, 4, 4, metal); for (const [fx, fy] of [[1, 5], [11, 5], [6, 0], [6, 10]]) P(g, metal[2], fx, fy); P(g, metal[3], 4, 3);
+      if (glow) { P(g, glow, 0, 4); P(g, glow, 11, 3); P(g, glow, 6, 0); P(g, glow, 9, 1); } px = 6; py = 20;
+    } else if (rank === 2) { // golden scales on a staff
+      g = mk(22, 30); shade(g, 10, 5, 2, 24, goldish); P(g, goldish[2], 2, 6, 18, 1); P(g, goldish[3], 2, 6, 6, 1);
+      for (const x of [3, 18]) { P(g, goldish[3], x, 7, 1, 5); shade(g, x - 3, 12, 7, 2, goldish); P(g, goldish[3], x - 2, 12, 2, 1); }
+      blob(g, 11, 3, 2, 2, goldish); if (glow) { P(g, glow, 11, 0); P(g, glow, 7, 3); P(g, glow, 15, 3); } px = 11; py = 23;
+    } else { // scepter with a coin orb and cross
+      g = mk(14, 28); shade(g, 6, 10, 2, 17, goldish); blob(g, 7, 7, 4, 4, goldish); P(g, goldish[0], 6, 6, 3, 3); P(g, goldish[3], 6, 6);
+      P(g, goldish[2], 7, 0, 1, 3); P(g, goldish[2], 6, 1, 3, 1); P(g, "#e8284a", 7, 7);
+      if (glow) { P(g, glow, 1, 7); P(g, glow, 13, 7); P(g, glow, 7, 0); } px = 7; py = 22;
+    }
+    parts.weapon = part(outline(g), px, py);
+    if (glow) parts.weaponGlow = glow;
+  }
+  // Knight shield on the back arm
+  if (rank === 1) {
+    const g = mk(12, 15); const m = v === 3 ? metalFor(rar, k) : v === 4 ? R.shadow : v === 2 ? R.wood : R.green;
+    shade(g, 1, 1, 10, 10, m); P(g, m[1], 2, 11, 8, 1); P(g, m[1], 3, 12, 6, 1); P(g, m[0], 5, 13, 2, 1);
+    if (v === 0 || v === 3) { P(g, R.gold[1], 4, 3, 4, 4); P(g, R.gold[2], 4, 3, 3, 3); P(g, R.gold[3], 4, 3); }
+    if (v === 0) { P(g, trim, 1, 1, 10, 1); P(g, trim, 1, 1, 1, 10); }
+    if (v === 2) { P(g, R.iron[2], 1, 5, 10, 1); P(g, R.mud[2], 7, 8); }
+    if (rim) P(g, rim, 10, 1, 1, 10);
+    parts.shield = part(outline(g), 6, 5);
+  }
+  // Capes hang behind the back shoulder and peek out on the left
+  const capeLen = v === 3 ? [0, 12, 24, 32][rank] : v === 4 ? [10, 16, 24, 30][rank] : v === 1 ? [0, 0, 0, 0][rank] : rank >= 2 ? (rank === 3 ? 30 : 24) : 0;
+  if (capeLen) {
+    const g = mk(18, capeLen + 3);
+    const capeCol = v === 4 ? R.shadow : v === 2 ? R.mud : R.red;
+    for (let y = 0; y < capeLen; y++) {
+      const w = 6 + Math.min(9, y >> 1), x0 = 16 - w;
+      for (let x = 0; x < w; x++) P(g, capeCol[x === 0 ? 0 : x < 2 ? 1 : (x + y) % 7 === 0 ? 1 : 2], x0 + x, 1 + y);
+    }
+    if (v === 3 || (rank === 3 && v !== 4)) { for (let y = 0; y < capeLen; y++) { const x0 = 16 - (6 + Math.min(9, y >> 1)); P(g, "#f2ece4", x0, 1 + y, 2, 1); if (y % 3 === 1) P(g, "#141012", x0, 1 + y); } P(g, R.fur[2], 9, 1, 8, 2); P(g, R.fur[3], 9, 1, 4, 1); }
+    if (rim) for (let y = 0; y < capeLen; y++) P(g, rim, 16 - (6 + Math.min(9, y >> 1)), 1 + y);
+    parts.cape = part(outline(g), 14, 1);
+  }
+  return parts;
+}
+
+function buildGhost() {
+  const g = mk(30, 44);
+  for (let y = 0; y < 34; y++) {
+    const w = Math.min(16, 7 + y);
+    for (let x = 0; x < w; x++) {
+      const rx = 15 - (w >> 1) + x;
+      if (y > 27 && ((x * 3 + y) % 4 === 0)) continue;
+      const u = x / (w - 1);
+      P(g, R.ghost[y < 3 ? 3 : u < .2 ? 2 : u > .8 ? 0 : 1], rx, 3 + y);
+    }
+  }
+  for (let y = 12; y < 30; y += 5) P(g, R.ghost[0], 9, 3 + y, 2, 1);
+  blob(g, 14, 11, 5, 5, R.shadow);
+  P(g, "#9ef0ff", 11, 11); P(g, "#9ef0ff", 15, 11); P(g, "#ffffff", 15, 11);
+  shade(g, 2, 22, 8, 3, R.wood); P(g, R.wood[3], 3, 22, 6, 1); P(g, R.gold[3], 5, 21); P(g, R.gold[2], 6, 21);
+  shade(g, 9, 22, 3, 3, R.ghost); // bony hand
+  return part(outline(g), 15, 37);
+}
+
+// Cache: figures per (variant, rank, rarity) with hue frames for legendary
+const cache = new Map();
+function figure(v, rank, rar, frame) {
+  const k = rar === 3 ? frame % HUES : 0;
+  const key = v + "-" + rank + "-" + rar + "-" + k;
+  if (!cache.has(key)) cache.set(key, buildFigure(v, rank, rar, k));
+  return cache.get(key);
+}
+const GHOST = buildGhost();
+
+// ---------- Drawing a rigged figure ----------
+const SNAP = Math.PI / 12;
+const snap = a => Math.round(a / SNAP) * SNAP;
+function drawPart(ctx, p, x, y, a = 0, flip = 1) {
+  ctx.save(); ctx.translate(Math.round(x), Math.round(y)); ctx.scale(flip, 1); if (a) ctx.rotate(snap(a));
+  ctx.drawImage(p.c, -p.px, -p.py); ctx.restore();
+}
+// pose: {bob, arm, step, flash, alpha}. Facing right; positive arm angles swing backwards.
+const TMP = mk(100, 110);
+const ARM_REST = -0.35;
+function drawFigure(ctx, f, x, y, pose = {}) {
+  const t = TMP; t.x.clearRect(0, 0, t.w, t.h);
+  const ox = 50, oy = 104, d = f.dim, c = t.x;
+  const bob = pose.bob || 0, step = pose.step || 0;
+  const hipY = oy - d.leg + bob, neckY = hipY - f.torsoH;
+  const half = d.tw >> 1;
+  if (f.cape) drawPart(c, f.cape, ox - half + 4, neckY + 1, .05 + step * .06);
+  const ab = .25 - step * .5;
+  drawPart(c, f.armB, ox - half + 3, neckY + 3, ab);
+  if (f.shield) { const sa = snap(ab); drawPart(c, f.shield, ox - half + 3 - Math.sin(sa) * (f.armLen - 2), neckY + 3 + Math.cos(sa) * (f.armLen - 2), 0); }
+  drawPart(c, f.legB, ox - 2, hipY, step * .5);
+  drawPart(c, f.legF, ox + 1, hipY, -step * .5);
+  drawPart(c, f.torso, ox, hipY);
+  drawPart(c, f.head, ox + 1, neckY + 1);
+  const shoulderX = ox + half - 2, shoulderY = neckY + 3;
+  const a = ARM_REST + (pose.arm || 0) + step * .45, sa = snap(a);
+  const hx = shoulderX - Math.sin(sa) * f.armLen, hy = shoulderY + Math.cos(sa) * f.armLen;
+  drawPart(c, f.armF, shoulderX, shoulderY, a);
+  drawPart(c, f.weapon, hx, hy, a - ARM_REST);
+  if (pose.flash) { c.save(); c.globalCompositeOperation = "source-atop"; c.fillStyle = "rgba(255,255,255,.85)"; c.fillRect(0, 0, t.w, t.h); c.restore(); }
+  ctx.save(); ctx.globalAlpha = pose.alpha == null ? 1 : pose.alpha;
+  ctx.drawImage(t.c, Math.round(x) - ox, Math.round(y) - oy);
+  ctx.restore();
+  return { hand: [x + (hx - ox), y + (hy - oy)] };
+}
+
+// ---------- Auras & rank marks ----------
+function drawAuraBack(ctx, v, rank, rar, x, y, f, time, frame) {
+  const d = f.dim, top = y - d.H;
+  if (v === 1) { // rune circle under feet
+    const col = rarityColor(rar, frame);
+    const pulse = .55 + .45 * Math.sin(time * 3 + x);
+    ctx.save(); ctx.globalAlpha = pulse;
+    for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; ctx.fillStyle = i % 4 === 0 ? "#fff6c8" : col; ctx.fillRect(Math.round(x + Math.cos(a) * 11), Math.round(y + 1 + Math.sin(a) * 3), 1, 1); }
+    ctx.restore();
+  }
+  if (v === 4) { // floating tarot card behind back with rank pips + halo
+    const cx = x - 8, cy = top + 8 + Math.sin(time * 2 + x) * 1.5;
+    ctx.fillStyle = OUT; ctx.fillRect(Math.round(cx - 6), Math.round(cy - 9), 12, 18);
+    ctx.fillStyle = "#2a2232"; ctx.fillRect(Math.round(cx - 5), Math.round(cy - 8), 10, 16);
+    ctx.fillStyle = "#e0b44a"; ctx.fillRect(Math.round(cx - 5), Math.round(cy - 8), 10, 1); ctx.fillRect(Math.round(cx - 5), Math.round(cy + 7), 10, 1);
+    for (let i = 0; i <= rank; i++) ctx.fillRect(Math.round(cx - 1), Math.round(cy - 5 + i * 3), 2, 2);
+    if (rar > 0) {
+      const hx = x + 1, hy = top - 1;
+      const col = rarityColor(rar, frame);
+      ctx.fillStyle = col;
+      const rings = rar === 1 ? [7] : rar === 2 ? [7, 9] : [7, 9];
+      for (const r of rings) for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2; ctx.fillRect(Math.round(hx + Math.cos(a) * r), Math.round(hy + Math.sin(a) * r * .45), 1, 1); }
+      if (rar === 3) for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2 + time; ctx.fillStyle = hsl((i * 30 + time * 90) % 360, 100, 65); ctx.fillRect(Math.round(hx + Math.cos(a) * 12), Math.round(hy + Math.sin(a) * 5), 1, 1); }
+    }
+  }
+}
+function drawAuraFront(ctx, v, rank, rar, x, y, f, time, frame, parts) {
+  const d = f.dim, top = y - d.H;
+  if (v === 1) { // orbiting sigils = rank, wisps
+    for (let i = 0; i <= rank; i++) {
+      const a = time * 1.6 + i / (rank + 1) * Math.PI * 2;
+      const sx = x + Math.cos(a) * 9, sy = top + 3 + Math.sin(a) * 3;
+      ctx.fillStyle = "#ffd25a"; ctx.fillRect(Math.round(sx), Math.round(sy), 2, 2);
+      ctx.fillStyle = "#fff6c8"; ctx.fillRect(Math.round(sx), Math.round(sy), 1, 1);
+    }
+    if (rar > 0) wisps(ctx, x, y, d.H, rarityColor(rar, frame), time, rar * 2);
+  }
+  if (v === 3 && rar > 0) { // glitter
+    const n = [0, 3, 6, 10][rar];
+    for (let i = 0; i < n; i++) {
+      const ph = (time * 1.3 + i * .37) % 1;
+      if (ph > .5) continue;
+      const sx = x - 10 + ((i * 53) % 21), sy = y - 6 - ((i * 37) % (d.H - 4));
+      ctx.fillStyle = rar === 3 ? hsl((i * 45 + time * 120) % 360, 100, 80) : "#fff8d0";
+      ctx.fillRect(Math.round(sx), Math.round(sy), 1, 1);
+      if (ph < .2) { ctx.fillRect(Math.round(sx) - 1, Math.round(sy), 3, 1); ctx.fillRect(Math.round(sx), Math.round(sy) - 1, 1, 3); }
+    }
+  }
+  if (v === 4) wisps(ctx, x, y, d.H, "rgba(10,8,14,.75)", time, 3);
+  if (v === 2 && parts && parts.glow) { // weapon glow sparkle
+    const [hx, hy] = parts.hand;
+    ctx.fillStyle = parts.glow;
+    const ph = (time * 2) % 1;
+    ctx.globalAlpha = .6 + .4 * Math.sin(time * 6);
+    ctx.fillRect(Math.round(hx + 3), Math.round(hy - 14 - ph * 3), 1, 1);
+    ctx.fillRect(Math.round(hx - 3), Math.round(hy - 10 - ph * 2), 1, 1);
+    ctx.globalAlpha = 1;
+  }
+}
+function wisps(ctx, x, y, H, col, time, n) {
+  ctx.fillStyle = col;
+  for (let i = 0; i < n; i++) {
+    const ph = (time * .45 + i / n) % 1;
+    const wx = x - 7 + ((i * 29) % 15) + Math.sin(ph * 6 + i) * 1.5;
+    const wy = y - ph * (H + 6);
+    ctx.globalAlpha = (1 - ph) * .9;
+    ctx.fillRect(Math.round(wx), Math.round(wy), 1, 2);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ---------- Tiny pixel digits ----------
+const DIG = { "0": "111101101101111", "1": "010110010010111", "2": "111001111100111", "3": "111001111001111", "4": "101101111001001", "5": "111100111001111", "6": "111100111101111", "7": "111001001001001", "8": "111101111101111", "9": "111101111001111" };
+function digits(ctx, str, x, y, col) {
+  let cx = x - str.length * 2;
+  for (const ch of str) {
+    const p = DIG[ch]; if (!p) { cx += 4; continue; }
+    for (let i = 0; i < 15; i++) if (p[i] === "1") { ctx.fillStyle = OUT; ctx.fillRect(cx + (i % 3) + 1, y + ((i / 3) | 0) + 1, 1, 1); }
+    for (let i = 0; i < 15; i++) if (p[i] === "1") { ctx.fillStyle = col; ctx.fillRect(cx + (i % 3), y + ((i / 3) | 0), 1, 1); }
+    cx += 4;
+  }
+}
+
+// ---------- Background: the coin vault ----------
+function buildVault(w, h) {
+  const g = mk(w, h), x = g.x;
+  x.fillStyle = "#0d0a0c"; x.fillRect(0, 0, w, h);
+  // back wall bricks
+  for (let y = 0; y < 104; y += 6) for (let bx = (y / 6) % 2 ? -6 : 0; bx < w; bx += 12) {
+    const n = ((bx * 7 + y * 13) % 5);
+    x.fillStyle = ["#1c1518", "#211a1c", "#181214", "#241c1e", "#1a1416"][n]; x.fillRect(bx + 1, y + 1, 11, 5);
+  }
+  // arches
+  for (const ax of [40, 160, 280]) {
+    x.fillStyle = "#08060a";
+    for (let yy = 0; yy < 70; yy++) { const half = yy < 18 ? Math.round(Math.sqrt(18 * 18 - (18 - yy) * (18 - yy))) : 18; x.fillRect(ax - half, 26 + yy, half * 2, 1); }
+    x.fillStyle = "#3a2c22"; for (let i = 0; i < 40; i++) { const a = Math.PI + i / 40 * Math.PI; x.fillRect(Math.round(ax + Math.cos(a) * 19), Math.round(44 + Math.sin(a) * 19), 2, 2); }
+  }
+  // gold piles in the arches
+  const pile = (cx, cy, rx, ry) => { for (let yy = -ry; yy <= 0; yy++) for (let xx = -rx; xx <= rx; xx++) { if ((xx * xx) / (rx * rx) + (yy * yy) / (ry * ry) > 1) continue; const v = -xx / rx - yy / ry; x.fillStyle = R.gold[v > .9 ? 3 : v > .1 ? 2 : v > -.6 ? 1 : 0]; x.fillRect(cx + xx, cy + yy, 1, 1); if (((xx * 31 + yy * 17) & 15) === 0) { x.fillStyle = "#fff4b8"; x.fillRect(cx + xx, cy + yy, 1, 1); } } };
+  pile(40, 96, 15, 9); pile(160, 96, 13, 7); pile(280, 96, 16, 10); pile(214, 98, 8, 5); pile(98, 98, 7, 4);
+  // floor
+  for (let y = 96; y < h; y++) { const t = (y - 96) / (h - 96); x.fillStyle = `rgb(${24 - t * 10 | 0},${19 - t * 8 | 0},${20 - t * 8 | 0})`; x.fillRect(0, y, w, 1); }
+  for (let y = 100; y < h; y += 7) { x.fillStyle = "#0e0b0d"; x.fillRect(0, y, w, 1); }
+  for (let fx = 0; fx < w; fx += 23) { x.fillStyle = "#0e0b0d"; x.fillRect(fx, 100, 1, h - 100); }
+  // scattered coins
+  for (let i = 0; i < 26; i++) { const cx = (i * 97) % w, cy = 104 + (i * 31) % 40; x.fillStyle = R.gold[2]; x.fillRect(cx, cy, 2, 1); x.fillStyle = R.gold[3]; x.fillRect(cx, cy, 1, 1); }
+  // pillars
+  for (const px of [100, 220]) { for (let y = 0; y < 98; y++) { x.fillStyle = "#2a2024"; x.fillRect(px - 5, y, 10, 1); x.fillStyle = "#3a2e30"; x.fillRect(px - 5, y, 2, 1); x.fillStyle = "#161012"; x.fillRect(px + 4, y, 1, 1); } }
+  return g;
+}
+const CANDLES = [[100, 64], [220, 64], [12, 92], [308, 92]];
+function drawCandles(ctx, time) {
+  for (const [cx, cy] of CANDLES) {
+    const f = Math.sin(time * 9 + cx) > 0 ? 1 : 0;
+    const grd = ctx.createRadialGradient(cx, cy - 3, 0, cx, cy - 3, 26);
+    grd.addColorStop(0, "rgba(255,170,60,.22)"); grd.addColorStop(1, "rgba(255,170,60,0)");
+    ctx.fillStyle = grd; ctx.fillRect(cx - 26, cy - 29, 52, 52);
+    ctx.fillStyle = "#e8dcc0"; ctx.fillRect(cx - 1, cy, 3, 6);
+    ctx.fillStyle = "#ffb43a"; ctx.fillRect(cx, cy - 3 - f, 1, 3 + f);
+    ctx.fillStyle = "#fff2b0"; ctx.fillRect(cx, cy - 2, 1, 1);
+  }
+}
+function drawDust(ctx, w, time) {
+  for (let i = 0; i < 24; i++) {
+    const ph = (time * .03 + i * .113) % 1;
+    const dx = (i * 41 + time * 4) % w, dy = 20 + ((i * 53) % 70) - ph * 10;
+    ctx.fillStyle = `rgba(255,220,150,${.15 + .25 * Math.sin(time + i)})`;
+    ctx.fillRect(Math.round(dx), Math.round(dy), 1, 1);
+  }
+}
+
+// ---------- Effects ----------
+function flames(ctx, x, y, h, time) {
+  for (let i = 0; i < 9; i++) {
+    const ph = (time * 1.8 + i * .17) % 1;
+    const fx = x - 6 + ((i * 7) % 13) + Math.sin(ph * 8 + i) * 1;
+    const fy = y - 4 - ph * h * .7;
+    ctx.fillStyle = ph < .3 ? "#fff2a0" : ph < .6 ? "#ffa030" : "#d8401a";
+    ctx.globalAlpha = 1 - ph * .8;
+    ctx.fillRect(Math.round(fx), Math.round(fy), 1 + (ph < .4 ? 1 : 0), 2);
+  }
+  ctx.globalAlpha = 1;
+}
+function coinRain(ctx, tx, ty, p, time) {
+  for (let i = 0; i < 18; i++) {
+    const st = i / 18 * .6;
+    const q = Math.min(1, Math.max(0, (p - st) / .4));
+    if (q <= 0 || q >= 1) continue;
+    const cx = tx - 14 + ((i * 11) % 28), cy = ty - 70 + q * 64;
+    const wide = Math.sin(time * 20 + i) > 0;
+    ctx.fillStyle = R.gold[2]; ctx.fillRect(Math.round(cx), Math.round(cy), wide ? 3 : 1, 3);
+    ctx.fillStyle = R.gold[3]; ctx.fillRect(Math.round(cx), Math.round(cy), 1, 1);
+  }
+}
+
+// ---------- Scene timeline (8 s loop) ----------
+const ROW = [
+  { rank: 3, rar: 3, x: 46 },  // King Midas (back)
+  { rank: 2, rar: 2, x: 82 },  // Golden Scales
+  { rank: 0, rar: 0, x: 116 }, // Coin Squire (ranged)
+  { rank: 1, rar: 1, x: 150 }, // Gold-Armored (front)
+];
+const GROUND = 120;
+const lerp = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
+const ease = t => t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+
+function drawScene(view, time) {
+  const { g, v, bg, banner } = view;
+  const ctx = g.x, W = g.w, H = g.h;
+  const t = time % 8, frame = Math.floor(time * 6);
+  // camera zoom during the special attack
+  const zoom = t > 3.4 && t < 5.4 ? 1 + .14 * Math.sin(Math.min(1, (t - 3.4) / .4) * Math.PI / 2) * (t > 5 ? (5.4 - t) / .4 : 1) : 1;
+  ctx.save();
+  ctx.clearRect(0, 0, W, H);
+  ctx.translate(W / 2, H * .7); ctx.scale(zoom, zoom); ctx.translate(-W / 2, -H * .7);
+  ctx.drawImage(bg.c, 0, 0);
+  drawCandles(ctx, time);
+  drawDust(ctx, W, time);
+
+  // enemy state
+  const ghostX = 200, ghost2X = 240;
+  let gAlpha = 1, gFlash = false, gDx = 0, gBurn = t > 2.9 && t < 5.2;
+  if (t > 1.85 && t < 2.0) { gFlash = true; gDx = 3; }
+  if (t > 3.05 && t < 3.15) gFlash = true;
+  if (t > 4.5 && t < 4.65) gFlash = true;
+  if (t > 4.7) gAlpha = Math.max(0, 1 - (t - 4.7) / .8);
+  if (t > 6.6) gAlpha = Math.min(1, (t - 6.6) / .8);
+  const gAtk = t > 2.0 && t < 2.3 ? -6 * Math.sin((t - 2.0) / .3 * Math.PI) : 0;
+
+  // shadows
+  ctx.fillStyle = "rgba(0,0,0,.45)";
+  for (const m of ROW) ctx.fillRect(m.x - 8, GROUND, 16, 2);
+  ctx.fillRect(ghostX - 7, GROUND, 14, 2); ctx.fillRect(ghost2X - 7, GROUND, 14, 2);
+
+  // player figures
+  const hands = {};
+  for (const m of ROW) {
+    const f = figure(v, m.rank, m.rar, frame);
+    let x = m.x, pose = { bob: Math.sin(time * 2.4 + m.x) > .3 ? -1 : 0 };
+    if (m.rank === 1) { // knight runs, strikes, returns
+      if (t > 1.0 && t < 1.6) { x = lerp(150, 184, ease((t - 1) / .6)); pose.step = Math.sin(t * 22) ; }
+      else if (t >= 1.6 && t < 2.3) { x = 184; pose.arm = t < 1.8 ? 2.8 : t < 2.0 ? -1.0 : -.3; if (t > 2.05 && t < 2.2) { pose.flash = true; x = 181; } }
+      else if (t >= 2.3 && t < 2.9) { x = lerp(184, 150, ease((t - 2.3) / .6)); pose.step = Math.sin(t * 22); }
+    }
+    if (m.rank === 0 && t > 2.4 && t < 2.8) pose.arm = t < 2.6 ? 2.4 : -1.3;
+    if (m.rank === 3 && t > 3.6 && t < 4.6) pose.arm = -2.5;
+    drawAuraBack(ctx, v, m.rank, m.rar, x, GROUND, f, time, frame);
+    const info = drawFigure(ctx, f, x, GROUND, pose);
+    hands[m.rank] = info.hand;
+    drawAuraFront(ctx, v, m.rank, m.rar, x, GROUND, f, time, frame, { hand: info.hand, glow: f.weaponGlow });
+    // minimal HP bar
+    ctx.fillStyle = OUT; ctx.fillRect(x - 8, GROUND + 4, 16, 3);
+    ctx.fillStyle = "#3fbf5a"; ctx.fillRect(x - 7, GROUND + 5, m.rank === 1 && t > 2.1 ? 11 : 14, 1);
+  }
+
+  // enemies
+  ctx.save(); ctx.globalAlpha = gAlpha;
+  drawPart(ctx, GHOST, ghostX + gDx + gAtk, GROUND + Math.sin(time * 3) * 1.5, 0, -1);
+  if (gFlash) { ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .7 * gAlpha; drawPart(ctx, GHOST, ghostX + gDx + gAtk, GROUND + Math.sin(time * 3) * 1.5, 0, -1); }
+  ctx.restore();
+  drawPart(ctx, GHOST, ghost2X, GROUND + Math.sin(time * 3 + 1) * 1.5, 0, -1);
+  if (gAlpha > .05) { ctx.fillStyle = OUT; ctx.fillRect(ghostX - 8, GROUND + 4, 16, 3); ctx.fillStyle = "#c0303a"; ctx.fillRect(ghostX - 7, GROUND + 5, t > 4.6 ? 0 : t > 3.1 ? 5 : t > 1.9 ? 9 : 14, 1); }
+  ctx.fillStyle = OUT; ctx.fillRect(ghost2X - 8, GROUND + 4, 16, 3); ctx.fillStyle = "#c0303a"; ctx.fillRect(ghost2X - 7, GROUND + 5, 14, 1);
+  if (gBurn && gAlpha > .2) flames(ctx, ghostX, GROUND, 30, time);
+  // ghost dissolving into wisps
+  if (t > 4.7 && t < 6.2) {
+    const q = (t - 4.7) / 1.5;
+    for (let i = 0; i < 16; i++) { ctx.fillStyle = i % 3 ? "#9ef0ff" : "#ffffff"; ctx.globalAlpha = 1 - q; ctx.fillRect(Math.round(ghostX - 8 + (i * 7) % 17 + Math.sin(q * 6 + i) * 2), Math.round(GROUND - 6 - (i * 5) % 26 - q * 30), 1, 2); }
+    ctx.globalAlpha = 1;
+  }
+
+  // coin projectile (burning coin)
+  if (t > 2.6 && t < 3.05) {
+    const q = (t - 2.6) / .45, [hx, hy] = hands[0] || [116, 100];
+    const px = lerp(hx, ghostX - 4, q), py = lerp(hy, GROUND - 16, q) - Math.sin(q * Math.PI) * 18;
+    ctx.fillStyle = "#ffa030"; ctx.fillRect(Math.round(px - 2), Math.round(py + 1), 2, 1);
+    ctx.fillStyle = R.gold[2]; ctx.fillRect(Math.round(px), Math.round(py), Math.sin(time * 30) > 0 ? 3 : 1, 3);
+    ctx.fillStyle = R.gold[3]; ctx.fillRect(Math.round(px), Math.round(py), 1, 1);
+  }
+  // damage numbers
+  const num = (s, x0, y0, t0, col) => { if (t > t0 && t < t0 + .7) digits(ctx, s, x0, Math.round(y0 - (t - t0) * 14), col); };
+  num("4", ghostX, GROUND - 40, 1.85, "#ffffff");
+  num("1", 184, GROUND - 50, 2.05, "#ff8080");
+  num("2", ghostX, GROUND - 40, 3.05, "#ffb040");
+  num("12", ghostX, GROUND - 46, 4.5, "#ffe08a");
+  ctx.restore();
+
+  // special attack: darken everything except Midas + coin rain
+  if (t > 3.4 && t < 5.2) {
+    const a = Math.min(1, (t - 3.4) / .3) * (t > 4.9 ? (5.2 - t) / .3 : 1);
+    ctx.fillStyle = `rgba(0,0,0,${.55 * a})`; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.translate(W / 2, H * .7); ctx.scale(zoom, zoom); ctx.translate(-W / 2, -H * .7);
+    const f = figure(v, 3, 3, frame);
+    drawAuraBack(ctx, v, 3, 3, 46, GROUND, f, time, frame);
+    const info = drawFigure(ctx, f, 46, GROUND, { arm: -2.5 });
+    drawAuraFront(ctx, v, 3, 3, 46, GROUND, f, time, frame, { hand: info.hand, glow: f.weaponGlow });
+    coinRain(ctx, ghostX, GROUND - 4, (t - 3.7) / 1.0, time);
+    if (t > 4.45 && t < 4.6) { ctx.fillStyle = "rgba(255,240,180,.5)"; ctx.fillRect(0, 0, W, H); }
+    ctx.restore();
+  }
+  if (banner) banner.classList.toggle("on", t > 3.5 && t < 4.9);
+  ctx.restore();
+}
+
+function drawLineup(view, time) {
+  const { g, v } = view, ctx = g.x;
+  const frame = Math.floor(time * 6);
+  ctx.clearRect(0, 0, g.w, g.h);
+  ctx.fillStyle = "#0b090d"; ctx.fillRect(0, 0, g.w, g.h);
+  ctx.fillStyle = "#17121a"; ctx.fillRect(0, 70, g.w, g.h - 70);
+  for (let i = 0; i < 4; i++) {
+    const x = 30 + i * 60, f = figure(v, i, i, frame);
+    ctx.fillStyle = "rgba(0,0,0,.5)"; ctx.fillRect(x - 8, 71, 16, 2);
+    drawAuraBack(ctx, v, i, i, x, 70, f, time, frame);
+    const info = drawFigure(ctx, f, x, 70, { bob: Math.sin(time * 2.4 + i) > .3 ? -1 : 0 });
+    drawAuraFront(ctx, v, i, i, x, 70, f, time, frame, { hand: info.hand, glow: f.weaponGlow });
+  }
+}
+
+// ---------- Boot ----------
+const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const views = [];
+for (const sec of document.querySelectorAll(".sample")) {
+  const v = +sec.dataset.variant;
+  const sc = sec.querySelector("canvas.scene"), ln = sec.querySelector("canvas.line");
+  const sg = { c: sc, x: sc.getContext("2d"), w: sc.width, h: sc.height }; sg.x.imageSmoothingEnabled = false;
+  const lg = { c: ln, x: ln.getContext("2d"), w: ln.width, h: ln.height }; lg.x.imageSmoothingEnabled = false;
+  views.push({ kind: "scene", g: sg, v, bg: buildVault(sc.width, sc.height), banner: sec.querySelector(".banner") });
+  views.push({ kind: "line", g: lg, v });
+}
+function tick(ms) {
+  const time = reduced ? 1.2 : ms / 1000;
+  for (const view of views) {
+    const r = view.g.c.getBoundingClientRect();
+    if (r.bottom < -50 || r.top > innerHeight + 50) continue;
+    view.kind === "scene" ? drawScene(view, time) : drawLineup(view, time);
+  }
+  if (!reduced) requestAnimationFrame(tick);
+}
+// First frame for every canvas, then animate what is on screen.
+for (const view of views) view.kind === "scene" ? drawScene(view, 4.2) : drawLineup(view, 0);
+requestAnimationFrame(tick);
+})();
+</script>
