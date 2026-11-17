@@ -396,7 +396,8 @@ func _execute(owner: BattleUnit, ability: Dictionary, context: Dictionary) -> vo
 	# The trigger event is inserted before the effect's own events, so the view
 	# first highlights the source and then shows what the ability did.
 	var insert_at := events.size()
-	var changed := AbilityEffects.apply(self, owner, ability["effect"], value, targets, context)
+	var changed := AbilityEffects.apply(self, owner, ability["effect"], value, targets,
+		context.merged({"ability": ability}) if ability.has("caps") else context)
 	if changed:
 		events.insert(insert_at, {
 			"type": "trigger", "uid": owner.uid, "effect": ability["effect"],

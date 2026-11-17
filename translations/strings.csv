@@ -675,7 +675,7 @@ ABIL_BAN_PRIOR,"Solange er lebt, können deine Figuren nicht geheilt werden.","W
 ABIL_SHIELD_BREAKER,Kampfbeginn (zuletzt): Zerstört alle Schilde deiner Figuren.,Battle start (last): destroys every shield of your figures.
 ABIL_WOUND_SEALER,Zugbeginn: Entfernt bis zu {v} Blutung von sich und seinen Verbündeten.,Turn start: removes up to {v} bleed from itself and each of its allies.
 ABIL_VAULT_CARDINAL,Kampfbeginn: Alle Gegner erhalten Schild {v}.,Battle start: all of its allies gain {v} shield.
-ABIL_CLOCKWORK_WARDEN,Zugbeginn: +{v} Angriff.,Turn start: +{v} attack.
+ABIL_CLOCKWORK_WARDEN,"Zugbeginn: +{v} Angriff (insgesamt höchstens +6 / +8 / +10 je Stufe).","Turn start: +{v} attack (at most +6 / +8 / +10 in total by level)."
 UI_ELITE,Elite (ab Akt 2),Elite (act 2 on)
 EVENT_TAX_RAID,Steuerrazzia,Tax Raid
 EVENT_TAX_RAID_DESC,Die Steuertruppe des Eintreibers stellt dich. Zahl oder wehr dich.,The collector's tax squad corners you. Pay up or fight back.

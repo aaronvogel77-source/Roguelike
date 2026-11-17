@@ -198,11 +198,11 @@ func test_wound_sealer_and_clockwork() -> void:
 	assert_gt(cleaned.size(), 0)
 	var tank := {"def": HELPER_DEF, "level": 1}
 	var clock := BattleSimulator.simulate([tank], [_enemy("clockwork_warden")])
-	var grew := false
+	var top := 0
 	for e in clock["events"]:
-		if e["type"] == "update" and e["unit"]["side"] == 1 and int(e["unit"]["attack"]) >= 8:
-			grew = true
-	assert_true(grew, "4 attack + 2 per turn")
+		if e["type"] == "update" and e["unit"]["side"] == 1:
+			top = maxi(top, int(e["unit"]["attack"]))
+	assert_eq(top, 10, "4 attack + 2 per turn, at most +6 at level 1")
 
 
 const HELPER_DEF := {"id": "wall", "attack": 0, "health": 200}

@@ -16,6 +16,6 @@
     {"id": "shield_breaker", "region": "coins", "cost": 4, "min_act": 2, "attack": 6, "health": 8, "ability": {"trigger": "battle_start", "target": "all_enemies", "effect": "break_shields", "values": [1, 1, 1], "late": true}, "themes": ["greed"], "role": "front"},
     {"id": "wound_sealer", "region": "coins", "cost": 4, "min_act": 2, "attack": 3, "health": 10, "ability": {"trigger": "turn_start", "target": "all_allies", "effect": "cleanse_bleed", "values": [2, 4, 6]}, "themes": ["trickster"], "role": "any"},
     {"id": "vault_cardinal", "region": "coins", "cost": 5, "min_act": 2, "attack": 2, "health": 12, "ability": {"trigger": "battle_start", "target": "all_allies", "effect": "gain_shield", "values": [3, 4, 5]}, "themes": ["vault"], "role": "back"},
-    {"id": "clockwork_warden", "region": "coins", "cost": 5, "min_act": 2, "attack": 4, "health": 12, "ability": {"trigger": "turn_start", "target": "self", "effect": "gain_attack", "values": [2, 2, 3]}, "themes": ["greed"], "role": "any"}
+    {"id": "clockwork_warden", "region": "coins", "cost": 5, "min_act": 2, "attack": 4, "health": 12, "ability": {"trigger": "turn_start", "target": "self", "effect": "wind_up", "values": [2, 2, 3], "caps": [6, 8, 10]}, "themes": ["greed"], "role": "any"}
   ]
 }

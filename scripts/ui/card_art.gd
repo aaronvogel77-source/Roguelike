@@ -492,7 +492,9 @@ static func face_rect(face: Dictionary) -> TextureRect:
 		curse.set_shader_parameter("eyes", float(fx.get("eyes", 0.0)))
 		rect.material = curse
 		return rect
-	if not fx.is_empty():
+	# Every card face goes through the same shader (even without effects), so
+	# all ranks of a family show exactly the same colours.
+	if true:
 		if _shader == null:
 			_shader = load("res://scripts/ui/card_shine.gdshader")
 		var material := ShaderMaterial.new()

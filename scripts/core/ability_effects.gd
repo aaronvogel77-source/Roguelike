@@ -214,6 +214,19 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 				t.multipliers.append(factor)
 				battle.emit_update(t)
 			return not targets.is_empty()
+		"wind_up":
+			# Uhrwerk-Wächter: +value attack per turn, at most the cap in total.
+			var ability: Dictionary = context.get("ability", {})
+			var caps: Array = ability.get("caps", [])
+			var cap := int(caps[clampi(owner.level - 1, 0, caps.size() - 1)]) if not caps.is_empty() else 999
+			var grown := int(owner.flags.get("wound_up", 0))
+			var gain := mini(int(value), cap - grown)
+			if gain <= 0:
+				return false
+			owner.flags["wound_up"] = grown + gain
+			owner.attack += gain
+			battle.emit_update(owner)
+			return true
 		"break_shields":
 			# Schildbrecher: every shield of the targets shatters.
 			var broke := false

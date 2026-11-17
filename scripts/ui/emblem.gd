@@ -52,7 +52,7 @@ const EFFECT_KINDS := {
 	"steal_gold": "coin", "health_per_gold": "coin", "shield_per_gold": "shield", "shield_per_suit": "shield", "attack_per_ten_gold": "coin", "midas": "coin",
 	"execute": "skull",
 	"break_shields": "shield", "burn_immune": "burn", "heal_block": "heart", "cleanse_bleed": "bleed",
-	"gain_attack": "sword",
+	"gain_attack": "sword", "wind_up": "sword",
 }
 
 var kind := "star"
