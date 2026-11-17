@@ -53,7 +53,7 @@
         "boss": true,
         "region": "coins",
         "cost": 0,
-        "attack": 4,
+        "attack": 6,
         "health": 30,
         "width": 3,
         "role": "front",
