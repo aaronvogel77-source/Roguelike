@@ -408,6 +408,18 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Optik im Spiegel** (direkt kaufbar): Kartenrücken, Bühnen-Hintergründe, Aura-Farben für Fusionen, besondere Figuren-Skins; Ausrüstungs-Skins vorgemerkt für später. M7 liefert das System plus eine kleine Startauswahl je Art
 - **Außerdem in M7:** Hauptmenü (Fortsetzen / Neuer Run mit Okkultisten-Wahl / Lager / Grimoire / Optionen), **Autosave** nach jeder Aktion (kein manuelles Laden), **Grimoire** mit allem Entdeckten („???“ für Unentdecktes). Export-Code und Bestwerte später
 
+### Legendäre Skins (beantwortet 2026-11-17, Plan wartet auf Freigabe)
+- **Anspruch:** Skins müssen richtig besonders sein: komplett neue Teile (Helm, Krone, Rüstung, Waffe) **plus animierte Effekte**
+- **Seltenheitsstufen:** Selten (neue Teile/Farben), Episch (+ leuchtende Teile), **Legendär** (+ animierte Effekte, eigener Spezialangriff); höher = teurer und seltener in Truhen
+- **4 Themen-Linien**, zuerst je **ein Vorzeige-Skin** (alle legendär, je **100 Seelenglut**, in der Figuren-Truhe sehr selten):
+  - Höllenfeuer – **Höllenhenker:** Stachelhelm mit glühenden Zacken, brennende Axt, Lava-Risse, Funkenregen beim Hieb
+  - Frost & Geister – **Frostkönig** (Ertrunkener König): Eiszacken-Krone, gefrorener Dreizack, Eisatem, Schneeflocken
+  - Leere & Sterne – **Sternenrichter** (Richter): schwarze Robe voller Sterne, schwebende Runen, violett glühender Zweihänder
+  - Gold & Heiligenschein – **Sonnenkönig Midas:** Strahlenkrone, Lichtflügel, polierte Prunkrüstung, goldene Funken
+- **Legendär im Kampf:** Dauer-Effekt, eigene Waffenspur und Trefferfunken, eigene Todesanimation, eigene Spezial-Szene (Name/Farbe)
+- **Sichtbar** im Kampf und auf den Karten (Shop/Reihe) mit leuchtendem Rahmen in Seltenheitsfarbe
+- **Vorschau** (Bild + animierte GIFs) vor dem Einbau; die bisherigen 4 einfachen Skins werden ersetzt
+
 ## Phase 11 – Benutzeroberfläche und Bedienung
 
 ### Runde 1 (beantwortet)
@@ -816,3 +828,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Feedback v0.10.0: Fusionsgestalten fürs Erste gut, Feinschliff (z. B. mehr Partner-Teile wie Kopfbedeckung/Haut) kommt später | Spieler-Feedback | – |
 | 2026-11-17 | M7-Planung: Seelenglut aus übrigen Seelen (abnehmende Staffel, max. 12/Run), Krypta-Lager mit Themen-Truhen (8), Upgrades 25/50/90, Okkultisten per Herausforderung oder Kauf, Novize als Start, Kern frei/Seltenes gesperrt, Duplikate → Seelenglut, Optik inkl. Skins, Hauptmenü + Autosave + Grimoire | Spieler-Wahl | Währung aus Run-Fortschritt; Kurs pro Akt; Misch-Pack; keine Duplikate; alles frei/stark gesperrt; zäher/sehr zäher Grind; Wagen/Bibliothek |
 | 2026-11-17 | M7 umgesetzt (v0.11.0): Hauptmenü (Fortsetzen / Neuer Run / Krypta-Lager / Grimoire), Okkultisten-Wahl (Novize, Wucherer, Fechtmeisterin), Autosave nach jeder Aktion in user://run.save, Meta-Speicher user://meta.json, Seelenglut am Run-Ende mit Staffel, Krypta-Lager (Truhen, Altar, Bildnisse, Spiegel) vor dem Pixel-Gewölbe, Grimoire mit 7 Reitern und ???, Optik: 3 Kartenrücken, 3 Hintergründe (Schatzgewölbe, Zerfallene Kathedrale, Mondfriedhof), 3 Aura-Stile, 4 Figuren-Skins; Menü-Knopf ≡ im Run; Debug „+50 Seelenglut“ im Menü | Plan freigegeben | – |
+| 2026-11-17 | Skins neu: Seltenheitsstufen, 4 legendäre Vorzeige-Skins (Höllenhenker, Frostkönig, Sternenrichter, Sonnenkönig Midas) je 100 Seelenglut mit Dauer-Effekt, eigener Waffenspur/Treffern, eigenem Tod und eigener Spezial-Szene, sichtbar in Kampf und auf Karten, Vorschau vor Einbau | Feedback: Skins zu unauffällig | Nur Teile / nur Effekte; alle legendär; nur Herausforderungen; 8/16 Skins; 40/60 Seelenglut |
