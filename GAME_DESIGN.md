@@ -420,6 +420,14 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Sichtbar** im Kampf und auf den Karten (Shop/Reihe) mit leuchtendem Rahmen in Seltenheitsfarbe
 - **Vorschau** (Bild + animierte GIFs) vor dem Einbau; die bisherigen 4 einfachen Skins werden ersetzt
 
+### Kartendesign nach Seltenheit (beantwortet 2026-11-17, Plan wartet auf Freigabe)
+- **Auf der Karte nur noch:** Name, Angriff & Leben (gelb bei Verstärkung), Stufe als **römische Ziffer** (I–III, kleines Siegel), Ausrüstungs-/Segen-Symbole. Rang-, Farb- und Gegnersymbole stehen **nur noch im Info-Fenster**
+- **Eigene Karten – Rahmen-Material nach Rang:** Bube Holz, Ritter Eisen, Königin Silber mit Eck-Ornamenten, König Gold mit Edelsteinen, Legende Gold mit leuchtenden Edelsteinen und Schimmer
+- **Hintergrund:** Pergament in der Tarot-Farbe getönt (Münzen grünlich, Stäbe rötlich, Kelche bläulich, Schwerter violett), Motive nach Rang gestaffelt: Bube Wasserzeichen des Farbsymbols, Ritter + Ornament-Bordüre, Königin + Rankenmuster, König + Strahlenkranz hinter der Figur, Legende + Sternenhimmel und Strahlen
+- **Gegnerkarten – verfluchte Gegenstücke:** dunkles, rissiges Pergament, Rahmen nach Kosten gestaffelt (rostiges Eisen → mit Dornen → Knochen und Blutrot), Bosse mit Totenköpfen und glühenden Augen
+- **Fusionen:** verflochtener Rahmen aus den Materialien/Farben der enthaltenen Figuren, F-Stufe als Siegel, ab F3 leuchtend
+- Legendäre Skins behalten ihren leuchtenden Rahmen in der Themenfarbe
+
 ## Phase 11 – Benutzeroberfläche und Bedienung
 
 ### Runde 1 (beantwortet)
@@ -845,3 +853,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.19.0: Eigene handgezeichnete Symbole (16×16) für alle 8 Relikte, 6 Tarot-Karten und die Ritualkerze – auf Objektkarten, in Relikt-/Tarot-Leisten, Packs und Grimoire; damit sind alle Figuren, Skins, Gegner, Bosse, Relikte und Tarot neu gezeichnet | Spieler: alles neu zeichnen | – |
 | 2026-11-17 | v0.20.0: Neue Symbole für alle 8 Pakte und 6 Ausrüstungsarten; handgezeichnete Rümpfe mit eigenen Details für 14 Hofkarten (z. B. Brandflecken beim Funkenträger, Narben und Flammen-Tätowierung beim Wutentbrannten, glühende Risse in der Aschen-Rüstung, Seetang und Muscheln beim Ertrunkenen König, Messergurt beim Klingenlehrling, Goldkette beim Richter); Skript tools/art_sketches/bodies.py | Spieler: alles neu zeichnen | – |
 | 2026-11-17 | v0.21.0: Arme und Beine aller Figuren handgezeichnet (Ärmel/Stulpen/Manschetten, Hände, Hosen, Stiefel mit Sohle, je Figur eigene Details wie Flammen-Tätowierung, Glutgelenke, Seetang, Wurfmesser am Handgelenk, goldene Hand bei Midas); 4 legendäre Skins, 4 Asse und beide Rezept-Fusionen komplett neu (Rumpf, Arme, Beine); Skript tools/art_sketches/limbs.py | Spieler: Arme/Beine, Skins und besondere Fusionen überarbeiten | – |
+| 2026-11-17 | Kartendesign nach Seltenheit: Rahmen-Material nach Rang, getönter Hintergrund mit gestaffelten Motiven, verfluchte Gegnerkarten nach Kosten, verflochtene Fusionsrahmen, Stufe als römische Ziffer, Rang-/Gegnersymbole nur im Info-Fenster | Spieler-Wahl | Leuchtrand; rote Kopie/Steckbrief; einheitlicher Hintergrund, Szenerie/Muster; Edelsteine/Sterne; Fusion wie bisher |
