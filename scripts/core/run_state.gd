@@ -28,7 +28,7 @@ const BOSS_SOULS := 2
 ## Boss treasury: gold treasure and the soul fallback when the relic bar is full.
 const TREASURE_GOLD := 12
 const TREASURE_SOULS := 3
-## Hard (difficulty 2) normal fights: a free loot pack in the next shop.
+## Hard (difficulty 2) normal fights: a free loot pack, opened right after the win.
 const LOOT_PACK_TYPES := ["equipment", "arcana"]
 const DEATH_SOUL_CHANCE := 0.05
 ## Objects per figure (equipment, blessing, each Strength card).
@@ -1091,8 +1091,8 @@ func apply_battle_result(result: Dictionary) -> Stage:
 		if row.filter(func(f: Variant) -> bool: return f != null).size() >= 2:
 			fusion_offer = {"source": "boss", "left": 1, "total": 1}
 		_roll_treasure()
-	elif int(chosen_enemy.get("difficulty", 0)) >= 2:
-		next_shop.append("loot_pack")
+	var loot := not is_boss_fight() and int(chosen_enemy.get("difficulty", 0)) >= 2
+	if loot:
 		last_income["loot"] = true
 	fight += 1
 	if fight >= FIGHTS_PER_ACT:
@@ -1103,7 +1103,15 @@ func apply_battle_result(result: Dictionary) -> Stage:
 		return stage
 	stage = Stage.REWARD
 	_roll_rewards()
+	if loot:
+		open_loot_pack()
 	return stage
+
+
+## The hard band's loot: a free pack (equipment or arcana) that opens at once.
+func open_loot_pack() -> void:
+	var loot_type: String = LOOT_PACK_TYPES[rng.stream("packs").randi_range(0, LOOT_PACK_TYPES.size() - 1)]
+	_open({"type": loot_type, "size": "normal", "free": true, "loot": true}, false)
 
 
 ## Boss treasury: a relic (souls when the relic bar is full), a legend pack, gold.
@@ -1224,7 +1232,7 @@ func _roll_shop() -> void:
 	# Skip marks: a free mega pack / two guaranteed knights.
 	if "mega_pack" in next_shop:
 		packs[0] = {"type": packs[0]["type"], "size": "mega", "free": true}
-	if "loot_pack" in next_shop:  # reward for beating a hard band
+	if "loot_pack" in next_shop:  # older saves: the loot pack waited in the shop
 		var loot_type: String = LOOT_PACK_TYPES[rng.stream("packs").randi_range(0, LOOT_PACK_TYPES.size() - 1)]
 		packs[packs.size() - 1] = {"type": loot_type, "size": "normal", "free": true, "loot": true}
 	if "royal_shop" in next_shop:  # at most knights (queens/kings were too strong)

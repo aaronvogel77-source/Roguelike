@@ -653,7 +653,8 @@ UI_TREASURE_LEGEND_PACK,Wähle 1 von 3 Legenden (Asse).,Choose 1 of 3 legends (a
 UI_TREASURE_GOLD,Sofort in deine Kasse.,Straight into your purse.
 UI_TREASURE_SOULS,Deine Reliktleiste ist voll – nimm Seelen.,Your relic bar is full – take souls.
 UI_PLUS_GOLD,+%d Gold,+%d gold
-UI_LOOT_NEXT_SHOP,Beute-Pack gratis im nächsten Shop,Free loot pack in the next shop
+UI_LOOT_NEXT_SHOP,Beute-Pack der schweren Bande,Loot pack of the hard band
+UI_LOOT_BANNER,Beute!,Loot!
 UI_SUIT_BONUS_LINE,Farbboni: %s,Suit bonuses: %s
 SUITB_SHORT_COINS,Münzen: Zins-Grenze +%d,Coins: interest cap +%d
 SUITB_SHORT_CUPS,Kelche: +%d Leben,Cups: +%d health

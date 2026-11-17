@@ -123,7 +123,7 @@ func test_income_with_difficulty_bonus_and_interest() -> void:
 	assert_eq(run.last_income["bonus"], 5)
 	assert_eq(run.last_income["interest"], 2)
 	assert_true(run.last_income.get("loot", false))
-	assert_has(run.next_shop, "loot_pack")
+	assert_false(run.open_pack.is_empty(), "loot pack opens right away")
 
 
 func test_interest_is_capped_at_five() -> void:

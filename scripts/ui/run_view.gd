@@ -310,7 +310,7 @@ func _show_debug_tools() -> void:
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 4)
 	panel.add_child(column)
-	var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion], ["+50 Glut", _debug_glut], ["Schatz", _debug_treasure]]
+	var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion], ["+50 Glut", _debug_glut], ["Schatz", _debug_treasure], ["Beute", _debug_loot]]
 	if _run.stage == RunState.Stage.PLANNING:
 		entries.insert(2, ["Legende", _debug_legend])
 	for entry in entries:
@@ -324,6 +324,13 @@ func _show_debug_tools() -> void:
 
 
 # --- Debug tools ("?debug=1" in the address) ---------------------------------------
+
+## Opens a hard band's loot pack right away.
+func _debug_loot() -> void:
+	if _run.open_pack.is_empty():
+		_run.open_loot_pack()
+	_show_stage()
+
 
 ## Opens the boss treasury right away.
 func _debug_treasure() -> void:
@@ -1333,7 +1340,7 @@ func _play_pack_opening(open: Dictionary) -> void:
 				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 3 if entry.get("id", "") == "ritual_candle" else 1
 		cards.append({"face": face, "rarity": rarity})
-	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"])))
+	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"]), open["pack"].get("loot", false)))
 
 
 ## Overlay while a pack is open: pick items, choose targets, discard the rest.

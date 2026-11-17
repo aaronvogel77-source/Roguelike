@@ -25,12 +25,16 @@ var _time := 0.0
 var _button: Button
 var _ready_to_flip := false
 var _busy := false
+## Loot of a hard band: golden pack, "Beute!" banner, coin rain, bells.
+var _loot := false
+var _coins: Array = []  # {"p", "v"}
 
 
-static func create(cards: Array, title: String) -> PackOpening:
+static func create(cards: Array, title: String, loot := false) -> PackOpening:
 	var view := PackOpening.new()
 	view._cards = cards
 	view._title = title
+	view._loot = loot
 	view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	view.mouse_filter = Control.MOUSE_FILTER_STOP
 	return view
@@ -53,6 +57,12 @@ func _ready() -> void:
 	_pack = _card_back(Vector2(170, 240), 2, true)
 	_pack.pivot_offset = Vector2(85, 120)
 	add_child(_pack)
+	if _loot:
+		title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.35))
+		var style: StyleBoxFlat = _pack.get_meta("style")
+		style.border_color = Palette.GOLD
+		style.shadow_color = Color(1.0, 0.8, 0.3, 0.9)
+		style.shadow_size = 18
 	_flash = ColorRect.new()
 	_flash.color = Color(1, 0.97, 0.85, 0.0)
 	_flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -65,7 +75,43 @@ func _ready() -> void:
 	add_child(_button)
 	add_child(_flash)
 	_layout.call_deferred()
-	_tear_open.call_deferred()
+	if _loot:
+		_loot_intro.call_deferred()
+	else:
+		_tear_open.call_deferred()
+
+
+## Loot: a big "Beute!" stamps in, coins rain on the golden pack, then it tears open.
+func _loot_intro() -> void:
+	Sound.play("coins")
+	Sound.play("bell_big", -2.0)
+	var banner := Label.new()
+	banner.text = tr("UI_LOOT_BANNER")
+	banner.add_theme_font_size_override("font_size", 96)
+	banner.add_theme_color_override("font_color", Palette.GOLD)
+	banner.add_theme_color_override("font_outline_color", Color(0.25, 0.1, 0.02))
+	banner.add_theme_constant_override("outline_size", 14)
+	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	banner.size = Vector2(size.x, 120)
+	banner.position = Vector2(0, size.y / 2 - 200)
+	banner.pivot_offset = Vector2(size.x / 2, 60)
+	banner.scale = Vector2(2.4, 2.4)
+	banner.modulate.a = 0.0
+	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(banner)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	for i in 60:
+		_coins.append({"p": Vector2(rng.randf_range(0, size.x), rng.randf_range(-400, -20)),
+			"v": Vector2(rng.randf_range(-30, 30), rng.randf_range(260, 520))})
+	var tween := create_tween()
+	tween.tween_property(banner, "modulate:a", 1.0, 0.12)
+	tween.parallel().tween_property(banner, "scale", Vector2.ONE, 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.7)
+	tween.tween_property(banner, "modulate:a", 0.0, 0.25)
+	tween.tween_callback(func() -> void:
+		banner.queue_free()
+		_tear_open())
 
 
 func _layout() -> void:
@@ -91,6 +137,8 @@ func _tear_open() -> void:
 		_flash.color = Color(GLOW[best]).lerp(Color.WHITE, 0.6)
 		_flash.color.a = 0.9
 		_burst(size / 2, GLOW[best], 40)
+		if _loot:  # a second, golden burst for the loot
+			_burst(size / 2, Palette.GOLD, 50)
 		_pack.visible = false
 		_deal())
 	tween.tween_property(_flash, "color:a", 0.0, 0.45)
@@ -228,6 +276,10 @@ func _burst(at: Vector2, color: Color, count: int) -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	for coin in _coins:
+		coin["v"] += Vector2(0, 300) * delta
+		coin["p"] += coin["v"] * delta
+	_coins = _coins.filter(func(c: Dictionary) -> bool: return c["p"].y < size.y + 20)
 	# Rarer face-down cards shimmer and tremble; legendary ones cycle colours.
 	for slot in _slots:
 		if slot["open"]:
@@ -246,6 +298,10 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	for coin in _coins:
+		var spin := absf(sin(_time * 9.0 + coin["p"].x))
+		draw_rect(Rect2(coin["p"] - Vector2(4 * spin, 4), Vector2(maxf(8 * spin, 2), 8)), Palette.GOLD)
+		draw_rect(Rect2(coin["p"] - Vector2(2 * spin, 2), Vector2(maxf(3 * spin, 1), 3)), Color(1.0, 0.95, 0.6))
 	for burst in _bursts:
 		var q := (_time - float(burst["time"])) / 0.8
 		var color: Color = burst["color"]

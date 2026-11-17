@@ -118,15 +118,15 @@ func test_full_relic_bar_turns_the_relic_into_souls() -> void:
 	assert_eq(run.treasure[0]["kind"], "souls")
 
 
-func test_hard_win_puts_a_free_loot_pack_in_the_next_shop() -> void:
+func test_hard_win_opens_a_free_loot_pack_right_away() -> void:
 	var run := RunState.new_run(_db, 4)
 	run.choose_enemy(2)
 	run.apply_battle_result({"victory": true, "gold_after": run.gold})
-	run._roll_shop()
-	var loot: Array = run.packs.filter(func(p: Dictionary) -> bool: return p.get("loot", false))
-	assert_eq(loot.size(), 1)
-	assert_true(loot[0]["free"])
-	assert_has(RunState.LOOT_PACK_TYPES, loot[0]["type"])
+	assert_eq(run.stage, RunState.Stage.REWARD)
+	assert_false(run.open_pack.is_empty(), "the loot pack is open on the reward screen")
+	assert_true(run.open_pack["pack"].get("loot", false))
+	assert_has(RunState.LOOT_PACK_TYPES, run.open_pack["pack"]["type"])
+	assert_false(run.next_shop.has("loot_pack"))
 
 
 func test_shop_never_rolls_relic_packs() -> void:
