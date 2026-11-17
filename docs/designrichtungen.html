@@ -1,0 +1,845 @@
+<title>Arcana – Fünf Richtungen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=VT323&family=Silkscreen:wght@400;700&family=UnifrakturMaguntia&family=Caveat:wght@500;700&family=EB+Garamond:ital@0;1&family=Abril+Fatface&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Marcellus&family=Josefin+Sans:wght@200;300;400&display=swap">
+<style>
+/* Layout: a dark studio pitch – one neutral frame, five chapters that each wear their own world.
+   Single deliberate dark look (game pitch), so no light theme. */
+:root {
+  --bg: #131118;
+  --panel: #1c1922;
+  --panel-2: #24202b;
+  --fg: #ebe6ef;
+  --muted: #a49cae;
+  --line: #332d3c;
+  --gold: #cfa953;
+  --good: #7fc18f;
+  --bad: #e07a6e;
+  --font-body: "Spectral", Georgia, serif;
+  --font-label: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 17px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; }
+p { margin: 0; }
+.label { font: 500 12px/1.4 var(--font-label); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+a { color: var(--gold); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* --- Intro --- */
+.intro { padding-block: 56px 32px; display: grid; gap: 18px; }
+.intro h1 { font-size: clamp(34px, 6vw, 58px); line-height: 1.05; letter-spacing: -.01em; }
+.intro h1 em { color: var(--gold); font-style: italic; font-weight: 400; }
+.intro p { max-width: 64ch; color: var(--muted); }
+.intro p strong { color: var(--fg); font-weight: 600; }
+.toc { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.toc a { text-decoration: none; color: var(--fg); border: 1px solid var(--line); background: var(--panel); padding: 8px 14px; border-radius: 999px; font-size: 15px; }
+.toc a span { color: var(--gold); font-family: var(--font-label); font-size: 12px; margin-right: 6px; }
+.toc a:hover { border-color: var(--gold); }
+
+/* --- Chapter frame --- */
+.dir { border-top: 1px solid var(--line); padding-block: 48px; display: grid; gap: 28px; }
+.dir-head { display: grid; gap: 10px; }
+.dir-head .label b { color: var(--gold); font-weight: 500; }
+.dir-head h2 { font-size: clamp(30px, 5vw, 48px); line-height: 1.05; }
+.dir-head .pitch { font-size: 20px; max-width: 60ch; }
+.moods { display: flex; flex-wrap: wrap; gap: 8px; }
+.moods span { font: 400 13px var(--font-label); border: 1px solid var(--line); border-radius: 4px; padding: 3px 8px; color: var(--muted); }
+
+.showcase { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 760px) { .showcase { grid-template-columns: minmax(0, 1fr); } }
+.caption { font: 400 13px/1.5 var(--font-label); color: var(--muted); margin-top: 8px; }
+
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 20px; }
+.block { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.block h3 { font-size: 19px; }
+.block ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+.block li::marker { color: var(--gold); }
+.block .rule { background: var(--panel-2); border-left: 3px solid var(--gold); padding: 10px 12px; border-radius: 0 6px 6px 0; font-size: 15.5px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw { display: grid; gap: 4px; justify-items: center; font: 400 11px var(--font-label); color: var(--muted); }
+.sw i { display: block; width: 44px; height: 44px; border-radius: 6px; border: 1px solid rgba(255,255,255,.15); }
+.typeline { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.typeline .label { min-width: 70px; }
+.proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .proscons { grid-template-columns: 1fr; } }
+.pro li::marker { color: var(--good); }
+.con li::marker { color: var(--bad); }
+.pro h4 { color: var(--good); } .con h4 { color: var(--bad); }
+h4 { margin: 0 0 6px; font: 500 12px var(--font-label); letter-spacing: .1em; text-transform: uppercase; }
+.meter { display: grid; gap: 6px; }
+.meter-row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: center; font-size: 15px; }
+.dots { display: flex; gap: 4px; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--gold); }
+.dots i.on { background: var(--gold); }
+.prompt { font: 400 13.5px/1.55 var(--font-label); background: #0d0b10; border: 1px solid var(--line); border-radius: 6px; padding: 12px; color: #cfc8d8; overflow-x: auto; }
+
+/* --- Mockup base: a 16:9 phone-landscape screen, scaled with container units --- */
+.mock { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 100%; border-radius: 14px; overflow: hidden; container-type: inline-size; box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+.m-top { position: absolute; inset: 0 0 auto 0; display: flex; justify-content: space-between; align-items: center; padding: 1.6cqw 2.4cqw; font-size: 1.9cqw; z-index: 3; }
+.m-top .stats { display: flex; gap: 2.2cqw; }
+.c { position: relative; width: 11cqw; aspect-ratio: 2 / 3; display: grid; grid-template-rows: auto 1fr auto; padding: .7cqw; }
+.c-name { font-size: 1.25cqw; line-height: 1.15; text-align: center; }
+.c-art { display: grid; place-items: center; }
+.c-art svg { width: 55%; height: auto; }
+.c-stats { display: flex; justify-content: space-between; font-size: 1.9cqw; line-height: 1; }
+.suit { fill: currentColor; }
+.m-note { position: absolute; z-index: 4; }
+
+.detail-card { aspect-ratio: 2 / 3; width: 100%; max-width: 300px; margin: 0 auto; container-type: inline-size; position: relative; overflow: hidden; }
+
+/* ===================== 1  HOLZSCHNITT ===================== */
+.holz { --ink: #2a1d14; --paper: #efe1c0; --ochre: #c88d2e; --madder: #9c2f25; --indigo: #2d3e63; --sage: #7c8a5a; --wood: #3a2618;
+  background:
+    repeating-linear-gradient(92deg, rgba(0,0,0,.08) 0 2px, transparent 2px 9px),
+    radial-gradient(120% 90% at 50% 40%, #5a3a24, var(--wood) 70%);
+  color: var(--paper); font-family: "IM Fell English", serif; }
+.holz .m-top { font-family: "IM Fell English SC", serif; color: var(--paper); background: linear-gradient(rgba(0,0,0,.45), transparent); }
+.holz .m-field { position: absolute; inset: 11cqw 4cqw 9cqw; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 3cqw; }
+.holz .row { display: flex; gap: 1.6cqw; justify-content: center; }
+.holz .c { background: var(--paper); color: var(--ink); border: .35cqw solid var(--ink); box-shadow: 0 0 0 .5cqw var(--paper), 0 0 0 .7cqw var(--ink), .8cqw 1.2cqw 0 rgba(0,0,0,.35); }
+.holz .c:nth-child(odd) { transform: rotate(-2.2deg); }
+.holz .c:nth-child(even) { transform: rotate(1.6deg); }
+.holz .c-name { font-family: "IM Fell English SC", serif; border-bottom: .2cqw solid var(--ink); padding-bottom: .3cqw; }
+.holz .c-art { background: repeating-linear-gradient(135deg, transparent 0 .5cqw, rgba(42,29,20,.12) .5cqw .65cqw); margin: .5cqw 0; border: .15cqw solid var(--ink); }
+.holz .c-art svg { stroke: var(--ink); stroke-width: 6; }
+.holz .c.coins .c-art svg { color: var(--ochre); }
+.holz .c.wands .c-art svg { color: var(--madder); }
+.holz .c.cups .c-art svg { color: var(--indigo); }
+.holz .c.enemy { background: #d9c7a3; }
+.holz .c.enemy .c-art svg { color: #5a4636; }
+.holz .c-stats span { font-family: "IM Fell English SC", serif; }
+.holz .c.reversed { transform: rotate(180deg); }
+.holz .c.reversed .c-name, .holz .c.reversed .c-stats { transform: rotate(180deg); }
+.holz .vs { font-family: "IM Fell English SC", serif; font-size: 3cqw; color: var(--ochre); }
+.holz .banner { position: absolute; left: 50%; bottom: 2cqw; transform: translateX(-50%); background: var(--madder); color: var(--paper); font: 1.7cqw "IM Fell English SC", serif; padding: .6cqw 3cqw; clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%); white-space: nowrap; }
+.holz .tag-rev { position: absolute; top: -2.2cqw; left: 50%; transform: translateX(-50%) rotate(180deg); font: 1.2cqw "IM Fell English SC", serif; color: var(--madder); background: var(--paper); padding: 0 .6cqw; white-space: nowrap; }
+
+.detail-card.holz-card { background: #efe1c0; color: #2a1d14; border: 6px solid #2a1d14; box-shadow: inset 0 0 0 6px #efe1c0, inset 0 0 0 8px #2a1d14; display: grid; grid-template-rows: auto 1fr auto; padding: 18px; font-family: "IM Fell English", serif; }
+.holz-card .numeral { text-align: center; font: 9cqw "IM Fell English SC", serif; letter-spacing: .1em; }
+.holz-card .art { display: grid; place-items: center; margin: 6px 0; background: repeating-linear-gradient(135deg, transparent 0 4px, rgba(42,29,20,.12) 4px 5px); border: 2px solid #2a1d14; }
+.holz-card .art svg { width: 60%; color: #c88d2e; stroke: #2a1d14; stroke-width: 5; }
+.holz-card .title { text-align: center; font: 8cqw "IM Fell English SC", serif; }
+.holz-card .text { text-align: center; font-size: 5.4cqw; font-style: italic; line-height: 1.3; }
+
+/* ===================== 2  NEON-SÉANCE ===================== */
+.neon { --pink: #ff3fb4; --cyan: #3ff2ff; --lime: #b8ff3f; --void: #07040d; --violet: #6b2bff;
+  background: radial-gradient(90% 70% at 50% 110%, rgba(107,43,255,.55), transparent 60%), var(--void);
+  color: #f3eaff; font-family: "VT323", monospace; }
+.neon::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 6;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 2px, transparent 2px 4px);
+  box-shadow: inset 0 0 8cqw rgba(0,0,0,.85); border-radius: 14px; }
+.neon .m-top { font-family: "Silkscreen", monospace; font-size: 1.5cqw; color: var(--cyan); text-shadow: 0 0 .8cqw var(--cyan); }
+.neon .m-top .gold { color: #ffd23f; text-shadow: 0 0 .8cqw #ffd23f; }
+.neon .grid { position: absolute; inset: 55% -20% -10%; background:
+  repeating-linear-gradient(90deg, rgba(63,242,255,.35) 0 1px, transparent 1px 6cqw),
+  repeating-linear-gradient(0deg, rgba(63,242,255,.35) 0 1px, transparent 1px 3cqw);
+  transform: perspective(30cqw) rotateX(55deg); transform-origin: top; }
+.neon .m-field { position: absolute; inset: 12cqw 4cqw 13cqw; display: flex; justify-content: space-between; align-items: center; }
+.neon .row { display: flex; gap: 1.4cqw; }
+.neon .c { background: rgba(10,4,24,.85); border: .25cqw solid var(--cyan); border-radius: 1cqw; box-shadow: 0 0 1.4cqw var(--cyan), inset 0 0 1.2cqw rgba(63,242,255,.3); }
+.neon .c.enemy { border-color: var(--pink); box-shadow: 0 0 1.4cqw var(--pink), inset 0 0 1.2cqw rgba(255,63,180,.3); }
+.neon .c-name { font-family: "Silkscreen", monospace; font-size: 1cqw; }
+.neon .c-art svg { color: var(--cyan); filter: drop-shadow(0 0 .6cqw var(--cyan)); }
+.neon .c.enemy .c-art svg { color: var(--pink); filter: drop-shadow(0 0 .6cqw var(--pink)); }
+.neon .c-stats { font-size: 2.6cqw; }
+.neon .atk { color: var(--pink); text-shadow: 0 0 .6cqw var(--pink); }
+.neon .hp { color: var(--lime); text-shadow: 0 0 .6cqw var(--lime); }
+.neon .formula { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%) rotate(-4deg); z-index: 5; text-align: center; }
+.neon .formula .chips { font-size: 4.6cqw; line-height: 1; }
+.neon .formula .chips b { color: var(--cyan); text-shadow: 0 0 1cqw var(--cyan); font-weight: 400; }
+.neon .formula .chips i { color: var(--pink); text-shadow: 0 0 1cqw var(--pink); font-style: normal; }
+.neon .formula .total { font-family: "VT323", monospace; font-size: 8cqw; color: #ffd23f; text-shadow: 0 0 1.2cqw #ff8a00; line-height: .9; }
+.neon .ecstasy { position: absolute; left: 4cqw; right: 4cqw; bottom: 4cqw; z-index: 5; display: grid; gap: .6cqw; }
+.neon .ecstasy .lbl { font-family: "Silkscreen", monospace; font-size: 1.3cqw; color: var(--pink); display: flex; justify-content: space-between; }
+.neon .ecstasy .bar { height: 1.6cqw; border: .2cqw solid var(--pink); border-radius: 1cqw; overflow: hidden; }
+.neon .ecstasy .bar i { display: block; width: 64%; height: 100%; background: linear-gradient(90deg, var(--violet), var(--pink), #ffd23f); box-shadow: 0 0 1.4cqw var(--pink); }
+
+.detail-card.neon-card { background: #07040d; border: 3px solid #3ff2ff; border-radius: 16px; box-shadow: 0 0 22px #3ff2ff, inset 0 0 22px rgba(63,242,255,.25); color: #f3eaff; padding: 18px; display: grid; grid-template-rows: auto 1fr auto auto; font-family: "VT323", monospace; }
+.neon-card .title { font: 700 7cqw "Silkscreen", monospace; color: #3ff2ff; text-shadow: 0 0 10px #3ff2ff; text-align: center; }
+.neon-card .art { display: grid; place-items: center; }
+.neon-card .art svg { width: 55%; color: #ffd23f; filter: drop-shadow(0 0 10px #ff8a00); }
+.neon-card .text { font-size: 8cqw; line-height: 1.05; text-align: center; }
+.neon-card .text b { color: #ff3fb4; font-weight: 400; }
+.neon-card .stats { display: flex; justify-content: space-between; font-size: 13cqw; }
+.neon-card .stats .atk { color: #ff3fb4; text-shadow: 0 0 10px #ff3fb4; }
+.neon-card .stats .hp { color: #b8ff3f; text-shadow: 0 0 10px #b8ff3f; }
+
+/* ===================== 3  LEBENDES GRIMOIRE ===================== */
+.grim { --vellum: #ece0c4; --vellum-2: #e3d3b0; --sepia: #4a3020; --rubric: #a8261b; --verd: #3f6b4f;
+  background: #2b1c14; color: var(--sepia); font-family: "EB Garamond", serif; }
+.grim .book { position: absolute; inset: 2.4cqw 3cqw; display: grid; grid-template-columns: 1fr 1fr; border-radius: .8cqw; box-shadow: 0 1.4cqw 3cqw rgba(0,0,0,.6); }
+.grim .page { background: radial-gradient(120% 120% at 50% 50%, var(--vellum), var(--vellum-2)); padding: 3cqw 3cqw 2.4cqw; position: relative; display: grid; grid-template-rows: auto 1fr auto; gap: 1cqw; }
+.grim .page.left { border-radius: .8cqw 0 0 .8cqw; box-shadow: inset -2.4cqw 0 2.4cqw -1.4cqw rgba(74,48,32,.45); }
+.grim .page.right { border-radius: 0 .8cqw .8cqw 0; box-shadow: inset 2.4cqw 0 2.4cqw -1.4cqw rgba(74,48,32,.45); }
+.grim .ph { font-family: "UnifrakturMaguntia", serif; font-size: 3cqw; line-height: 1; }
+.grim .ph::first-letter { color: var(--rubric); font-size: 4.4cqw; }
+.grim .figs { display: flex; gap: 1.6cqw; justify-content: center; align-items: center; }
+.grim .c { width: 9.5cqw; background: none; padding: 0; }
+.grim .c-art { border: .18cqw solid var(--sepia); border-radius: 50% 50% 46% 54% / 40% 44% 56% 60%; aspect-ratio: 1; }
+.grim .c-art svg { color: transparent; stroke: var(--sepia); stroke-width: 5; stroke-dasharray: 6 3; }
+.grim .c.enemy .c-art { border-color: var(--rubric); }
+.grim .c.enemy .c-art svg { stroke: var(--rubric); }
+.grim .c-name { font-family: "Caveat", cursive; font-size: 1.9cqw; font-weight: 700; margin-top: .3cqw; }
+.grim .c-stats { justify-content: center; gap: 1.4cqw; font-family: "Caveat", cursive; font-weight: 700; font-size: 2.1cqw; }
+.grim .c-stats .atk { color: var(--rubric); }
+.grim .c-stats .hp { color: var(--verd); }
+.grim .margin { font-family: "Caveat", cursive; font-size: 1.7cqw; color: #6b4a33; line-height: 1.2; transform: rotate(-2deg); }
+.grim .margin b { color: var(--rubric); font-weight: 700; }
+.grim .glyphs { display: flex; gap: 1cqw; justify-content: center; }
+.grim .glyph { width: 4.6cqw; aspect-ratio: 1; border: .18cqw solid var(--sepia); border-radius: 50%; display: grid; place-items: center; font: 2.4cqw "UnifrakturMaguntia", serif; }
+.grim .glyph.r { color: var(--rubric); border-color: var(--rubric); }
+.grim .ink { position: absolute; right: 2.4cqw; bottom: 2cqw; width: 7cqw; height: 7cqw; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #3a2a2a, #120a08); opacity: .18; }
+
+.detail-card.grim-card { background: radial-gradient(120% 120% at 50% 40%, #ece0c4, #ddc9a3); color: #4a3020; border-radius: 6px; padding: 20px 22px; display: grid; grid-template-rows: auto 1fr auto; font-family: "EB Garamond", serif; box-shadow: inset 0 0 30px rgba(74,48,32,.35); }
+.grim-card .title { font: 10cqw "UnifrakturMaguntia", serif; text-align: center; line-height: 1; }
+.grim-card .title::first-letter { color: #a8261b; }
+.grim-card .art { display: grid; place-items: center; }
+.grim-card .art svg { width: 62%; color: transparent; stroke: #4a3020; stroke-width: 4; stroke-dasharray: 7 3; }
+.grim-card .text { font-size: 5.6cqw; line-height: 1.3; }
+.grim-card .text .note { font-family: "Caveat", cursive; color: #a8261b; font-size: 6.4cqw; }
+
+/* ===================== 4  TOTENTANZ-THEATER ===================== */
+.thea { --velvet: #5e0f1c; --velvet-d: #2a050c; --brass: #d6a94a; --bone: #efe6d2; --wood: #6b4527;
+  background: #0b0507; color: var(--bone); font-family: "Old Standard TT", serif; }
+.thea .stage { position: absolute; inset: 0; perspective: 60cqw; }
+.thea .floor { position: absolute; left: -10%; right: -10%; bottom: 0; height: 42%; transform: rotateX(62deg); transform-origin: bottom;
+  background: repeating-linear-gradient(90deg, #4a2c17 0 5cqw, #573520 5cqw 10cqw); box-shadow: inset 0 3cqw 6cqw rgba(0,0,0,.8); }
+.thea .curtain { position: absolute; top: 0; bottom: 0; width: 14%; z-index: 4;
+  background: repeating-linear-gradient(90deg, var(--velvet) 0 1.6cqw, var(--velvet-d) 1.6cqw 2.6cqw, var(--velvet) 2.6cqw 3.6cqw); }
+.thea .curtain.l { left: 0; border-radius: 0 0 60% 0; }
+.thea .curtain.r { right: 0; border-radius: 0 0 0 60%; }
+.thea .valance { position: absolute; top: 0; left: 0; right: 0; height: 7cqw; z-index: 5; background: repeating-linear-gradient(90deg, var(--velvet) 0 3cqw, var(--velvet-d) 3cqw 3.4cqw); border-bottom: .5cqw solid var(--brass);
+  -webkit-mask: radial-gradient(3cqw 2cqw at 3cqw 100%, transparent 98%, #000) 0 0 / 6cqw 100%; mask: radial-gradient(3cqw 2cqw at 3cqw 100%, transparent 98%, #000) 0 0 / 6cqw 100%; }
+.thea .m-top { z-index: 6; font-family: "Abril Fatface", serif; color: var(--brass); font-size: 1.8cqw; top: 1.4cqw; }
+.thea .lights { position: absolute; inset: 0; z-index: 2; background:
+  radial-gradient(14cqw 30cqw at 66% 64%, rgba(255,220,150,.35), transparent 70%),
+  radial-gradient(40cqw 20cqw at 50% 110%, rgba(255,170,80,.25), transparent 70%); }
+.thea .m-field { position: absolute; left: 16%; right: 16%; top: 13cqw; bottom: 7cqw; z-index: 3; display: flex; justify-content: space-between; align-items: flex-end; }
+.thea .row { display: flex; gap: 1.6cqw; align-items: flex-end; }
+.thea .puppet { position: relative; display: grid; justify-items: center; }
+.thea .puppet::before { content: ""; position: absolute; bottom: 100%; left: 50%; width: 0; height: 30cqw; border-left: .12cqw solid rgba(239,230,210,.45); }
+.thea .puppet::after { content: ""; position: absolute; bottom: 100%; left: 22%; width: 56%; height: 30cqw; border-left: .1cqw solid rgba(239,230,210,.25); border-right: .1cqw solid rgba(239,230,210,.25); }
+.thea .c { width: 9.6cqw; background: linear-gradient(#7a5233, #4f3220); border: .3cqw solid var(--brass); border-radius: 4.8cqw 4.8cqw .8cqw .8cqw; box-shadow: 0 1.4cqw 1.4cqw rgba(0,0,0,.6); color: var(--bone); }
+.thea .c.enemy { background: linear-gradient(#3b3b42, #1e1e24); border-color: #9b9bab; }
+.thea .c.lit { box-shadow: 0 0 3cqw rgba(255,214,140,.7), 0 1.4cqw 1.4cqw rgba(0,0,0,.6); }
+.thea .c-name { font-family: "Abril Fatface", serif; font-size: 1.15cqw; margin-top: 1.2cqw; }
+.thea .c-art svg { color: var(--bone); }
+.thea .c-stats { font-family: "Abril Fatface", serif; }
+.thea .c-stats .atk { color: #ff8f7a; } .thea .c-stats .hp { color: #b9e39b; }
+.thea .shadow { width: 8cqw; height: 1.2cqw; background: radial-gradient(closest-side, rgba(0,0,0,.7), transparent); margin-top: .4cqw; }
+.thea .yank { position: absolute; z-index: 6; left: 50%; bottom: 2cqw; transform: translateX(-50%); font: 1.6cqw "Abril Fatface", serif; color: #1b0c05; background: var(--brass); padding: .6cqw 2cqw; border-radius: 2cqw; box-shadow: 0 0 2cqw rgba(214,169,74,.6); white-space: nowrap; }
+
+.detail-card.thea-card { background: #1b0c10; border: 4px double #d6a94a; color: #efe6d2; padding: 18px; display: grid; grid-template-rows: auto auto auto 1fr auto; text-align: center; font-family: "Old Standard TT", serif; border-radius: 4px; }
+.thea-card .bill { font: 4.4cqw "Old Standard TT", serif; letter-spacing: .3em; text-transform: uppercase; color: #d6a94a; }
+.thea-card .title { font: 11cqw/1 "Abril Fatface", serif; margin: 6px 0; }
+.thea-card .text { font-size: 5.6cqw; line-height: 1.35; font-style: italic; align-self: center; }
+.thea-card .roles { font: 4.6cqw "Old Standard TT", serif; letter-spacing: .12em; color: #d6a94a; border-top: 1px solid #d6a94a; padding-top: 6px; }
+
+/* ===================== 5  ASTROLABIUM ===================== */
+.astro { --night: #070b1d; --night-2: #0e1636; --silver: #c9d3ea; --star: #fff3c4; --mars: #ff7a59; --venus: #8ff0c9; --line2: rgba(201,211,234,.35);
+  background: radial-gradient(70% 90% at 50% 50%, var(--night-2), var(--night)); color: var(--silver); font-family: "Josefin Sans", sans-serif; font-weight: 300; }
+.astro .stars { position: absolute; inset: 0; background-image:
+  radial-gradient(.2cqw .2cqw at 12% 18%, #fff, transparent), radial-gradient(.15cqw .15cqw at 82% 12%, #fff, transparent),
+  radial-gradient(.2cqw .2cqw at 70% 80%, #fff, transparent), radial-gradient(.15cqw .15cqw at 22% 72%, #fff, transparent),
+  radial-gradient(.12cqw .12cqw at 46% 8%, #fff, transparent), radial-gradient(.12cqw .12cqw at 92% 58%, #fff, transparent); }
+.astro .m-top { font-family: "Marcellus", serif; letter-spacing: .12em; font-size: 1.6cqw; }
+.astro .ring { position: absolute; width: 36cqw; aspect-ratio: 1; top: 50%; transform: translateY(-46%); border-radius: 50%; border: .15cqw solid var(--line2); }
+.astro .ring::before { content: ""; position: absolute; inset: 3cqw; border-radius: 50%; border: .1cqw dashed var(--line2); }
+.astro .ring.own { left: 8cqw; }
+.astro .ring.foe { right: 8cqw; width: 26cqw; }
+.astro .node { position: absolute; width: 7.4cqw; aspect-ratio: 1; margin: -3.7cqw 0 0 -3.7cqw; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, rgba(14,22,54,.95) 60%, rgba(14,22,54,0)); border: .15cqw solid var(--silver); }
+.astro .node svg { width: 50%; color: var(--star); filter: drop-shadow(0 0 .6cqw var(--star)); }
+.astro .node.empty { border-style: dashed; opacity: .4; }
+.astro .node.front { border-width: .3cqw; box-shadow: 0 0 2cqw rgba(255,243,196,.5); }
+.astro .node.foe { border-color: var(--mars); }
+.astro .node.foe svg { color: var(--mars); filter: drop-shadow(0 0 .6cqw var(--mars)); }
+.astro .node .n { position: absolute; top: 100%; font-size: 1.1cqw; white-space: nowrap; letter-spacing: .08em; margin-top: .3cqw; }
+.astro .node .s { position: absolute; bottom: 100%; font-size: 1.3cqw; white-space: nowrap; margin-bottom: .2cqw; }
+.astro svg.const { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.astro .planet { position: absolute; left: 53%; top: 5.5cqw; transform: translateX(-50%); text-align: center; z-index: 3; }
+.astro .planet .glyph { font-family: "Marcellus", serif; font-size: 4cqw; color: var(--mars); text-shadow: 0 0 1.4cqw var(--mars); line-height: 1; }
+.astro .planet .t { font-size: 1.3cqw; letter-spacing: .16em; text-transform: uppercase; }
+.astro .legend { position: absolute; left: 50%; bottom: 2.4cqw; transform: translateX(-50%); font-size: 1.3cqw; letter-spacing: .1em; color: var(--venus); white-space: nowrap; }
+
+.detail-card.astro-card { background: radial-gradient(90% 70% at 50% 40%, #0e1636, #070b1d); color: #c9d3ea; border: 1px solid rgba(201,211,234,.5); border-radius: 50% 50% 12px 12px / 30% 30% 12px 12px; padding: 22px 20px 18px; display: grid; grid-template-rows: auto 1fr auto auto; text-align: center; font-family: "Josefin Sans", sans-serif; font-weight: 300; }
+.astro-card .title { font: 8cqw "Marcellus", serif; letter-spacing: .12em; margin-top: 10%; }
+.astro-card .art { display: grid; place-items: center; }
+.astro-card .art svg { width: 70%; }
+.astro-card .text { font-size: 5.4cqw; line-height: 1.35; }
+.astro-card .deg { font-size: 4.4cqw; letter-spacing: .3em; color: #fff3c4; margin-top: 6px; }
+
+/* --- Comparison --- */
+.compare { border-top: 1px solid var(--line); padding-top: 48px; display: grid; gap: 18px; }
+.compare h2 { font-size: clamp(28px, 4.4vw, 40px); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 15px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 12px var(--font-label); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.next { background: var(--panel); border: 1px solid var(--gold); border-radius: 10px; padding: 20px; display: grid; gap: 10px; }
+.next p { max-width: 70ch; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .astro .ring.own::before { animation: spin 90s linear infinite; }
+  .neon .formula { animation: pulse 2.4s ease-in-out infinite; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 50% { transform: translate(-50%, -50%) rotate(-4deg) scale(1.06); } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="s-coin" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" class="suit"/><path d="M50 22 L58 44 L80 44 L62 57 L69 79 L50 66 L31 79 L38 57 L20 44 L42 44 Z" fill="none" stroke="currentColor"/></symbol>
+  <symbol id="s-wand" viewBox="0 0 100 100"><path d="M30 88 L66 16 L74 20 L38 92 Z" class="suit"/><path d="M66 14 C 62 4, 80 2, 76 14 C 86 8, 88 24, 76 22" fill="none" stroke="currentColor"/><circle cx="58" cy="40" r="5" class="suit"/></symbol>
+  <symbol id="s-cup" viewBox="0 0 100 100"><path d="M22 18 H78 C 78 52, 62 62, 50 62 C 38 62, 22 52, 22 18 Z" class="suit"/><path d="M46 62 H54 V80 H46 Z M30 86 H70 V92 H30 Z" class="suit"/></symbol>
+  <symbol id="s-sword" viewBox="0 0 100 100"><path d="M47 8 H53 L54 66 H46 Z" class="suit"/><path d="M28 66 H72 V72 H28 Z M46 72 H54 V90 H46 Z" class="suit"/><circle cx="50" cy="94" r="4" class="suit"/></symbol>
+  <symbol id="s-skull" viewBox="0 0 100 100"><path d="M50 12 C 26 12, 16 30, 18 50 C 20 62, 28 66, 30 74 L 70 74 C 72 66, 80 62, 82 50 C 84 30, 74 12, 50 12 Z" class="suit"/><circle cx="38" cy="46" r="8" fill="#000" opacity=".55"/><circle cx="62" cy="46" r="8" fill="#000" opacity=".55"/><path d="M36 78 H64 V88 H36 Z" class="suit"/></symbol>
+</svg>
+
+<main class="wrap">
+
+<header class="intro">
+  <span class="label">Arcana · Designvorschläge zur Auswahl · Stand v0.7.1</span>
+  <h1>Fünf Richtungen für <em>ein</em> Spiel</h1>
+  <p>Jede Richtung ist ein vollständiges Paket aus <strong>Optik, Bildschirmaufbau, Bedienung und einer eigenen Spielmechanik</strong>, die zur Welt der Richtung passt. Sie sind bewusst so verschieden wie möglich. Der Kern bleibt in allen fünf gleich: Tarot-Hofkarten, Auto-Kampf, Shop, Fusion, Gebiete.</p>
+  <p>Die Bilder sind gezeichnete Entwürfe aus HTML und CSS, keine fertige Grafik. Sie zeigen Farbwelt, Schrift, Kartenaufbau und Bildschirmlogik. Die echte Grafik entsteht in M8 mit KI-Bildern im gewählten Stil.</p>
+  <nav class="toc" aria-label="Richtungen">
+    <a href="#holzschnitt"><span>1</span>Das Alte Blatt</a>
+    <a href="#neon"><span>2</span>Neon-Séance</a>
+    <a href="#grimoire"><span>3</span>Lebendes Grimoire</a>
+    <a href="#theater"><span>4</span>Totentanz-Theater</a>
+    <a href="#astrolabium"><span>5</span>Astrolabium</a>
+    <a href="#vergleich"><span>→</span>Vergleich</a>
+  </nav>
+</header>
+
+<!-- ============================ 1 ============================ -->
+<section class="dir" id="holzschnitt">
+  <div class="dir-head">
+    <span class="label">Richtung <b>1</b> von 5 · klassisch, ruhig, lesbar</span>
+    <h2 style="font-family:'IM Fell English SC',serif">Das Alte Blatt</h2>
+    <p class="pitch">Ein echtes Tarot-Deck aus dem 16. Jahrhundert liegt auf dem Tisch einer Wahrsagerin. Holzschnitt-Linien, handkolorierte Flächen, Pergament und Blattgold. Karten können <em>umgekehrt</em> fallen und bedeuten dann etwas anderes.</p>
+    <div class="moods"><span>Holzschnitt</span><span>Rider-Waite</span><span>Pergament</span><span>Kerzentisch</span><span>handkoloriert</span></div>
+  </div>
+
+  <div class="showcase">
+    <div>
+      <div class="mock holz" role="img" aria-label="Entwurf Kampfbildschirm im Holzschnitt-Stil">
+        <div class="m-top"><span>Akt I · Das Gierige Haus</span><span class="stats"><span>Gold 12</span><span>Seelen 3</span></span></div>
+        <div class="m-field">
+          <div class="row">
+            <div class="c cups reversed"><span class="tag-rev">umgekehrt</span><div class="c-name">Bluttrinker</div><div class="c-art"><svg><use href="#s-cup"/></svg></div><div class="c-stats"><span>3</span><span>4</span></div></div>
+            <div class="c wands"><div class="c-name">Funkenträger</div><div class="c-art"><svg><use href="#s-wand"/></svg></div><div class="c-stats"><span>2</span><span>2</span></div></div>
+            <div class="c coins"><div class="c-name">König Midas</div><div class="c-art"><svg><use href="#s-coin"/></svg></div><div class="c-stats"><span>4</span><span>6</span></div></div>
+          </div>
+          <div class="vs">✦</div>
+          <div class="row">
+            <div class="c enemy"><div class="c-name">Schulden&shy;eintreiber</div><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-stats"><span>2</span><span>3</span></div></div>
+            <div class="c enemy"><div class="c-name">Tresor&shy;wächter</div><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-stats"><span>2</span><span>8</span></div></div>
+          </div>
+        </div>
+        <div class="banner">Der Bluttrinker ist umgekehrt gefallen</div>
+      </div>
+      <p class="caption">Kampf: Die Karten liegen leicht schief auf dem Tisch, wie gelegt. Die umgekehrte Karte steht auf dem Kopf, ihr Name bleibt lesbar.</p>
+    </div>
+    <div>
+      <div class="detail-card holz-card" role="img" aria-label="Detailkarte König Midas im Holzschnitt-Stil">
+        <div class="numeral">XIV · REX</div>
+        <div class="art"><svg viewBox="0 0 100 100"><use href="#s-coin"/></svg></div>
+        <div><div class="title">König Midas</div><div class="text">Kampfbeginn: Angriff ×(1 + Gold/20).<br>Umgekehrt: Jeder Treffer kostet dich 1 Gold, dafür ×2.</div></div>
+      </div>
+      <p class="caption">Detailkarte: Römische Ziffer und lateinischer Rang oben, Bildfeld mit Schraffur, Text kursiv wie eine alte Deutung.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="block">
+      <h3>Optik</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:#efe1c0"></i>Pergament</div>
+        <div class="sw"><i style="background:#2a1d14"></i>Tinte</div>
+        <div class="sw"><i style="background:#c88d2e"></i>Ocker</div>
+        <div class="sw"><i style="background:#9c2f25"></i>Krapprot</div>
+        <div class="sw"><i style="background:#2d3e63"></i>Indigo</div>
+        <div class="sw"><i style="background:#7c8a5a"></i>Salbei</div>
+      </div>
+      <div class="typeline"><span class="label">Titel</span><span style="font:24px 'IM Fell English SC',serif">König Midas</span></div>
+      <div class="typeline"><span class="label">Text</span><span style="font:italic 18px 'IM Fell English',serif">Kampfbeginn: Schild 1</span></div>
+      <ul>
+        <li>Nur sechs Druckfarben, flach aufgetragen wie handkolorierte Holzschnitte. Eine Farbe pro Tarot-Farbe, so bleibt alles lesbar.</li>
+        <li>Schraffur statt Verläufe. Seltenheit zeigt sich durch Blattgold-Rahmen, nicht durch Leuchten.</li>
+        <li>Hintergrund: dunkler Holztisch mit Kerzenlicht, je Gebiet ein anderes Tuch (grün für Münzen, rot für Stäbe …).</li>
+        <li>Effekte zurückhaltend: Karten drehen sich beim Ausspielen um, Treffer als Tintenklecks, Tod als Karte, die verbrennt.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Bildschirme &amp; Bedienung</h3>
+      <ul>
+        <li><b>Shop als Legung:</b> Die Angebote liegen als Tarot-Legung (Keltisches Kreuz) auf dem Tisch. Packs sind versiegelte Kartenstapel.</li>
+        <li><b>Kampf:</b> Wie jetzt eine Reihe, aber Karten liegen flach auf dem Tisch, leicht gedreht. Fähigkeiten blitzen als Goldlinie auf.</li>
+        <li><b>Fusion:</b> Zwei Karten werden übereinandergelegt und „zusammengenäht“, die neue Karte bekommt einen doppelten Rahmen.</li>
+        <li><b>Ereignisse:</b> Jedes Ereignis ist eine große Arkana-Karte (Der Turm, Der Mond …), die aufgedeckt wird.</li>
+        <li>Am Handy am leichtesten lesbar: dunkle Schrift auf hellem Pergament, wenig Effekte.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Eigene Mechanik: Umgekehrte Karten</h3>
+      <div class="rule">Jede gekaufte Figur fällt mit 20 % Chance <b>umgekehrt</b>. Umgekehrt hat sie eine andere, riskantere Fähigkeit. Der Tarot „Der Gehängte“ dreht eine Figur um.</div>
+      <ul>
+        <li>Jede der 16 Figuren bekommt eine zweite, umgekehrte Fähigkeit. Beispiel Bluttrinker: aufrecht „heilt 50 % des Schadens“, umgekehrt „verursacht +3 Schaden, verliert aber selbst 1 Leben pro Zug“.</li>
+        <li>Umgekehrte Karten verkaufen sich für 1 Gold mehr, man kann also gezielt danach jagen.</li>
+        <li>Fusion: Eine umgekehrte und eine aufrechte Karte ergeben die Meisterfähigkeit in einer „gespiegelten“ Form.</li>
+        <li>Folge: Mehr Entscheidungen beim Kaufen ohne neue Figuren. Der Inhalt verdoppelt sich fast.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Abwägung</h3>
+      <div class="proscons">
+        <div class="pro"><h4>Stärken</h4><ul><li>Am besten lesbar, auch am Handy</li><li>Passt exakt zum Tarot-Thema</li><li>KI-Bilder im Holzschnitt-Stil gelingen gut und einheitlich</li></ul></div>
+        <div class="con"><h4>Schwächen</h4><ul><li>Ruhig, wenig „Wow“ im Kampf</li><li>Ähnelt bekannten Tarot-Apps</li><li>16 zusätzliche Fähigkeiten zu entwerfen</li></ul></div>
+      </div>
+      <div class="meter">
+        <div class="meter-row"><span>Aufwand Optik</span><span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+        <div class="meter-row"><span>Aufwand Mechanik</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+        <div class="meter-row"><span>Neuheit</span><span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+      </div>
+      <h4>Beispiel-Bildprompt für M8</h4>
+      <pre class="prompt">16th century woodcut tarot card, King of Pentacles as greedy king Midas, hand-coloured flat ochre and madder red, heavy black ink outlines, cross-hatching, aged parchment, no text, centered figure</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 2 ============================ -->
+<section class="dir" id="neon">
+  <div class="dir-head">
+    <span class="label">Richtung <b>2</b> von 5 · laut, schnell, saftig</span>
+    <h2 style="font-family:'Silkscreen',monospace;letter-spacing:.02em">Neon-Séance</h2>
+    <p class="pitch">Eine Geisterbeschwörung in einer Spielhalle der 80er. Röhrenbildschirm, Scanlines, Neonfarben auf Schwarz. Jeder Treffer ist eine Rechnung, die groß über den Bildschirm fliegt. Der Kampf wird zur Show.</p>
+    <div class="moods"><span>CRT</span><span>Arcade</span><span>Neon</span><span>Synthwave</span><span>große Zahlen</span></div>
+  </div>
+
+  <div class="showcase">
+    <div>
+      <div class="mock neon" role="img" aria-label="Entwurf Kampfbildschirm im Neon-Stil">
+        <div class="grid"></div>
+        <div class="m-top"><span>AKT 1-2 · GIER</span><span class="stats"><span class="gold">$12</span><span>SEELEN 3</span></span></div>
+        <div class="m-field">
+          <div class="row">
+            <div class="c"><div class="c-name">BLUTTRINKER</div><div class="c-art"><svg><use href="#s-cup"/></svg></div><div class="c-stats"><span class="atk">3</span><span class="hp">4</span></div></div>
+            <div class="c"><div class="c-name">FUNKENTRÄGER</div><div class="c-art"><svg><use href="#s-wand"/></svg></div><div class="c-stats"><span class="atk">2</span><span class="hp">2</span></div></div>
+            <div class="c"><div class="c-name">KÖNIG MIDAS</div><div class="c-art"><svg><use href="#s-coin"/></svg></div><div class="c-stats"><span class="atk">4</span><span class="hp">6</span></div></div>
+          </div>
+          <div class="row">
+            <div class="c enemy"><div class="c-name">EINTREIBER</div><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-stats"><span class="atk">2</span><span class="hp">3</span></div></div>
+            <div class="c enemy"><div class="c-name">TRESOR</div><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-stats"><span class="atk">2</span><span class="hp">8</span></div></div>
+          </div>
+        </div>
+        <div class="formula"><div class="chips"><b>(4+2)</b> <i>×1,6</i></div><div class="total">= 9!</div></div>
+        <div class="ecstasy"><div class="lbl"><span>EKSTASE</span><span>×1,6</span></div><div class="bar"><i></i></div></div>
+      </div>
+      <p class="caption">Kampf: Der Treffer erscheint als Rechnung (Angriff + Boni) × Mult. Unten füllt sich die Ekstase-Leiste mit jeder ausgelösten Fähigkeit.</p>
+    </div>
+    <div>
+      <div class="detail-card neon-card" role="img" aria-label="Detailkarte König Midas im Neon-Stil">
+        <div class="title">KÖNIG MIDAS</div>
+        <div class="art"><svg viewBox="0 0 100 100"><use href="#s-coin"/></svg></div>
+        <div class="text">KAMPFBEGINN:<br><b>×(1 + GOLD/20)</b></div>
+        <div class="stats"><span class="atk">4</span><span class="hp">6</span></div>
+      </div>
+      <p class="caption">Detailkarte: Pixelschrift, Werte als riesige leuchtende Zahlen. Seltenheit zeigt sich durch Flackern und Farbwechsel.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="block">
+      <h3>Optik</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:#07040d"></i>Leere</div>
+        <div class="sw"><i style="background:#ff3fb4"></i>Pink</div>
+        <div class="sw"><i style="background:#3ff2ff"></i>Cyan</div>
+        <div class="sw"><i style="background:#b8ff3f"></i>Gift</div>
+        <div class="sw"><i style="background:#ffd23f"></i>Münze</div>
+        <div class="sw"><i style="background:#6b2bff"></i>Violett</div>
+      </div>
+      <div class="typeline"><span class="label">Titel</span><span style="font:20px 'Silkscreen',monospace">KÖNIG MIDAS</span></div>
+      <div class="typeline"><span class="label">Text</span><span style="font:24px 'VT323',monospace">Kampfbeginn: Schild 1</span></div>
+      <ul>
+        <li>Schwarz mit Neonlinien, Scanlines und leicht gewölbtem Bild wie ein Röhrenmonitor.</li>
+        <li>Eigene Spieler: Cyan. Gegner: Pink. Gold: Gelb. Status: Brennen orange, Blutung rot, Fluch violett, Schild weiß.</li>
+        <li>Zahlen sind die Stars: große Pixelzahlen, Bildschirmwackeln bei großen Treffern, Glitch-Effekt bei Tod.</li>
+        <li>Musik und Sound wichtig: Synth-Töne, aufsteigende Tonhöhe bei Kettenreaktionen.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Bildschirme &amp; Bedienung</h3>
+      <ul>
+        <li><b>Kampf mit Tempo-Knopf:</b> ×1 / ×2 / ×4. Bei ×4 nur noch die Endrechnung jedes Zugs.</li>
+        <li><b>Rechnung sichtbar:</b> Jede Zahl zeigt woher sie kommt, z. B. „(4 + 2 Schwert) × 1,5 Sonne × 1,1 Ekstase“.</li>
+        <li><b>Shop als Automat:</b> Ein Spielautomat mit drei Walzen. „Neu würfeln“ ist ein Hebel.</li>
+        <li><b>Fusion:</b> Zwei Karten fliegen ineinander, ein Blitz, Zahlen zählen hoch.</li>
+        <li><b>Ergebnis nach dem Kampf:</b> Highscore-Tafel mit höchstem Treffer, Ekstase-Rekord, Kills.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Eigene Mechanik: Ekstase</h3>
+      <div class="rule">Jede ausgelöste Fähigkeit im Kampf erhöht die <b>Ekstase</b> des Teams um ×0,05. Die Ekstase gilt als zusätzlicher Mult für alle Angriffe und beginnt jeden Kampf bei ×1.</div>
+      <ul>
+        <li>Builds mit vielen kleinen Auslösern (Brennen-Ticks, Schilde, Heilung) werden über die Kampfdauer stärker.</li>
+        <li><b>Overkill-Gold:</b> Schaden über das Leben hinaus zählt; je 10 Overkill gibt es 1 Gold (max. 3 pro Kampf).</li>
+        <li>Neue Relikte rund um Ekstase, z. B. „Ekstase startet bei ×1,2“ oder „Ab ×2 Ekstase heilen alle 1 pro Zug“.</li>
+        <li>Folge: Das Balatro-Gefühl „meine Zahlen explodieren“ wird zum Kern.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Abwägung</h3>
+      <div class="proscons">
+        <div class="pro"><h4>Stärken</h4><ul><li>Spektakulärster Kampf</li><li>Rechnungen machen Synergien sofort verständlich</li><li>Optik geht gut ohne viele Illustrationen</li></ul></div>
+        <div class="con"><h4>Schwächen</h4><ul><li>Weniger Dark Fantasy, eher Retro-Spaß</li><li>Nah an Balatro, Abgrenzung nötig</li><li>Effekte und Sound kosten viel Feinarbeit</li></ul></div>
+      </div>
+      <div class="meter">
+        <div class="meter-row"><span>Aufwand Optik</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+        <div class="meter-row"><span>Aufwand Mechanik</span><span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+        <div class="meter-row"><span>Neuheit</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+      </div>
+      <h4>Beispiel-Bildprompt für M8</h4>
+      <pre class="prompt">pixel art occult portrait, king made of gold coins, 64x96 sprite, neon magenta and cyan rim light, black background, CRT glow, limited palette, no text</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 3 ============================ -->
+<section class="dir" id="grimoire">
+  <div class="dir-head">
+    <span class="label">Richtung <b>3</b> von 5 · handgemacht, gelehrt, geheimnisvoll</span>
+    <h2 style="font-family:'UnifrakturMaguntia',serif;font-weight:400">Lebendes Grimoire</h2>
+    <p class="pitch">Das ganze Spiel ist ein Zauberbuch. Jeder Bildschirm ist eine Doppelseite, Figuren sind Tintenzeichnungen, die sich selbst zeichnen. Fähigkeiten schreibt man aus Siegeln selbst zusammen.</p>
+    <div class="moods"><span>Manuskript</span><span>Tinte</span><span>Randnotizen</span><span>Rubrizierung</span><span>Alchemie</span></div>
+  </div>
+
+  <div class="showcase">
+    <div>
+      <div class="mock grim" role="img" aria-label="Entwurf Kampfseite im Grimoire-Stil">
+        <div class="book">
+          <div class="page left">
+            <div class="ph">Deine Schar</div>
+            <div class="figs">
+              <div class="c"><div class="c-art"><svg><use href="#s-cup"/></svg></div><div class="c-name">Bluttrinker</div><div class="c-stats"><span class="atk">3</span><span class="hp">4</span></div></div>
+              <div class="c"><div class="c-art"><svg><use href="#s-wand"/></svg></div><div class="c-name">Funkenträger</div><div class="c-stats"><span class="atk">2</span><span class="hp">2</span></div></div>
+              <div class="c"><div class="c-art"><svg><use href="#s-coin"/></svg></div><div class="c-name">K. Midas</div><div class="c-stats"><span class="atk">4</span><span class="hp">6</span></div></div>
+            </div>
+            <div class="glyphs"><span class="glyph r">A</span><span class="glyph">F</span><span class="glyph">S</span><span class="glyph r">B</span></div>
+          </div>
+          <div class="page right">
+            <div class="ph">Die Gierigen</div>
+            <div class="figs">
+              <div class="c enemy"><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-name">Eintreiber</div><div class="c-stats"><span class="atk">2</span><span class="hp">3</span></div></div>
+              <div class="c enemy"><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-name">Tresorwächter</div><div class="c-stats"><span class="atk">2</span><span class="hp">8</span></div></div>
+            </div>
+            <div class="margin">Randnotiz: Der Wächter wird <b>bei jedem Treffer</b> härter. Schnell zuschlagen!</div>
+            <div class="ink"></div>
+          </div>
+        </div>
+      </div>
+      <p class="caption">Kampf: Links deine Schar, rechts die Gegner, wie eine aufgeschlagene Doppelseite. Unten links die gesammelten Siegel. Hinweise stehen als Randnotiz.</p>
+    </div>
+    <div>
+      <div class="detail-card grim-card" role="img" aria-label="Detailseite König Midas im Grimoire-Stil">
+        <div class="title">König Midas</div>
+        <div class="art"><svg viewBox="0 0 100 100"><use href="#s-coin"/></svg></div>
+        <div class="text">Kampfbeginn: Angriff ×(1 + Gold/20).<br><span class="note">„Was er berührt, wird Gold. Was ihn berührt, auch.“</span></div>
+      </div>
+      <p class="caption">Detailseite: Fraktur-Titel mit roter Initiale, die Zeichnung erscheint Strich für Strich, ein Zitat als Randnotiz.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="block">
+      <h3>Optik</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:#ece0c4"></i>Pergament</div>
+        <div class="sw"><i style="background:#4a3020"></i>Sepia</div>
+        <div class="sw"><i style="background:#a8261b"></i>Rubrik</div>
+        <div class="sw"><i style="background:#3f6b4f"></i>Grünspan</div>
+        <div class="sw"><i style="background:#2b1c14"></i>Einband</div>
+      </div>
+      <div class="typeline"><span class="label">Titel</span><span style="font:28px 'UnifrakturMaguntia',serif">König Midas</span></div>
+      <div class="typeline"><span class="label">Notiz</span><span style="font:700 24px 'Caveat',cursive;color:#d9b48a">Schnell zuschlagen!</span></div>
+      <div class="typeline"><span class="label">Text</span><span style="font:19px 'EB Garamond',serif">Kampfbeginn: Schild 1</span></div>
+      <ul>
+        <li>Alles ist Tinte auf Pergament. Gegner in roter Tinte, eigene Figuren in brauner.</li>
+        <li>Figuren als Tuschezeichnungen, die beim Erscheinen „gezeichnet“ werden (Strich-Animation).</li>
+        <li>Seiten blättern zwischen den Bildschirmen um. Tod: Die Zeichnung verläuft und wird durchgestrichen.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Bildschirme &amp; Bedienung</h3>
+      <ul>
+        <li><b>Jeder Bildschirm eine Doppelseite:</b> Shop links, Reihe rechts; Gegnerwahl als Inhaltsverzeichnis mit drei „Kapiteln“.</li>
+        <li><b>Hilfe als Randnotiz:</b> Hinweise erscheinen handschriftlich am Rand, statt in Fenstern.</li>
+        <li><b>Grimoire = Sammelbuch:</b> Das geplante Grimoire aus M7 ist hier das Spiel selbst. Entdeckte Figuren füllen echte Seiten.</li>
+        <li><b>Fusion als Ritual:</b> Zwei Figuren werden in einen Bannkreis gezeichnet, Linien verbinden sich zur neuen Zeichnung.</li>
+        <li>Am Handy: Hochformat-Option denkbar (eine Seite pro Bildschirm).</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Eigene Mechanik: Siegel-Schrift</h3>
+      <div class="rule">Statt fertiger Ausrüstung findest du <b>Siegel</b>: Auslöser-Siegel (z. B. „Angriff“, „Treffer“, „Tod“) und Wirkungs-Siegel (z. B. „Brennen 1“, „Schild 2“). Ein Auslöser und eine Wirkung zusammen ergeben eine neue Fähigkeit, die du auf eine Figur schreibst.</div>
+      <ul>
+        <li>Das bestehende Fähigkeits-Baukastensystem wird für den Spieler sichtbar und spielbar.</li>
+        <li>Seltene Siegel: „Alle Gegner“, „×1,5“, „doppelt“. Verfluchte Siegel haben einen Preis.</li>
+        <li>Pro Figur höchstens eine geschriebene Fähigkeit; Überschreiben kostet 1 Seele.</li>
+        <li>Folge: Viel Kreativität beim Bauen. Ersetzt das jetzige Ausrüstungs-Würfeln.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Abwägung</h3>
+      <div class="proscons">
+        <div class="pro"><h4>Stärken</h4><ul><li>Sehr eigenständig, kaum Vergleichbares</li><li>Grimoire und Sammeln sind im Kern verankert</li><li>Siegel-Schrift erzeugt eigene Kombinationen</li></ul></div>
+        <div class="con"><h4>Schwächen</h4><ul><li>Fraktur und Handschrift am Handy schwerer lesbar</li><li>Siegel-Balance ist knifflig</li><li>Animierte Tuschezeichnungen sind aufwendig</li></ul></div>
+      </div>
+      <div class="meter">
+        <div class="meter-row"><span>Aufwand Optik</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+        <div class="meter-row"><span>Aufwand Mechanik</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+        <div class="meter-row"><span>Neuheit</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+      </div>
+      <h4>Beispiel-Bildprompt für M8</h4>
+      <pre class="prompt">medieval manuscript ink drawing, greedy king holding a coin, sepia ink on vellum, loose expressive linework, red rubrication accents, alchemical marginalia, white background, no text</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 4 ============================ -->
+<section class="dir" id="theater">
+  <div class="dir-head">
+    <span class="label">Richtung <b>4</b> von 5 · düster, verspielt, mit einem Eingriff pro Kampf</span>
+    <h2 style="font-family:'Abril Fatface',serif;font-weight:400">Totentanz-Theater</h2>
+    <p class="pitch">Ein verfluchtes Marionettentheater. Deine Figuren sind Holzpuppen an Fäden, du bist der Puppenspieler. Samtvorhang, Rampenlicht, Kerzen. Einmal pro Kampf darfst du an den Fäden ziehen.</p>
+    <div class="moods"><span>Marionetten</span><span>Samt</span><span>Rampenlicht</span><span>Totentanz</span><span>Diorama</span></div>
+  </div>
+
+  <div class="showcase">
+    <div>
+      <div class="mock thea" role="img" aria-label="Entwurf Bühnenkampf im Theater-Stil">
+        <div class="stage"><div class="floor"></div></div>
+        <div class="lights"></div>
+        <div class="valance"></div>
+        <div class="curtain l"></div><div class="curtain r"></div>
+        <div class="m-top"><span>II. Akt · Die Gier</span><span class="stats"><span>12 Gold</span><span>3 Seelen</span></span></div>
+        <div class="m-field">
+          <div class="row">
+            <div class="puppet"><div class="c"><div class="c-name">Bluttrinker</div><div class="c-art"><svg><use href="#s-cup"/></svg></div><div class="c-stats"><span class="atk">3</span><span class="hp">4</span></div></div><div class="shadow"></div></div>
+            <div class="puppet"><div class="c lit"><div class="c-name">Funkenträger</div><div class="c-art"><svg><use href="#s-wand"/></svg></div><div class="c-stats"><span class="atk">2</span><span class="hp">2</span></div></div><div class="shadow"></div></div>
+            <div class="puppet"><div class="c"><div class="c-name">K. Midas</div><div class="c-art"><svg><use href="#s-coin"/></svg></div><div class="c-stats"><span class="atk">4</span><span class="hp">6</span></div></div><div class="shadow"></div></div>
+          </div>
+          <div class="row">
+            <div class="puppet"><div class="c enemy"><div class="c-name">Eintreiber</div><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-stats"><span class="atk">2</span><span class="hp">3</span></div></div><div class="shadow"></div></div>
+            <div class="puppet"><div class="c enemy"><div class="c-name">Wächter</div><div class="c-art"><svg><use href="#s-skull"/></svg></div><div class="c-stats"><span class="atk">2</span><span class="hp">8</span></div></div><div class="shadow"></div></div>
+          </div>
+        </div>
+        <div class="yank">✋ An den Fäden ziehen (1×)</div>
+      </div>
+      <p class="caption">Kampf: Die Bühne von vorn, Puppen hängen an Fäden. Der Lichtkegel liegt gerade auf dem Funkenträger. Unten der eine Eingriff pro Kampf.</p>
+    </div>
+    <div>
+      <div class="detail-card thea-card" role="img" aria-label="Theaterzettel König Midas">
+        <div class="bill">Heute Abend</div>
+        <div class="title">König Midas</div>
+        <svg viewBox="0 0 100 100" style="width:38%;margin:0 auto;color:#d6a94a" aria-hidden="true"><use href="#s-coin"/></svg>
+        <div class="text">„Kampfbeginn: Angriff ×(1 + Gold/20).“<br>Im Rampenlicht: zusätzlich ×1,5.</div>
+        <div class="roles">Rolle · König der Münzen</div>
+      </div>
+      <p class="caption">Detailkarte als Theaterzettel: Jede Figur ist eine Rolle mit Bühnentext.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="block">
+      <h3>Optik</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:#5e0f1c"></i>Samt</div>
+        <div class="sw"><i style="background:#d6a94a"></i>Messing</div>
+        <div class="sw"><i style="background:#efe6d2"></i>Knochen</div>
+        <div class="sw"><i style="background:#6b4527"></i>Holz</div>
+        <div class="sw"><i style="background:#0b0507"></i>Dunkel</div>
+      </div>
+      <div class="typeline"><span class="label">Titel</span><span style="font:28px 'Abril Fatface',serif">König Midas</span></div>
+      <div class="typeline"><span class="label">Text</span><span style="font:italic 19px 'Old Standard TT',serif">Kampfbeginn: Schild 1</span></div>
+      <ul>
+        <li>Leichte 3D-Bühne (Diorama) mit Perspektive, Puppen als flache, bemalte Holzfiguren.</li>
+        <li>Licht ist das wichtigste Gestaltungsmittel: Rampenlicht, Kerzen, Schatten an der Bühnenrückwand.</li>
+        <li>Animationen „hölzern“: Puppen hüpfen an Fäden, Angriffe als Ruck nach vorn, Tod: Fäden reißen, die Puppe fällt zusammen.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Bildschirme &amp; Bedienung</h3>
+      <ul>
+        <li><b>Shop als Requisitenkammer:</b> Puppen hängen an einer Stange, Packs sind Kostümtruhen.</li>
+        <li><b>Gegnerwahl als Spielplan:</b> drei Theaterplakate, jedes ein „Stück“ mit Besetzungsliste.</li>
+        <li><b>Kampf mit einem Eingriff:</b> Einmal pro Kampf antippen und eine Puppe an einen anderen Platz ziehen.</li>
+        <li><b>Boss als Hauptdarsteller:</b> Vorhang fällt, Ansage wie im Theater, Boss-Puppe doppelt so groß.</li>
+        <li>Ereignisse finden „hinter der Bühne“ statt (Garderobe, Souffleurkasten, Requisite).</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Eigene Mechanik: Rampenlicht &amp; Fäden</h3>
+      <div class="rule"><b>Rampenlicht:</b> Ein Lichtkegel wandert jeden Zug eine Position weiter. Die beleuchtete Figur löst ihre Fähigkeit ×1,5 aus. <b>Fäden:</b> Einmal pro Kampf darfst du eine Figur an einen anderen Platz ziehen.</div>
+      <ul>
+        <li>Der Lichtweg ist vor dem Kampf sichtbar, die Reihenfolge wird so zur Planungsaufgabe.</li>
+        <li>Der Eingriff macht aus dem reinen Auto-Kampf etwas mit einem einzigen, wichtigen Moment, z. B. eine sterbende Figur nach hinten retten.</li>
+        <li>Neue Relikte: „Zweiter Faden“ (2 Eingriffe), „Doppelter Scheinwerfer“.</li>
+        <li>Folge: Mehr Spannung im Kampf, ohne die Automatik aufzugeben.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Abwägung</h3>
+      <div class="proscons">
+        <div class="pro"><h4>Stärken</h4><ul><li>Starker, unverwechselbarer Charakter</li><li>Erster echter Spieler-Eingriff im Kampf</li><li>Boss-Auftritte als Theater sind sehr wirkungsvoll</li></ul></div>
+        <div class="con"><h4>Schwächen</h4><ul><li>Tarot tritt optisch in den Hintergrund</li><li>3D-Bühne und Licht am Handy aufwendig</li><li>Eingriff braucht Tempo-Pause im Kampf</li></ul></div>
+      </div>
+      <div class="meter">
+        <div class="meter-row"><span>Aufwand Optik</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+        <div class="meter-row"><span>Aufwand Mechanik</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+        <div class="meter-row"><span>Neuheit</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+      </div>
+      <h4>Beispiel-Bildprompt für M8</h4>
+      <pre class="prompt">hand-painted wooden marionette of a greedy golden king, visible strings, flat painted wood, theatrical stage lighting, dark red velvet background, gothic puppet theatre, front view, no text</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 5 ============================ -->
+<section class="dir" id="astrolabium">
+  <div class="dir-head">
+    <span class="label">Richtung <b>5</b> von 5 · elegant, kosmisch, räumlich</span>
+    <h2 style="font-family:'Marcellus',serif;letter-spacing:.08em">Astrolabium</h2>
+    <p class="pitch">Die Hofkarten sind Sternbilder. Statt in einer Reihe stehen sie auf einem drehbaren Himmelsring. Nachbarn bilden Konstellationen, und jeder Kampf steht unter dem Einfluss eines Planeten.</p>
+    <div class="moods"><span>Sternkarte</span><span>Silberlinien</span><span>Astrologie</span><span>Geometrie</span><span>Stille</span></div>
+  </div>
+
+  <div class="showcase">
+    <div>
+      <div class="mock astro" role="img" aria-label="Entwurf Himmelsring im Astrolabium-Stil">
+        <div class="stars"></div>
+        <div class="m-top"><span>AKT I · HAUS DES GOLDES</span><span class="stats"><span>12 Gold</span><span>3 Seelen</span></span></div>
+        <div class="planet"><div class="glyph">♂</div><div class="t">Stunde des Mars · Brennen +1</div></div>
+        <svg class="const" viewBox="0 0 160 90" aria-hidden="true">
+          <line x1="27.2" y1="22.5" x2="56" y2="22.5" stroke="#8ff0c9" stroke-width=".5" stroke-dasharray="1.4 .9"/>
+        </svg>
+        <div class="ring own" aria-hidden="true">
+          <div class="node" style="left:25%;top:7%"><svg><use href="#s-cup"/></svg><span class="n">Bluttrinker</span></div>
+          <div class="node" style="left:75%;top:7%"><svg><use href="#s-cup"/></svg><span class="n">Messdiener</span></div>
+          <div class="node front" style="left:100%;top:50%"><svg><use href="#s-wand"/></svg><span class="n">Funkenträger</span></div>
+          <div class="node" style="left:75%;top:93%"><svg><use href="#s-coin"/></svg><span class="n">König Midas</span></div>
+          <div class="node empty" style="left:25%;top:93%"></div>
+          <div class="node empty" style="left:0%;top:50%"></div>
+        </div>
+        <div class="ring foe" aria-hidden="true">
+          <div class="node foe front" style="left:0%;top:50%"><svg><use href="#s-skull"/></svg><span class="n">Eintreiber</span></div>
+          <div class="node foe" style="left:50%;top:0%"><svg><use href="#s-skull"/></svg><span class="n">Wächter</span></div>
+          <div class="node foe" style="left:50%;top:100%"><svg><use href="#s-skull"/></svg><span class="n">Wächter</span></div>
+        </div>
+        <div class="legend">Konstellation „Kelchpaar“: beide Kelche +1/+1</div>
+      </div>
+      <p class="caption">Kampf: Dein Team auf einem Ring mit 6 Plätzen. Die Figur, die zum Gegner zeigt, kämpft. Stirbt sie, dreht sich der Ring weiter. Benachbarte gleiche Farben verbinden sich zu Konstellationen.</p>
+    </div>
+    <div>
+      <div class="detail-card astro-card" role="img" aria-label="Sternbildkarte König Midas">
+        <div class="title">KÖNIG MIDAS</div>
+        <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#c9d3ea" stroke-width=".8" fill="none"><path d="M20 70 L38 40 L50 52 L62 30 L80 62 L50 80 Z"/></g><g fill="#fff3c4"><circle cx="20" cy="70" r="2.4"/><circle cx="38" cy="40" r="2"/><circle cx="50" cy="52" r="3"/><circle cx="62" cy="30" r="2.6"/><circle cx="80" cy="62" r="2"/><circle cx="50" cy="80" r="2.2"/></g></svg></div>
+        <div class="text">Kampfbeginn: Angriff ×(1 + Gold/20).<br>In der Stunde der Sonne: doppelt.</div>
+        <div class="deg">24° · STIER · 4 / 6</div>
+      </div>
+      <p class="caption">Detailkarte als Sternbild: Jede Figur hat ein eigenes Sternmuster und eine Planeten-Vorliebe.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="block">
+      <h3>Optik</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:#070b1d"></i>Nacht</div>
+        <div class="sw"><i style="background:#0e1636"></i>Tiefe</div>
+        <div class="sw"><i style="background:#c9d3ea"></i>Silber</div>
+        <div class="sw"><i style="background:#fff3c4"></i>Stern</div>
+        <div class="sw"><i style="background:#ff7a59"></i>Mars</div>
+        <div class="sw"><i style="background:#8ff0c9"></i>Venus</div>
+      </div>
+      <div class="typeline"><span class="label">Titel</span><span style="font:24px 'Marcellus',serif;letter-spacing:.12em">KÖNIG MIDAS</span></div>
+      <div class="typeline"><span class="label">Text</span><span style="font:300 19px 'Josefin Sans',sans-serif">Kampfbeginn: Schild 1</span></div>
+      <ul>
+        <li>Nachtblau mit feinen Silberlinien, sparsam, präzise, viel Leerraum.</li>
+        <li>Figuren als leuchtende Sternbild-Sigillen statt Porträts, so braucht es wenig Illustration.</li>
+        <li>Langsame, ruhige Bewegung: Der Ring dreht sich, Konstellationslinien glimmen auf.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Bildschirme &amp; Bedienung</h3>
+      <ul>
+        <li><b>Ring statt Reihe:</b> 6 Plätze im Kreis. Drehen per Wischen, Einschieben zwischen zwei Sternen.</li>
+        <li><b>Gegnerwahl als Himmelskarte:</b> drei Sternbilder am Horizont, darunter der herrschende Planet.</li>
+        <li><b>Shop als Sternwarte:</b> Angebote erscheinen in einem Teleskop-Ausschnitt.</li>
+        <li><b>Fusion:</b> Zwei Sternbilder verschmelzen zu einem größeren, die Linien wachsen zusammen.</li>
+        <li>Am Handy gut: wenige Elemente, große Formen. Der Ring braucht aber mehr Höhe als eine Reihe.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Eigene Mechanik: Konstellationen &amp; Planetenstunde</h3>
+      <div class="rule"><b>Konstellationen:</b> Zwei benachbarte Figuren gleicher Farbe erhalten +1/+1, drei in Folge zusätzlich eine Farbwirkung. <b>Planetenstunde:</b> Jeder Kampf steht unter einem Planeten, der in der Gegnerwahl sichtbar ist (Mars: Brennen +1, Venus: Heilung ×2, Saturn: Schild hält 1 Zug länger …).</div>
+      <ul>
+        <li>Der Ring dreht sich nach jedem Tod: die nächste Figur rückt nach vorn, Nachbarschaften verschieben sich mitten im Kampf.</li>
+        <li>Figuren haben eine Planeten-Vorliebe; in „ihrer“ Stunde wirkt ihre Fähigkeit doppelt.</li>
+        <li>Die Gegnerwahl bekommt eine zweite Ebene: welcher Gegner unter welchem Planeten?</li>
+        <li>Folge: Aufstellung wird räumlich und viel taktischer.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>Abwägung</h3>
+      <div class="proscons">
+        <div class="pro"><h4>Stärken</h4><ul><li>Sehr edel, ungewöhnlich, eigene Identität</li><li>Wenig Illustration nötig</li><li>Aufstellung wird zum echten Rätsel</li></ul></div>
+        <div class="con"><h4>Schwächen</h4><ul><li>Größter Umbau: Reihe wird Ring</li><li>Weniger düster, eher mystisch</li><li>Kampf schwerer auf einen Blick zu lesen</li></ul></div>
+      </div>
+      <div class="meter">
+        <div class="meter-row"><span>Aufwand Optik</span><span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+        <div class="meter-row"><span>Aufwand Mechanik</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+        <div class="meter-row"><span>Neuheit</span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+      </div>
+      <h4>Beispiel-Bildprompt für M8</h4>
+      <pre class="prompt">minimal celestial sigil of a king made of stars, thin silver line constellation, deep navy background, astrolabe engraving style, soft glow, symmetrical, no text</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ Vergleich ============================ -->
+<section class="compare" id="vergleich">
+  <span class="label">Überblick</span>
+  <h2>Die fünf Richtungen im Vergleich</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Richtung</th><th>Gefühl</th><th>Neue Mechanik</th><th>Was sich im Spiel ändert</th><th>Lesbarkeit am Handy</th><th>Gesamtaufwand</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Das Alte Blatt</td><td>Ruhig, klassisch, Tarot pur</td><td>Umgekehrte Karten</td><td>16 zweite Fähigkeiten, Shop als Legung</td><td>Sehr gut</td><td>Niedrig bis mittel</td></tr>
+        <tr><td>2 · Neon-Séance</td><td>Laut, schnell, Zahlenrausch</td><td>Ekstase-Mult, Overkill-Gold</td><td>Kampf zeigt Rechnungen, Tempo-Knopf</td><td>Gut</td><td>Mittel</td></tr>
+        <tr><td>3 · Lebendes Grimoire</td><td>Gelehrt, handgemacht</td><td>Siegel-Schrift (Fähigkeiten selbst bauen)</td><td>Ausrüstung wird durch Siegel ersetzt, Grimoire im Kern</td><td>Mittel</td><td>Hoch</td></tr>
+        <tr><td>4 · Totentanz-Theater</td><td>Düster-verspielt, inszeniert</td><td>Rampenlicht, ein Eingriff pro Kampf</td><td>Kampf bekommt einen Spieler-Moment</td><td>Mittel</td><td>Hoch</td></tr>
+        <tr><td>5 · Astrolabium</td><td>Edel, kosmisch, taktisch</td><td>Konstellationen, Planetenstunde</td><td>Reihe wird Ring mit 6 Plätzen</td><td>Mittel</td><td>Sehr hoch</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="next">
+    <span class="label">So geht es weiter</span>
+    <p>Sag mir, welche Richtung dich anspricht, gern auch eine Mischung (z. B. „Optik von 1, Mechanik von 4“). Zur gewählten Richtung arbeite ich dann die Details aus: alle Bildschirme, die Regeln mit Zahlen, betroffene Figuren und Gegenstände, und einen Plan, wie sie ins Spiel kommt. Die Mechaniken sind Vorschläge; nichts davon wird ohne deine Freigabe gebaut.</p>
+  </div>
+</section>
+
+</main>
