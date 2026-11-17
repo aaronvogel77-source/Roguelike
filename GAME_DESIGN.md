@@ -470,6 +470,12 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Hinweise beim ersten Mal:** Pergament-Zettel mit Pfeil neben dem neuen Element, 1–2 Sätze, „Verstanden“; jeder Hinweis nur einmal, im Menü zurücksetzbar und ganz abschaltbar
 - **Aschepakt:** Brennen ×1,75 (zwischen ×2 und ×1,5)
 
+### Kartenfarbe nach Familie (beantwortet 2026-11-17, umgesetzt in v0.30.0)
+- **Figurenkarten (Vorderseite):** Hintergrund und Rahmen in der Familienfarbe – Münzen Grün, Stäbe Rot-Orange, Kelche Blau, Schwerter Violett (wie bisher bei Farbboni, Edelsteinen, Gewändern)
+- **Rang/Seltenheit** bleibt sichtbar über Glanz, Funkeln, Polychrom und Rahmenschmuck (Edelsteine, Ornamente), nicht mehr über die Grundfarbe
+- **Familiensymbol neu gezeichnet:** Münze mit Pentakel, Stab mit Flamme, Kelch, Schwert – kräftig in Familienfarbe mit heller Kontur, groß als Wasserzeichen hinter der Figur und klein in einer Ecke; Vorschau vor dem Einbau
+- Verdeckte Rückseiten in Packs bleiben nach Seltenheit leuchtend
+
 ## Phase 11 – Benutzeroberfläche und Bedienung
 
 ### Runde 1 (beantwortet)
@@ -920,3 +926,5 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Sound/Musik aus CC0-Bibliotheken (OpenGameArt inkl. Kenney-Pakete), Musik Mischung aus düsterer Orgel/Glocken und Chiptune, getrennte Regler; Erst-Hinweise als Pergament-Zettel mit Pfeil; Aschepakt ×1,75 | Spieler-Wahl; eigene Umgebung „Roguelike“ mit Zugriff auf kenney.nl und opengameart.org | Selbst synthetisieren; Banner-Hinweise; Hinweise nur im Grimoire |
 | 2026-11-17 | v0.29.0: Sound und Musik (45 Effekte, 5 Musikstücke, alle CC0 von OpenGameArt, Credits in docs/AUDIO_CREDITS.md): Menü/Grimoire „Cathedral“, Planung „Dark Shrine Loop“, Lager „Dark Bishop“, Kampf „8-Bit Slay the Evil“, Boss „8-Bit Danger Strong Boss“ mit Überblendung; Klicks, Karten, Münzen, Treffer, Schild, Brennen, Blutung, Fluch, Heilung, Tod, Wiederbelebung, Stufenaufstieg, Fusion, Packs (Glocke ab episch), Schatzkammer, Sieg/Niederlage. Einstellungsseite im Menü: Musik, Effekte, Stumm, Hinweise an/aus, Hinweise zurücksetzen. 12 Erst-Hinweise als Pergament-Zettel mit Pfeil (Gegnerwahl, Boss, Shop, Kampf, Packs, Farbboni, Seelen/Pakte, Belohnung, Ereignis, Gefahr, Fusion, Schatzkammer), je einmal, einer pro Bildschirm. Aschepakt ×1,75 (Ausschluss-Test +2 Pkt, im Rauschen) | Spieler-Wahl | – |
 | 2026-11-17 | v0.29.1: Das Gratis-Beutepack der schweren Bande öffnet sich direkt nach dem Sieg auf dem Belohnungsbildschirm statt im nächsten Shop zu warten: großes „Beute!“, goldenes Pack mit Leuchten, Münzregen, Münz- und Glockenklang, zusätzlicher goldener Funkenstoß beim Aufreißen; Debug-Knopf „Beute“ | Spieler-Wunsch | – |
+| 2026-11-17 | Figurenkarten nach Familienfarbe statt Rangfarbe, Rang über Glanz/Effekte/Rahmenschmuck; Familiensymbole neu (Wasserzeichen + Ecke); Kerzenträger heilt sich nie selbst; Opfer-Beschreibungen vollständig | Spieler: bessere Übersicht | Rückseiten nach Familie; klassische Tarotfarben; nur Ecke / nur Wasserzeichen |
+| 2026-11-17 | v0.30.0: Figurenkarten in Familienfarbe (Grund + Rahmen; Asse dunkel in Familienfarbe mit Strahlen und Polychrom; Fusionsrahmen aus den Familien der verschmolzenen Figuren), Rang über Rahmenschmuck (Ritter Nieten, Königin Silber-Ecken, König/Ass Goldsteine, König Strahlen) und die bisherigen Glanz-Effekte; neue Familiensymbole (Münze mit Pentakel, Stab mit Flamme, Kelch, Schwert) oben links und als Wasserzeichen – überall gleich stark (dunklere Töne auf hellem, hellere auf dunklem Grund); Kerzenträger heilt nie sich selbst; Opfer-Beschreibungen vollständig | Spieler-Feedback zur Vorschau: Wasserzeichen bei allen gleich stark | Wasserzeichen kräftiger; Rang deutlicher |

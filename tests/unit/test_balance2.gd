@@ -274,3 +274,14 @@ func test_negative_events_are_rare_and_never_before_a_boss() -> void:
 		boss_run.fight = 2
 		assert_false(boss_run._roll_negative_event(_db.items["events"]))
 	assert_between(hits, 20, 65, "about 13 % per chance")
+
+
+func test_candle_bearer_never_heals_itself() -> void:
+	# Alone in front it has nobody to heal; behind a wounded ally it heals that ally.
+	var alone := BattleSimulator.simulate([{"def": _db.figures["blade_apprentice"], "level": 1}], [_enemy("candle_bearer")])
+	assert_eq(_events_of(alone, "heal").size(), 0)
+	var guarded := BattleSimulator.simulate([{"def": _db.figures["blade_apprentice"], "level": 1}],
+		[_enemy("vault_warden"), _enemy("candle_bearer")])
+	var heals := _events_of(guarded, "heal")
+	for e in heals:
+		assert_ne(e["uid"], 3, "the candle bearer (uid 3) is never healed by itself")

@@ -353,9 +353,9 @@ UI_BUY,Kaufen,Buy
 UI_SOLD,Verkauft,Sold
 UI_MARKET_FIGURE_HINT,Ziehe die Figur auf einen freien Platz oder tippe Kaufen und dann einen Platz an,"Drag the figure onto a free slot, or tap Buy and then a slot"
 OFFER_SACRIFICE_ONE,Einzelopfer,Single offering
-OFFER_SACRIFICE_ONE_DESC,Eine Figur geht. Du erhältst Seelen: Rangwert + Stufe.,One figure goes. You gain souls: rank value + level.
+"OFFER_SACRIFICE_ONE_DESC","Eine Figur geht für immer. Du erhältst Seelen: Rangwert (Bube 1 … König 4) + Stufe. Seelen kaufen Pakte.","One figure is gone for good. You gain souls: rank value (page 1 … king 4) + level. Souls buy pacts."
 OFFER_SACRIFICE_TWO,Doppelopfer,Double offering
-OFFER_SACRIFICE_TWO_DESC,Zwei Figuren gehen. Du wählst einen Pakt aus 3.,Two figures go. Choose a pact out of 3.
+"OFFER_SACRIFICE_TWO_DESC","Zwei Figuren gehen für immer. Du wählst 1 von 3 Pakten: ein starker Vorteil für den ganzen Run, aber jeder Pakt hat einen Preis. Höchstens 3 Pakte.","Two figures are gone for good. Choose 1 of 3 pacts: a strong boon for the whole run, but every pact has a price. At most 3 pacts."
 OFFER_THROW_3,Kupfer,Copper
 OFFER_THROW_3_DESC,Eine magische Ausrüstung (1 Zusatz).,One magic equipment piece (1 bonus).
 OFFER_THROW_6,Silber,Silver
@@ -669,7 +669,7 @@ ENEMY_WOUND_SEALER,Wundversiegler,Wound Sealer
 ENEMY_VAULT_CARDINAL,Tresorkardinal,Vault Cardinal
 ENEMY_CLOCKWORK_WARDEN,Uhrwerk-Wächter,Clockwork Warden
 ABIL_CURSE_WEAVER,Kampfbeginn: Deine vorderste Figur erhält Fluch {v}.,Battle start: your front figure gains {v} curse.
-ABIL_CANDLE_BEARER,Zugbeginn: Heilt den vordersten Gegner um {v}.,Turn start: heals its front ally by {v}.
+ABIL_CANDLE_BEARER,"Zugbeginn: Heilt den vordersten Gegner um {v} (nicht sich selbst).","Turn start: heals its front ally by {v} (never itself)."
 ABIL_SALT_GOLEM,Immun gegen Brennen.,Immune to burn.
 ABIL_BAN_PRIOR,"Solange er lebt, können deine Figuren nicht geheilt werden.","While it lives, your figures cannot be healed."
 ABIL_SHIELD_BREAKER,Kampfbeginn (zuletzt): Zerstört alle Schilde deiner Figuren.,Battle start (last): destroys every shield of your figures.

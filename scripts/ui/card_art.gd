@@ -29,6 +29,21 @@ const CATEGORY := {
 	"pact": {"frame": ["2a0408", "6a0c16", "c02436", "ff8a90"], "bg": ["2a0a10", "140408"], "dark": true, "fx": {"gloss": 0.4}},
 }
 const ENEMY_BG := ["3a2228", "1c0c10"]
+## Figure cards show their family (suit) by colour: frame ramp and parchment.
+## The rank shows through gloss / sparkle / polychrome and the frame's jewellery.
+const SUIT_LOOKS := {
+	"coins": {"frame": ["0e2a12", "25602c", "4ea04a", "b8f0a0"], "bg": ["e4f0d8", "b4d09c"], "dark_bg": ["12301a", "06140a"]},
+	"wands": {"frame": ["3a0e06", "8a2a10", "e0602a", "ffc890"], "bg": ["f6e2d2", "e0b294"], "dark_bg": ["3a1408", "180604"]},
+	"cups": {"frame": ["0a1a3a", "1e4a8a", "3e8ad8", "b0e0ff"], "bg": ["dceaf8", "a6c2e2"], "dark_bg": ["0e2240", "060c1c"]},
+	"swords": {"frame": ["220e36", "552682", "9654d6", "e2c4ff"], "bg": ["ece0f6", "c6a8e2"], "dark_bg": ["24123a", "0e0618"]},
+}
+## Family symbols, 15×15: o outline, f fill, h highlight, y glow (the wand's flame).
+const SUIT_SYMBOLS := {
+	"coins": [".....ooooo.....", "...oohhhhhoo...", "..ohhfffffhho..", ".ohhfffofffffo.", ".ohffffofffffo.", "ohffffooofffffo", "ohfoooooooooffo", "ohffooofooofffo", "ohfffoofooffffo", "ohfffoooooffffo", ".ohffoofoofffo.", ".ohffofffofffo.", "..offfffffffo..", "...oofffffoo...", ".....ooooo....."],
+	"wands": ["...........oho.", "..........ohyho", ".........ohyyhh", "..........ohyho", "..........offfo", ".........offfo.", "........offfo..", ".......ofhfo...", "......ofhfo....", ".....offfo.....", "....ofhfo......", "...ofhfo.......", "..offfo........", ".offfo.........", ".offo.........."],
+	"cups": ["...ooooooooo...", "..ohhhhhhhhho..", ".ohfffffffffho.", ".ohffffffffffo.", ".ohffffffffffo.", ".ohffffffffffo.", "..ohffffffffo..", "...ohffffffo...", "....ooohooo....", ".....ohfho.....", "....ooohooo....", "...ohhhfhhho...", "..ohfffffffho..", "...ooooooooo...", "..............."],
+	"swords": ["......oho......", ".....ohfho.....", ".....ohffo.....", ".....ohffo.....", ".....ohffo.....", ".....ohffo.....", ".....ohffo.....", "..o..ohffo..o..", ".ohooohffoooho.", ".ohhhhfffhhhfo.", "..ooooohooooo..", "......oho......", "......oho......", ".....ohfho.....", "......oho......"],
+}
 const SUIT_MARKS := {
 	"coins": [".ooooo.", "o.....o", "o.ooo.o", "o.o.o.o", "o.ooo.o", "o.....o", ".ooooo."],
 	"wands": ["...o...", "..ooo..", "..o.o..", "...o...", "...o...", "...o...", "..ooo.."],
@@ -36,6 +51,8 @@ const SUIT_MARKS := {
 	"swords": ["...o...", "...o...", "...o...", "...o...", "ooooooo", "...o...", "...o..."],
 }
 const OUTLINE := Color("120a0e")
+## The big family symbol behind every figure card, equally strong everywhere.
+const WATERMARK_ALPHA := 0.35
 
 static var _cache: Dictionary = {}
 
@@ -58,15 +75,15 @@ static func for_unit(definition: Dictionary, enemy: bool, suit: String, size_px:
 	if definition.get("recipe", false):
 		return _cached("r:%d:%d:%s" % [w, h, suit], func() -> Dictionary: return _figure(w, h, TIERS["recipe"], suit, "recipe"))
 	if rank == "legend":
-		return _cached("a:%d:%d:%s" % [w, h, suit], func() -> Dictionary: return _figure(w, h, TIERS["legend"], suit, "ace"))
+		return _cached("a:%d:%d:%s" % [w, h, suit], func() -> Dictionary: return _suit_figure(w, h, "legend", suit))
 	var fusion: Dictionary = definition.get("fusion", {})
 	if not fusion.is_empty():
-		var ranks: Array = fusion.get("part_ranks", [rank])
+		var suits: Array = fusion.get("suits", [suit])
 		var stage := int(fusion.get("stage", 1))
-		return _cached("f:%d:%d:%s:%s:%d" % [w, h, suit, ",".join(ranks), stage],
-			func() -> Dictionary: return _fusion(w, h, ranks, suit, stage))
+		return _cached("f:%d:%d:%s:%s:%d" % [w, h, suit, ",".join(suits), stage],
+			func() -> Dictionary: return _fusion(w, h, suits, suit, stage))
 	return _cached("p:%d:%d:%s:%s" % [w, h, rank, suit],
-		func() -> Dictionary: return _figure(w, h, TIERS.get(rank, TIERS["page"]), suit, ""))
+		func() -> Dictionary: return _suit_figure(w, h, rank, suit))
 
 
 ## Object cards: equipment by rarity, relics / tarot / pacts by category.
@@ -109,10 +126,99 @@ static func _figure(w: int, h: int, look: Dictionary, suit: String, special: Str
 	if special == "recipe":
 		_circle(c, w / 2, int(h * 0.45), mini(w, h) / 3, Color(frame[2], 0.6))
 	if suit != "":
-		_watermark(c, w, h, suit, Color(frame[1], 0.28 if special == "" else 0.5), special != "")
+		_watermark_symbol(c, w, h, suit, look.get("dark", false))
 	_frame(c, w, h, [frame])
 	_round(c, w, h)
 	return {"tex": c.texture(), "fx": look.get("fx", {}), "accent": frame[2], "dark": look.get("dark", false)}
+
+
+## A figure card in its family's colours. The rank adds jewellery to the
+## frame and the shine effects of its tier (page plain ... king sparkling,
+## aces dark with rays and polychrome).
+static func _suit_figure(w: int, h: int, rank: String, suit: String) -> Dictionary:
+	var look: Dictionary = SUIT_LOOKS.get(suit, SUIT_LOOKS["coins"])
+	var frame := _colors(look["frame"])
+	var c := PixelCanvas.new(w, h)
+	var ace := rank == "legend"
+	if ace:
+		_gradient(c, w, h, Color(look["dark_bg"][0]), Color(look["dark_bg"][1]))
+		_stars(c, w, h, frame[3])
+		_rays(c, w, h, Color(frame[2], 0.35), 16)
+	else:
+		_gradient(c, w, h, Color(look["bg"][0]), Color(look["bg"][1]))
+		_fibres(c, w, h, Color(look["bg"][1]))
+		if rank == "king":
+			_rays(c, w, h, Color(frame[2], 0.22), 12)
+	_watermark_symbol(c, w, h, suit, ace)
+	_frame(c, w, h, [frame])
+	_rank_jewels(c, w, h, rank, frame)
+	_suit_symbol(c, suit, 13, 13, 1, 1.0)  # small corner badge, top left (the level seal sits top centre)
+	_round(c, w, h)
+	var fx: Dictionary = (TIERS["legend"] if ace else TIERS.get(rank, TIERS["page"]))["fx"]
+	return {"tex": c.texture(), "fx": fx, "accent": frame[2], "dark": ace}
+
+
+## Rank jewellery on the frame: knights rivets, queens silver corner filigree,
+## kings and aces gold gems in the corners and on the sides.
+static func _rank_jewels(c: PixelCanvas, w: int, h: int, rank: String, frame: Array) -> void:
+	var silver := Color("e8ecf4")
+	var gold := _colors(TIERS["king"]["frame"])
+	match rank:
+		"knight":
+			for p in [Vector2i(5, 5), Vector2i(w - 7, 5), Vector2i(5, h - 7), Vector2i(w - 7, h - 7)]:
+				c.px(OUTLINE, p.x, p.y, 2, 2)
+				c.px(silver, p.x, p.y)
+		"queen":
+			for corner in [Vector2i(4, 4), Vector2i(w - 5, 4), Vector2i(4, h - 5), Vector2i(w - 5, h - 5)]:
+				var sx := 1 if corner.x < w / 2 else -1
+				var sy := 1 if corner.y < h / 2 else -1
+				for i in 6:
+					c.px(silver, corner.x + i * sx, corner.y)
+					c.px(silver, corner.x, corner.y + i * sy)
+				c.px(silver, corner.x + 2 * sx, corner.y + 2 * sy)
+		"king", "legend":
+			var spots := [Vector2i(3, 3), Vector2i(w - 6, 3), Vector2i(3, h - 6), Vector2i(w - 6, h - 6),
+				Vector2i(w / 2 - 1, h - 5), Vector2i(1, h / 2 - 1), Vector2i(w - 4, h / 2 - 1)]
+			for p in spots:
+				c.px(OUTLINE, p.x - 1, p.y - 1, 5, 5)
+				c.px(gold[2], p.x, p.y, 3, 3)
+				c.px(frame[3], p.x, p.y)
+				c.px(gold[3], p.x + 1, p.y + 1)
+
+
+## The big watermark: same size and strength on every figure card.
+## On light parchment it uses the darker tones of the family ramp, on dark
+## grounds (aces, recipes, skins) the lighter ones, so it reads the same everywhere.
+static func _watermark_symbol(c: PixelCanvas, w: int, h: int, suit: String, dark := false) -> void:
+	# Dark grounds swallow more of the symbol: a little more strength there.
+	_suit_symbol(c, suit, w / 2, int(h * 0.44), 3 if w >= 50 else 2, WATERMARK_ALPHA * (1.5 if dark else 1.0), 1 if dark else -1)
+
+
+## A family symbol at (cx, cy) with its centre there; alpha < 1 for the watermark.
+static func _suit_symbol(c: PixelCanvas, suit: String, cx: int, cy: int, scale: int, alpha: float, shift := 0) -> void:
+	var rows: Array = SUIT_SYMBOLS.get(suit, SUIT_SYMBOLS["coins"])
+	var ramp := _colors(SUIT_LOOKS.get(suit, SUIT_LOOKS["coins"])["frame"])
+	# shift -1: darker tones (for light grounds), +1: lighter tones (dark grounds).
+	var pick := func(i: int) -> Color: return ramp[clampi(i + shift, 0, 3)]
+	var tones := {"o": pick.call(0), "f": pick.call(2), "h": pick.call(3), "y": Color("ffe060")}
+	var ox := cx - 15 * scale / 2
+	var oy := cy - 15 * scale / 2
+	for y in rows.size():
+		var row: String = rows[y]
+		for x in row.length():
+			var ch := row[x]
+			if not tones.has(ch):
+				continue
+			var tone: Color = tones[ch]
+			if alpha >= 1.0:
+				c.px(tone, ox + x * scale, oy + y * scale, scale, scale)
+			else:
+				for j in scale:
+					for i in scale:
+						var px := ox + x * scale + i
+						var py := oy + y * scale + j
+						if px >= 0 and py >= 0 and px < c.w and py < c.h:
+							c.image.set_pixel(px, py, c.image.get_pixel(px, py).lerp(tone, alpha))
 
 
 ## A real tarot card: midnight sky, a gold arch framing the picture, a name
@@ -165,15 +271,16 @@ static func _tarot(w: int, h: int) -> Dictionary:
 	return {"tex": c.texture(), "fx": {"gloss": 0.7, "sparkle": 0.8}, "accent": gold[2], "dark": true}
 
 
-static func _fusion(w: int, h: int, ranks: Array, suit: String, stage: int) -> Dictionary:
+static func _fusion(w: int, h: int, suits: Array, suit: String, stage: int) -> Dictionary:
 	var c := PixelCanvas.new(w, h)
-	var main: Dictionary = TIERS.get(ranks[0], TIERS["page"])
-	# Calm and elegant: the main figure's parchment, the braided frame of all
-	# fused figures, and one small gold stone per fusion stage at the bottom.
+	var main: Dictionary = SUIT_LOOKS.get(suit, SUIT_LOOKS["coins"])
+	# Calm and elegant: the main family's parchment, a frame braided from the
+	# families of all fused figures, one small gold stone per fusion stage.
 	_gradient(c, w, h, Color(main["bg"][0]), Color(main["bg"][1]))
 	_fibres(c, w, h, Color(main["bg"][1]))
-	var frames: Array = ranks.map(func(r: String) -> Array: return _colors(TIERS.get(r, TIERS["page"])["frame"]))
+	var frames: Array = suits.map(func(s: String) -> Array: return _colors(SUIT_LOOKS.get(s, SUIT_LOOKS["coins"])["frame"]))
 	_vortex(c, w, h, frames.map(func(f: Array) -> Color: return f[1]), stage)
+	_watermark_symbol(c, w, h, suit)
 	_frame(c, w, h, frames)
 	var gold := _colors(TIERS["king"]["frame"])
 	for x in range(5, w - 5):  # a fine gold inner line
@@ -197,7 +304,7 @@ static func _skin(w: int, h: int, suit: String, theme: Array) -> Dictionary:
 	# colour lives in the frame and a faint watermark only.
 	_gradient(c, w, h, Color("4a4450").lerp(main, 0.12), Color("1e1a24"))
 	_fibres(c, w, h, Color("2a2630"))
-	_watermark(c, w, h, suit, Color(light, 0.12), true)
+	_watermark_symbol(c, w, h, suit, true)
 	_frame(c, w, h, [frame])
 	_round(c, w, h)
 	return {"tex": c.texture(), "fx": {"gloss": 0.35}, "accent": main, "dark": true}

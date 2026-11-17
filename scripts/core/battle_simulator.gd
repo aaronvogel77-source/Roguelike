@@ -420,6 +420,8 @@ func _resolve_targets(owner: BattleUnit, target: String, context: Dictionary) ->
 			return [attacker] if attacker != null and attacker.is_alive() else []
 		"front_ally":
 			return allies.slice(0, 1)
+		"front_other_ally":  # the front ally, but never the owner itself
+			return allies.slice(0, 1) if not allies.is_empty() and allies[0] != owner else []
 		"back_ally":
 			return allies.slice(allies.size() - 1) if not allies.is_empty() else []
 		"ally_in_front":
