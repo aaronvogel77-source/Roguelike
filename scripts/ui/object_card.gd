@@ -54,13 +54,26 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 			lines = [TranslationServer.translate(key + "_DESC"),
 				TranslationServer.translate("PACT_COST_PREFIX") % TranslationServer.translate(key + "_COST")]
 	_style = StyleBoxFlat.new()
-	_style.bg_color = Palette.PANEL
+	_style.bg_color = Color(0, 0, 0, 0)
 	_style.border_color = border
-	_style.set_border_width_all(3)
+	_style.set_border_width_all(0)
 	_style.set_corner_radius_all(10)
+	var margin := 4 if compact else 9
 	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
-		_style.set_content_margin(side, 4 if compact else 8)
+		_style.set_content_margin(side, margin)
 	add_theme_stylebox_override("panel", _style)
+	# The pixel card face (rarity / category colour, gloss and polychrome).
+	var rarity := int(entry["item"]["rarity"]) if kind == "equipment" else 0
+	var face_holder := Control.new()
+	face_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(face_holder)
+	var face := CardArt.face_rect(CardArt.for_object(kind, rarity, card_size))
+	face_holder.add_child(face)
+	face.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side in ["offset_left", "offset_top"]:
+		face.set(side, -margin)
+	for side in ["offset_right", "offset_bottom"]:
+		face.set(side, margin)
 
 	var unique := kind == "equipment" and int(entry["item"]["rarity"]) == Items.RARITY_UNIQUE
 	if unique:
@@ -140,7 +153,7 @@ func _highlight_label(line: String) -> String:
 
 
 func set_selected(selected: bool) -> void:
-	_style.set_border_width_all(6 if selected else 3)
+	_style.set_border_width_all(4 if selected else 0)
 
 
 func _label(text: String, font_size: int, color: Color) -> Label:

@@ -22,6 +22,7 @@ var body: PanelContainer
 var card_size := CARD_SIZE
 
 var _style: StyleBoxFlat
+var _face: Dictionary = {}
 var _overlay: Panel
 var _level_seal: Label
 var _identity: HBoxContainer
@@ -64,11 +65,12 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	body.pivot_offset = card_size / 2
 	body.mouse_filter = Control.MOUSE_FILTER_STOP
 	body.gui_input.connect(_on_body_input)
-	# The card face: pixel frame and background by rarity (CardArt).
-	var face := StyleBoxTexture.new()
-	face.texture = CardArt.for_unit(unit_definition, enemy, String(initial.get("suit", "")), card_size)
-	body.add_theme_stylebox_override("panel", face)
+	# The card face: pixel frame and background by rarity (CardArt), with the
+	# rarity's gloss / sparkle / polychrome effect from card_shine.gdshader.
+	_face = CardArt.for_unit(unit_definition, enemy, String(initial.get("suit", "")), card_size)
+	body.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	body.add_child(CardArt.face_rect(_face))
 	# Glow, flashes and highlights live on a transparent overlay above the face.
 	_style = StyleBoxFlat.new()
 	_style.bg_color = Color(0, 0, 0, 0)
@@ -107,24 +109,19 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_overlay.add_theme_stylebox_override("panel", _style)
 	body.add_child(_overlay)
-	# Seals between attack and health: level as a roman numeral, fusion stage above.
-	_level_seal = _seal_label(Vector2(card_size.x / 2 - 12, card_size.y - 32))
+	# Level seal top centre in the rarity colour; fusions show their stage beside it.
+	_level_seal = _seal_label(Vector2(card_size.x / 2 - 15, 6))
 	if stage > 0:
-		_seal_label(Vector2(card_size.x / 2 - 12, card_size.y - 54)).text = "F%d" % stage
+		var fusion_seal := _seal_label(Vector2(card_size.x / 2 + 17, 8))
+		fusion_seal.text = "F%d" % stage
+		fusion_seal.size = Vector2(22, 18)
+		fusion_seal.add_theme_font_size_override("font_size", 11)
 
-	var name_label := Label.new()
-	name_label.text = ContentDb.display_name(definition)
-	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", _fitting_font_size(name_label))
-	var dark_face: bool = enemy or unit_definition.get("rank", "") == "legend" or unit_definition.get("recipe", false)
-	name_label.add_theme_color_override("font_color", Palette.PARCHMENT if dark_face else Color("3a2414"))
-	# An outline keeps the name readable on top of the figure.
-	name_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85) if dark_face else Color("efe4c8"))
-	name_label.add_theme_constant_override("outline_size", 5)
-	name_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	name_label.max_lines_visible = 2
-	column.add_child(name_label)
+	# No name on the card (it is in the info panel); the level seal sits on top.
+	var top_space := Control.new()
+	top_space.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	top_space.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(top_space)
 
 	# Rank, suit and level as small emblems (placeholders for the M8 art).
 	_identity = HBoxContainer.new()
@@ -169,7 +166,7 @@ func _add_portrait(initial: Dictionary, unit_definition: Dictionary, enemy: bool
 	actor.position = Vector2(card_size.x / 2.0, card_size.y - 46.0)
 	actor.home_x = randf() * 10.0
 	body.add_child(actor)
-	body.move_child(actor, 0)
+	body.move_child(actor, 1)  # above the card face, below the texts
 
 
 func base_border_color() -> Color:
@@ -359,16 +356,20 @@ static func identity_kinds(unit_definition: Dictionary, enemy: bool, suit: Strin
 func _seal_label(at: Vector2) -> Label:
 	var label := Label.new()
 	label.position = at
-	label.size = Vector2(24, 20)
+	label.size = Vector2(30, 22)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 13)
-	var wax := StyleBoxFlat.new()  # a small wax seal behind the numeral
-	wax.bg_color = Color("7a1420")
-	wax.border_color = Color("d9a530")
-	wax.set_border_width_all(1)
-	wax.set_corner_radius_all(10)
-	label.add_theme_stylebox_override("normal", wax)
+	label.add_theme_font_size_override("font_size", 15)
+	# A medallion in the card's rarity colour behind the numeral.
+	var accent: Color = _face.get("accent", Palette.GOLD)
+	var medal := StyleBoxFlat.new()
+	medal.bg_color = accent.darkened(0.55)
+	medal.border_color = accent.lightened(0.25)
+	medal.set_border_width_all(2)
+	medal.set_corner_radius_all(11)
+	medal.shadow_color = Color(0, 0, 0, 0.5)
+	medal.shadow_size = 2
+	label.add_theme_stylebox_override("normal", medal)
 	label.add_theme_color_override("font_color", Color("ffe08a"))
 	label.add_theme_color_override("font_outline_color", Color(0.1, 0.05, 0.02))
 	label.add_theme_constant_override("outline_size", 5)
