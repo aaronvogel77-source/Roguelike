@@ -76,6 +76,9 @@ func _burst_open() -> void:
 
 
 func _deal_cards() -> void:
+	get_tree().create_timer(0.8).timeout.connect(func() -> void:
+		if is_inside_tree() and not _cards.is_empty():
+			Hints.show(self, "treasury", _cards[0]))
 	var count := _run.treasure.size()
 	var total := count * CARD.x + (count - 1) * 40.0
 	var top := 120.0

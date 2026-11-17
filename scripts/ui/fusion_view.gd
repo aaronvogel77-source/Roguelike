@@ -43,7 +43,11 @@ func _rebuild() -> void:
 
 	var preview := Fusion.preview(_run, _main, _partner) if _main >= 0 and _partner >= 0 else {}
 	column.add_child(_label(_hint_text(preview), 21, Palette.PARCHMENT))
-	column.add_child(_centered(_row_cards()))
+	var row_cards := _centered(_row_cards())
+	column.add_child(row_cards)
+	(func() -> void:
+		if is_inside_tree():
+			Hints.show(self, "fusion", row_cards)).call_deferred()
 	if not preview.is_empty():
 		column.add_child(_centered(_preview_box(preview)))
 

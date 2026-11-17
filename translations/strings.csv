@@ -725,3 +725,30 @@ UI_MENU_SETTINGS,Einstellungen,Settings
 UI_SET_MUSIC,Musik,Music
 UI_SET_SFX,Effekte,Effects
 UI_SET_MUTE,Stumm,Mute
+UI_SET_HINTS,Hinweise,Hints
+UI_SET_HINTS_RESET,Alle Hinweise erneut zeigen,Show all hints again
+HINT_OK,Verstanden,Got it
+HINT_CHOICE_TITLE,Wähle deinen Gegner,Choose your enemy
+HINT_CHOICE,"Drei Banden stehen zur Wahl: leicht, mittel und schwer. Schwerere bringen mehr Gold, die schwerste dazu ein Gratis-Beutepack.","Three bands to choose from: easy, medium and hard. Harder ones pay more gold, the hardest also a free loot pack."
+HINT_BOSS_TITLE,Ein Boss!,A boss!
+HINT_BOSS,"Bosse haben eine Sonderregel – lies sie oben nach. Ein Sieg öffnet die Schatzkammer und gibt einen neuen Platz.","Bosses have a special rule – read it above. A win opens the treasury and gives a new slot."
+HINT_SHOP_TITLE,Der Shop,The shop
+HINT_SHOP,"Kaufe Figuren und zieh sie in deine Reihe. Lege eine gleiche Figur auf eine andere: Sie verschmelzen und steigen auf.","Buy figures and drag them into your row. Put an equal figure onto another: they merge and level up."
+HINT_FIGHT_TITLE,Bereit zum Kampf,Ready to fight
+HINT_FIGHT,"Nur die vorderste Figur kämpft, die anderen rücken nach. Stelle deine Reihe um, dann drück auf Kampf.","Only the front figure fights, the others move up. Rearrange your row, then press Fight."
+HINT_PACK_TITLE,Packs,Packs
+HINT_PACK,"Packs enthalten Ausrüstung oder Tarot-Karten (und ganz selten ein Ass). Tippe ein Pack an, um es zu kaufen und zu öffnen.","Packs hold equipment or tarot cards (and very rarely an ace). Tap a pack to buy and open it."
+HINT_SUIT_TITLE,Farbboni,Suit bonuses
+HINT_SUIT,"Mehrere Figuren einer Farbe stärken sich gegenseitig. Hier siehst du, was deine Reihe gerade bekommt.","Several figures of one suit strengthen each other. Here you see what your row gets right now."
+HINT_SOULS_TITLE,Seelen und Pakte,Souls and pacts
+HINT_SOULS,"Mit Seelen kaufst du Pakte: mächtige Vorteile, die aber immer einen Preis haben.","Souls buy pacts: powerful boons that always come at a price."
+HINT_REWARD_TITLE,Belohnung,Reward
+HINT_REWARD,Nach jedem Sieg darfst du eine Figur gratis nehmen – oder verzichten und 2 Gold bekommen.,After every win you may take one figure for free – or skip it for 2 gold.
+HINT_EVENT_TITLE,Ein Ereignis,An event
+HINT_EVENT,"Ereignisse bieten seltene Gelegenheiten. Manche kosten etwas, du kannst aber auch einfach weitergehen.","Events offer rare chances. Some cost something, but you can always move on."
+HINT_DANGER_TITLE,Gefahr!,Danger!
+HINT_DANGER,"Einer Gefahr entkommst du nicht umsonst: zahlen, kämpfen oder den Nachteil tragen.","A danger is never free to escape: pay, fight or bear the drawback."
+HINT_FUSION_TITLE,Fusion,Fusion
+HINT_FUSION,"Wähle zwei Figuren: Sie verschmelzen zu einer stärkeren, die Fähigkeiten beider behält. Ab der dritten Fusion erwacht eine Meisterfähigkeit.","Choose two figures: they fuse into a stronger one that keeps both abilities. From the third fusion a master ability awakens."
+HINT_TREASURY_TITLE,Die Schatzkammer,The treasury
+HINT_TREASURY,Für jeden besiegten Boss darfst du einen Schatz wählen: ein Relikt, ein Ass-Pack oder Gold.,For every defeated boss you choose one treasure: a relic, an ace pack or gold.

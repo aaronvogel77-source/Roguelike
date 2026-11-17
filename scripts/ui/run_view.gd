@@ -118,6 +118,26 @@ func _stage_sounds() -> void:
 			Sound.play("coins", -4.0)
 
 
+## Controls the first-time hints point at, filled while a screen is built.
+var _hint_targets := {}
+## Order in which hints are offered on a screen (one at a time).
+const HINT_ORDER := ["choice", "boss", "shop", "fight", "pack", "suit", "souls", "reward", "event", "danger"]
+
+
+func _show_hints() -> void:
+	if _run == null or _battle_view != null or not _run.fusion_offer.is_empty() or not _run.treasure.is_empty() \
+			or not _run.open_pack.is_empty():
+		return
+	if _run.stage == RunState.Stage.ENEMY_CHOICE and _run.is_boss_fight() and _hint_targets.has("choice"):
+		_hint_targets["boss"] = _hint_targets["choice"]
+	for id in HINT_ORDER:
+		if id == "choice" and _run.is_boss_fight():
+			continue
+		if _hint_targets.has(id) and Hints.wants(id):
+			Hints.show(_screen, id, _hint_targets[id])
+			return
+
+
 func _autosave() -> void:
 	if _run.stage in [RunState.Stage.WON, RunState.Stage.LOST]:
 		if not _run.flags.get("meta_done", false):
@@ -181,6 +201,7 @@ func _show_region_intro() -> void:
 func _show_stage() -> void:
 	_autosave()
 	_stage_sounds()
+	_hint_targets.clear()
 	FigureArt.gold_hint = _run.gold  # gold-dependent looks (Gold-Armored)
 	_selected = {}
 	_sell_armed = -1
@@ -204,6 +225,7 @@ func _show_stage() -> void:
 				_build_pack_overlay()
 		RunState.Stage.WON, RunState.Stage.LOST:
 			_build_run_end()
+	_show_hints.call_deferred()
 	# A fusion offer (altar, boss, candle, blood moon) lies over every screen.
 	if not _run.fusion_offer.is_empty() and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
 		var fusion := FusionView.create(_run, _db, _detail_panel)
@@ -538,7 +560,10 @@ func _build_enemy_choice() -> void:
 	# Scales down when the options (3 enemies + skip) do not fit the width.
 	column.add_child(_fitted(options, 1.0))
 	for i in _run.enemy_options.size():
-		options.add_child(_enemy_option_panel(_run.enemy_options[i], i))
+		var option_panel := _enemy_option_panel(_run.enemy_options[i], i)
+		options.add_child(option_panel)
+		if i == _run.enemy_options.size() - 1:
+			_hint_targets["choice"] = option_panel
 	if not _run.is_boss_fight():
 		options.add_child(_skip_panel())
 
@@ -673,7 +698,9 @@ func _build_planning() -> void:
 	own_box.add_child(_xp_hint_row())
 	var suit_line := _suit_bonus_text()
 	if suit_line != "":
-		own_box.add_child(_rich_line(suit_line, 16))
+		var suit_label := _rich_line(suit_line, 16)
+		own_box.add_child(suit_label)
+		_hint_targets["suit"] = suit_label
 	field.add_child(own_box)
 	var enemy_box := VBoxContainer.new()
 	enemy_box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -689,6 +716,7 @@ func _build_planning() -> void:
 	bottom.add_theme_constant_override("separation", 14)
 	bottom.custom_minimum_size = Vector2(0, 200)
 	bottom.add_child(_label(tr("UI_SHOP"), 22, Palette.GOLD))
+	_hint_targets["shop"] = bottom
 	_shop_slots.clear()
 	for i in _run.shop.size():
 		var shop_box := VBoxContainer.new()
@@ -703,8 +731,14 @@ func _build_planning() -> void:
 		_shop_slots.append(slot)
 
 	for i in _run.packs.size():
-		bottom.add_child(_pack_view(i))
-	bottom.add_child(_soul_pack_view())
+		var pack_view := _pack_view(i)
+		bottom.add_child(pack_view)
+		if not _run.packs[i].is_empty() and not _hint_targets.has("pack"):
+			_hint_targets["pack"] = pack_view
+	var soul_view := _soul_pack_view()
+	bottom.add_child(soul_view)
+	if _run.souls > 0:
+		_hint_targets["souls"] = soul_view
 
 	# Wax seals: reroll (gold), undo (grey), fight (big, red).
 	var seals := HBoxContainer.new()
@@ -722,6 +756,7 @@ func _build_planning() -> void:
 		skip_boss.add_theme_font_size_override("font_size", 13)
 		seals.add_child(skip_boss)
 	var fight := _seal(tr("UI_FIGHT"), 150, "red", _on_fight)
+	_hint_targets["fight"] = fight
 	fight.add_theme_font_size_override("font_size", 30)
 	fight.disabled = _filled_slots() == 0
 	seals.add_child(fight)
@@ -1562,7 +1597,9 @@ func _build_event() -> void:
 		options.add_child(result)
 		options.add_child(_centered(_button(tr("UI_CONTINUE"), Vector2(560, 60), _on_event_option.bind("leave", 0))))
 	else:
-		options.add_child(_market_coat() if id == "black_market" else _event_scene(id))
+		var scene := _market_coat() if id == "black_market" else _event_scene(id)
+		options.add_child(scene)
+		_hint_targets["danger" if _run.is_negative_event() else "event"] = scene
 		var exit_option := "decline" if id == "duel" else ("small" if id == "grave_robber" else "leave")
 		if id != "grave_robber" and not _run.is_negative_event():
 			options.add_child(_centered(_button(tr("OPT_" + exit_option.to_upper()), Vector2(400, 56), _on_event_option.bind(exit_option, 0))))
@@ -1980,6 +2017,7 @@ func _build_reward() -> void:
 	choices.alignment = BoxContainer.ALIGNMENT_CENTER
 	choices.add_theme_constant_override("separation", 40)
 	column.add_child(_fitted(choices, 1.6))
+	_hint_targets["reward"] = choices
 	for i in _run.rewards.size():
 		var def_id: String = _run.rewards[i]
 		var box := VBoxContainer.new()

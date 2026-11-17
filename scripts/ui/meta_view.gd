@@ -140,9 +140,21 @@ func _build_settings(column: VBoxContainer) -> void:
 	column.add_child(_centered(_button(tr("UI_BACK"), Vector2(260, 60), _show.bind("menu"))))
 
 
-## Room for more settings rows (first-time hints).
-func _settings_extra(_grid: GridContainer) -> void:
-	pass
+## First-time hints: on/off and "show them all again".
+func _settings_extra(grid: GridContainer) -> void:
+	var toggle := CheckButton.new()
+	Hints.wants("")  # loads the saved settings
+	toggle.button_pressed = Hints.enabled
+	toggle.add_theme_font_size_override("font_size", 24)
+	toggle.toggled.connect(Hints.set_enabled)
+	grid.add_child(_label(tr("UI_SET_HINTS"), 26, Palette.PARCHMENT))
+	grid.add_child(toggle)
+	grid.add_child(Control.new())
+	var reset := _button(tr("UI_SET_HINTS_RESET"), Vector2(320, 48), func() -> void:
+		Hints.reset()
+		_show("settings"))
+	reset.disabled = Hints.seen.is_empty()
+	grid.add_child(reset)
 
 
 func _slider(value: float) -> HSlider:
