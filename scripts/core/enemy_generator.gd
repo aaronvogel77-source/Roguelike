@@ -10,9 +10,11 @@ extends RefCounted
 ## Budget per fight in act 1: small, big, boss.
 ## The boss budget pays only for the retinue; the boss figure comes on top.
 ## (static vars, not consts: tools/auto_tune.gd tries other values.)
-static var FIGHT_BUDGET := [2.6, 5.4, 2.0]
+static var FIGHT_BUDGET := [3.35, 6.3, 2.0]
 ## Budget grows exponentially per act.
-static var ACT_GROWTH := 3.4
+static var ACT_GROWTH := 4.8
+## Extra factor for the small fight from act 2 on (act 1 small fights stay as they are).
+static var LATE_SMALL_FACTOR := 1.0
 ## Retinue budget of the boss fight per act (act 1 kept small: the boss itself is strong).
 static var BOSS_RETINUE := [2.0, 16.0]
 ## Easy / medium / hard options in the enemy choice.
@@ -32,6 +34,8 @@ const HARD_MIN_UNITS := 2
 
 static func budget(act: int, fight: int, difficulty: int) -> int:
 	var value: float = FIGHT_BUDGET[fight] * pow(ACT_GROWTH, act - 1)
+	if fight == 0 and act >= 2:
+		value *= LATE_SMALL_FACTOR
 	if fight == 2:
 		value = BOSS_RETINUE[act - 1] if act <= BOSS_RETINUE.size() else BOSS_RETINUE[-1] * pow(ACT_GROWTH, act - BOSS_RETINUE.size())
 	if fight < 2:

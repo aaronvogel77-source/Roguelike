@@ -4,7 +4,7 @@ extends SceneTree
 ## the target corridor of tools/balance_targets.json. Bisection: a higher
 ## value always means stronger enemies. Nothing is written to the game files -
 ## the result is a proposal with the values and the measured rates.
-## Usage: godot --headless -s tools/auto_tune.gd -- [runs per bot for act 1] [runs per bot for act 2]
+## Usage: godot --headless -s tools/auto_tune.gd -- [runs per bot for act 1] [runs per bot for act 2] [station prefix, e.g. A2]
 
 const STEPS := 6
 
@@ -14,7 +14,8 @@ var _knobs := [
 	{"name": "Akt 1 groß: Budget", "station": "A1 K2", "lo": 3.0, "hi": 9.0, "set": func(v: float) -> void: EnemyGenerator.FIGHT_BUDGET[1] = v},
 	{"name": "Akt 1 Boss: Leben Steuereintreiber", "station": "A1 K3", "lo": 10.0, "hi": 30.0, "boss": "boss_tax_collector", "stat": "health"},
 	{"name": "Akt 2: Wachstum je Akt", "station": "A2 K2", "lo": 2.5, "hi": 5.0, "set": func(v: float) -> void: EnemyGenerator.ACT_GROWTH = v},
-	{"name": "Akt 2 Boss: Gefolge-Budget", "station": "A2 K3", "lo": 6.0, "hi": 30.0, "set": func(v: float) -> void: EnemyGenerator.BOSS_RETINUE[1] = v},
+	{"name": "Akt 2 klein: Zusatzfaktor", "station": "A2 K1", "lo": 1.0, "hi": 2.5, "set": func(v: float) -> void: EnemyGenerator.LATE_SMALL_FACTOR = v},
+	{"name": "Akt 2 Boss: Gefolge-Budget", "station": "A2 K3", "lo": 10.0, "hi": 70.0, "set": func(v: float) -> void: EnemyGenerator.BOSS_RETINUE[1] = v},
 ]
 
 
@@ -22,12 +23,15 @@ func _init() -> void:
 	var args := OS.get_cmdline_user_args()
 	var runs_act1 := int(args[0]) if args.size() > 0 else 20
 	var runs_act2 := int(args[1]) if args.size() > 1 else 50
+	var only := String(args[2]) if args.size() > 2 else ""
 	var db := ContentDb.load_default()
 	var targets: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tools/balance_targets.json"))
 	var corridors: Dictionary = targets["stations"]
 	print("=== Auto-Tuning (Ziele aus tools/balance_targets.json) ===")
 	for knob in _knobs:
 		var station: String = knob["station"]
+		if only != "" and not station.begins_with(only):
+			continue
 		var corridor: Array = corridors[station]
 		var goal := (float(corridor[0]) + float(corridor[1])) / 200.0
 		var runs := runs_act1 if station.begins_with("A1") else runs_act2
@@ -83,6 +87,7 @@ func _knob_value(db: ContentDb, knob: Dictionary) -> float:
 		"A1 K1": return float(EnemyGenerator.FIGHT_BUDGET[0])
 		"A1 K2": return float(EnemyGenerator.FIGHT_BUDGET[1])
 		"A2 K2": return EnemyGenerator.ACT_GROWTH
+		"A2 K1": return EnemyGenerator.LATE_SMALL_FACTOR
 		"A2 K3": return float(EnemyGenerator.BOSS_RETINUE[1])
 	return 0.0
 
