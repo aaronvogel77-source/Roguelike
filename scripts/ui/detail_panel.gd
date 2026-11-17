@@ -58,15 +58,18 @@ func _init() -> void:
 
 
 func show_card(card: UnitCard) -> void:
-	var definition := card.definition
-	var snapshot := card.snapshot
+	show_unit(card.definition, card.snapshot, card.is_enemy, card.extras)
+
+
+## Details of any unit (cards in the shop/row, figures on the battle stage).
+func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, extras: Dictionary = {}) -> void:
 	_title.text = ContentDb.display_name(definition)
 	var level: int = snapshot.get("level", 1)
 	# Rank · suit · level, each with its emblem.
 	for child in _subtitle.get_children():
 		child.queue_free()
-	var kinds := UnitCard.identity_kinds(definition, card.is_enemy, snapshot.get("suit", ""))
-	var texts: Array = [tr("UI_ENEMY")] if card.is_enemy else [
+	var kinds := UnitCard.identity_kinds(definition, is_enemy, snapshot.get("suit", ""))
+	var texts: Array = [tr("UI_ENEMY")] if is_enemy else [
 		tr("RANK_" + String(definition["rank"]).to_upper()),
 		tr("SUIT_" + String(snapshot.get("suit", definition["suit"])).to_upper()),
 	]
@@ -102,7 +105,7 @@ func show_card(card: UnitCard) -> void:
 				color.to_html(false), tr("STATUS_" + status.to_upper()), statuses[status],
 				Keywords.colorize(tr("STATUS_%s_DESC" % status.to_upper())),
 			])
-	var figure: Dictionary = card.extras.get("figure", {})
+	var figure: Dictionary = extras.get("figure", {})
 	if not figure.is_empty():
 		if int(figure.get("bonus_attack", 0)) != 0 or int(figure.get("bonus_health", 0)) != 0:
 			lines.append(Keywords.colorize(tr("UI_BONUS_STATS") % [figure.get("bonus_attack", 0), figure.get("bonus_health", 0)]))
@@ -111,13 +114,13 @@ func show_card(card: UnitCard) -> void:
 			var color: Color = ItemText.RARITY_COLORS[int(item["rarity"])]
 			lines.append("[color=#%s]%s[/color]" % [color.to_html(false),
 				tr("UI_EQUIPMENT") % ("%s (%s)" % [ItemText.equipment_name(item), ItemText.rarity_line(int(item["rarity"]))])])
-			for line in ItemText.equipment_lines(card.extras["db"], item):
+			for line in ItemText.equipment_lines(extras["db"], item):
 				lines.append("   " + Keywords.colorize(line))
 		var names: Array = []
-		for source in card.extras.get("sources", []):
+		for source in extras.get("sources", []):
 			if source == "tarot_strength":
 				names.append(ItemText.tarot_name("strength"))
-			elif source in card.extras["db"].items["pacts"]:
+			elif source in extras["db"].items["pacts"]:
 				names.append(tr("PACT_" + String(source).to_upper()))
 			else:
 				names.append(ItemText.relic_name(source))

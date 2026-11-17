@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M5b abgeschlossen. M6 (Fusion) gebaut (v0.7.0), wartet auf Feedback.
+**Status:** Umsetzung – M0–M6 abgeschlossen. Kampfbühne Schritt 1 (Pixel-Figuren im Kampf) gebaut (v0.8.0), wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -766,3 +766,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Figuren & Kampfbühne: Seitenansicht, 64-px-Pixelkunst von Claude im Code (später ersetzbar), Gliederpuppen-Animation, Karten nur in Shop/Planung, minimale Werteanzeige, Pixel-Landschaften, Bewegung je Waffe, Tod je Farbe, Körper nach Rang, Fusionsgestalt mit erkennbaren Teilen, Gegner als Kreaturen mit riesigen Bossen, düster mit leuchtenden Effekten, Tempo ×1/×2/×3 + Überspringen | Spieler will echte Figuren statt Karten; ersetzt KI-Holzschnitt-Planung | 5 Designrichtungen; Isometrie/Frontal; handgemalt/3D/Comic; Einzelbild-Animation; KI-Bilder vom Spieler, Asset-Pakete |
 | 2026-11-17 | Fünf Pixel-Stilproben (docs/stilproben.html, animiert): 1 Heraldik (Wappenrock, Rang per Kopfbedeckung, Seltenheit als Borte), 2 Okkulter Orden (Roben, Rang = kreisende Siegel, Seltenheit = Bannkreis, Nebel-Aura), 3 Söldner (Rang = Rüstung, Seltenheit an der Waffe), 4 Prunk & Reliquie (Seltenheit = Material, Rang = Umhang/Krone, Glitzer), 5 Schattengestalten (Silhouette mit Lichtkante, Rang = schwebende Karte, Seltenheit = Heiligenschein, Rauch) | Auswahl vor Schritt 1 der Kampfbühne | – |
 | 2026-11-17 | Stil Prunk & Reliquie gewählt: Material nach Rang, Fusion obendrauf, Schillern nur bei Rezepten, Funkeln nur F3/Rezepte, nur besondere Gegenstände verändern das Aussehen | Seltenheit soll erst mit Fusion/Rezepten den Höhepunkt erreichen | Heraldik, Okkulter Orden, Söldner, Schattengestalten; Material nur nach Stufe/Fusion; Ausrüstung immer sichtbar |
+| 2026-11-17 | Kampfbühne Schritt 1 (v0.8.0): Seitenansicht-Pixelbühne (300×130, scharf hochskaliert) in der Schatzkammer mit Kerzen und Staub; alle Figuren und Gegner als Gliederpuppen im Stil Prunk & Reliquie (Material nach Rang, Edelstein nach Farbe, Waffe nach Farbe/Rang), Gegner als verderbte Bronze-Gestalten bzw. Geister, Bosse riesig; Nahkämpfer laufen zur Mitte, Fernkämpfer werfen; Treffer-Blitz und Rückstoß; Status am Körper (Feuer, Blut, Fluchschleier, Schildschale); Tod je Farbe; Reihen rücken nach; dünne Lebensbalken, Details per Antippen; Tempo 1×/2×/3× gespeichert + Überspringen; Testarena per ?arena=1 | Schritt 1 des Plans | – |

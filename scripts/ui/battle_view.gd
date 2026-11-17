@@ -8,7 +8,10 @@ extends Control
 
 signal finished(result: Dictionary)
 
-const SPEEDS := [1.0, 2.0, 4.0]
+const SPEEDS := [1.0, 2.0, 3.0]
+## Chosen speed, kept between battles (and saved to the settings file).
+static var saved_speed := 0.0
+const SETTINGS_PATH := "user://settings.cfg"
 const ROW_GAP := 56
 const CARD_SPACING := 6
 
@@ -18,14 +21,13 @@ var sandbox := true
 var _db: ContentDb
 var _rng_streams: RngStreams
 var _speed := 1.0
-var _cards: Dictionary = {}  # uid -> UnitCard
+var _stage: BattleStage
+var _skipping := false
 var _battle: Dictionary = {}
 var _battle_gold := 0
 var _url_seed_used := false
 var _playback_token := 0  # increments to cancel an older playback
 
-var _player_row: HBoxContainer
-var _enemy_row: HBoxContainer
 var _turn_label: Label
 var _gold_label: Label
 var _detail_panel: DetailPanel
@@ -35,8 +37,6 @@ var _start_button: Button
 var _new_button: Button
 var _speed_buttons: Array[Button] = []
 var _fx_layer: Control
-var _field: HBoxContainer
-var _field_holder: Control
 
 
 func _ready() -> void:
@@ -46,7 +46,6 @@ func _ready() -> void:
 	_build_layout()
 	if sandbox:
 		_new_battle()
-	_fit_field.call_deferred()
 
 
 ## Run mode: shows the given fight and starts it right away.
@@ -106,19 +105,6 @@ func _announce_boss(boss_name: String, rule_text: String) -> void:
 	await tween.finished
 
 
-## On wide screens (most phones in landscape) the battle field is scaled up so
-## cards use the extra width; never shrinks below the 1280×720 design size.
-func _fit_field() -> void:
-	if _field == null:
-		return
-	_field.size = _field.get_combined_minimum_size()
-	var needed := _field.size.x + 40
-	var factor := clampf(_field_holder.size.x / needed, 0.7, 1.7)
-	factor = minf(factor, _field_holder.size.y / maxf(_field.size.y, 1.0))
-	_field.scale = Vector2(factor, factor)
-	_field.position = (_field_holder.size - _field.size * factor) / 2
-
-
 # --- Layout -----------------------------------------------------------------
 
 func _build_layout() -> void:
@@ -134,22 +120,12 @@ func _build_layout() -> void:
 
 	root.add_child(_build_top_bar())
 
-	# Containers reset the scale of their children, so the field sits in a plain
-	# Control and is positioned and scaled by _fit_field().
-	_field_holder = Control.new()
-	_field_holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_field_holder.resized.connect(_fit_field)
-	root.add_child(_field_holder)
-	var field := HBoxContainer.new()
-	_field = field
-	field.alignment = BoxContainer.ALIGNMENT_CENTER
-	field.add_theme_constant_override("separation", ROW_GAP)
-	_field_holder.add_child(field)
-
-	_player_row = _make_row(BoxContainer.ALIGNMENT_END)
-	field.add_child(_wrap_row(_player_row, tr("UI_YOUR_TEAM")))
-	_enemy_row = _make_row(BoxContainer.ALIGNMENT_BEGIN)
-	field.add_child(_wrap_row(_enemy_row, tr("UI_ENEMIES")))
+	# The pixel battle stage fills the space between the bars.
+	_stage = BattleStage.new()
+	_stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_stage.unit_tapped.connect(func(a: FigureActor) -> void:
+		_detail_panel.show_unit(a.definition, a.snapshot, a.is_enemy))
+	root.add_child(_stage)
 
 	root.add_child(_build_bottom_bar())
 
@@ -191,10 +167,13 @@ func _build_top_bar() -> Control:
 	for speed in SPEEDS:
 		var button := _make_button("%d×" % int(speed), Vector2(72, 56))
 		button.toggle_mode = true
-		button.pressed.connect(_set_speed.bind(speed))
+		button.pressed.connect(_set_speed.bind(speed, true))
 		_speed_buttons.append(button)
 		bar.add_child(button)
-	_set_speed(1.0)
+	var skip := _make_button(tr("UI_SKIP_BATTLE"), Vector2(150, 56))
+	skip.pressed.connect(func() -> void: _skipping = true)
+	bar.add_child(skip)
+	_set_speed(_load_speed())
 
 	var margin_right := Control.new()
 	margin_right.custom_minimum_size = Vector2(16, 0)
@@ -224,25 +203,6 @@ func _build_bottom_bar() -> Control:
 	balance.custom_minimum_size = Vector2(200, 0)
 	bar.add_child(balance)
 	return bar
-
-
-func _make_row(alignment: BoxContainer.AlignmentMode) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	row.alignment = alignment
-	row.add_theme_constant_override("separation", CARD_SPACING)
-	row.custom_minimum_size = Vector2(6 * (UnitCard.CARD_SIZE.x + CARD_SPACING), UnitCard.CARD_SIZE.y)
-	return row
-
-
-func _wrap_row(row: HBoxContainer, title: String) -> Control:
-	var column := VBoxContainer.new()
-	column.alignment = BoxContainer.ALIGNMENT_CENTER
-	column.add_theme_constant_override("separation", 12)
-	var label := _make_label(title, 20, Palette.MUTED)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	column.add_child(label)
-	column.add_child(row)
-	return column
 
 
 func _make_label(text: String, font_size: int, color: Color) -> Label:
@@ -294,26 +254,8 @@ func _new_battle() -> void:
 
 
 func _show_start_state(start_event: Dictionary) -> void:
-	for row in [_player_row, _enemy_row]:
-		for child in row.get_children():
-			child.queue_free()
-	_cards.clear()
-	# Player row is drawn back-to-front so the front unit sits next to the middle.
-	var player_units: Array = start_event["player"].duplicate()
-	player_units.reverse()
-	for snapshot in player_units:
-		_player_row.add_child(_make_card(snapshot, false))
-	for snapshot in start_event["enemy"]:
-		_enemy_row.add_child(_make_card(snapshot, true))
-	# Rows are as wide as the units at battle start (boss figures are 2-3 wide),
-	# so small teams are drawn larger. The width stays fixed during the fight.
-	var enemy_slots := 0
-	for snapshot in start_event["enemy"]:
-		enemy_slots += int(_db.enemies[snapshot["def_id"]].get("width", 1))
-	var slot_width := UnitCard.CARD_SIZE.x + CARD_SPACING
-	_enemy_row.custom_minimum_size.x = maxi(enemy_slots, 3) * slot_width
-	_player_row.custom_minimum_size.x = maxi(start_event["player"].size(), 3) * slot_width
-	_fit_field.call_deferred()
+	_skipping = false
+	_stage.setup(start_event, _db)
 
 
 ## Web only: "?seed=123" in the address replays that battle (for bug reports).
@@ -327,25 +269,32 @@ func _take_url_seed() -> int:
 	return int(match.get_string(1)) if match != null else -1
 
 
-func _make_card(snapshot: Dictionary, is_enemy: bool) -> UnitCard:
-	var definition: Dictionary = _db.enemies[snapshot["def_id"]] if is_enemy else _db.figures[snapshot["def_id"]]
-	if not snapshot.get("display", {}).is_empty():
-		definition = snapshot["display"]  # fusions: their built definition
-	var card := UnitCard.new()
-	card.setup(snapshot, definition, is_enemy)
-	card.tapped.connect(_detail_panel.show_card)
-	_cards[card.uid] = card
-	return card
-
-
 ## Animations run a bit slower than the nominal speed so each step is readable.
 const PACE := 1.35
 
 
-func _set_speed(speed: float) -> void:
+func _set_speed(speed: float, save := false) -> void:
 	_speed = speed / PACE
 	for i in _speed_buttons.size():
 		_speed_buttons[i].set_pressed_no_signal(is_equal_approx(SPEEDS[i], speed))
+	if save:
+		saved_speed = speed
+		var config := ConfigFile.new()
+		config.load(SETTINGS_PATH)
+		config.set_value("battle", "speed", speed)
+		config.save(SETTINGS_PATH)
+
+
+func _load_speed() -> float:
+	if saved_speed <= 0.0:
+		var config := ConfigFile.new()
+		saved_speed = float(config.get_value("battle", "speed", 1.0)) if config.load(SETTINGS_PATH) == OK else 1.0
+	return saved_speed if saved_speed in SPEEDS else 1.0
+
+
+## Playback speed for the stage (skipping makes everything near-instant).
+func _stage_speed() -> float:
+	return 40.0 if _skipping else _speed
 
 
 # --- Playback -----------------------------------------------------------------
@@ -378,9 +327,9 @@ func _play_events(token: int) -> void:
 			"trigger":
 				await _show_trigger(event)
 			"update":
-				var card: UnitCard = _cards.get(event["unit"]["uid"])
-				if card != null:
-					card.apply_snapshot(event["unit"])
+				var unit := _stage.actor(event["unit"]["uid"])
+				if unit != null:
+					unit.apply_snapshot(event["unit"])
 			"clash":
 				await _animate_clash(event)
 			"shielded":
@@ -403,6 +352,7 @@ func _play_events(token: int) -> void:
 			"removed":
 				await _animate_removed(event)
 			"end":
+				_skipping = false
 				_show_result(event)
 				if not sandbox:
 					_new_button.show()
@@ -410,24 +360,24 @@ func _play_events(token: int) -> void:
 
 
 func _show_trigger(event: Dictionary) -> void:
-	var card: UnitCard = _cards.get(event["uid"])
-	if card == null:
+	var source := _stage.actor(event["uid"])
+	if source == null:
 		return
 	var kind := Emblem.kind_for_effect(event["effect"])
 	var color: Color = Emblem.COLORS.get(kind, Palette.GOLD)
-	card.flash_trigger(0.4 / _speed)
+	source.glow(Palette.GOLD, 0.4 / _stage_speed())
 	var other_targets: Array = event["targets"].filter(func(uid: int) -> bool: return uid != event["uid"])
 	if other_targets.is_empty():
-		# Ability on itself: halo pulse plus the emblem rising out of the card.
-		card.pulse_glow(color, 0.45 / _speed)
-		_rise_emblem(kind, card.center_position())
+		# Ability on itself: the figure glows and the emblem rises out of it.
+		source.glow(color, 0.45 / _stage_speed())
+		if not _skipping:
+			_rise_emblem(kind, _stage.screen_center(event["uid"]))
 		await _wait(0.5)
 		return
 	# Ability on others: the emblem flies from the source to every target.
 	for uid in other_targets:
-		var target: UnitCard = _cards.get(uid)
-		if target != null:
-			_fly_emblem(kind, card.center_position(), target)
+		if _stage.actor(uid) != null and not _skipping:
+			_fly_emblem(kind, _stage.screen_center(event["uid"]), uid)
 	await _wait(0.55)
 
 
@@ -444,10 +394,10 @@ func _rise_emblem(kind: String, at: Vector2) -> void:
 
 
 ## Emblem flies on an arc from a point to a target card, then bursts on it.
-func _fly_emblem(kind: String, from: Vector2, target: UnitCard, flight := 0.3, arc := true) -> void:
+func _fly_emblem(kind: String, from: Vector2, target_uid: int, flight := 0.3, arc := true) -> void:
 	var emblem := Emblem.create(kind, 40)
 	_fx_layer.add_child(emblem)
-	var to := target.center_position()
+	var to := _stage.screen_center(target_uid)
 	var lift := (-60.0 - absf(to.x - from.x) * 0.15) if arc else -12.0
 	var place := func(t: float) -> void:
 		var point := from.lerp(to, t) + Vector2(0, lift * 4.0 * t * (1.0 - t))
@@ -457,77 +407,56 @@ func _fly_emblem(kind: String, from: Vector2, target: UnitCard, flight := 0.3, a
 	var tween := create_tween()
 	tween.tween_method(place, 0.0, 1.0, flight / _speed).set_ease(Tween.EASE_IN_OUT)
 	if kind != "sword":  # plain attacks already flash red on impact
-		tween.tween_callback(func() -> void: target.pulse_glow(emblem.color, 0.3 / _speed))
+		tween.tween_callback(func() -> void:
+			var target := _stage.actor(target_uid)
+			if target != null:
+				target.glow(emblem.color, 0.3 / _stage_speed()))
 	tween.tween_property(emblem, "scale", Vector2(1.6, 1.6), 0.12 / _speed)
 	tween.parallel().tween_property(emblem, "modulate:a", 0.0, 0.12 / _speed)
 	tween.tween_callback(emblem.queue_free)
 
 
 func _animate_clash(event: Dictionary) -> void:
-	var player_card: UnitCard = _cards[event["player_uid"]]
-	var enemy_card: UnitCard = _cards[event["enemy_uid"]]
-	var lunge := 22.0
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(player_card.body, "position:x", lunge, 0.15 / _speed)
-	tween.tween_property(enemy_card.body, "position:x", -lunge, 0.15 / _speed)
-	tween.chain().tween_property(player_card.body, "position:x", 0.0, 0.15 / _speed)
-	tween.parallel().tween_property(enemy_card.body, "position:x", 0.0, 0.15 / _speed)
-	# Crossing swords show who strikes whom.
-	_fly_emblem("sword", player_card.center_position(), enemy_card, 0.2, false)
-	_fly_emblem("sword", enemy_card.center_position(), player_card, 0.2, false)
-	await _wait(0.2)
+	await _stage.clash(event["player_uid"], event["enemy_uid"], _stage_speed())
 
 
 func _show_damage(event: Dictionary) -> void:
-	var card: UnitCard = _cards.get(event["uid"])
-	if card == null:
+	var unit := _stage.actor(event["uid"])
+	if unit == null:
 		return
-	card.body.modulate = Palette.DAMAGE_FLASH
-	create_tween().tween_property(card.body, "modulate", Color.WHITE, 0.3 / _speed)
+	unit.hit(0.3 / _stage_speed())
+	if _skipping:
+		return
 	var color: Color = Palette.DAMAGE_FLASH
 	if event["source"] in ["burn", "bleed"]:
 		color = Emblem.COLORS[event["source"]]
-		# Damage over time: the status emblem rises out of the card.
-		_rise_emblem(event["source"], card.center_position() + Vector2(0, 20))
-	_float_number("-%d" % event["amount"], card.center_position(), color)
+	_float_number("-%d" % event["amount"], _stage.screen_center(event["uid"]), color)
 
 
 func _animate_dying(event: Dictionary) -> void:
-	var card: UnitCard = _cards.get(event["uid"])
-	if card == null:
+	var unit := _stage.actor(event["uid"])
+	if unit == null:
 		return
-	var tween := create_tween()
-	for offset in [-6.0, 6.0, -4.0, 0.0]:
-		tween.tween_property(card.body, "position:x", offset, 0.04 / _speed)
+	unit.shake(0.16 / _stage_speed())
 	await _wait(0.16)
 
 
 func _animate_revive(event: Dictionary) -> void:
-	var card: UnitCard = _cards.get(event["uid"])
-	if card == null:
+	var unit := _stage.actor(event["uid"])
+	if unit == null:
 		return
-	card.body.modulate = Color(2, 2, 2)
-	create_tween().tween_property(card.body, "modulate", Color.WHITE, 0.4 / _speed)
+	unit.revive(0.4 / _stage_speed())
 	_float_on(event["uid"], tr("UI_REVIVED"), Palette.PARCHMENT)
 	await _wait(0.3)
 
 
 func _animate_removed(event: Dictionary) -> void:
-	var card: UnitCard = _cards.get(event["uid"])
-	if card == null:
-		return
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(card.body, "modulate:a", 0.0, 0.25 / _speed)
-	tween.tween_property(card.body, "scale", Vector2(0.6, 0.6), 0.25 / _speed)
-	await _wait(0.25)
-	_cards.erase(event["uid"])
-	card.queue_free()
+	await _stage.remove(event["uid"], _stage_speed())
 
 
 func _float_on(uid: int, text: String, color: Color) -> void:
-	var card: UnitCard = _cards.get(uid)
-	if card != null:
-		_float_number(text, card.center_position() + Vector2(0, -24), color)
+	if _stage.actor(uid) != null and not _skipping:
+		_float_number(text, _stage.screen_top(uid), color)
 
 
 func _float_number(text: String, at: Vector2, color: Color) -> void:
@@ -560,4 +489,7 @@ func _show_result(event: Dictionary) -> void:
 
 
 func _wait(seconds: float) -> void:
+	if _skipping:
+		await get_tree().process_frame
+		return
 	await get_tree().create_timer(seconds / _speed).timeout

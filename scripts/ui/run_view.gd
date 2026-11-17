@@ -35,6 +35,10 @@ func _ready() -> void:
 	_detail_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_detail_panel.position.y += 64
 	add_child(_detail_panel)
+	# "?arena=1": random test battles with full teams (sandbox battle view).
+	if _url_flag("arena"):
+		add_child(BattleScene.instantiate())
+		return
 	_new_run()
 
 
