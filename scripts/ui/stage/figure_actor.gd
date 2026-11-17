@@ -138,10 +138,12 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 		sprite.use_parent_material = true
 		_rig.add_child(sprite)
 		_sprites[key] = sprite
-	# Small things held in the hand (orb, pouch, chalice, knives) stay in front
-	# of the arm; long weapons stay behind the head.
+	# Faces are never covered: the head is drawn over every weapon. Small
+	# things held in the hand (orb, pouch, chalice) also stay in front of the arm.
 	if _sprites.has("weapon") and _sprites["weapon"].texture.get_height() <= 18:
 		_rig.move_child(_sprites["weapon"], -1)
+	if _sprites.has("head"):
+		_rig.move_child(_sprites["head"], -1)
 	_fx = Node2D.new()
 	_fx.z_index = 1
 	_fx.draw.connect(_draw_fx)

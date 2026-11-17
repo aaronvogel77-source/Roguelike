@@ -175,3 +175,15 @@ func test_legendary_skin_in_a_chest_gets_its_reveal() -> void:
 	var reveals := opening.get_children().filter(func(c: Node) -> bool: return c is LegendaryReveal)
 	assert_eq(reveals.size(), 1, "the legendary reveal opens")
 
+
+func test_weapons_never_cover_a_face() -> void:
+	# Rule from the pixel-art skill: the head is drawn over every weapon.
+	var db := ContentDb.load_default()
+	for id in db.figures:
+		var actor := FigureActor.new()
+		actor.setup(db.figures[id], {"uid": 1, "health": 1, "max_health": 1}, false)
+		var head: Node = actor._sprites["head"]
+		var weapon: Node = actor._sprites["weapon"]
+		assert_gt(head.get_index(), weapon.get_index(), "%s: head above weapon" % id)
+		actor.free()
+

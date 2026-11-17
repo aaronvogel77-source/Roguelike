@@ -52,7 +52,7 @@ func _draw(sheet: Image, p: Dictionary, feet: Vector2i) -> void:
 	var small: bool = p["weapon"]["tex"].get_height() <= 18
 	if not small:
 		_blit(sheet, p["weapon"], shoulder + Vector2i(0, int(p["arm_len"])))
-	_blit(sheet, p["head"], neck + Vector2i(1, 1))
 	_blit(sheet, p["armF"], shoulder)
 	if small:
 		_blit(sheet, p["weapon"], shoulder + Vector2i(0, int(p["arm_len"])))
+	_blit(sheet, p["head"], neck + Vector2i(1, 1))  # faces are never covered

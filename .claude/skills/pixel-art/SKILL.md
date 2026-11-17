@@ -23,7 +23,9 @@ or hand-made as pixel grids (`handmade_art.gd`), which gives the best detail.
    recipes gold, only legendary skins and recipes shimmer.
 7. **Suit by gem and cloth:** coins green, wands red-orange, cups blue, swords violet.
 8. **Name and ability show in the design:** e.g. Henker = black hood + axe, Midas = golden hand + crown.
-9. **Faces are never covered:** weapons are drawn behind the head (`figure_actor.gd` draw order).
+9. **Faces are never covered (fixed rule from the player):** the head is always drawn last, over every
+   weapon and held item, also while attacking (`figure_actor.gd` draw order; enforced by
+   `test_weapons_never_cover_a_face`). Long weapons lean slightly forward at rest.
 10. **Enemies look different from heroes:** creatures and corrupted bodies with sickly/bronze/blood ramps.
 11. **Effects glow, bodies stay dark:** saturated bright colours are reserved for fire, magic, gold glints.
 
