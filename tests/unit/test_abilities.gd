@@ -285,3 +285,19 @@ func test_ash_king_stops_spreading_burn_once_he_is_dead() -> void:
 	var back_burned := _events(result, "update").any(func(e: Dictionary) -> bool:
 		return e["unit"]["uid"] == back_uid and e["unit"]["statuses"].get("burn", 0) > 0)
 	assert_false(back_burned, "no burn jumps over after the ash king has died")
+
+
+func test_lifesteal_heals_right_after_the_hit_and_can_save_the_drinker() -> void:
+	# Blood drinker L1 (3/4, 50 %) against a 4/9 brute: it takes 4 (-> 0) while dealing 3,
+	# heals 1 in the same exchange and survives the first clash.
+	var result := BattleSimulator.simulate([_fig("blood_drinker")], [_unit(4, 9)])
+	var heals := _events(result, "heal").filter(func(e): return e["uid"] == 1)
+	assert_false(heals.is_empty(), "lifesteal heals")
+	assert_eq(heals[0]["amount"], 1)
+	var first_turn_deaths := []
+	for e in result["events"]:
+		if e["type"] == "turn" and e["turn"] == 2:
+			break
+		if e["type"] == "dying" and e["uid"] == 1:
+			first_turn_deaths.append(e)
+	assert_eq(first_turn_deaths.size(), 0, "saved by its own lifesteal")

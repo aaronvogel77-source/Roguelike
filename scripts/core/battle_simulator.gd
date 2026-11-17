@@ -292,14 +292,14 @@ func _deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 	return remaining
 
 
-func _heal(unit: BattleUnit, amount: int) -> void:
+func _heal(unit: BattleUnit, amount: int, same_exchange := false) -> void:
 	# Bannprior: while it lives, the other side cannot heal.
 	if living(1 - unit.side).any(func(u: BattleUnit) -> bool: return not u.aura("heal_block").is_empty()):
 		return
 	if unit.side == PLAYER and player_heal_factor < 1.0:
 		amount = int(floor(amount * player_heal_factor))
 	var healed := mini(amount, unit.max_health - unit.health)
-	if not unit.is_alive():
+	if not unit.is_alive() and not (same_exchange and not unit.flags.get("death_resolved", false)):
 		return
 	# "Überfluss" (master): healing beyond full health becomes shield
 	# for the bearer's whole team.
@@ -448,8 +448,11 @@ func deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 	return _deal_damage(unit, amount, source)
 
 
-func heal(unit: BattleUnit, amount: int) -> void:
-	_heal(unit, amount)
+## same_exchange: healing that belongs to the attack that just happened (lifesteal).
+## The strikes are simultaneous, so it still counts for a unit the counter-strike
+## brought to 0 - deaths are only resolved after the exchange.
+func heal(unit: BattleUnit, amount: int, same_exchange := false) -> void:
+	_heal(unit, amount, same_exchange)
 
 
 ## Changes the player's real gold; returns the actual change.

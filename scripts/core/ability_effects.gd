@@ -321,7 +321,7 @@ static func _lifesteal(battle: BattleSimulator, owner: BattleUnit, share: float,
 	var amount := int(floor(int(context.get("damage_dealt", 0)) * share))
 	if amount <= 0 or owner.health >= owner.max_health:
 		return false
-	battle.heal(owner, amount)
+	battle.heal(owner, amount, true)  # right after its own hit, before deaths are resolved
 	return true
 
 
