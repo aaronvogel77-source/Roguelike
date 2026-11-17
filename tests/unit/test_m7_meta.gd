@@ -107,7 +107,7 @@ func test_save_round_trip_and_run_meta_survives_serialization() -> void:
 
 func test_cosmetics_buy_and_equip() -> void:
 	var meta := MetaState.new()
-	meta.glut = 150
+	meta.glut = 300
 	assert_true(meta.buy_cosmetic(_db, "back_blood"))
 	assert_true(meta.equip(_db, "back_blood"))
 	assert_eq(meta.equipped["back"], "back_blood")

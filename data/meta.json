@@ -9,7 +9,7 @@
     "events": ["mirror", "duel", "soul_trader"]
   },
   "chest_size": 3,
-  "legendary_skin_weight": 0.05,
+  "legendary_skin_weight": 0.01,
   "duplicate_refund": 2,
   "chests": [
     {"id": "figures", "price": 8, "pools": ["figures", "skins"]},
@@ -37,9 +37,9 @@
     {"id": "aura_suits", "kind": "aura", "price": 0},
     {"id": "aura_violet", "kind": "aura", "price": 10},
     {"id": "aura_ember", "kind": "aura", "price": 10},
-    {"id": "skin_hell_executioner", "kind": "skin", "figure": "executioner", "price": 100, "rarity": "legendary", "fx": "hellfire"},
-    {"id": "skin_frost_king", "kind": "skin", "figure": "drowned_king", "price": 100, "rarity": "legendary", "fx": "frost"},
-    {"id": "skin_star_judge", "kind": "skin", "figure": "the_judge", "price": 100, "rarity": "legendary", "fx": "void"},
-    {"id": "skin_sun_midas", "kind": "skin", "figure": "king_midas", "price": 100, "rarity": "legendary", "fx": "sun"}
+    {"id": "skin_hell_executioner", "kind": "skin", "figure": "executioner", "price": 250, "rarity": "legendary", "fx": "hellfire"},
+    {"id": "skin_frost_king", "kind": "skin", "figure": "drowned_king", "price": 250, "rarity": "legendary", "fx": "frost"},
+    {"id": "skin_star_judge", "kind": "skin", "figure": "the_judge", "price": 250, "rarity": "legendary", "fx": "void"},
+    {"id": "skin_sun_midas", "kind": "skin", "figure": "king_midas", "price": 250, "rarity": "legendary", "fx": "sun"}
   ]
 }
