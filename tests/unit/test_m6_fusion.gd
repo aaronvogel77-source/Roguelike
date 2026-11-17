@@ -41,7 +41,8 @@ func test_fusion_takes_higher_stats_plus_one_and_restarts_at_level_one() -> void
 	assert_true(run.fusion_offer.is_empty(), "offer used up")
 	var entry: Dictionary = run.player_battle_team()[0]
 	assert_eq(entry["def"]["attack"], 5)
-	assert_eq(entry["abilities"].size(), 2)
+	var own: Array = entry["abilities"].filter(func(a: Dictionary) -> bool: return not a.get("suit_bonus", false))
+	assert_eq(own.size(), 2)
 	assert_eq(entry["suits"], ["wands", "swords"])
 	assert_eq(entry["def"]["fusion_name"], tr("NAME_STEM_EXECUTIONER") + "-" + tr("NAME_CORE_SPARK_BEARER"))
 

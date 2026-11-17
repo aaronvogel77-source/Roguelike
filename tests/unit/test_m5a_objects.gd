@@ -48,6 +48,7 @@ func test_equipment_changes_battle_stats() -> void:
 
 func test_cursed_gold_drain_reduces_income() -> void:
 	var run := _planning_run()
+	run.row[0] = _fig("the_judge")
 	run.row[0]["equipment"] = {"base": "amulet", "rarity": 3, "affixes": [], "drawback": {"id": "gold_drain", "value": -1}}
 	run.apply_battle_result({"victory": true, "gold_after": 0})
 	assert_eq(run.last_income["extra"], -1)
@@ -88,7 +89,7 @@ func test_royal_court_counts_queens_kings_and_aces() -> void:
 	var run := _planning_run()
 	run.row[0] = _fig("the_judge")
 	run.row[1] = _fig("golden_scales")
-	run.row[2] = _fig("ace_of_cups")
+	run.row[2] = _fig("ace_of_coins")
 	run.relics = ["royal_court"]
 	for entry in run.player_battle_team():
 		assert_eq(entry["bonus_health"], 3)
@@ -97,6 +98,7 @@ func test_royal_court_counts_queens_kings_and_aces() -> void:
 func test_beggars_bowl_pays_after_wins() -> void:
 	var run := _planning_run()
 	run.relics = ["beggars_bowl"]
+	run.row[0] = _fig("the_judge")
 	run.apply_battle_result({"victory": true, "gold_after": 0})
 	assert_eq(run.last_income["extra"], 1)
 
@@ -299,7 +301,9 @@ func test_reroll_keeps_the_packs() -> void:
 func test_enemy_options_use_different_enemies() -> void:
 	for seed_value in range(1, 30):
 		var run := RunState.new_run(_db, seed_value)
+		# The options are built from different enemies; only the cheap ones
+		# added to reach the next difficulty step may repeat.
 		var first: Array = run.enemy_options[0]["team"].map(func(u): return u["def_id"])
 		var second: Array = run.enemy_options[1]["team"].map(func(u): return u["def_id"])
-		for id in second:
-			assert_does_not_have(first, id)
+		var fresh := second.filter(func(id): return not id in first)
+		assert_gt(fresh.size(), 0, "seed %d: the medium option brings new enemies" % seed_value)

@@ -130,9 +130,9 @@ func test_gold_armored_gains_shield_per_gold() -> void:
 
 func test_king_midas_multiplier_from_gold() -> void:
 	var result := BattleSimulator.simulate([_fig("king_midas", 3)], [_unit(0, 100)], 30)
-	# L3: 6 attack × (1 + 30/10) = 24.
+	# L3: 6 attack × (1 + 30/5) = 42.
 	var hits := _events(result, "damage").filter(func(e): return e["source"] == "attack")
-	assert_eq(hits[0]["amount"], 24)
+	assert_eq(hits[0]["amount"], 42)
 
 
 func test_golden_scales_multiplies_rearmost_ally_when_ally_dies() -> void:
@@ -184,8 +184,8 @@ func test_chalice_revives_once_and_drowned_king_absorbs_twice() -> void:
 func test_drowned_king_absorbs_a_share_of_attack_and_health() -> void:
 	var fodder := _unit(10, 10, null, "fodder")
 	var result := BattleSimulator.simulate([fodder, _fig("drowned_king", 2)], [_unit(50, 100)])
-	# Level 2 king (5/9) takes 60 %: +6 attack, +6 health.
-	assert_true(_ever(result, 2, func(u): return u["attack"] == 11 and u["max_health"] == 15))
+	# Level 2 king (5/9) takes 50 %: +5 attack, +5 health.
+	assert_true(_ever(result, 2, func(u): return u["attack"] == 10 and u["max_health"] == 14))
 
 
 # --- Swords -------------------------------------------------------------------------

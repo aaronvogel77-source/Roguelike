@@ -142,6 +142,9 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 		for source in extras.get("sources", []):
 			if source == "tarot_strength":
 				continue
+			elif String(source).begins_with("suit_"):
+				lines.append("%s %s" % [_tag("UI_CAT_SUIT_BONUS", CATEGORY_COLORS["ability"]),
+					Keywords.colorize(tr("SUITBONUS_" + String(source).substr(5).to_upper()))])
 			elif source in extras["db"].items["pacts"]:
 				pact_names.append(tr("PACT_" + String(source).to_upper()))
 			else:

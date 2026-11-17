@@ -428,7 +428,7 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Fusionen:** verflochtener Rahmen aus den Materialien/Farben der enthaltenen Figuren, F-Stufe als Siegel, ab F3 leuchtend
 - Legendäre Skins behalten ihren leuchtenden Rahmen in der Themenfarbe
 
-### Balancing-Runde 2 – Münzen, Farb-Builds, härterer Anfang, Belohnungen (beantwortet 2026-11-17, Freigabe ausstehend)
+### Balancing-Runde 2 – Münzen, Farb-Builds, härterer Anfang, Belohnungen (beantwortet 2026-11-17, freigegeben und umgesetzt in v0.26.0)
 - **Münzfiguren:** König Midas ×(1 + Gold/10) / /7 / /5 (vorher /20 /15 /10); Münzknecht behält Schild 2/4/6 und bringt nach jedem Sieg +1 / +1 / +2 Gold; Goldene Waage gibt zusätzlich zu Kampfbeginn der hintersten Figur ×(1 + 0,05 je 5 Gold) Angriff
 - **Farbboni (je Figur der Farbe in der Reihe, im Team-Info sichtbar):**
   - Münzen: Zins-Obergrenze +1 je Münzfigur
@@ -438,12 +438,14 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Härterer Anfang:** Startgold 8 → 6; reicht das laut Bots nicht, Gegner in Akt 1 etwas stärker
 - **Boss-Sieg – Schatzkammer:** zusätzlich zur bisherigen Belohnung 1 von 3 Schätzen wählen: ein Relikt, ein Ass-Pack mit garantierter Legende oder +12 Gold, mit eigener Animation
 - **Relikte** nur noch aus der Schatzkammer oder sehr selten (5 %) als Zusatzwahl in Arkana-Packs; das Relikt-Pack im Shop entfällt
-- **Pakte seltener:** Seelen-Pack 7 statt 4 Seelen, „Der Teufel“ erscheint halb so oft; max. 3 Pakte bleibt
+- **Pakte seltener:** Seelen-Pack 7 statt 4 Seelen, das Opferaltar-Ereignis (zwei Figuren opfern → 1 von 3 Pakten; in der Frage „Der Teufel“ genannt) erscheint halb so oft; max. 3 Pakte bleibt
 - **Schwere Gegnerbanden:** mittel +3 Gold (vorher +2), schwer +5 Gold (vorher +4) und ein Gratis-Beutepack (Ausrüstung oder Arkana)
 - **Schwache Buben stärker:** Messdiener 1/3 → 1/4, Heilung 2/3/4; Funkenträger 2/2 → 2/3
 - **Starke Karten gedämpft:** Klinge der Klarheit 4/4 → 4/3, Richter 5/5 → 5/4, Ertrunkener König Aufnahme 30/60/100 % → 25/50/80 %
 - **Nicht gewählt:** Neu würfeln günstiger, Zins je 4 Gold
 - Danach Messung mit den 6 Bots (je 150 Runs) und Vergleich mit v0.25.0
+- **Umsetzungsdetails v0.26.0:** Startgold bei allen Okkultisten −2 (Novize 6, Wucherer 4, Fechter 6). Startgold allein reichte laut Bots nicht → Gegnerbudgets Akt 1 klein 1,5 → 2,6, groß 3,0 → 4,6, Boss-Gefolge Akt 1 1,0 → 1,5; Akt-Wachstum 3,2 → 3,4; Gefolge Akt-2-Boss 6 → 13 (die Schatzkammer macht Akt 2 sonst zu leicht). Das Ass-Pack zieht aus allen Assen, auch aus noch nicht im Lager freigeschalteten. Relikt beim Schwarzmarkt (gegen Gold) und beim Duell-Sieg bleiben als seltene Quellen; Relikt-Packs gibt es nicht mehr. Beutepack: Ausrüstung oder Arkana, normal groß, gratis, golden leuchtend im nächsten Shop. Die Kelch-, Schwert- und Stab-Boni stehen im Info-Fenster der Figur, alle aktiven Boni als Zeile unter der eigenen Reihe
+- **Messung v0.26.0 (150 Runs je Bot):** Siegquote Verschwender 18 %, Farbspezialist 12 %, Sparer 11 %, Taktiker 11 %, Fusionist 9 %, Leveler 5 % (v0.25.0: 1–12 %). Stationen: A1 K1 77 % (vorher 92 %), A1 K2 72 % (81 %), A1 Boss 35 % (16 %), A2 K1 95 %, A2 K2 82 %, A2 Boss 75 % (59 %). König Midas am Run-Ende 71 % Siegquote (vorher 10 %)
 
 ## Phase 11 – Benutzeroberfläche und Bedienung
 
@@ -563,10 +565,10 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ### Münzen (Erde) – Thema Schild, Gold, Wirtschaft
 | Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
 |---|---|---|---|
-| Bube | **Münzknecht** | 1/4 | *Kampfbeginn:* erhält Schild 2 / 4 / 6 |
+| Bube | **Münzknecht** | 1/4 | *Kampfbeginn:* erhält Schild 2 / 4 / 6; *nach jedem Sieg:* +1 / +1 / +2 Gold (v0.26.0) |
 | Ritter | **Goldgepanzerter** | 3/4 | *Kampfbeginn:* erhält Schild 1 pro 4 / 3 / 2 Gold im Besitz (nach Feedback statt Leben) |
-| Königin | **Goldene Waage** | 3/4 | *Bei Tod einer eigenen Figur:* **hinterste** eigene Figur erhält ×1,2 / ×1,35 / ×1,5 Angriff (Mult, stapelt) – geändert nach M5a-Feedback, vorher vorderste |
-| König | **König Midas** | 4/6 | *Kampfbeginn:* erhält ×(1 + Gold/20) / ×(1 + Gold/15) / ×(1 + Gold/10) Angriff (Mult) |
+| Königin | **Goldene Waage** | 3/4 | *Bei Tod einer eigenen Figur:* **hinterste** eigene Figur erhält ×1,2 / ×1,35 / ×1,5 Angriff (Mult, stapelt) – geändert nach M5a-Feedback, vorher vorderste; *Kampfbeginn:* hinterste Figur ×(1 + 0,05 je 5 Gold) (v0.26.0) |
+| König | **König Midas** | 4/6 | *Kampfbeginn:* erhält ×(1 + Gold/10) / ×(1 + Gold/7) / ×(1 + Gold/5) Angriff (Mult) – v0.26.0, vorher /20 /15 /10 |
 
 *Profil:* Ein starker Spar-Build (Goldgepanzerter + Midas) steht gegen das Kaufen. Schild kommt vom Buben und (goldabhängig) vom Goldgepanzerten. Die Waage bringt Multiplikatoren für Opfer-Builds und verbindet sich mit Kelchen (Opfer).
 
@@ -883,3 +885,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.24.5: Fusionskarten ohne F-Siegel; stattdessen ein Fusionswirbel als Figurenhintergrund (Spiralarme in den Farben der verschmolzenen Figuren, heller Kern, mehr Arme je Stufe); Goldsteine unten bleiben als dezenter Stufen-Hinweis | Spieler-Wunsch | – |
 | 2026-11-17 | v0.25.0 Balancing mit 6 Strategie-Bots (Verschwender, Sparer, Leveler, Farbspezialist, Fusionist, Taktiker; tools/bots.gd, tools/balance_report.gd, Skill balance), je 150 Runs: Akt-1-Boss bleibt bewusst eine Mauer (Bots 16 %, Spieler-Wahl „so lassen“); Akt 2 war zu leicht (100 % in normalen Kämpfen) → Wachstum der Gegnerbudgets ×1,5 → ×3,2, Akt-2-Boss-Gefolge 3 → 6, Goldene Mauer 3/20 → 3/23; Ergebnis Akt 2: klein 96 %, groß 65 %, Boss 59 % (Bots) | Spieler: Akt 2 deutlich stärker, auch der Boss | Boss Leben 12→9, ohne Gefolge, weniger Diebstahl; Akt 2 nur etwas stärker |
 | 2026-11-17 | Balancing-Runde 2 geplant (Münzfiguren, Farbboni für alle vier Farben, Startgold 6, Schatzkammer nach Bossen, Relikte/Pakte seltener, Beutepack für schwere Banden, Buben stärker, Top-Karten gedämpft) | Spieler: Münzen zu schwach, Anfang zu leicht, Boss/schwere Wahl zu wenig belohnend | Stufen-Sets 2/4/6; einfache +1/+1 je Farbe; günstigeres Neu würfeln |
+| 2026-11-17 | v0.26.0 Balancing-Runde 2: Midas /10 /7 /5, Münzknecht +Gold nach Siegen, Goldene Waage + Gold-Mult, Farbboni (Münzen Zinsgrenze, Kelche Leben, Schwerter Blutung, Stäbe Brennen), Startgold −2, Akt-1-Gegner stärker (klein 2,6, groß 4,6), Schatzkammer nach Bossen (Relikt/Ass-Pack/+12 Gold), keine Relikt-Packs mehr, Relikt 5 % in Arkana-Packs, Seelen-Pack 7, Opferaltar halb so oft, mittel +3 / schwer +5 Gold + Beutepack, Messdiener/Funkenträger stärker, Klinge/Richter/Ertrunkener König schwächer, Akt-2-Boss-Gefolge 13 | Spieler: Münzen zu schwach, Anfang zu leicht, Boss und schwere Wahl zu wenig belohnend, Farb-Builds sollen sich lohnen | Stufen-Sets 2/4/6; günstigeres Neu würfeln; Zins je 4 Gold |

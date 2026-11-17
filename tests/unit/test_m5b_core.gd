@@ -34,10 +34,10 @@ func test_boss_win_gives_two_souls() -> void:
 
 func test_soul_pack_offers_unowned_pacts() -> void:
 	var run := _planning_run()
-	run.souls = 5
+	run.souls = 8
 	run.pacts = ["blood_pact"]
 	assert_true(run.buy_soul_pack())
-	assert_eq(run.souls, 1, "soul packs cost 4")
+	assert_eq(run.souls, 1, "soul packs cost 7")
 	for item in run.open_pack["items"]:
 		assert_eq(item["kind"], "pact")
 		assert_ne(item["id"], "blood_pact")
@@ -48,7 +48,7 @@ func test_soul_pack_offers_unowned_pacts() -> void:
 func test_soul_hunger_makes_soul_packs_pricier() -> void:
 	var run := _planning_run()
 	run.pacts = ["soul_hunger"]
-	assert_eq(run.soul_pack_price(), 5)
+	assert_eq(run.soul_pack_price(), 8)
 
 
 func test_blood_pact_multiplies_and_drains() -> void:
@@ -60,9 +60,9 @@ func test_blood_pact_multiplies_and_drains() -> void:
 	var result := BattleSimulator.simulate([entry], [{"def": _db.enemies["beggar_ghost"], "level": 1}])
 	var drained := false
 	for e in result["events"]:
-		if e["type"] == "update" and e["unit"]["uid"] == 1 and e["unit"]["health"] == 4:
+		if e["type"] == "update" and e["unit"]["uid"] == 1 and e["unit"]["health"] == 3:
 			drained = true
-	assert_true(drained, "5 health -> 4 (10 %, min 1)")
+	assert_true(drained, "4 health -> 3 (10 %, min 1)")
 
 
 func test_golden_oath_interest_and_doubled_gold() -> void:
@@ -75,12 +75,12 @@ func test_golden_oath_interest_and_doubled_gold() -> void:
 	var midas := {"def": _db.figures["king_midas"], "level": 3}
 	var result := BattleSimulator.simulate([midas], [{"def": _db.enemies["vault_warden"], "level": 3}], 10, {"gold_factor": 2})
 	var hits: Array = result["events"].filter(func(e: Dictionary) -> bool: return e["type"] == "damage" and e["source"] == "attack" and e["uid"] == 2)
-	# Midas L3: 6 × (1 + 20/10) = 18 (shield absorbs some, so check the multiplier instead).
+	# Midas L3: 6 × (1 + 20/5) = 30 (shield absorbs some, so check the multiplier instead).
 	var mult_seen := false
 	for e in result["events"]:
-		if e["type"] == "update" and e["unit"]["uid"] == 1 and absf(e["unit"]["multiplier"] - 3.0) < 0.01:
+		if e["type"] == "update" and e["unit"]["uid"] == 1 and absf(e["unit"]["multiplier"] - 5.0) < 0.01:
 			mult_seen = true
-	assert_true(mult_seen, "20 visible gold -> ×3")
+	assert_true(mult_seen, "20 visible gold -> ×5")
 
 
 func test_return_pact_revives_two_figures() -> void:

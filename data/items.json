@@ -230,8 +230,7 @@
     },
     "type_weights": {
       "equipment": 45,
-      "arcana": 35,
-      "relic": 20
+      "arcana": 35
     },
     "sizes": {
       "normal": {
@@ -258,8 +257,10 @@
       "jumbo": 0.01,
       "mega": 0.02
     },
+    "arcana_relic_chance": 0.05,
+    "legend_pack_choices": 3,
     "soul_pack": {
-      "price_souls": 4,
+      "price_souls": 7,
       "choices": 2
     }
   },
@@ -293,6 +294,9 @@
       "soul_trader",
       "fusion_altar"
     ],
+    "weights": {
+      "altar": 0.5
+    },
     "max_per_act": 1
   },
   "uniques": [

@@ -23,9 +23,9 @@
     {"id": "pack_luck", "prices": [25, 50]}
   ],
   "occultists": [
-    {"id": "novice", "start_gold": 8, "interest_cap": 5, "slots": 3, "start": ""},
-    {"id": "usurer", "start_gold": 6, "interest_cap": 7, "slots": 3, "start": "coin_squire", "price": 40, "challenge": "beat_act1_boss"},
-    {"id": "fencer", "start_gold": 8, "interest_cap": 0, "slots": 4, "start": "blade_apprentice", "price": 80, "challenge": "win_run"}
+    {"id": "novice", "start_gold": 6, "interest_cap": 5, "slots": 3, "start": ""},
+    {"id": "usurer", "start_gold": 4, "interest_cap": 7, "slots": 3, "start": "coin_squire", "price": 40, "challenge": "beat_act1_boss"},
+    {"id": "fencer", "start_gold": 6, "interest_cap": 0, "slots": 4, "start": "blade_apprentice", "price": 80, "challenge": "win_run"}
   ],
   "cosmetics": [
     {"id": "back_tarot", "kind": "back", "price": 0},

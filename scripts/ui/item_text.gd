@@ -54,7 +54,10 @@ static func tarot_text(tarot_id: String) -> String:
 static func pack_name(pack: Dictionary) -> String:
 	var name := TranslationServer.translate("PACK_" + String(pack["type"]).to_upper())
 	var size := TranslationServer.translate("PACK_SIZE_" + String(pack["size"]).to_upper())
-	return name if size == "" or size == "PACK_SIZE_NORMAL" else "%s (%s)" % [name, size]
+	var full: String = name if size == "" or size == "PACK_SIZE_NORMAL" else "%s (%s)" % [name, size]
+	if pack.get("loot", false):
+		return TranslationServer.translate("PACK_LOOT") % full
+	return full
 
 
 static func _fill(key: String, value: Variant) -> String:

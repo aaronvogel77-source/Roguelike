@@ -106,7 +106,7 @@ func test_event_screens_skip_and_soul_pack() -> void:
 		await wait_frames(2)
 	view._run.stage = RunState.Stage.PLANNING
 	view._run.chosen_enemy = view._run.enemy_options[0]
-	view._run.souls = 5
+	view._run.souls = 8
 	view._show_stage()
 	await wait_frames(2)
 	assert_true(view._run.buy_soul_pack())

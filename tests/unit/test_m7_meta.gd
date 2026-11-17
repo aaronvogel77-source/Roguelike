@@ -58,7 +58,7 @@ func test_upgrades_cost_more_per_level_and_apply() -> void:
 	assert_true(meta.buy_upgrade(_db, "start_soul"))
 	assert_true(meta.buy_upgrade(_db, "cheap_reroll"))
 	var run := RunState.new_run(_db, 3, meta.run_options(_db, "novice"))
-	assert_eq(run.gold, 9)
+	assert_eq(run.gold, 7)
 	assert_eq(run.souls, 1)
 	run.choose_enemy(0)
 	assert_eq(run.reroll_price(), 4, "first reroll 5 - 1")
@@ -73,10 +73,10 @@ func test_occultists_by_purchase_or_challenge() -> void:
 	meta.glut = 40
 	assert_true(meta.buy_occultist(_db, "usurer"))
 	var usurer := RunState.new_run(_db, 3, meta.run_options(_db, "usurer"))
-	assert_eq(usurer.gold, 6)
+	assert_eq(usurer.gold, 4)
 	assert_eq(usurer.row[0]["def_id"], "coin_squire")
 	usurer.gold = 50
-	assert_eq(usurer.interest(), 7)
+	assert_eq(usurer.interest(), 8, "usurer cap 7 + 1 coin figure")
 	# The fencer through a won run.
 	var won := RunState.new_run(_db, 3)
 	won.stage = RunState.Stage.WON

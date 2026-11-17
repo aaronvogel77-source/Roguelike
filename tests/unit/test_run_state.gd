@@ -22,9 +22,9 @@ func _win() -> Dictionary:
 	return {"victory": true}
 
 
-func test_new_run_starts_with_one_page_and_eight_gold() -> void:
+func test_new_run_starts_with_one_page_and_six_gold() -> void:
 	var run := _run()
-	assert_eq(run.gold, 8)
+	assert_eq(run.gold, 6)
 	assert_eq(run.slot_count(), 3)
 	assert_not_null(run.row[0])
 	assert_eq(_db.figures[run.row[0]["def_id"]]["rank"], "page")
@@ -114,12 +114,16 @@ func test_slots_cannot_be_bought() -> void:
 
 func test_income_with_difficulty_bonus_and_interest() -> void:
 	var run := _run()
-	run.choose_enemy(2)  # hard: +4
+	run.choose_enemy(2)  # hard: +5 and a loot pack
 	run.gold = 12
 	run.apply_battle_result({"victory": true, "gold_after": 12})
-	# 12 gold -> interest 2; income 4 + 4 + 2 = 10.
-	assert_eq(run.gold, 22)
-	assert_eq(run.last_income, {"base": 4, "bonus": 4, "interest": 2, "extra": 0})
+	# 12 gold -> interest 2; income 4 + 5 + 2 = 11 (+ coin figures' win gold).
+	var extra := int(run.last_income["extra"])
+	assert_eq(run.gold, 23 + extra)
+	assert_eq(run.last_income["bonus"], 5)
+	assert_eq(run.last_income["interest"], 2)
+	assert_true(run.last_income.get("loot", false))
+	assert_has(run.next_shop, "loot_pack")
 
 
 func test_interest_is_capped_at_five() -> void:
@@ -259,7 +263,7 @@ func test_enemy_options_are_ordered_by_real_strength() -> void:
 
 
 func test_first_boss_has_a_small_retinue() -> void:
-	assert_eq(EnemyGenerator.budget(1, 2, 2), 1)
+	assert_eq(EnemyGenerator.budget(1, 2, 2), 2)
 
 
 func test_figures_can_be_moved_in_events_but_not_at_the_grave() -> void:

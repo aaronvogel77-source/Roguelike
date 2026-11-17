@@ -126,11 +126,15 @@ static func pack_price(db: ContentDb, pack: Dictionary) -> int:
 
 
 static func pack_picks(db: ContentDb, pack: Dictionary) -> int:
+	if pack["type"] == "legend":
+		return 1
 	return int(db.items["packs"]["sizes"][pack["size"]]["picks"])
 
 
 static func pack_choice_count(db: ContentDb, pack: Dictionary) -> int:
 	var rules: Dictionary = db.items["packs"]
+	if pack["type"] == "legend":
+		return int(rules["legend_pack_choices"])
 	var size: Dictionary = rules["sizes"][pack["size"]]
 	if size.has("set_choices"):
 		return int(size["set_choices"])
@@ -168,6 +172,18 @@ static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: Random
 				var index := rng.randi_range(0, cards.size() - 1)
 				result.append({"kind": "tarot", "id": cards[index]})
 				cards.remove_at(index)
+			# Relics are boss treasures now; arcana packs only rarely hold one.
+			var relic_pool: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
+				func(id: String) -> bool: return not id in owned_relics)
+			if not relic_pool.is_empty() and rng.randf() < float(db.items["packs"].get("arcana_relic_chance", 0.0)):
+				result.append({"kind": "relic", "id": relic_pool[rng.randi_range(0, relic_pool.size() - 1)]})
+		"legend":
+			# Boss treasury: different legendary figures, pick one.
+			var legends: Array = db.legendary_figures(true).map(func(f: Dictionary) -> String: return f["id"])
+			for i in mini(count, legends.size()):
+				var index := rng.randi_range(0, legends.size() - 1)
+				result.append({"kind": "figure", "def_id": legends[index]})
+				legends.remove_at(index)
 		"relic":
 			var relics: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
 				func(id: String) -> bool: return not id in owned_relics)

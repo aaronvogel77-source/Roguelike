@@ -189,6 +189,15 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			owner.attack += bonus
 			battle.emit_update(owner)
 			return true
+		"scales_gold":
+			# Goldene Waage: rearmost ally × (1 + value per full 5 gold).
+			var steps := battle.gold / 5
+			if steps <= 0:
+				return false
+			for t: BattleUnit in targets:
+				t.multipliers.append(1.0 + value * steps)
+				battle.emit_update(t)
+			return not targets.is_empty()
 		"midas_scales":
 			# Waage des Midas: all allies' attack × (value + 0.1 per 10 gold).
 			var factor := value + 0.1 * (battle.gold / 10)

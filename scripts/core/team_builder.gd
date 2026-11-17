@@ -11,9 +11,50 @@ static func player_team(run: RunState) -> Array:
 	for figure in run.row:
 		if figure != null:
 			team.append(_figure_entry(run, figure))
+	_apply_suit_bonus(team)
 	_apply_relics(run, team)
 	_apply_pacts(run, team)
 	return team
+
+
+## Cups health and swords bleed per suit figure.
+const SUIT_CUP_HEALTH := 2
+const SUIT_SWORDS_PER_BLEED := 2
+
+
+## Suit bonuses of the whole row (coins raise the interest cap in RunState):
+## cups +2 health per cup figure on each cup figure; swords 1 bleed on every
+## enemy per 2 sword figures; wands 1 burn on the front enemy per wand figure.
+static func suit_counts(team: Array) -> Dictionary:
+	var counts := {"coins": 0, "cups": 0, "swords": 0, "wands": 0}
+	for entry in team:
+		for suit in entry.get("suits", [entry.get("suit", "")]):
+			if counts.has(suit):
+				counts[suit] += 1
+	return counts
+
+
+static func _apply_suit_bonus(team: Array) -> void:
+	var counts := suit_counts(team)
+	var bleed: int = counts["swords"] / SUIT_SWORDS_PER_BLEED
+	var burn: int = counts["wands"]
+	for entry in team:
+		var suits: Array = entry.get("suits", [entry.get("suit", "")])
+		if "cups" in suits:
+			entry["bonus_health"] += SUIT_CUP_HEALTH * counts["cups"]
+			entry["sources"].append("suit_cups")
+		if bleed > 0 and "swords" in suits:
+			var bleed_ability := _ability("battle_start", "all_enemies", "apply_bleed", bleed)
+			bleed_ability["suit_bonus"] = true
+			entry["abilities"].append(bleed_ability)
+			entry["sources"].append("suit_swords")
+			bleed = 0
+		if burn > 0 and "wands" in suits:
+			var burn_ability := _ability("battle_start", "front_enemy", "apply_burn", burn)
+			burn_ability["suit_bonus"] = true
+			entry["abilities"].append(burn_ability)
+			entry["sources"].append("suit_wands")
+			burn = 0
 
 
 ## Per-figure pact effects (economy and battle-wide pact effects live in
@@ -149,8 +190,16 @@ static func gold_after_win(run: RunState) -> int:
 	if "death_pact" in run.pacts:
 		extra -= 1
 	for figure in run.row:
-		if figure != null and figure.has("equipment"):
+		if figure == null:
+			continue
+		if figure.has("equipment"):
 			extra += Items.equipment_modifiers(run.db, figure["equipment"])["run_gold"]
+		# Münzknecht: gold after every win (also when its ability lives on in a fusion).
+		var sources: Array = figure["fusion"]["abilities"] if figure.has("fusion") else [figure["def_id"]]
+		for id in sources:
+			var win_gold: Array = run.db.figures[id].get("win_gold", [])
+			if not win_gold.is_empty():
+				extra += int(win_gold[run.figure_level(figure) - 1])
 	return extra
 
 

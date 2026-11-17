@@ -33,9 +33,9 @@ UI_DEFEAT,Niederlage – der Run wäre vorbei,Defeat – the run would be over
 UI_DRAW,Gleichstand – zählt als Sieg,Draw – counts as victory
 UI_YOUR_TEAM,Dein Team,Your team
 UI_ENEMIES,Gegner,Enemies
-ABIL_COIN_SQUIRE,Kampfbeginn: erhält Schild {v}.,Battle start: gains {v} shield.
+"ABIL_COIN_SQUIRE","Kampfbeginn: erhält Schild {v}. Nach jedem Sieg: +1 Gold (Stufe 3: +2).","Battle start: gains {v} shield. After every win: +1 gold (level 3: +2)."
 ABIL_GOLD_ARMORED,Kampfbeginn: Schild 1 pro {v} Gold im Besitz.,Battle start: 1 shield per {v} gold you own.
-ABIL_GOLDEN_SCALES,Wenn eine eigene Figur stirbt: Die hinterste eigene Figur erhält ×{v} Angriff.,When an ally dies: your rearmost figure gains ×{v} attack.
+"ABIL_GOLDEN_SCALES","Wenn eine eigene Figur stirbt: Die hinterste eigene Figur erhält ×{v} Angriff. Kampfbeginn: Die hinterste Figur erhält ×0,05 Angriff je 5 Gold.","When an ally dies: your rearmost figure gains ×{v} attack. Battle start: your rearmost figure gains ×0.05 attack per 5 gold."
 ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×(1 + gold / {v}).
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
 ABIL_ENRAGED_ONE,Wenn getroffen: Der Angreifer erhält Brennen {v}.,When hit: the attacker gains {v} burn.
@@ -222,6 +222,8 @@ TAROT_WHEEL_OF_FORTUNE_DESC,Eine Figur wechselt zufällig in eine andere Tarot-F
 PACK_EQUIPMENT,Schmiede-Pack,Forge Pack
 PACK_ARCANA,Arkana-Pack,Arcana Pack
 PACK_RELIC,Reliquien-Pack,Reliquary Pack
+PACK_LEGEND,Ass-Pack,Ace Pack
+PACK_LOOT,Beute: %s,Loot: %s
 PACK_SIZE_NORMAL,,
 PACK_SIZE_JUMBO,Groß,Jumbo
 PACK_SIZE_MEGA,Mega,Mega
@@ -540,6 +542,11 @@ UI_CAT_BLESSING,Segen,Blessing
 UI_CAT_STRENGTH,Kraft,Strength
 UI_CAT_RELICS,Relikte,Relics
 UI_CAT_PACTS,Pakte,Pacts
+UI_CAT_SUIT_BONUS,Farbbonus,Suit bonus
+SUITBONUS_COINS,"Zins-Obergrenze +1 je Münzfigur.","Interest cap +1 per coin figure."
+SUITBONUS_CUPS,"+2 Leben je Kelchfigur in der Reihe.","+2 health per cup figure in the row."
+SUITBONUS_SWORDS,"Kampfbeginn: 1 Blutung auf jeden Gegner je 2 Schwertfiguren.","Battle start: 1 bleed on every enemy per 2 sword figures."
+SUITBONUS_WANDS,"Kampfbeginn: 1 Brennen auf den vordersten Gegner je Stabfigur.","Battle start: 1 burn on the front enemy per wand figure."
 UI_CAT_ABILITY,Fähigkeit,Ability
 UI_CAT_TAROT,Tarot,Tarot
 UI_CAT_RELIC,Relikt,Relic
@@ -640,3 +647,15 @@ UI_OBJECT_SLOTS,"Objekt-Plätze: %d / %d (1 · ab Stufe 3: 2 · je Fusion +1, ma
 UI_REVEAL_ALL,Alle aufdecken,Reveal all
 UI_LEGENDARY,LEGENDÄR,LEGENDARY
 UI_UNLOCKED,Freigeschaltet!,Unlocked!
+UI_TREASURY,Schatzkammer,Treasury
+UI_TREASURY_HINT,Der Boss ist besiegt – wähle einen Schatz.,The boss is defeated – choose one treasure.
+UI_TREASURE_LEGEND_PACK,Wähle 1 von 3 Legenden (Asse).,Choose 1 of 3 legends (aces).
+UI_TREASURE_GOLD,Sofort in deine Kasse.,Straight into your purse.
+UI_TREASURE_SOULS,Deine Reliktleiste ist voll – nimm Seelen.,Your relic bar is full – take souls.
+UI_PLUS_GOLD,+%d Gold,+%d gold
+UI_LOOT_NEXT_SHOP,Beute-Pack gratis im nächsten Shop,Free loot pack in the next shop
+UI_SUIT_BONUS_LINE,Farbboni: %s,Suit bonuses: %s
+SUITB_SHORT_COINS,Münzen: Zins-Grenze +%d,Coins: interest cap +%d
+SUITB_SHORT_CUPS,Kelche: +%d Leben,Cups: +%d health
+SUITB_SHORT_SWORDS,Schwerter: %d Blutung auf alle,Swords: %d bleed on all
+SUITB_SHORT_WANDS,Stäbe: %d Brennen vorne,Wands: %d burn on the front

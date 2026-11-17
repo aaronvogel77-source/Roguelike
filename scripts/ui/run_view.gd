@@ -167,6 +167,8 @@ func _show_stage() -> void:
 				_build_pack_overlay()
 		RunState.Stage.REWARD:
 			_build_reward()
+			if not _run.open_pack.is_empty():
+				_build_pack_overlay()
 		RunState.Stage.EVENT:
 			_build_event()
 			if not _run.open_pack.is_empty():
@@ -178,6 +180,14 @@ func _show_stage() -> void:
 		var fusion := FusionView.create(_run, _db, _detail_panel)
 		fusion.finished.connect(_on_fusion_finished)
 		_screen.add_child(fusion)
+	# After a boss (and its fusion): the treasury, choose one treasure.
+	elif not _run.treasure.is_empty() and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
+		var treasury := TreasuryView.create(_run, _db, _detail_panel)
+		treasury.chosen.connect(func(index: int) -> void:
+			_run.take_treasure(index)
+			_undo.clear()
+			_show_stage())
+		_screen.add_child(treasury)
 
 
 func _on_fusion_finished(title: String, text: String) -> void:
@@ -249,7 +259,7 @@ func _show_debug_tools() -> void:
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 4)
 	panel.add_child(column)
-	var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion], ["+50 Glut", _debug_glut]]
+	var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion], ["+50 Glut", _debug_glut], ["Schatz", _debug_treasure]]
 	if _run.stage == RunState.Stage.PLANNING:
 		entries.insert(2, ["Legende", _debug_legend])
 	for entry in entries:
@@ -263,6 +273,14 @@ func _show_debug_tools() -> void:
 
 
 # --- Debug tools ("?debug=1" in the address) ---------------------------------------
+
+## Opens the boss treasury right away.
+func _debug_treasure() -> void:
+	_run._roll_treasure()
+	if _run.treasure.is_empty():  # after the last boss: still show it
+		_run.treasure = [{"kind": "gold", "amount": RunState.TREASURE_GOLD}, {"kind": "legend_pack"}]
+	_show_stage()
+
 
 func _debug_glut() -> void:
 	_meta.glut += 50
@@ -624,6 +642,9 @@ func _build_planning() -> void:
 	own_box.add_child(_label(tr("UI_YOUR_TEAM_FRONT"), 16, Palette.MUTED))
 	own_box.add_child(_own_row_slots())
 	own_box.add_child(_xp_hint_row())
+	var suit_line := _suit_bonus_text()
+	if suit_line != "":
+		own_box.add_child(_rich_line(suit_line, 16))
 	field.add_child(own_box)
 	var enemy_box := VBoxContainer.new()
 	enemy_box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -1161,6 +1182,11 @@ func _pack_view(index: int) -> Control:
 	style.set_border_width_all(4 if pack.get("size", "") == "mega" else 2)
 	style.set_corner_radius_all(10)
 	style.set_content_margin_all(4)
+	if pack.get("loot", false):  # reward for a hard band: golden glow
+		style.border_color = Palette.GOLD
+		style.set_border_width_all(4)
+		style.shadow_color = Color(Palette.GOLD, 0.6)
+		style.shadow_size = 8
 	panel.add_theme_stylebox_override("panel", style)
 	box.add_child(_with_coin(panel, str(_run.pack_cost(pack)) if not pack.is_empty() else "", false))
 	var price_text := ""
@@ -1851,6 +1877,8 @@ func _build_reward() -> void:
 		summary += "  ·  " + tr("UI_INCOME_SOULS") % income["souls"]
 	if income.get("slot", false):
 		summary += "  ·  " + tr("UI_NEW_SLOT")
+	if income.get("loot", false):
+		summary += "  ·  " + tr("UI_LOOT_NEXT_SHOP")
 	var summary_label := _label(summary, 20, Palette.PARCHMENT)
 	summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(summary_label)
@@ -2032,6 +2060,25 @@ func _build_run_end() -> void:
 
 func _stage_name_at_end(won: bool) -> String:
 	return tr("UI_FIGHT_BOSS") if won else tr(STAGE_NAMES[_run.fight])
+
+
+## Active suit bonuses of the row, e.g. "Münzen: Zins-Grenze +2 · Stäbe: 3 Brennen".
+func _suit_bonus_text() -> String:
+	var parts: Array = []
+	for suit in ["coins", "cups", "swords", "wands"]:
+		var count := _run.suit_count(suit)
+		var amount := 0
+		match suit:
+			"coins": amount = count if _run.interest_cap() > 0 else 0
+			"cups": amount = count * TeamBuilder.SUIT_CUP_HEALTH
+			"swords": amount = count / TeamBuilder.SUIT_SWORDS_PER_BLEED
+			"wands": amount = count
+		if amount > 0:
+			parts.append("[color=#%s]%s[/color]" % [Emblem.COLORS["suit_" + suit].to_html(false),
+				tr("SUITB_SHORT_" + suit.to_upper()) % amount])
+	if parts.is_empty():
+		return ""
+	return tr("UI_SUIT_BONUS_LINE") % " · ".join(parts)
 
 
 func _footer_text() -> String:

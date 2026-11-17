@@ -47,6 +47,9 @@ func play(db: ContentDb, seed_value: int, options: Dictionary = {}) -> RunState:
 		if not run.fusion_offer.is_empty():
 			_handle_fusion()
 			continue
+		if not run.treasure.is_empty():
+			_handle_treasure()
+			continue
 		if not run.open_pack.is_empty():
 			_handle_pack()
 			continue
@@ -217,7 +220,8 @@ func _weakest() -> int:
 
 
 func _buy_pack() -> bool:
-	if rng.randf() > float(knobs["packs"]):
+	var has_free := run.packs.any(func(p: Dictionary) -> bool: return p.get("free", false))
+	if not has_free and rng.randf() > float(knobs["packs"]):
 		return false
 	var best := -1
 	var best_score := 0.0
@@ -344,6 +348,29 @@ func _handle_pack() -> void:
 			run.close_pack()
 			return
 		run.take_pack_item(best, best_target)
+
+
+## Boss treasury: savers take gold, a free slot or a weak figure calls for an
+## ace, otherwise a relic.
+func _handle_treasure() -> void:
+	var kinds: Array = run.treasure.map(func(t: Dictionary) -> String: return t["kind"])
+	var pick := -1
+	if int(knobs["save"]) >= 20:
+		pick = kinds.find("gold")
+	elif kinds.has("legend_pack") and (_filled() < run.slot_count() or knobs["sell"]):
+		pick = kinds.find("legend_pack")
+	elif kinds.has("relic"):
+		pick = kinds.find("relic")
+	if pick < 0:
+		pick = kinds.find("gold")
+	log["treasure"] = log.get("treasure", []) + [kinds[maxi(pick, 0)]]
+	run.take_treasure(maxi(pick, 0))
+	# Make room for the ace by selling the weakest figure if the row is full.
+	if not run.open_pack.is_empty() and _filled() >= run.slot_count() and knobs["sell"]:
+		var weakest := _weakest()
+		if weakest >= 0:
+			run.sell(weakest)
+	_handle_pack()
 
 
 func _strongest_with_room() -> int:

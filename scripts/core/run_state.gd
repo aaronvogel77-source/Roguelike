@@ -10,7 +10,7 @@ enum Stage { ENEMY_CHOICE, PLANNING, REWARD, WON, LOST, EVENT }
 
 const ACTS := 2  # vertical slice: one region, two acts
 const FIGHTS_PER_ACT := 3
-const START_GOLD := 8
+const START_GOLD := 6
 const START_SLOTS := 3
 const MAX_SLOTS := 6
 ## Shop price by rank (page, knight, queen, king).
@@ -25,6 +25,11 @@ const MAX_RELICS := 3
 const MAX_TAROTS := 2
 const MAX_PACTS := 3
 const BOSS_SOULS := 2
+## Boss treasury: gold treasure and the soul fallback when the relic bar is full.
+const TREASURE_GOLD := 12
+const TREASURE_SOULS := 3
+## Hard (difficulty 2) normal fights: a free loot pack in the next shop.
+const LOOT_PACK_TYPES := ["equipment", "arcana"]
 const DEATH_SOUL_CHANCE := 0.05
 ## Objects per figure (equipment, blessing, each Strength card).
 ## Object slots (equipment, blessing, Strength cards - any mix): 1 at the
@@ -77,6 +82,8 @@ var flags: Dictionary = {}
 ## A fusion the player may do now: {"source": "altar|boss|candle|blood_moon",
 ## "left": fusions still allowed} or {} (see fuse()).
 var fusion_offer: Dictionary = {}
+## Boss treasury: three treasures to choose one from ({"kind": "relic|legend_pack|gold|souls", ...}) or [].
+var treasure: Array = []
 ## Current event: {"id", "used": [options], "resolved", "result", ...offers} or {}.
 var event: Dictionary = {}
 var fights_since_event := 0
@@ -225,11 +232,22 @@ func sell_value(figure: Dictionary) -> int:
 
 func interest_cap() -> int:
 	var cap := int(occultist.get("interest_cap", MAX_INTEREST))
+	if cap > 0:  # coin suit bonus: +1 per coin figure in the row
+		cap += suit_count("coins")
 	if "golden_oath" in pacts and cap > 0:  # the fencer never earns interest
 		cap = 10
 	if "return_pact" in pacts:
 		cap = mini(cap, 3)
 	return cap
+
+
+## Figures in the row that count as the given suit (fusions count all their suits).
+func suit_count(suit: String) -> int:
+	var count := 0
+	for figure in row:
+		if figure != null and suit in figure_suits(figure):
+			count += 1
+	return count
 
 
 func interest() -> int:
@@ -482,8 +500,20 @@ func _roll_event() -> bool:
 	if stream.randf() < float(db.fusion["blood_moon_chance"]):
 		start_event("blood_moon")
 		return true
+	# Weighted pick; the sacrificial altar (pacts) comes half as often.
 	var ids: Array = rules["ids"]
-	start_event(ids[stream.randi_range(0, ids.size() - 1)])
+	var weights: Dictionary = rules.get("weights", {})
+	var total := 0.0
+	for id in ids:
+		total += float(weights.get(id, 1.0))
+	var roll := stream.randf() * total
+	var picked: String = ids[ids.size() - 1]
+	for id in ids:
+		roll -= float(weights.get(id, 1.0))
+		if roll < 0.0:
+			picked = id
+			break
+	start_event(picked)
 	return true
 
 
@@ -496,7 +526,7 @@ func start_event(id: String) -> void:
 			var relic_pool: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
 				func(r: String) -> bool: return not r in relics)
 			event["relic"] = relic_pool[stream.randi_range(0, relic_pool.size() - 1)] if not relic_pool.is_empty() else ""
-			var types := ["equipment", "arcana", "relic"]
+			var types := ["equipment", "arcana"]
 			event["pack_type"] = types[stream.randi_range(0, types.size() - 1)]
 			var royals := _figure_ids_of_rank("queen") + _figure_ids_of_rank("king")
 			event["figure"] = royals[stream.randi_range(0, royals.size() - 1)]
@@ -966,6 +996,10 @@ func apply_battle_result(result: Dictionary) -> Stage:
 		# After every act boss: one free fusion (can be skipped).
 		if row.filter(func(f: Variant) -> bool: return f != null).size() >= 2:
 			fusion_offer = {"source": "boss", "left": 1, "total": 1}
+		_roll_treasure()
+	elif int(chosen_enemy.get("difficulty", 0)) >= 2:
+		next_shop.append("loot_pack")
+		last_income["loot"] = true
 	fight += 1
 	if fight >= FIGHTS_PER_ACT:
 		fight = 0
@@ -976,6 +1010,41 @@ func apply_battle_result(result: Dictionary) -> Stage:
 	stage = Stage.REWARD
 	_roll_rewards()
 	return stage
+
+
+## Boss treasury: a relic (souls when the relic bar is full), a legend pack, gold.
+func _roll_treasure() -> void:
+	treasure.clear()
+	if act >= ACTS and fight >= FIGHTS_PER_ACT - 1:
+		return  # the last boss ends the run
+	var pool: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
+		func(r: String) -> bool: return not r in relics)
+	if relics.size() < MAX_RELICS and not pool.is_empty():
+		treasure.append({"kind": "relic", "id": pool[rng.stream("treasure").randi_range(0, pool.size() - 1)]})
+	else:
+		treasure.append({"kind": "souls", "amount": TREASURE_SOULS})
+	# The ace pack draws from every ace, also those not yet unlocked in the vault.
+	if not db.legendary_figures(true).is_empty():
+		treasure.append({"kind": "legend_pack"})
+	treasure.append({"kind": "gold", "amount": TREASURE_GOLD})
+
+
+## Takes one treasure; a legend pack opens right away (pick one legend).
+func take_treasure(index: int) -> bool:
+	if index < 0 or index >= treasure.size():
+		return false
+	var entry: Dictionary = treasure[index]
+	match entry["kind"]:
+		"relic":
+			relics.append(entry["id"])
+		"souls":
+			souls += int(entry["amount"])
+		"gold":
+			gold += int(entry["amount"])
+		"legend_pack":
+			_open({"type": "legend", "size": "normal"}, false)
+	treasure.clear()
+	return true
 
 
 ## Takes a reward figure: merges into a matching figure, else the first free slot.
@@ -1052,6 +1121,9 @@ func _roll_shop() -> void:
 	# Skip marks: a free mega pack / two guaranteed knights.
 	if "mega_pack" in next_shop:
 		packs[0] = {"type": packs[0]["type"], "size": "mega", "free": true}
+	if "loot_pack" in next_shop:  # reward for beating a hard band
+		var loot_type: String = LOOT_PACK_TYPES[rng.stream("packs").randi_range(0, LOOT_PACK_TYPES.size() - 1)]
+		packs[packs.size() - 1] = {"type": loot_type, "size": "normal", "free": true, "loot": true}
 	if "royal_shop" in next_shop:  # at most knights (queens/kings were too strong)
 		var knights := _figure_ids_of_rank("knight")
 		for i in 2:
@@ -1104,7 +1176,7 @@ func to_dict() -> Dictionary:
 		"reroll_count": reroll_count, "free_rerolls": free_rerolls, "enemy_options": enemy_options.duplicate(true),
 		"chosen_enemy": chosen_enemy.duplicate(true), "rewards": rewards.duplicate(),
 		"next_uid": next_uid, "battles_won": battles_won, "last_income": last_income.duplicate(),
-		"fusion_offer": fusion_offer.duplicate(true), "meta_options": meta_options.duplicate(true),
+		"fusion_offer": fusion_offer.duplicate(true), "treasure": treasure.duplicate(true), "meta_options": meta_options.duplicate(true),
 	}
 
 
@@ -1119,6 +1191,7 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.gold = int(data["gold"])
 	run.packs = data.get("packs", []).duplicate(true)
 	run.open_pack = data.get("open_pack", {}).duplicate(true)
+	run.treasure = data.get("treasure", []).duplicate(true)
 	run.relics = data.get("relics", []).duplicate()
 	run.tarots = data.get("tarots", []).duplicate()
 	run.pacts = data.get("pacts", []).duplicate()
