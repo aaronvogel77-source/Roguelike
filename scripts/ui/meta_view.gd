@@ -10,6 +10,9 @@ signal start_run(occultist: String)
 const PAGES_IN_VAULT := ["chests", "altar", "portraits", "mirror"]
 const GRIMOIRE_TABS := ["figures", "relics", "tarot", "pacts", "masters", "recipes", "enemies"]
 const COSMETIC_KINDS := ["back", "stage", "aura", "skin"]
+const OCCULTIST_EMBLEMS := {"novice": "skull", "usurer": "coin", "fencer": "sword"}
+## Rarity (glow) of chest finds; legendary skins get their big reveal.
+const FIND_RARITY := {"tarot": 1, "relics": 2, "events": 2, "pacts": 3, "figures": 4, "skins": 5}
 
 var _db: ContentDb
 var _meta: MetaState
@@ -211,10 +214,59 @@ func _chest_card(chest: Dictionary) -> Control:
 	var open := _button(tr("UI_BUY_FOR") % price, Vector2(200, 50), func() -> void:
 		_last_chest = _meta.open_chest(_db, id, _rng)
 		_meta.save()
-		_show("chests"))
+		_show("chests")
+		_play_chest(id))
 	open.disabled = _meta.glut < price
 	box.add_child(open)
 	return card
+
+
+## The chest opens with the pack animation; every find is a card.
+func _play_chest(id: String) -> void:
+	if _last_chest.is_empty():
+		return
+	var cards: Array = []
+	for found in _last_chest:
+		cards.append({"face": _find_face(found), "rarity": FIND_RARITY.get(found["kind"], 1),
+			"skin": found["id"] if found["kind"] == "skins" and found["new"] else ""})
+	var opening := PackOpening.create(cards, tr("CHEST_" + id.to_upper()))
+	add_child(opening)
+
+
+## The face of a chest find: its card, plus "neu!" or the duplicate refund.
+func _find_face(found: Dictionary) -> Control:
+	var kind: String = found["kind"]
+	var id: String = found["id"]
+	var face: Control
+	match kind:
+		"figures":
+			face = _scaled(UnitCard.for_definition(_db.figures[id], 1, false), 1.15)
+		"skins":
+			var figure_id := String(MetaState.cosmetic(_db, id)["figure"])
+			var worn := Cosmetics.skins.duplicate()
+			Cosmetics.skins[figure_id] = id
+			face = _scaled(UnitCard.for_definition(_db.figures[figure_id], 1, false), 1.15)
+			Cosmetics.skins = worn
+		"relics", "tarot", "pacts":
+			var object_kind: String = {"relics": "relic", "tarot": "tarot", "pacts": "pact"}[kind]
+			face = ObjectCard.create(_db, {"kind": object_kind, "id": id}, Vector2(140, 196))
+		_:
+			var panel := _panel(Vector2(140, 196), Palette.GOLD)
+			var box := _box(panel)
+			box.add_child(_centered(Emblem.create("skull", 46)))
+			box.add_child(_text_label(_content_name(kind, id), 20, Palette.GOLD))
+			box.add_child(_text_label(tr("CHEST_EVENTS"), 13, Palette.MUTED))
+			face = panel
+	var column := VBoxContainer.new()
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_child(_centered(face))
+	var note := tr("UI_CHEST_NEW") if found["new"] else tr("UI_CHEST_DUPLICATE") % int(_db.meta["duplicate_refund"])
+	column.add_child(_text_label(note, 16, Color("ffe08a") if found["new"] else Palette.MUTED))
+	return column
+
+
+func _celebrate(emblem: String, title: String, color: Color, big: bool) -> void:
+	add_child.call_deferred(UnlockFlash.create(emblem, title, color, big))
 
 
 func _chest_result_text() -> String:
@@ -244,6 +296,7 @@ func _upgrade_card(entry: Dictionary) -> Control:
 		var buy := _button(tr("UI_BUY_FOR") % price, Vector2(200, 50), func() -> void:
 			if _meta.buy_upgrade(_db, id):
 				_meta.save()
+				_celebrate("star", tr("UPGRADE_" + id.to_upper()), Palette.GOLD, false)
 			_show("altar"))
 		buy.disabled = _meta.glut < price
 		box.add_child(buy)
@@ -265,6 +318,7 @@ func _portrait_card(entry: Dictionary) -> Control:
 		var buy := _button(tr("UI_BUY_FOR") % int(entry["price"]), Vector2(200, 50), func() -> void:
 			if _meta.buy_occultist(_db, id):
 				_meta.save()
+				_celebrate(OCCULTIST_EMBLEMS.get(id, "skull"), tr("OCC_" + id.to_upper()), Palette.GOLD, true)
 			_show("portraits"))
 		buy.disabled = _meta.glut < int(entry["price"])
 		box.add_child(buy)
@@ -302,6 +356,11 @@ func _buy_cosmetic_button(id: String, price: int) -> Button:
 	var buy := _button(tr("UI_BUY_FOR") % price, Vector2(170, 46), func() -> void:
 		if _meta.buy_cosmetic(_db, id):
 			_meta.save()
+			if MetaState.cosmetic(_db, id).get("rarity", "") == "legendary":
+				_show("mirror")
+				add_child(LegendaryReveal.create(id))
+				return
+			_celebrate("soul", tr("COSMETIC_" + id.to_upper()), Color("ffb060"), false)
 		_show("mirror"))
 	buy.disabled = _meta.glut < price
 	return buy

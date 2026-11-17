@@ -32,6 +32,8 @@ static var _shader: Shader
 var uid := 0
 ## Portrait on a card: only the figure, no bars, numbers or effects.
 var portrait := false
+## Showcase (legendary reveal): the figure with its skin effects, no bars.
+var showcase := false
 var is_enemy := false
 var definition: Dictionary = {}
 var snapshot: Dictionary = {}
@@ -360,6 +362,10 @@ func _death_style() -> String:
 # --- Effects drawn on the figure (pixel rectangles in stage space) ---
 
 func _draw_fx() -> void:
+	if showcase:
+		if fx_theme != "":
+			_draw_skin_front()
+		return
 	if portrait:
 		return
 	var statuses: Dictionary = snapshot.get("statuses", {})

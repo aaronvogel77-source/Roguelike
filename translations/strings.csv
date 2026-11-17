@@ -637,3 +637,6 @@ UI_RARITY_LEGENDARY_SKIN,Legendär,Legendary
 UI_GLUT_SHORT,Glut: %d,Embers: %d
 UI_MENU_BUTTON,Menü,Menu
 UI_OBJECT_SLOTS,"Objekt-Plätze: %d / %d (1 · ab Stufe 3: 2 · je Fusion +1, max. 3)","Object slots: %d / %d (1 · from level 3: 2 · +1 per fusion, max 3)"
+UI_REVEAL_ALL,Alle aufdecken,Reveal all
+UI_LEGENDARY,LEGENDÄR,LEGENDARY
+UI_UNLOCKED,Freigeschaltet!,Unlocked!

@@ -1195,6 +1195,41 @@ func _on_buy_pack(index: int) -> void:
 		_show_stage()
 
 
+var _revealed_pack := ""  # the pack whose opening animation already played
+
+
+## A freshly opened pack tears open and its cards are turned one by one,
+## once; afterwards the normal pick screen lies underneath.
+func _play_pack_opening(open: Dictionary) -> void:
+	var key := JSON.stringify(open["items"])
+	if key == _revealed_pack:
+		return
+	_revealed_pack = key
+	var cards: Array = []
+	for entry in open["items"]:
+		var face: Control
+		var rarity := 1
+		match entry["kind"]:
+			"figure":
+				var definition: Dictionary = _db.figures[entry["def_id"]]
+				face = _scaled(UnitCard.for_definition(definition, 1, false), 1.15)
+				rarity = 4 if definition["rank"] == "legend" else RunState.RANKS.find(definition["rank"])
+			"equipment":
+				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				rarity = int(entry["item"]["rarity"])
+			"relic":
+				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				rarity = 2
+			"pact":
+				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				rarity = 3
+			_:
+				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				rarity = 3 if entry.get("id", "") == "ritual_candle" else 1
+		cards.append({"face": face, "rarity": rarity})
+	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"])))
+
+
 ## Overlay while a pack is open: pick items, choose targets, discard the rest.
 func _build_pack_overlay() -> void:
 	var overlay := ColorRect.new()
@@ -1250,6 +1285,7 @@ func _build_pack_overlay() -> void:
 	var skip := _button(tr("UI_PACK_SKIP"), Vector2(260, 60), _on_close_pack)
 	skip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	column.add_child(skip)
+	_play_pack_opening(open)
 
 
 func _pack_item_box(i: int) -> Control:
