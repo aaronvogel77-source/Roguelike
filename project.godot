@@ -6,7 +6,7 @@ config_version=5
 [application]
 
 config/name="Arcana (working title)"
-config/version="0.27.0"
+config/version="0.27.1"
 config/description="Dark-fantasy auto-battler roguelite with tarot court-card figures."
 run/main_scene="res://scenes/run.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")

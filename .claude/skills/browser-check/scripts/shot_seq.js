@@ -1,5 +1,6 @@
 // Plays a tap sequence against the local Arcana web build and saves screenshots.
 // Usage: node shot_seq.js <out_dir> '<url query>' '<steps json>'
+// Steps: ["tap", x, y, wait, shot] or ["drag", x, y, wait, shot, to_x, to_y] (CSS pixels).
 // Only talks to http://localhost:8765 (the locally served build).
 const { chromium, devices } = require('playwright');
 (async () => {
@@ -14,6 +15,14 @@ const { chromium, devices } = require('playwright');
   let n = 0;
   for (const s of steps) {
     if (s[0] === 'tap') await page.touchscreen.tap(s[1], s[2]);
+    // ["drag", x, y, wait_ms, shot, to_x, to_y]: press, move in small steps, release.
+    if (s[0] === 'drag') {
+      await page.mouse.move(s[1], s[2]);
+      await page.mouse.down();
+      await page.mouse.move(s[5], s[6], { steps: 20 });
+      await page.waitForTimeout(150);
+      await page.mouse.up();
+    }
     await page.waitForTimeout(s[3] || 300);
     if (s[4]) await page.screenshot({ path: `${out}/${String(n++).padStart(2, '0')}.png` });
   }

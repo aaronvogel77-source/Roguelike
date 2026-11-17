@@ -878,6 +878,12 @@ func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 	elif data["kind"] == "market_figure":
 		if _run.resolve_event("buy_figure", [slot.index]):
 			_show_stage()
+	elif data["kind"] == "reward":
+		if _run.take_reward_at(data["index"], slot.index):
+			_undo.clear()
+			_show_stage()
+		else:
+			_detail_panel.show_message(tr(ContentDb.name_key(_db.figures[_run.rewards[data["index"]]])), tr("UI_NEEDS_FREE_SLOT"))
 
 
 ## Dropped between two cards: the figure is inserted there. Visually the
@@ -1331,7 +1337,7 @@ func _pack_item_box(i: int) -> Control:
 	if entry.get("taken", false):
 		visual.modulate.a = 0.3
 	elif _run.pack_item_target(i) != "":
-		_make_draggable(visual, {"kind": "pack", "index": i})
+		_make_draggable(visual, {"kind": "pack", "index": i}, entry.get("def_id", "") if entry["kind"] == "figure" else "")
 	box.add_child(visual)
 	var text := tr("UI_PICK")
 	var enabled: bool = not entry.get("taken", false)
@@ -1433,13 +1439,27 @@ func _show_equipment_compare(figure: Dictionary, new_item: Dictionary, item_inde
 	column.add_child(buttons)
 
 
-## Lets a control be dragged onto row slots (pack items, market figures).
-func _make_draggable(control: Control, data: Dictionary) -> void:
+## Lets a control be dragged onto row slots (pack items, market figures,
+## rewards). Figure cards stop the mouse on their own face, so they let
+## presses fall through to the draggable holder (taps still open the info).
+## The preview is the card itself (figures) or the pack emblem.
+func _make_draggable(control: Control, data: Dictionary, def_id: String = "") -> void:
+	# Everything inside lets presses through to the holder, which starts the drag.
+	for child in control.find_children("*", "Control", true, false):
+		if child.mouse_filter == Control.MOUSE_FILTER_STOP:
+			child.mouse_filter = Control.MOUSE_FILTER_PASS
+	control.mouse_filter = Control.MOUSE_FILTER_STOP
 	control.set_drag_forwarding(func(_at: Vector2) -> Variant:
-		var preview := Emblem.create("pack", 60)
-		preview.position = -Vector2(30, 30)
 		var holder := Control.new()
-		holder.add_child(preview)
+		if def_id != "":
+			var preview := UnitCard.for_definition(_db.figures[def_id], 1, false)
+			preview.modulate = Color(1, 1, 1, 0.85)
+			preview.position = -UnitCard.CARD_SIZE / 2
+			holder.add_child(preview)
+		else:
+			var emblem := Emblem.create("pack", 60)
+			emblem.position = -Vector2(30, 30)
+			holder.add_child(emblem)
 		control.set_drag_preview(holder)
 		return data, Callable(), Callable())
 
@@ -1683,7 +1703,7 @@ func _market_coat() -> Control:
 	figure_card.tapped.connect(_detail_panel.show_card)
 	var figure_visual := _scaled(_with_rarity(figure_card, def_id), 1.3)
 	if not "buy_figure" in event["used"]:
-		_make_draggable(figure_visual, {"kind": "market_figure"})
+		_make_draggable(figure_visual, {"kind": "market_figure"}, def_id)
 	compartments.add_child(_compartment(tr("UI_MARKET_FIGURES"), figure_visual, tr("UI_PRICE") % (_run.price_of(def_id) / 2), "buy_figure"))
 	return coat
 
@@ -1898,9 +1918,12 @@ func _build_reward() -> void:
 		var card := UnitCard.for_definition(_db.figures[def_id], 1, false)
 		card.tapped.connect(_detail_panel.show_card)
 		var holder := CenterContainer.new()
-		holder.add_child(_with_rarity(card, def_id))
+		var reward_visual := _with_rarity(card, def_id)
+		holder.add_child(reward_visual)
 		box.add_child(holder)
 		var target := _run.reward_target(def_id)
+		# Can also be dragged onto a chosen slot (sell a figure first to make room).
+		_make_draggable(reward_visual, {"kind": "reward", "index": i}, def_id)
 		var text := tr("UI_TAKE")
 		if target >= 0 and _run.row[target] != null:
 			text = tr("UI_TAKE_MERGE")

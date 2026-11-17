@@ -71,16 +71,16 @@ func test_shield_absorbs_attack_damage_first() -> void:
 
 
 func test_burn_ticks_at_turn_start_and_decreases() -> void:
-	# Spark Bearer applies burn 2 on its attack; the enemy (0/10) burns next turn.
+	# Spark Bearer applies burn 1 on its attack; the enemy (0/10) burns next turn.
 	var result := BattleSimulator.simulate([_fig("spark_bearer")], [_unit(0, 10)])
 	var burns := _events(result, "damage").filter(func(e): return e["source"] == "burn")
 	assert_gt(burns.size(), 0)
-	assert_eq(burns[0]["amount"], 2)
+	assert_eq(burns[0]["amount"], 1)
 
 
 func test_mistress_of_embers_multiplies_burn() -> void:
-	# Spark bearer L1 front (burn 2), Mistress L3 behind: floor(2 × 2.5) = 5.
-	var result := BattleSimulator.simulate([_fig("spark_bearer"), _fig("mistress_of_embers", 3)], [_unit(0, 30)])
+	# Spark bearer L2 front (burn 2), Mistress L3 behind: floor(2 × 2.5) = 5.
+	var result := BattleSimulator.simulate([_fig("spark_bearer", 2), _fig("mistress_of_embers", 3)], [_unit(0, 30)])
 	var burns := _events(result, "damage").filter(func(e): return e["source"] == "burn")
 	assert_eq(burns[0]["amount"], 5)
 
@@ -88,7 +88,7 @@ func test_mistress_of_embers_multiplies_burn() -> void:
 func test_attacker_that_falls_still_lands_its_burn() -> void:
 	# Spark Bearer (2/2) dies to the 5/9 enemy in the same exchange, its burn still sticks.
 	var result := BattleSimulator.simulate([_fig("spark_bearer")], [_unit(5, 9)])
-	assert_true(_ever(result, 2, func(u): return u["statuses"].get("burn", 0) == 2))
+	assert_true(_ever(result, 2, func(u): return u["statuses"].get("burn", 0) == 1))
 
 
 func test_bleed_ticks_every_turn_and_keeps_its_stacks() -> void:

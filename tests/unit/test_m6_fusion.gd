@@ -163,7 +163,7 @@ func test_ember_core_doubles_burn_and_heals() -> void:
 	var result := BattleSimulator.simulate([_entry(figure)], [{"def": _db.enemies["greedy_dragon"], "level": 3}])
 	var burns := _events(result, "damage").filter(func(e): return e["source"] == "burn")
 	assert_gt(burns.size(), 0)
-	assert_eq(burns[0]["amount"], 4, "burn 2 × 2")
+	assert_eq(burns[0]["amount"], 2, "burn 1 × 2")
 	var heals := _events(result, "heal").filter(func(e: Dictionary) -> bool: return e["uid"] == 1)
 	assert_false(heals.is_empty(), "burn ticks heal the fusion")
 

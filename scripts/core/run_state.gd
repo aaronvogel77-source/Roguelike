@@ -1059,6 +1059,15 @@ func take_reward(index: int) -> bool:
 	return true
 
 
+## Takes a reward figure onto a chosen slot (empty, or a matching figure to merge).
+func take_reward_at(index: int, row_index: int) -> bool:
+	if stage != Stage.REWARD or index < 0 or index >= rewards.size() or not can_place(rewards[index], row_index):
+		return false
+	_place(rewards[index], row_index)
+	_finish_reward()
+	return true
+
+
 func skip_reward() -> bool:
 	if stage != Stage.REWARD:
 		return false
