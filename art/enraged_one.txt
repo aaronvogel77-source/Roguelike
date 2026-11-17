@@ -1,5 +1,8 @@
 kind = figure
 [palette]
+q = 24160e
+n = 704a2e
+N = 94683f
 y = fff0a0
 F = ff9a20
 f = e04010
@@ -37,3 +40,67 @@ b = 2a1008
 .nNNNNNNNNNNNNNNn.
 .lllmmmmmmmmssdd..
 .lllmmmmmmmmssdd..
+[armF pivot=2,1]
+lmms
+lmms
+lfms
+lmFs
+lfms
+lmfs
+lmms
+lmms
+lmms
+bbbb
+lmms
+lmms
+lmms
+.ms.
+[armB pivot=2,1]
+msss
+msss
+msss
+msss
+msss
+msss
+msss
+msss
+msss
+bbbb
+msss
+msss
+msss
+.ss.
+[legF pivot=2,0]
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbq..
+bbbbb..
+nbbbq..
+nbbbq..
+nbbbq..
+nbbbqbq
+nbbbqbq
+[legB pivot=2,0]
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqq..
+bbbbb..
+bqqqq..
+bqqqq..
+bqqqq..
+bqqqqqq
+bqqqqqq

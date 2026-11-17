@@ -1,5 +1,11 @@
 kind = figure
 [palette]
+q = 5a3608
+r = 8a5a12
+R = c08a20
+S = f0c850
+F = f6f0e6
+k = 202024
 o = fffbe0
 u = c0303a
 e = 28b060
@@ -28,3 +34,113 @@ Z = e2dcd2
 ...YYYZZZZY......
 ....YYYYYY.......
 .....ssss........
+[torso pivot=9,19]
+..FFFFFFFFFFFFFFF..
+..FkFFFkFFFkFFFkF..
+..SSSRRRRRRRRrrqq..
+.SSSSRRRRRRRRrrrqq.
+.SSSGRRRRRRRRrGrqq.
+.SSSGGRRRRRRRGGrqq.
+.SSSScGRRRRRGcrrqq.
+.SSSSRcGGeGGcrrrqq.
+.SSSSRRRRRRRRrrrqq.
+..SSSRRRTRRRRrrqq..
+..SSSRRRTRRRRrrqq..
+..SSSRRRTRRRRrrqq..
+..SSSRRRRRRRRrrqq..
+..SSSRRRRRRRRrrqq..
+.SSSRRRRRRRRrrrqq..
+.SSSRRRRRRRRrrrqq..
+.SSSRRRRRRRRrrrqq..
+ccccccccccccccccc..
+aaaaaaaaaaaaaaaaa..
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+.SSSSRRRRRRRRrrrqq.
+TTTTTTTTTTTTTTTTTTT
+[armF pivot=2,1]
+SRRr
+SRRr
+SRRr
+SRRr
+SRRr
+SRRr
+SRRr
+SRRr
+SRRr
+SRRr
+SRRr
+FFFF
+TGGc
+TGGc
+TGGc
+.Gc.
+[armB pivot=2,1]
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+Rrrr
+FFFF
+msss
+msss
+msss
+.ss.
+[legF pivot=2,0]
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+Rrrrq..
+TTTTT..
+cGGGa..
+cGGGa..
+cGGGa..
+cGGGaGa
+cGGGaGa
+[legB pivot=2,0]
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+rqqqq..
+TTTTT..
+Gaaaa..
+Gaaaa..
+Gaaaa..
+Gaaaaaa
+Gaaaaaa

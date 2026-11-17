@@ -1,5 +1,6 @@
 kind = figure
 [palette]
+A = 4a2a08
 R = a02a30
 q = 3a0c10
 o = ffa030
@@ -58,3 +59,69 @@ RRRRrrrrrrrrrrrqqqqqq
 RRRRrrrrrrrrrrrqqqqqq
 RRRRrrrrrrrrrrrqqqqqq
 RRRRrrrrrrrrrrrqqqqqq
+[armF pivot=2,1]
+Rrrq
+Rrrq
+Rrrq
+Rrrq
+Rrrq
+Rrrq
+Rrrq
+Rrrq
+Rrrq
+oooo
+lmms
+lmms
+lmms
+.ms.
+[armB pivot=2,1]
+rqqq
+rqqq
+rqqq
+rqqq
+rqqq
+rqqq
+rqqq
+rqqq
+rqqq
+oooo
+msss
+msss
+msss
+.ss.
+[legF pivot=2,0]
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+rqqq..
+GccA..
+GccA..
+GccA..
+GccAcA
+GccAcA
+[legB pivot=2,0]
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+qqqq..
+cAAA..
+cAAA..
+cAAA..
+cAAAAA
+cAAAAA

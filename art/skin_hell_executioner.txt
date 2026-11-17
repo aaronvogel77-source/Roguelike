@@ -1,5 +1,7 @@
 kind = figure
 [palette]
+b = 24160e
+B = 3a2414
 k = 0e0a08
 h = 241a16
 H = 3a2c26
@@ -30,3 +32,84 @@ m = 3a2c26
 ...hhhhhhhhh....
 .....ssss.......
 ......ss........
+[torso pivot=9,16]
+..HHHHHHHHHHkkkk..
+..HHHhOhhhhhkkkk..
+.HHHhhhohhhhkkkkk.
+.HHHhhohhhhhkkkkk.
+.HoHhhhoOhhhkkkkk.
+.HHOhhhhohhhkkkkk.
+.HHHohhohhhhokkkk.
+.HHHhhohhhhhOkkkk.
+..HHHhhhhhhhkokk..
+..HHHhhhhhhhkkkk..
+..HHHhhhhhhhkkkk..
+..HHHhhhhhhhkkkk..
+.bbbbbboOobbbbbbb.
+.HBBBBBBBBBBBBBB..
+.HBBBBBBoBBBBBBB..
+.HBBBBBBBBoBBBBB..
+[armF pivot=2,1]
+Hhhk
+Hhhk
+Hohk
+HhOk
+Hhhk
+Hohk
+Hhhk
+Hhok
+Hhhk
+OOOO
+Hhhk
+Hhhk
+Hhhk
+.hk.
+[armB pivot=2,1]
+hkkk
+hkkk
+hkkk
+hkkk
+hkkk
+hkkk
+hkkk
+hkkk
+hkkk
+OOOO
+hkkk
+hkkk
+hkkk
+.kk.
+[legF pivot=2,0]
+Bbbbk..
+Bbbbk..
+Bbbbk..
+Bobbk..
+Bbbbk..
+Bbbbk..
+Bbobk..
+Bbbbk..
+Bbbbk..
+Bbbbk..
+ooooo..
+kkkkk..
+kkkkk..
+kkkkk..
+kkkkkkk
+kkkkkkk
+[legB pivot=2,0]
+bkkkk..
+bkkkk..
+bkkkk..
+bkkkk..
+bkkkk..
+bkkkk..
+bkkkk..
+bkkkk..
+bkkkk..
+bkkkk..
+ooooo..
+kkkkk..
+kkkkk..
+kkkkk..
+kkkkkkk
+kkkkkkk

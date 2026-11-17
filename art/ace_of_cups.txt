@@ -1,5 +1,8 @@
 kind = figure
 [palette]
+u = 1a3458
+U = 2c5288
+p = 0c1a2e
 d = 1a3a6a
 s = 3a6aa8
 m = 7aaae0
@@ -28,3 +31,113 @@ y = 7ac8e8
 .....ww..y.......
 .................
 .......ss........
+[torso pivot=12,19]
+....VVVVVVVVVUUUpppp.....
+.....VVVVVVVuuuupppp.....
+.....UUUuuuuuuuupppp.....
+....UUUUuuuuuuuuppppp....
+....UUUUuuuuuuuuppppp....
+....UUGGGGGuuuuuppppp....
+....UUUGwGuuuuuuppppp....
+....UUUUGuuuuuuuppppp....
+....UUUGGGuuuuuuppppp....
+.....UUUuuuuuuuupppp.....
+.....UUUuuuuuuuupppp.....
+.....UUUuuuuuuuupppp.....
+.....UUUuuuuuuuupppp.....
+.....UUUuuuuuuuupppp.....
+....UUUuuuuuuuuppppp.....
+....UUUuuuuuuuuppppp.....
+....UUUuuuuuuuuppppp.....
+VVVVVVVVVVVVVVVVVppp.....
+....UUUuuuuuuuuppppp.....
+....UUUUuuuuuuuuppppp....
+...UUUUuuuuuuuuupppppp...
+...UUUUuuuuuuuuupppppp...
+...UUUUuuuuuuuuupppppp...
+..UUUUuuuuuuuuuuupppppp..
+..UUUUuuuuuuuuuuupppppp..
+..UyUUuuyuuuuuuuupppppp..
+.UUUUyuuuuyuuuuuuppppppp.
+.UUUUUuuuuuuuuuuuppppppp.
+.UUUUUuuuuuuuuuuuppppppp.
+UUUUUuuuuuuuuuuuuuppppppp
+UUUUUuuuuuuuuuuuuuppppppp
+UUUUUuuuuuuuuuuuuuppppppp
+UUUUUuuuuuuuuuuuuuppppppp
+UUUUUuuuuuuuuuuuuuppppppp
+UUUUUuuuuuuuuuuuuuppppppp
+[armF pivot=2,1]
+Uuup
+Uuup
+Uuup
+Uuup
+Uuup
+Uuup
+Uuup
+Uuup
+Uuup
+Uuup
+Uuup
+VVVV
+lmms
+lmms
+lmms
+.ms.
+[armB pivot=2,1]
+uppp
+uppp
+uppp
+uppp
+uppp
+uppp
+uppp
+uppp
+uppp
+uppp
+uppp
+VVVV
+msss
+msss
+msss
+.ss.
+[legF pivot=2,0]
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+upppp..
+VVVVu..
+VVVVu..
+VVVVu..
+VVVVuVu
+VVVVuVu
+[legB pivot=2,0]
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+ppppp..
+Vuuuu..
+Vuuuu..
+Vuuuu..
+Vuuuuuu
+Vuuuuuu

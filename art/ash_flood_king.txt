@@ -1,5 +1,6 @@
 kind = figure
 [palette]
+B = 3a3438
 A = 5a525a
 a = 2a2628
 o = ffa030
@@ -32,3 +33,97 @@ y = 7ac8e8
 ...gLPLLLLyL.....
 ....gLLLLL.......
 .....ssss........
+[torso pivot=9,19]
+..AAAAAAAAAAAaakk..
+..AAABBBBBBBBaakk..
+..AAABBBBBBBBaakk..
+.ABBBBBBBBBBBBBBBk.
+.AAAABBBBBBBBaaakk.
+.ABBBBBkkkkkBBBBBk.
+.AAAABBkoyokBaaakk.
+.AAAABBkkokkBaaakk.
+.AAAABBBBBBBBaaakk.
+..AoABBBBBBBBaakk..
+..AAPBBBBBBBPaakk..
+..AAAPBBBBBByPakk..
+..AAABBBBBBBBaakk..
+..AAABBBBBBBBaakk..
+.AAABBBBBBBBaaakk..
+.AAABBBBBBBBaaakk..
+.PPPPPPPPPPPPPPPP..
+.AAABBBBBBBBaaakk..
+.AAABBBBBBBBaaakk..
+[armF pivot=2,1]
+ABBa
+ABBa
+ABBa
+ABBa
+APBa
+ABBa
+ABBa
+ABBa
+ABBa
+ABBa
+ABBa
+PPPP
+lmms
+lmms
+lmms
+.ms.
+[armB pivot=2,1]
+Baaa
+Baaa
+Baaa
+Baaa
+Baaa
+Baaa
+Baaa
+Baaa
+Baaa
+Baaa
+Baaa
+PPPP
+msss
+msss
+msss
+.ss.
+[legF pivot=2,0]
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+ABBBa..
+PPPPP..
+Baaak..
+Baaak..
+Baaak..
+Baaakak
+Baaakak
+[legB pivot=2,0]
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+Baaaa..
+PPPPP..
+akkkk..
+akkkk..
+akkkk..
+akkkkkk
+akkkkkk
