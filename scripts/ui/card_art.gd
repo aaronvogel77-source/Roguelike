@@ -185,13 +185,14 @@ static func _skin(w: int, h: int, suit: String, theme: Array) -> Dictionary:
 	var light := Color(theme[1])
 	var frame := [main.darkened(0.7), main.darkened(0.3), main, light]
 	var c := PixelCanvas.new(w, h)
-	_gradient(c, w, h, main.darkened(0.55), main.darkened(0.85))
-	_rays(c, w, h, Color(main, 0.35), 14)
-	_stars(c, w, h, light)
-	_watermark(c, w, h, suit, Color(light, 0.25), true)
+	# A calm, neutral background so the skinned figure stands out; the theme
+	# colour lives in the frame and a faint watermark only.
+	_gradient(c, w, h, Color("4a4450").lerp(main, 0.12), Color("1e1a24"))
+	_fibres(c, w, h, Color("2a2630"))
+	_watermark(c, w, h, suit, Color(light, 0.12), true)
 	_frame(c, w, h, [frame])
 	_round(c, w, h)
-	return {"tex": c.texture(), "fx": {"gloss": 1.0, "sparkle": 1.0}, "accent": main, "dark": true}
+	return {"tex": c.texture(), "fx": {"gloss": 0.35}, "accent": main, "dark": true}
 
 
 ## Enemy cards: the same bold card as the player's, but cursed - dark
@@ -200,17 +201,16 @@ static func _skin(w: int, h: int, suit: String, theme: Array) -> Dictionary:
 static func _enemy(w: int, h: int, tier: int, boss: bool) -> Dictionary:
 	var c := PixelCanvas.new(w, h)
 	var level := 4 if boss else tier
-	var bg_top := Color("3a1a20").lerp(Color("4a0c14"), level / 4.0)
-	_gradient(c, w, h, bg_top, Color("0e0406"))
+	# A dusty blood-red mid tone (not black), so dark creatures still stand out.
+	var bg_top := Color("9a6a62").lerp(Color("8a4a46"), level / 4.0)
+	_gradient(c, w, h, bg_top, Color("5a3434").lerp(Color("4a2226"), level / 4.0))
 	for i in 4 + level * 2:  # cracks through the cursed parchment
 		var x := (i * 17 + 9) % w
 		var y := (i * 31 + 6) % maxi(1, h - 10)
 		for s in 7 + level * 2:
 			x += [-1, 0, 1, 1, 0, -1][(s + i) % 6]
 			y += 1
-			c.px(Color("0a0204"), x, y)
-	# A big skull watermark behind the creature, clearer for stronger enemies.
-	_skull(c, w / 2 - 7, int(h * 0.42) - 8, 2, Color(0.55, 0.12, 0.14, 0.18 + 0.08 * level), Color(1.0, 0.2, 0.2, 0.3 + 0.12 * level))
+			c.px(Color("3a1a1c"), x, y)
 	var frame := _colors(["1a0a0a", "4a2a24", "8a6a5a", "c8b8a0"] if level >= 3 else ["140808", "3a1a14", "6a3424", "9a5a3a"])
 	_frame(c, w, h, [frame])
 	if level >= 2:  # thorns pointing inwards

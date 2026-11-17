@@ -24,6 +24,7 @@ var card_size := CARD_SIZE
 var _style: StyleBoxFlat
 var _face: Dictionary = {}
 var _overlay: Panel
+var _glow_style: StyleBoxFlat
 var _level_seal: Label
 var _identity: HBoxContainer
 var _chips: HFlowContainer
@@ -84,15 +85,14 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 		_style.shadow_color = Color(Palette.SUIT_COLORS.get(suits[-1], Palette.GOLD), 0.75)
 		_style.shadow_size = 3 + 3 * stage
 		if stage >= 3:
-			_cycle_glow(suits)
+			_cycle_glow.call_deferred(suits)  # after the glow panel exists
 	# Legendary skins: a glowing frame in the skin's theme colour.
 	var skin := String(Cosmetics.skins.get(String(unit_definition.get("id", "")), "")) if not enemy else ""
 	if skin != "" and FigureArt.SKINS.has(skin):
 		var theme_color := Color(FigureArt.FX_COLORS[FigureArt.SKINS[skin]["fx"]][0])
-		_style.border_color = theme_color
-		_style.shadow_color = Color(theme_color, 0.8)
-		_style.shadow_size = maxi(_style.shadow_size, 8)
-		_style.set_border_width_all(2)
+		_style.border_color = theme_color  # the frame shows the theme; no glow over the figure
+		_style.shadow_color = Color(theme_color, 0.35)
+		_style.shadow_size = maxi(_style.shadow_size, 3)
 	add_child(body)
 	_add_portrait(initial, unit_definition, enemy)
 
@@ -105,6 +105,18 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	column.add_theme_constant_override("separation", 2)
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(column)
+	# The glow (fusions, skins) is a shadow BEHIND the card face; the overlay
+	# on top only draws borders (flashes, selection), never a tint.
+	_glow_style = _style.duplicate()
+	_glow_style.border_color = Color(0, 0, 0, 0)
+	_glow_style.set_border_width_all(0)
+	var glow := Panel.new()
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glow.add_theme_stylebox_override("panel", _glow_style)
+	body.add_child(glow)
+	body.move_child(glow, 0)
+	_style.shadow_size = 0
+	_style.shadow_color = Color(0, 0, 0, 0)
 	_overlay = Panel.new()
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_overlay.add_theme_stylebox_override("panel", _style)
@@ -200,7 +212,7 @@ func _cycle_glow(suits: Array) -> void:
 	var colors: Array = suits.map(func(s: String) -> Color: return Color(Palette.SUIT_COLORS.get(s, Palette.GOLD), 0.8))
 	var tween := create_tween().set_loops()
 	for color in colors:
-		tween.tween_property(_style, "shadow_color", color, 0.8)
+		tween.tween_property(_glow_style, "shadow_color", color, 0.8)
 
 
 ## Short gold flash on the frame when this unit's ability fires.
