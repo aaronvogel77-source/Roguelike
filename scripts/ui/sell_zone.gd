@@ -5,14 +5,17 @@ extends PanelContainer
 signal tapped
 signal dropped(data: Dictionary)
 
+## Hidden until a figure or object is held, dragged or selected.
+var auto_hide := false
 var _label: Label
 var _style: StyleBoxFlat
+var _active := false
 
 
 func _init() -> void:
 	custom_minimum_size = UnitCard.CARD_SIZE + Vector2(20, 0)
 	_style = StyleBoxFlat.new()
-	_style.bg_color = Color(0.25, 0.08, 0.08, 0.35)
+	_style.bg_color = Color(0.22, 0.06, 0.12, 0.92)
 	_style.border_color = Color(0.8, 0.3, 0.3, 0.5)
 	_style.set_border_width_all(2)
 	_style.set_corner_radius_all(10)
@@ -32,8 +35,34 @@ func _init() -> void:
 
 func show_text(text: String, active: bool) -> void:
 	_label.text = text
+	_active = active
 	_style.border_color = Palette.GOLD if active else Color(0.8, 0.3, 0.3, 0.5)
 	_style.set_border_width_all(4 if active else 2)
+	if auto_hide:
+		_reveal(active)
+
+
+func set_auto_hide(value: bool) -> void:
+	auto_hide = value
+	_reveal(false)
+
+
+func _reveal(on: bool) -> void:
+	if not auto_hide:
+		return
+	modulate.a = 1.0 if on else 0.0
+	mouse_filter = Control.MOUSE_FILTER_STOP if on else Control.MOUSE_FILTER_IGNORE
+
+
+func _notification(what: int) -> void:
+	if not auto_hide:
+		return
+	if what == NOTIFICATION_DRAG_BEGIN:
+		var data: Variant = get_viewport().gui_get_drag_data()
+		if data is Dictionary and data.get("kind") == "row":
+			_reveal(true)
+	elif what == NOTIFICATION_DRAG_END:
+		_reveal(_active)
 
 
 func _gui_input(event: InputEvent) -> void:

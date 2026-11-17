@@ -490,6 +490,7 @@ var _undo_button: Button
 
 
 func _build_planning() -> void:
+	_screen.add_child(_velvet())
 	var column := _column()
 	column.add_child(_top_bar(_stage_title()))
 	column.add_child(_info_line())
@@ -524,6 +525,8 @@ func _build_planning() -> void:
 	_shop_slots.clear()
 	for i in _run.shop.size():
 		var shop_box := VBoxContainer.new()
+		shop_box.add_theme_constant_override("separation", -6)
+		shop_box.add_child(_coin_badge(str(_run.price_of(_run.shop[i])) if _run.shop[i] != "" else "", false))
 		var slot := SlotView.new("shop", i)
 		if _run.shop[i] != "":
 			slot.set_card(UnitCard.for_definition(_db.figures[_run.shop[i]], 1, false))
@@ -531,9 +534,6 @@ func _build_planning() -> void:
 		slot.accepts_drops = false
 		slot.tapped.connect(_on_slot_tapped)
 		shop_box.add_child(slot)
-		var price := _label(tr("UI_PRICE") % _run.price_of(_run.shop[i]) if _run.shop[i] != "" else "", 20, Palette.GOLD)
-		price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		shop_box.add_child(price)
 		bottom.add_child(shop_box)
 		_shop_slots.append(slot)
 
@@ -541,33 +541,38 @@ func _build_planning() -> void:
 		bottom.add_child(_pack_view(i))
 	bottom.add_child(_soul_pack_view())
 
-	_sell_zone = SellZone.new()
-	_sell_zone.tapped.connect(_on_sell_zone_tapped)
-	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
-	bottom.add_child(_sell_zone)
-
-	var actions := GridContainer.new()
-	actions.columns = 1
-	actions.add_theme_constant_override("h_separation", 10)
-	actions.add_theme_constant_override("v_separation", 10)
-	var reroll := _button(tr("UI_REROLL") % _run.reroll_price(), Vector2(200, 56), _on_reroll)
+	# Wax seals: reroll (gold), undo (grey), fight (big, red).
+	var seals := HBoxContainer.new()
+	seals.add_theme_constant_override("separation", 12)
+	seals.alignment = BoxContainer.ALIGNMENT_CENTER
+	var reroll := _seal(tr("UI_REROLL_SEAL") % _run.reroll_price(), 104, "gold", _on_reroll)
 	reroll.disabled = _run.gold < _run.reroll_price()
-	actions.add_child(reroll)
-	_undo_button = _button(tr("UI_UNDO"), Vector2(200, 56), _on_undo)
+	seals.add_child(reroll)
+	_undo_button = _seal(tr("UI_UNDO"), 104, "grey", _on_undo)
 	_undo_button.disabled = _undo.is_empty()
-	actions.add_child(_undo_button)
-	bottom.add_child(actions)
-
+	seals.add_child(_undo_button)
 	if _run.can_skip_boss():
-		var skip_boss := _button(tr("UI_SKIP_BOSS"), Vector2(200, 56), _on_skip_boss)
-		skip_boss.add_theme_font_size_override("font_size", 15)
-		actions.add_child(skip_boss)
-	var fight := _button(tr("UI_FIGHT"), Vector2(170, 124), _on_fight)
+		var skip_boss := _seal(tr("UI_SKIP_BOSS"), 104, "grey", _on_skip_boss)
+		skip_boss.add_theme_font_size_override("font_size", 13)
+		seals.add_child(skip_boss)
+	var fight := _seal(tr("UI_FIGHT"), 150, "red", _on_fight)
 	fight.add_theme_font_size_override("font_size", 30)
 	fight.disabled = _filled_slots() == 0
-	bottom.add_child(fight)
+	seals.add_child(fight)
+	bottom.add_child(_spacer(12))
+	bottom.add_child(seals)
 	column.add_child(bottom)
 	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+
+	# The sell zone only shows up while a figure or object is held or selected.
+	_sell_zone = SellZone.new()
+	_sell_zone.custom_minimum_size = Vector2(340, 120)
+	_sell_zone.set_auto_hide(true)
+	_sell_zone.tapped.connect(_on_sell_zone_tapped)
+	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
+	_screen.add_child(_sell_zone)
+	_sell_zone.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM, Control.PRESET_MODE_KEEP_SIZE)
+	_sell_zone.position.y -= 250
 
 
 ## The player's row as interactive slots (back on the left, front on the right).
@@ -896,14 +901,92 @@ func _on_strip_tapped(kind: String, index: int, card: ObjectCard) -> void:
 		_sell_zone.show_text(tr("UI_SELL_FOR") % (Items.relic_price(_db, _run.relics[index]) / 2), true)
 
 
+## Dark velvet behind the tarot spread.
+func _velvet() -> Control:
+	var gradient := Gradient.new()
+	gradient.set_color(0, Color("3a0e2a"))
+	gradient.set_color(1, Color("0e030a"))
+	var texture := GradientTexture2D.new()
+	texture.gradient = gradient
+	texture.fill = GradientTexture2D.FILL_RADIAL
+	texture.fill_from = Vector2(0.5, 0.6)
+	texture.fill_to = Vector2(1.1, 1.2)
+	var rect := TextureRect.new()
+	rect.texture = texture
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_SCALE
+	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return rect
+
+
+## A price as a gold (or soul-blue) coin above a card.
+func _coin_badge(text: String, soul: bool) -> Control:
+	var center := CenterContainer.new()
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.z_index = 1
+	if text == "":
+		center.custom_minimum_size = Vector2(0, 40)
+		return center
+	var coin := PanelContainer.new()
+	coin.custom_minimum_size = Vector2(40, 40)
+	coin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("8fd8ff") if soul else Color("e8b648")
+	style.border_color = Color("1e4a6a") if soul else Color("4a3208")
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(20)
+	coin.add_theme_stylebox_override("panel", style)
+	var label := _label(text, 20, Color("1a1208"))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	coin.add_child(label)
+	center.add_child(coin)
+	return center
+
+
+## A round wax-seal button.
+func _seal(text: String, diameter: float, color_kind: String, callback: Callable) -> Button:
+	var colors := {"gold": [Color("d8a63a"), Color("6a4a10"), Color("2a1808")],
+		"grey": [Color("4a4450"), Color("2a2630"), Color("e0dae6")],
+		"red": [Color("b02830"), Color("5a0c14"), Color("ffe8d0")]}
+	var c: Array = colors[color_kind]
+	var button := Button.new()
+	button.text = text
+	button.custom_minimum_size = Vector2(diameter, diameter)
+	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD
+	button.add_theme_font_size_override("font_size", 17)
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		var style := StyleBoxFlat.new()
+		style.bg_color = c[0].lightened(0.12) if state == "hover" else (c[0].darkened(0.15) if state == "pressed" else c[0])
+		if state == "disabled":
+			style.bg_color = c[0].darkened(0.55)
+		if state == "focus":
+			style.draw_center = false
+		style.border_color = c[1]
+		style.set_border_width_all(5)
+		style.set_corner_radius_all(int(diameter / 2.0))
+		style.shadow_color = Color(0, 0, 0, 0.45)
+		style.shadow_size = 4
+		style.shadow_offset = Vector2(0, 4)
+		button.add_theme_stylebox_override(state, style)
+	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		button.add_theme_color_override(key, c[2])
+	button.add_theme_color_override("font_disabled_color", Color(c[2], 0.4))
+	button.pressed.connect(callback)
+	return button
+
+
 ## The soul pack (paid in souls): two pacts, pick one.
 func _soul_pack_view() -> Control:
 	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", -6)
+	box.add_child(_coin_badge(str(_run.soul_pack_price()), true))
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.05, 0.08)
-	style.border_color = Emblem.COLORS["pact"]
+	style.bg_color = Color("12283a")
+	style.border_color = Color("8fd8ff")
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(10)
 	style.set_content_margin_all(4)
@@ -927,9 +1010,6 @@ func _soul_pack_view() -> Control:
 				_pack_pick = -1
 				_show_stage())
 	box.add_child(panel)
-	var price := _label(tr("UI_SOUL_PRICE") % _run.soul_pack_price(), 18, Emblem.COLORS["soul"])
-	price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(price)
 	if _run.pacts.size() >= RunState.MAX_PACTS:
 		panel.modulate.a = 0.4
 	return box
@@ -938,11 +1018,13 @@ func _soul_pack_view() -> Control:
 ## A pack in the shop: tap to buy and open it.
 func _pack_view(index: int) -> Control:
 	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", -6)
 	var pack: Dictionary = _run.packs[index]
+	box.add_child(_coin_badge(str(_run.pack_cost(pack)) if not pack.is_empty() else "", false))
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.16, 0.12, 0.08) if not pack.is_empty() else Color(1, 1, 1, 0.03)
+	style.bg_color = Color("2a0e3a") if not pack.is_empty() else Color(1, 1, 1, 0.03)
 	style.border_color = Palette.GOLD if not pack.is_empty() else Color(1, 1, 1, 0.15)
 	style.set_border_width_all(4 if pack.get("size", "") == "mega" else 2)
 	style.set_corner_radius_all(10)
@@ -968,13 +1050,9 @@ func _pack_view(index: int) -> Control:
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		inner.add_child(content)
 		panel.add_child(inner)
-		price_text = tr("UI_PRICE") % _run.pack_cost(pack)
 		panel.gui_input.connect(func(event: InputEvent) -> void:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 				_on_buy_pack(index))
-	var price := _label(price_text, 20, Palette.GOLD)
-	price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(price)
 	return box
 
 

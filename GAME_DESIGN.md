@@ -256,6 +256,18 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Rang:** zusätzlich über Umhang (Bube keiner bis König bodenlanger Hermelin) und Kronenhöhe
 - **Ausrüstung & Segen im Aussehen:** Nur besondere Gegenstände (selten, verflucht, einzigartig) und später besonders starke Segen verändern das Aussehen
 
+### Eigenes Design je Figur und Monster (Feedback 2026-11-17, umzusetzen in Kampfbühne Schritt 2)
+- Jede Figur, jedes Monster und jeder Boss bekommt ein **ganz eigenes Design passend zu Name und Fähigkeit**, in den Farben ihrer Tarot-Farbe und mit dem Material ihres Rangs
+- Beispiele des Spielers:
+  - **Goldgepanzerter:** goldene Rüstung, die **dicker oder dünner wird, je mehr oder weniger Gold** man besitzt (passend zu „Schild pro Gold“)
+  - **Henker:** Henkersaxt und schwarze Henkerskappe
+  - **König Midas:** goldene Hand und Krone
+- Gilt ebenso für Asse, Rezept-Figuren und Fusionsgestalten
+
+### Shop: Tarot-Legung (gewählt 2026-11-17)
+- Shop- und Planungsbildschirm im Stil **Tarot-Legung** (docs/shopvorlagen.html, Vorlage 2): Karten auf dunklem Samt, dein Team als Kartenreihe, Angebote als Legung, Packs als verdeckte Karten, Preise als Goldmünzen, Knöpfe als Wachssiegel (Neu würfeln gold, Rückgängig grau, Kampf groß und rot)
+- **Verkaufsfeld nur bei Bedarf (wie Balatro):** Es erscheint erst, wenn man eine Figur oder Karte gedrückt hält bzw. zieht; der freie Platz in der Mitte wird nicht dauerhaft belegt
+
 ## Phase 6 – Kampfsystem
 
 ### Runde 1 (beantwortet)
@@ -677,6 +689,7 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 - **Genaue Statusregeln und Zahlen** → Prototyp (Startpunkt steht in Phase 6)
 - **Verderben-Zahlen** → Prototyp (Startpunkt: ab Zug 15, verdoppelnd)
 - **Die 10 Meisterfähigkeiten** inhaltlich → Inhaltsrunden
+- **Meta-Währung & Lager (Idee des Spielers, für M7):** Eine Währung, die man in Runs verdient und im **Lager** ausgibt, um dort Packs u. Ä. zu öffnen und dauerhaften Fortschritt für die nächsten Runs zu bekommen
 - **Liste geheimer Rezepte und Anlässe** → Inhaltsphase
 - **Seed-Eingabe/Teilen und Daily-Challenge** → nach dem Vertical Slice
 
@@ -769,3 +782,5 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Kampfbühne Schritt 1 (v0.8.0): Seitenansicht-Pixelbühne (300×130, scharf hochskaliert) in der Schatzkammer mit Kerzen und Staub; alle Figuren und Gegner als Gliederpuppen im Stil Prunk & Reliquie (Material nach Rang, Edelstein nach Farbe, Waffe nach Farbe/Rang), Gegner als verderbte Bronze-Gestalten bzw. Geister, Bosse riesig; Nahkämpfer laufen zur Mitte, Fernkämpfer werfen; Treffer-Blitz und Rückstoß; Status am Körper (Feuer, Blut, Fluchschleier, Schildschale); Tod je Farbe; Reihen rücken nach; dünne Lebensbalken, Details per Antippen; Tempo 1×/2×/3× gespeichert + Überspringen; Testarena per ?arena=1 | Schritt 1 des Plans | – |
 | 2026-11-17 | v0.8.1: Angriff/Leben als Zahlen unter den Figuren, Status-Symbole mit Stapelzahl, Wiederbelebung (zusammensacken, Lichtstrahl, Aufstehen), Gegner als eigene Kreaturen, breite Kreaturen bekommen mehr Platz | Feedback zu Schritt 1 | – |
 | 2026-11-17 | Fünf Shop-Vorlagen (docs/shopvorlagen.html): 1 Händlertisch (Messingschilder, Wachssiegel-Kampf, Verkaufsfeuer), 2 Tarot-Legung (Karten auf Samt, Wachssiegel), 3 Schatzkammer-Regal (Nischen, Pixel-Steinknöpfe), 4 Reliquienschrein (Spitzbögen, Fensterrose als Kampf-Knopf), 5 Klar & Kompakt (Felder, große flache Knöpfe) | Auswahl für die Shop-Überarbeitung | – |
+| 2026-11-17 | Eigenes Design je Figur/Monster passend zu Name und Fähigkeit (Goldgepanzerter-Rüstung wächst mit Gold, Henker mit Axt und Kappe, Midas mit goldener Hand); Meta-Währung + Lager vorgemerkt für M7; Shop-Stil Tarot-Legung gewählt, Verkaufsfeld nur beim Gedrückthalten | Spieler-Feedback | Händlertisch, Schatzkammer-Regal, Reliquienschrein, Klar & Kompakt |
+| 2026-11-17 | v0.8.2: Shop im Stil Tarot-Legung umgesetzt: Samt-Hintergrund, Karten als Pergament-Tarotkarten mit animierter Pixel-Figur (Gegner auf dunklem Tuch), Preise als Gold-/Seelenmünzen über den Karten, Packs als verdeckte Karten, Wachssiegel-Knöpfe (Neu würfeln gold, Rückgängig grau, Kampf groß rot); Verkaufsfeld erscheint nur beim Ziehen/Gedrückthalten oder bei Auswahl einer Figur bzw. eines Relikts | Shop-Wahl des Spielers | – |

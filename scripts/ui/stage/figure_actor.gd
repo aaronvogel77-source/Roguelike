@@ -27,6 +27,8 @@ void fragment() {
 static var _shader: Shader
 
 var uid := 0
+## Portrait on a card: only the figure, no bars, numbers or effects.
+var portrait := false
 var is_enemy := false
 var definition: Dictionary = {}
 var snapshot: Dictionary = {}
@@ -304,6 +306,8 @@ func _death_style() -> String:
 # --- Effects drawn on the figure (pixel rectangles in stage space) ---
 
 func _draw_fx() -> void:
+	if portrait:
+		return
 	var statuses: Dictionary = snapshot.get("statuses", {})
 	var h := _height
 	if _revive_time >= 0.0:

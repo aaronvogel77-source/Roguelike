@@ -63,7 +63,8 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	body.mouse_filter = Control.MOUSE_FILTER_STOP
 	body.gui_input.connect(_on_body_input)
 	_style = StyleBoxFlat.new()
-	_style.bg_color = Palette.PANEL
+	# Tarot look: player figures on parchment, enemies on dark red cloth.
+	_style.bg_color = Color("2e1a1e") if enemy else Color("e6d6b4")
 	_style.border_color = base_border_color()
 	_style.set_border_width_all(5 if unit_definition.get("boss", false) else 3)
 	_style.set_corner_radius_all(10)
@@ -82,6 +83,7 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 		_style.set_content_margin(side, 5)
 	body.add_theme_stylebox_override("panel", _style)
 	add_child(body)
+	_add_portrait(initial, unit_definition, enemy)
 
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 2)
@@ -93,7 +95,10 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.add_theme_font_size_override("font_size", _fitting_font_size(name_label))
-	name_label.add_theme_color_override("font_color", Palette.PARCHMENT)
+	name_label.add_theme_color_override("font_color", Palette.PARCHMENT if enemy else Color("3a2414"))
+	# An outline keeps the name readable on top of the figure.
+	name_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85) if enemy else Color("e6d6b4"))
+	name_label.add_theme_constant_override("outline_size", 5)
 	name_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	name_label.max_lines_visible = 2
 	column.add_child(name_label)
@@ -122,6 +127,26 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	_health_label = _add_stat_badge(stats, "life")
 
 	apply_snapshot(initial)
+
+
+## The animated pixel figure in the middle of the card (drawn under the texts).
+func _add_portrait(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> void:
+	var actor := FigureActor.new()
+	actor.portrait = true
+	actor.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var shown := initial.duplicate()
+	shown["uid"] = 0
+	actor.setup(unit_definition, shown, enemy)
+	var height := maxf(actor.hit_rect().size.y - 26.0, 20.0)
+	var room := card_size.y - 62.0
+	var factor := clampf(room / height, 0.6, 1.5)
+	if factor > 1.0:
+		factor = maxf(1.0, floorf(factor * 4.0) / 4.0)
+	actor.scale = Vector2(factor, factor)
+	actor.position = Vector2(card_size.x / 2.0, card_size.y - 40.0)
+	actor.home_x = randf() * 10.0
+	body.add_child(actor)
+	body.move_child(actor, 0)
 
 
 func base_border_color() -> Color:

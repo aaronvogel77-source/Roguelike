@@ -517,3 +517,6 @@ NAME_CORE_ACE_OF_CUPS,Quelle,Fount
 NAME_STEM_ACE_OF_SWORDS,Wahrheits,Truth
 NAME_CORE_ACE_OF_SWORDS,Klinge,Blade
 UI_SKIP_BATTLE,Überspringen,Skip
+UI_REROLL_SEAL,"Neu würfeln
+%d Gold","Reroll
+%d gold"
