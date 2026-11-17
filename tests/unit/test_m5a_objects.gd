@@ -100,7 +100,7 @@ func test_beggars_bowl_pays_after_wins() -> void:
 	run.relics = ["beggars_bowl"]
 	run.row[0] = _fig("the_judge")
 	run.apply_battle_result({"victory": true, "gold_after": 0})
-	assert_eq(run.last_income["extra"], 1)
+	assert_eq(run.last_income["extra"], 2)
 
 
 # --- Tarot ---------------------------------------------------------------------------

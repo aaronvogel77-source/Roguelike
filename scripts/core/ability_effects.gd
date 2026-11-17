@@ -189,6 +189,15 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			owner.attack += bonus
 			battle.emit_update(owner)
 			return true
+		"shield_per_suit":
+			# Goldene Waage: shield per ally (itself included) of a suit.
+			var count := 0
+			for ally: BattleUnit in battle.living(owner.side):
+				if ally.has_suit("coins"):
+					count += 1
+			if count <= 0:
+				return false
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_SHIELD, int(value) * count)
 		"scales_gold":
 			# Goldene Waage: rearmost ally × (1 + value per full 5 gold).
 			var steps := battle.gold / 5

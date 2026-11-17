@@ -961,13 +961,13 @@ func battle_options() -> Dictionary:
 	if "golden_oath" in pacts:
 		options["gold_factor"] = 2
 	if "ash_pact" in pacts:
-		options["burn_factor_vs_enemy"] = 2.0
+		options["burn_factor_vs_enemy"] = 1.5
 		options["burn_spread"] = true
 	if "blade_oath" in pacts:
 		options["bleed_factor"] = 2
 		options["player_heal_factor"] = 0.75
 	if "return_pact" in pacts:
-		options["team_revives"] = 2
+		options["team_revives"] = 1
 	return options
 
 

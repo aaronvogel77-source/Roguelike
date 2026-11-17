@@ -76,7 +76,7 @@ static func _apply_pacts(run: RunState, team: Array) -> void:
 					entry["abilities"].append(_ability("on_ally_death", "self", "mult_attack", 1.1))
 				"vanguard_pact":
 					if i == 0:
-						entry["multipliers"].append(2.0)
+						entry["multipliers"].append(1.5)
 						var gather := _ability("battle_start", "self", "gather_shields", 1)
 						gather["late"] = true
 						entry["abilities"].append(gather)
@@ -140,6 +140,7 @@ static func _apply_relics(run: RunState, team: Array) -> void:
 					affected = "coins" in entry["suits"]
 					if affected:
 						entry["bonus_attack"] += 1
+						entry["bonus_health"] += 1
 				"blood_chalice":
 					affected = "cups" in entry["suits"]
 					if affected:
@@ -148,13 +149,15 @@ static func _apply_relics(run: RunState, team: Array) -> void:
 					affected = i == 0
 					if affected:
 						entry["multipliers"].append(1.5)
-				"death_bell":
-					entry["abilities"].append(_ability("on_ally_death", "self", "gain_attack", 1))
+				"death_bell":  # only the rearmost figure grows
+					affected = i == team.size() - 1
+					if affected:
+						entry["abilities"].append(_ability("on_ally_death", "self", "gain_attack", 1))
 				"royal_court":
 					affected = royals > 0
 					entry["bonus_health"] += royals
 				"eternal_ember":
-					affected = _applies(entry, "apply_burn")
+					affected = "wands" in entry["suits"] and _applies(entry, "apply_burn")
 				"whetstone":
 					affected = "swords" in entry["suits"] and _applies(entry, "apply_bleed")
 				_:
@@ -178,15 +181,15 @@ static func _applies(entry: Dictionary, effect: String) -> bool:
 static func status_bonus(run: RunState) -> Dictionary:
 	var bonus := {}
 	if "eternal_ember" in run.relics:
-		bonus["burn"] = {"all": 1}
+		bonus["burn"] = {"wands": 1}
 	if "whetstone" in run.relics:
-		bonus["bleed"] = {"swords": 1}
+		bonus["bleed"] = {"swords": 2}
 	return bonus
 
 
 ## Extra gold after a won battle: relics, pacts and equipment drawbacks.
 static func gold_after_win(run: RunState) -> int:
-	var extra := 1 if "beggars_bowl" in run.relics else 0
+	var extra := 2 if "beggars_bowl" in run.relics else 0
 	if "death_pact" in run.pacts:
 		extra -= 1
 	for figure in run.row:

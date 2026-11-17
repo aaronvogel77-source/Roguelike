@@ -106,7 +106,7 @@ func test_vanguard_pact_gathers_shields_to_the_front() -> void:
 	run.row = [_fig("the_judge"), _fig("coin_squire"), null]
 	run.pacts = ["vanguard_pact"]
 	var team := run.player_battle_team()
-	assert_has(team[0]["multipliers"], 2.0)
+	assert_has(team[0]["multipliers"], 1.5)
 	assert_eq(team[1]["bonus_attack"], -1, "rearmost -1 attack")
 	var result := BattleSimulator.simulate(team, [{"def": _db.enemies["beggar_ghost"], "level": 1}])
 	var gathered := false

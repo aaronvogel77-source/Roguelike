@@ -35,7 +35,7 @@ UI_YOUR_TEAM,Dein Team,Your team
 UI_ENEMIES,Gegner,Enemies
 "ABIL_COIN_SQUIRE","Kampfbeginn: erhält Schild {v}. Nach jedem Sieg: +1 Gold (Stufe 3: +2).","Battle start: gains {v} shield. After every win: +1 gold (level 3: +2)."
 ABIL_GOLD_ARMORED,Kampfbeginn: Schild 1 pro {v} Gold im Besitz.,Battle start: 1 shield per {v} gold you own.
-"ABIL_GOLDEN_SCALES","Wenn eine eigene Figur stirbt: Die hinterste eigene Figur erhält ×{v} Angriff. Kampfbeginn: Die hinterste Figur erhält ×0,05 Angriff je 5 Gold.","When an ally dies: your rearmost figure gains ×{v} attack. Battle start: your rearmost figure gains ×0.05 attack per 5 gold."
+"ABIL_GOLDEN_SCALES","Kampfbeginn: erhält Schild {v} je Münzfigur im Team. Die hinterste Figur erhält ×0,05 Angriff je 5 Gold.","Battle start: gains {v} shield per coin figure in the team. Your rearmost figure gains ×0.05 attack per 5 gold."
 ABIL_KING_MIDAS,Kampfbeginn: Angriff ×(1 + Gold / {v}).,Battle start: attack ×(1 + gold / {v}).
 ABIL_SPARK_BEARER,Nach dem Angriff: Das Ziel erhält Brennen {v}.,After attacking: the target gains {v} burn.
 ABIL_ENRAGED_ONE,Wenn getroffen: Der Angreifer erhält Brennen {v}.,When hit: the attacker gains {v} burn.
@@ -192,19 +192,19 @@ AFFIX_SELF_CURSE,Kampfbeginn: selbst Fluch {v},Battle start: {v} curse on itself
 AFFIX_SELF_BURN,Kampfbeginn: selbst Brennen {v},Battle start: {v} burn on itself
 AFFIX_GOLD_DRAIN,{v} Gold pro Kampf,{v} gold after every battle
 RELIC_WAR_CHEST,Kriegskasse,War Chest
-RELIC_WAR_CHEST_DESC,Münz-Figuren +1 Angriff.,Coin figures +1 attack.
+RELIC_WAR_CHEST_DESC,Münz-Figuren +1 Angriff und +1 Leben.,Coin figures +1 attack and +1 health.
 RELIC_ETERNAL_EMBER,Ewige Glut,Eternal Ember
-RELIC_ETERNAL_EMBER_DESC,"Brennen, das deine Figuren verursachen, +1 Stapel.",Burn your figures apply gets +1 stack.
+RELIC_ETERNAL_EMBER_DESC,"Brennen, das deine Stab-Figuren verursachen, +1 Stapel.",Burn your wand figures apply gets +1 stack.
 RELIC_BLOOD_CHALICE,Blutkelch,Blood Chalice
 RELIC_BLOOD_CHALICE_DESC,Kelch-Figuren heilen sich zu Zugbeginn um 1.,Cup figures heal 1 at turn start.
 RELIC_WHETSTONE,Wetzstein,Whetstone
-RELIC_WHETSTONE_DESC,Blutung deiner Schwert-Figuren +1 Stapel.,Bleed from your sword figures gets +1 stack.
+RELIC_WHETSTONE_DESC,Blutung deiner Schwert-Figuren +2 Stapel.,Bleed from your sword figures gets +2 stacks.
 RELIC_VANGUARD_BANNER,Vorhut-Banner,Vanguard Banner
 RELIC_VANGUARD_BANNER_DESC,"Deine vorderste Figur erhält ×1,5 Angriff.",Your front figure gains ×1.5 attack.
 RELIC_DEATH_BELL,Totenglocke,Death Bell
-RELIC_DEATH_BELL_DESC,Wenn eine eigene Figur stirbt: Alle anderen +1 Angriff.,When an ally dies: all others +1 attack.
+RELIC_DEATH_BELL_DESC,Wenn eine eigene Figur stirbt: Deine hinterste Figur +1 Angriff.,When an ally dies: your rearmost figure +1 attack.
 RELIC_BEGGARS_BOWL,Bettelschale,Beggar's Bowl
-RELIC_BEGGARS_BOWL_DESC,Nach jedem Sieg +1 Gold.,After every victory +1 gold.
+RELIC_BEGGARS_BOWL_DESC,Nach jedem Sieg +2 Gold.,After every victory +2 gold.
 RELIC_ROYAL_COURT,Hofstaat,Royal Court
 RELIC_ROYAL_COURT_DESC,"Je Königin, König oder Ass im Team: alle Figuren +1 Leben.","For each queen, king or ace in your team: all figures +1 health."
 TAROT_STRENGTH,Die Kraft,Strength
@@ -267,7 +267,7 @@ PACT_GOLDEN_OATH,Goldener Schwur,Golden Oath
 PACT_GOLDEN_OATH_DESC,Zinsen bis +10. Gold-Effekte zählen doppeltes Gold.,Interest up to +10. Gold effects count double gold.
 PACT_GOLDEN_OATH_COST,Neuwürfeln kostet +1.,Rerolls cost +1.
 PACT_ASH_PACT,Aschepakt,Ash Pact
-PACT_ASH_PACT_DESC,Brennen-Schaden an Gegnern ×2. Brennende Gegner geben ihr Brennen beim Tod weiter.,Burn damage to enemies ×2. Burning enemies pass their burn on when they die.
+PACT_ASH_PACT_DESC,Brennen-Schaden an Gegnern ×1,5. Brennende Gegner geben ihr Brennen beim Tod weiter.,Burn damage to enemies ×1.5. Burning enemies pass their burn on when they die.
 PACT_ASH_PACT_COST,Kampfbeginn: Deine vorderste Figur erhält Brennen 1.,Battle start: your front figure gains 1 burn.
 PACT_BLADE_OATH,Klingenschwur,Blade Oath
 PACT_BLADE_OATH_DESC,Blutung deiner Figuren: doppelt so viele Stapel.,Bleed from your figures: twice the stacks.
@@ -276,10 +276,10 @@ PACT_DEATH_PACT,Totenpakt,Death Pact
 PACT_DEATH_PACT_DESC,"Wenn eine eigene Figur stirbt: alle anderen ×1,1 Angriff (stapelt).",When an ally dies: all others ×1.1 attack (stacks).
 PACT_DEATH_PACT_COST,-1 Gold nach jedem Sieg.,-1 gold after every victory.
 PACT_RETURN_PACT,Wiederkehr-Pakt,Return Pact
-PACT_RETURN_PACT_DESC,Die ersten 2 gefallenen Figuren pro Kampf kehren mit halbem Leben zurück.,The first 2 fallen figures per battle return with half health.
+PACT_RETURN_PACT_DESC,Die erste gefallene Figur pro Kampf kehrt mit halbem Leben zurück.,The first fallen figure per battle returns with half health.
 PACT_RETURN_PACT_COST,Zinsen max. +3.,Interest max. +3.
 PACT_VANGUARD_PACT,Pakt der Vorhut,Vanguard Pact
-PACT_VANGUARD_PACT_DESC,Vorderste Figur ×2 Angriff und erhält alle Schilde des Teams.,Front figure ×2 attack and takes all shields of the team.
+PACT_VANGUARD_PACT_DESC,Vorderste Figur ×1,5 Angriff und erhält alle Schilde des Teams.,Front figure ×1.5 attack and takes all shields of the team.
 PACT_VANGUARD_PACT_COST,Hinterste Figur -1 Angriff.,Rearmost figure -1 attack.
 PACT_SOUL_HUNGER,Seelenhunger,Soul Hunger
 PACT_SOUL_HUNGER_DESC,"Pro getötetem Gegner: deine Figuren +1/+1 bis Kampfende, 25 % Chance auf +1 Seele.","Per enemy killed: your figures +1/+1 until the end of battle, 25 % chance of +1 soul."

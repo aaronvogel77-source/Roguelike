@@ -3,7 +3,7 @@
   "figures": [
     {"id": "coin_squire", "suit": "coins", "rank": "page", "attack": 1, "health": 4, "ability": {"trigger": "battle_start", "target": "self", "effect": "gain_shield", "values": [2, 4, 6]}, "win_gold": [1, 1, 2]},
     {"id": "gold_armored", "suit": "coins", "rank": "knight", "attack": 3, "health": 4, "ability": {"trigger": "battle_start", "target": "self", "effect": "shield_per_gold", "values": [4, 3, 2]}},
-    {"id": "golden_scales", "suit": "coins", "rank": "queen", "attack": 3, "health": 4, "ability": {"trigger": "on_ally_death", "target": "back_ally", "effect": "mult_attack", "values": [1.2, 1.35, 1.5]}, "extra_abilities": [{"trigger": "battle_start", "target": "back_ally", "effect": "scales_gold", "values": [0.05, 0.05, 0.05]}]},
+    {"id": "golden_scales", "suit": "coins", "rank": "queen", "attack": 3, "health": 4, "ability": {"trigger": "battle_start", "target": "self", "effect": "shield_per_suit", "values": [2, 3, 4], "suit": "coins"}, "extra_abilities": [{"trigger": "battle_start", "target": "back_ally", "effect": "scales_gold", "values": [0.05, 0.05, 0.05]}]},
     {"id": "king_midas", "suit": "coins", "rank": "king", "attack": 4, "health": 6, "ability": {"trigger": "battle_start", "target": "self", "effect": "midas", "values": [10, 7, 5]}},
     {"id": "spark_bearer", "suit": "wands", "rank": "page", "attack": 2, "health": 3, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "apply_burn", "values": [1, 2, 3]}},
     {"id": "enraged_one", "suit": "wands", "rank": "knight", "attack": 4, "health": 3, "ability": {"trigger": "on_hit", "target": "attacker", "effect": "apply_burn", "values": [1, 2, 3]}},

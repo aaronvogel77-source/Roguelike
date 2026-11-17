@@ -116,47 +116,77 @@ write('shield_breaker', {'b': '3a2210', 'B': '7a4a1c', 'c': 'b07434', 'C': 'e0b0
       'i': '6a6a78', 'I': 'a8a8b8', 'e': 'ff6a30', 'k': '0a0808', 'w': '3a2a1a', 'W': '8a6a3a', 's': '5a6a80',
       'S': 'a8b8cc'}, c, (21, 52), (35, -38))
 
-# --- Wundversiegler: plague surgeon with a long bird mask, needle and glowing thread, bandages
-c = C(36, 54)
-for y in range(18, 52):                      # leather coat
-    half = 5 + (y - 18) // 5
+# --- Wundversiegler: plague surgeon - wide-brimmed hat, conical leather beak with glass eyes,
+# long coat with a belt of vials, gloved hand raising a needle with a glowing thread, boots
+c = C(38, 54)
+L = 'lmMN'  # leather ramp (dark -> warm light)
+def coat_row(y, cx, half, ramp):
     for x in range(-half, half + 1):
-        if y > 48 and x % 3 == 0: continue
-        u = (x + half) / (2 * half)
-        c.put(14 + x, y, 'L' if u < .22 else 'l' if u > .75 else 'm')
-for y in range(22, 46, 5): c.line(9, y, 19, y + 2, 'W')            # bandages around the coat
-c.ell(14, 11, 6, 6, 'lmLM')                  # hood
-c.text(10, 1, ['  kkkkk ', ' kKKKKKk', 'kKMMMMMK'])                  # brimmed hat
-c.ell(16, 11, 3, 3, 'pPqQ')                  # mask
-c.text(15, 10, ['ee'])                       # glass eyes
-c.line(19, 12, 30, 16, 'q'); c.line(19, 13, 29, 17, 'p'); c.line(19, 14, 27, 17, 'P')  # long beak
-c.line(22, 26, 30, 22, 'm'); c.text(30, 20, ['QQ', 'QQ'])           # arm raising the needle
-c.line(32, 12, 32, 22, 'N'); c.put(32, 11, 'Q')                     # needle
-c.line(33, 22, 35, 30, 'y'); c.line(35, 30, 31, 36, 'y')            # glowing thread
-write('wound_sealer', {'l': '1a120c', 'L': '5a4028', 'm': '3a2818', 'M': '7a5a3a', 'k': '0c0806', 'K': '2a2018',
-      'p': '8a7e6a', 'P': 'b8ac94', 'q': 'd8ccb4', 'Q': 'f0e8d4', 'e': '7af0c0', 'W': 'd8d0c0', 'N': 'c0c8d4',
-      'y': '7af0c0'}, c, (14, 52), (31, -34))
+        u = (x + half) / max(1, 2 * half)
+        ch = ramp[2] if u < .2 else ramp[0] if u > .78 else ramp[1]
+        if (x + half) % 4 == 3 and y > 30: ch = ramp[0]           # vertical folds
+        c.put(cx + x, y, ch)
+for y in range(18, 46):                       # coat, slightly flared
+    coat_row(y, 15, 5 + (y - 18) // 5, L)
+c.rect(9, 30, 13, 2, 'k'); c.text(11, 29, ['v vv'])                 # belt with vials
+c.text(12, 31, ['V VV'])
+c.rect(10, 46, 4, 6, 'K'); c.rect(16, 46, 4, 6, 'K')                # legs
+c.rect(9, 51, 6, 2, 'k'); c.rect(15, 51, 6, 2, 'k')                 # boots
+c.ell(9, 24, 3, 7, L)                         # back arm (hanging, holding a satchel)
+c.text(4, 31, ['bbbb', 'bBBb', 'bbbb'])       # satchel of tools
+c.ell(15, 13, 5, 5, L)                        # hood around the mask
+c.ell(17, 13, 3, 4, 'pPqQ')                   # mask
+c.text(16, 11, ['ee'])                        # glass eye
+c.put(17, 11, 'E')
+for i in range(8):                            # conical beak, shaded
+    h = max(0, 2 - i // 3)
+    for dy in range(-h, h + 1):
+        c.put(20 + i, 14 + dy + i // 3, 'Q' if dy < 0 else 'P' if dy == 0 else 'p')
+c.text(7, 4, ['   kkkkkkk', '  kKKKKKKKk', 'kkKKMMMMMKKkk', 'kkkkkkkkkkkkk'])   # hat with wide brim
+c.ell(24, 22, 3, 2, L); c.line(21, 22, 26, 20, 'M')                # raised upper arm
+c.text(26, 17, ['gg', 'gG'])                  # glove
+c.line(28, 6, 28, 17, 'n'); c.put(28, 5, 'Q')                       # needle
+c.line(29, 17, 33, 24, 'y'); c.line(33, 24, 31, 31, 'y'); c.put(32, 32, 'Y')  # glowing thread
+write('wound_sealer', {'l': '1a120c', 'm': '3e2a18', 'M': '6a4a2c', 'N': '96703e', 'k': '0c0806', 'K': '2a2018',
+      'p': '8a7e6a', 'P': 'b8ac94', 'q': 'd8ccb4', 'Q': 'f0e8d4', 'e': '2a5a50', 'E': '9affe0', 'v': '3a7a5a',
+      'V': '7af0c0', 'b': '3a2410', 'B': '7a5a30', 'g': '5a4a3a', 'G': '8a7a6a', 'n': 'c0c8d4', 'y': '7af0c0',
+      'Y': 'd0fff0'}, c, (15, 53), (28, -38))
 
-# --- Tresorkardinal: obese cardinal in red and gold, tall mitre, holding a golden reliquary shield
+# --- Tresorkardinal: stout cardinal - tall mitre with lappets, red mozzetta over a red robe with
+# gold trim and folds, big jowly face, both hands holding a golden reliquary shield in front
 c = C(44, 58)
 r = 'rRsS'  # cardinal red ramp
-c.ell(20, 38, 13, 16, r)                     # huge robe
-c.rect(19, 24, 3, 32, 'G'); c.rect(19, 24, 1, 32, 'T')             # gold stole
-c.ell(20, 20, 7, 6, r)                       # shoulders / cape
-c.ell(20, 13, 5, 5, 'pPqQ')                  # fat face
-c.text(18, 12, ['k k'])
-c.text(19, 15, ['ppp'])                      # double chin
-c.tri((15, 9), (25, 9), (20, -1), 'a')       # mitre
-c.tri((16, 8), (24, 8), (20, 0), 'G')
-c.text(19, 3, [' T ', 'TGT', ' T '])        # jewel cross on the mitre
-c.box(30, 22, 12, 14, 'aAGT')                # reliquary shield
-c.text(33, 25, ['  T  ', ' TeT ', 'TeeeT', ' TeT ', '  T  '])     # glowing gem
-c.line(27, 28, 31, 28, 'R')                  # arm holding it
-for (x, y) in ((3, 20), (40, 12), (5, 40)):                          # small floating shield glyphs
+for y in range(28, 54):                       # robe, wide and heavy, with folds
+    half = 9 + (y - 28) // 3
+    for x in range(-half, half + 1):
+        u = (x + half) / (2 * half)
+        ch = r[2] if u < .2 else r[0] if u > .8 else r[1]
+        if (x + half) % 5 == 4: ch = r[0]
+        c.put(20 + x, y, ch)
+c.rect(18, 28, 4, 26, 'G'); c.rect(18, 28, 1, 26, 'T'); c.rect(21, 28, 1, 26, 'a')   # gold front band
+c.rect(11, 53, 19, 1, 'a'); c.rect(12, 54, 5, 2, 'k'); c.rect(23, 54, 5, 2, 'k')     # hem, shoes
+c.ell(20, 26, 11, 6, r)                       # mozzetta (shoulder cape)
+c.rect(10, 31, 21, 1, 'G')                    # gold edge of the cape
+c.ell(20, 16, 6, 6, 'pPqQ')                   # big face
+c.text(17, 15, ['k  k'])                      # eyes
+c.text(18, 14, ['P  P'])
+c.text(18, 19, ['pppp'])                      # jowls
+c.text(19, 18, ['ss'])                        # mouth
+c.tri((14, 11), (26, 11), (20, -1), 'A')      # mitre
+c.tri((15, 10), (25, 10), (20, 0), 'G')
+c.tri((15, 10), (19, 10), (19, 3), 'T')
+c.rect(14, 10, 13, 2, 'a')                    # mitre band
+c.text(19, 3, [' T ', 'TGT', ' T '])          # jewel cross
+c.line(14, 12, 13, 20, 'G'); c.line(26, 12, 27, 20, 'G')            # lappets
+c.ell(10, 34, 3, 5, r); c.ell(30, 34, 3, 5, r)                      # sleeves
+c.box(13, 34, 15, 15, 'aAGT')                 # reliquary shield held in front
+c.text(17, 37, ['  T  ', ' TeT ', 'TeeeT', ' TeT ', '  T  '])     # glowing gem
+c.text(12, 38, ['qq']); c.text(27, 38, ['qq'])                      # hands on the shield
+for (x, y) in ((3, 18), (37, 12), (2, 40), (39, 42)):               # floating shield glyphs
     c.text(x, y, ['eee', 'eTe', ' e '])
 write('vault_cardinal', {'r': '4a0c14', 'R': '8a1a24', 's': 'c03038', 'S': 'e86058', 'a': '6a4a10', 'A': 'a87c20',
       'G': 'dca42c', 'T': 'fff0a0', 'p': 'b08a74', 'P': 'd0a890', 'q': 'e8c4aa', 'Q': 'f8e0cc', 'k': '1a0c0a',
-      'e': '7af0ff'}, c, (20, 56), (33, -30))
+      'e': '7af0ff'}, c, (20, 56), (20, -24))
 
 # --- Uhrwerk-Wächter: brass automaton with a clock face in its chest, gears, a wind-up key on its back
 c = C(44, 56)
