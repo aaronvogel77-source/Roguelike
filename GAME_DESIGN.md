@@ -200,6 +200,10 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - **Meisterfähigkeiten:**
   - Münzen + Münzen – **Goldene Mauer:** Kampfbeginn: alle Verbündeten erhalten Schild 1 pro 5 Gold im Besitz (max. 5)
   - Stäbe + Stäbe – **Feuerspringen:** Stirbt ein brennender Gegner, springt sein Brennen **doppelt** auf den nächsten Gegner über (stärkere Form des Aschepakts)
+  - Kelche + Kelche – **Tränenmeer:** Der erste gefallene Verbündete pro Kampf kehrt mit vollem Leben zurück
+  - Schwerter + Schwerter – **Durchbohren:** Angriffe durchdringen Schild und verursachen Blutung 2
+  - Münzen + Stäbe – **Goldglut:** Kampfbeginn: alle Gegner erhalten Brennen 1 pro 10 Gold im Besitz (max. 3)
+  - Münzen + Kelche – **Überfluss:** Heilung über das volle Leben hinaus wird zu Schild
 
 ## Phase 6 – Kampfsystem
 
@@ -702,3 +706,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | M6 Runde 1: Fusionswerte zurückhaltend, Neustart auf Stufe 1, Fusion zählt für alle enthaltenen Farben, geheime Rezepte und Anlässe direkt in M6 | Luft nach oben, Mischteams stärken | Summe + Bonus; höchste Stufe übernehmen; Geheimes erst mit M7 |
 | 2026-11-17 | M6 Runde 2: Fusion = Höchstwerte + 1/1, Leveln nur über Kampfsiege/Magier, Altar 2/3/4 Seelen, Ritualkerze selten in Arcana-Packs (+ Schwarzmarkt) | Zurückhaltende Werte, Seelen knapp | Hauptfigur + halber Partner; Duplikate; 1/2/3 oder fix 3; nur Schwarzmarkt/Ereignisse |
 | 2026-11-17 | M6 Runde 3: 2 geheime Rezepte, Blutmond = doppelte Fusion, Meister Münzen+Münzen Goldene Mauer, Stäbe+Stäbe Feuerspringen | Entdeckerfreude, Spar-Build-Krönung, Feuer-Kettenreaktion | 1/4 Rezepte; Blutmond ohne Fähigkeitsgrenze/behält Stufe; Zinsmacht, Kriegskasse; Ewiges Feuer, Feuersturm |
+| 2026-11-17 | M6 Runde 4: Kelch+Kelch Tränenmeer, Schwert+Schwert Durchbohren, Münz+Stab Goldglut, Münz+Kelch Überfluss | Klare Identität je Kombination | Lebensquell, Seelenschlucker; Blutbad, Richtschwert; Brennende Münzen, Feuersold; Totengeld, Kirchenzehnt |
