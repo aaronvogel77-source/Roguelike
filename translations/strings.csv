@@ -753,3 +753,7 @@ HINT_FUSION_TITLE,Fusion,Fusion
 HINT_FUSION,"Wähle zwei Figuren: Sie verschmelzen zu einer stärkeren, die Fähigkeiten beider behält. Ab der dritten Fusion erwacht eine Meisterfähigkeit.","Choose two figures: they fuse into a stronger one that keeps both abilities. From the third fusion a master ability awakens."
 HINT_TREASURY_TITLE,Die Schatzkammer,The treasury
 HINT_TREASURY,Für jeden besiegten Boss darfst du einen Schatz wählen: ein Relikt, ein Ass-Pack oder Gold.,For every defeated boss you choose one treasure: a relic, an ace pack or gold.
+UI_SET_TEXT,Schriftgröße,Text size
+UI_MERGE_MAX,"Diese Figur hat schon Stufe 3 (Maximum) – die beiden haben nur den Platz getauscht.","This figure is already at level 3 (maximum) – the two only swapped places."
+UI_MERGE_FUSED,"Fusionen und Rezeptfiguren verschmelzen nicht mit Duplikaten – die beiden haben nur den Platz getauscht.","Fusions and recipe figures do not merge with duplicates – the two only swapped places."
+UI_ABILITY_LEVEL,(Stufe %s),(level %s)

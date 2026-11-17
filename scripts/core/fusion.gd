@@ -16,12 +16,19 @@ static func parts_of(run: RunState, figure: Dictionary) -> Dictionary:
 	if figure.has("fusion"):
 		var data: Dictionary = figure["fusion"].duplicate(true)
 		data["final"] = false
+		if not data.has("ability_levels"):  # fusions from older saves: their current level
+			var levels := {}
+			for id in data["abilities"]:
+				levels[id] = run.figure_level(figure)
+			data["ability_levels"] = levels
 		return data
 	var definition: Dictionary = run.db.figures[figure["def_id"]]
 	return {
 		"parts": [figure["def_id"]],
 		"suits": [run.figure_suit(figure)],
 		"abilities": [figure["def_id"]] if definition.has("ability") else [],
+		# Each kept ability keeps the level its figure had (Funkenträger III stays III).
+		"ability_levels": {figure["def_id"]: run.figure_level(figure)},
 		"attack": int(definition["attack"]),
 		"health": int(definition["health"]),
 		"final": definition.get("recipe", false),
@@ -88,6 +95,10 @@ static func preview(run: RunState, main_index: int, partner_index: int) -> Dicti
 	result["attack"] = maxi(int(a["attack"]), int(b["attack"])) + bonus
 	result["health"] = maxi(int(a["health"]), int(b["health"])) + bonus
 	result["candidates"] = a["abilities"] + b["abilities"]
+	var levels: Dictionary = a.get("ability_levels", {}).duplicate()
+	for id in b.get("ability_levels", {}):
+		levels[id] = maxi(int(levels.get(id, 1)), int(b["ability_levels"][id]))
+	result["ability_levels"] = levels
 	result["keep"] = mini(result["candidates"].size(), int(run.db.fusion["max_abilities"]))
 	var master := master_for(run.db, result["suits"]) if result["stage"] >= 3 else {}
 	result["master"] = master.get("id", "")
@@ -138,7 +149,8 @@ static func definition(db: ContentDb, figure: Dictionary) -> Dictionary:
 		"id": figure["def_id"], "rank": main["rank"], "suit": data["suits"][0],
 		"attack": int(data["attack"]), "health": int(data["health"]),
 		"fusion": {"stage": stage, "suits": data["suits"].duplicate(), "parts": data["parts"].duplicate(),
-			"abilities": data["abilities"].duplicate(), "master": master.get("id", ""), "partner": partner,
+			"abilities": data["abilities"].duplicate(),
+			"ability_levels": data.get("ability_levels", {}).duplicate(), "master": master.get("id", ""), "partner": partner,
 			"part_ranks": data["parts"].map(func(id: String) -> String: return String(db.figures[id]["rank"]))},
 		"fusion_name": TranslationServer.translate("NAME_STEM_" + partner.to_upper()) + "-"
 			+ TranslationServer.translate("NAME_CORE_" + String(figure["def_id"]).to_upper()),
@@ -148,11 +160,18 @@ static func definition(db: ContentDb, figure: Dictionary) -> Dictionary:
 ## Abilities a fused figure fights with: the kept ones plus the master ability.
 static func abilities(db: ContentDb, figure: Dictionary) -> Array:
 	var result: Array = []
+	var levels: Dictionary = figure["fusion"].get("ability_levels", {})
 	for id in figure["fusion"]["abilities"]:
 		var source: Dictionary = db.figures[id]
+		var own: Array = []
 		if source.has("ability"):
-			result.append(source["ability"])
-		result.append_array(source.get("extra_abilities", []))
+			own.append(source["ability"])
+		own.append_array(source.get("extra_abilities", []))
+		for ability in own:
+			var copy: Dictionary = ability.duplicate(true)
+			if levels.has(id):
+				copy["level"] = int(levels[id])  # the level its figure brought along
+			result.append(copy)
 	var data: Dictionary = figure["fusion"]
 	if data["parts"].size() - 1 >= 3:
 		result.append_array(master_for(db, data["suits"]).get("abilities", []))

@@ -267,3 +267,17 @@ func test_fusion_survives_serialization() -> void:
 	run.fuse(0, 1)
 	var copy := RunState.from_dict(_db, run.to_dict())
 	assert_eq(copy.row[0]["fusion"]["parts"], ["spark_bearer", "executioner"])
+
+
+func test_kept_abilities_keep_their_figures_level() -> void:
+	# A level-3 Spark Bearer (burn 3) fused with an Executioner: the fused figure
+	# starts at level 1, but the burn stays at its level-3 value.
+	var run := _run_with([_fig("spark_bearer", RunState.XP_FOR_LEVEL[2]), _fig("executioner"), null])
+	assert_true(run.fuse(0, 1))
+	var fused: Dictionary = run.row[0]
+	assert_eq(fused["fusion"]["ability_levels"]["spark_bearer"], 3)
+	assert_eq(fused["fusion"]["ability_levels"]["executioner"], 1)
+	var entry: Dictionary = run.player_battle_team()[0]
+	var unit := BattleSimulator.preview_unit(entry, BattleSimulator.PLAYER)
+	var burn: Dictionary = unit.abilities.filter(func(a: Dictionary) -> bool: return a["effect"] == "apply_burn" and a.get("level", 0) == 3)[0]
+	assert_eq(unit.level_value(burn), 3.0, "burn at level 3")

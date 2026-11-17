@@ -147,6 +147,17 @@ func _settings_extra(grid: GridContainer) -> void:
 	toggle.button_pressed = Hints.enabled
 	toggle.add_theme_font_size_override("font_size", 24)
 	toggle.toggled.connect(Hints.set_enabled)
+	var sizes := OptionButton.new()
+	for i in UiText.CHOICES.size():
+		sizes.add_item("%d %%" % int(round(UiText.CHOICES[i] * 100)), i)
+		if is_equal_approx(UiText.CHOICES[i], UiText.scale):
+			sizes.select(i)
+	sizes.add_theme_font_size_override("font_size", 24)
+	sizes.item_selected.connect(func(index: int) -> void:
+		UiText.set_scale(UiText.CHOICES[index])
+		_show("settings"))
+	grid.add_child(_label(tr("UI_SET_TEXT"), 26, Palette.PARCHMENT))
+	grid.add_child(sizes)
 	grid.add_child(_label(tr("UI_SET_HINTS"), 26, Palette.PARCHMENT))
 	grid.add_child(toggle)
 	grid.add_child(Control.new())

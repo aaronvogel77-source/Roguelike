@@ -25,6 +25,7 @@ var _battle_view: Control
 func _ready() -> void:
 	TranslationServer.set_locale("de")
 	Sound.setup(get_tree())
+	UiText.setup(get_tree())
 	theme = UiTheme.build()
 	_db = ContentDb.load_default()
 	var background := ColorRect.new()
@@ -253,6 +254,7 @@ func _on_fusion_finished(title: String, text: String) -> void:
 func _top_bar(title: String) -> HBoxContainer:
 	var bar := HBoxContainer.new()
 	bar.custom_minimum_size = Vector2(0, 60)
+	bar.set_meta("text_fixed", true)  # the bar is full: its numbers keep their size
 	bar.add_theme_constant_override("separation", 18)
 	bar.add_child(_spacer(8))
 	# Back to the main menu; the run is autosaved and can be continued.
@@ -960,9 +962,25 @@ func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 ## Dropped between two cards: the figure is inserted there. Visually the
 ## front is on the right, so "left of a card" means behind it.
 func _on_slot_inserted(data: Dictionary, slot: SlotView, side: String) -> void:
-	var after_index := slot.index if side == "left" else slot.index - 1
 	var from: int = data["index"]
+	# An equal figure always merges, wherever on the card it was dropped.
+	var source: Variant = _run.row[from] if from < _run.row.size() else null
+	var target: Variant = _run.row[slot.index] if slot.index < _run.row.size() else null
+	if source != null and target != null and source["def_id"] == target["def_id"]:
+		_move(from, slot.index)
+		return
+	var after_index := slot.index if side == "left" else slot.index - 1
 	_apply_action(func() -> bool: return _run.insert_between(from, after_index))
+
+
+func merging_possible(target: Dictionary, source: Dictionary) -> bool:
+	return not source.has("fusion") and not source.has("recipe_parts") and _run.can_merge_into(target, source["def_id"])
+
+
+func _merge_block_text(target: Dictionary, source: Dictionary) -> String:
+	if target.has("fusion") or source.has("fusion") or target.has("recipe_parts") or source.has("recipe_parts"):
+		return tr("UI_MERGE_FUSED")
+	return tr("UI_MERGE_MAX")
 
 
 ## Moves (or swaps) row figures; dropping onto an equal figure merges them.
@@ -972,6 +990,9 @@ func _move(from_index: int, to_index: int) -> void:
 	var merging: bool = target != null and source != null and target["def_id"] == source["def_id"]
 	var before_xp := int(target["xp"]) if merging else -1
 	Sound.play("card_slide")
+	# Explain why two equal figures do not merge.
+	if target != null and source != null and target["def_id"] == source["def_id"] and not merging_possible(target, source):
+		_detail_panel.show_message(tr(ContentDb.name_key(_db.figures[source["def_id"]])), _merge_block_text(target, source))
 	_apply_action(func() -> bool: return _run.move(from_index, to_index))
 	if merging and _run.row[from_index] == null:
 		_show_merge(_run.row[to_index]["def_id"], before_xp, int(_run.row[to_index]["xp"]))
@@ -982,7 +1003,10 @@ func _buy(shop_index: int, row_index: int) -> void:
 	var before: Variant = _run.row[row_index] if row_index < _run.row.size() else null
 	var before_xp := int(before["xp"]) if before != null else -1
 	var gold_before := _run.gold
+	var wanted: String = _run.shop[shop_index] if shop_index < _run.shop.size() else ""
 	_apply_action(func() -> bool: return _run.buy(shop_index, row_index))
+	if _run.gold == gold_before and before != null and before["def_id"] == wanted and not merging_possible(before, {"def_id": wanted}):
+		_detail_panel.show_message(tr(ContentDb.name_key(_db.figures[wanted])), _merge_block_text(before, {"def_id": wanted}).split("–")[0])
 	if _run.gold < gold_before:
 		Sound.play("card_place")
 		Sound.play("coins", -8.0)
@@ -1194,6 +1218,7 @@ func _seal(text: String, diameter: float, color_kind: String, callback: Callable
 		"red": [Color("b02830"), Color("5a0c14"), Color("ffe8d0")]}
 	var c: Array = colors[color_kind]
 	var button := Button.new()
+	button.set_meta("text_fixed", true)  # round seals have no room for bigger text
 	button.text = text
 	button.custom_minimum_size = Vector2(diameter, diameter)
 	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -1223,6 +1248,7 @@ func _seal(text: String, diameter: float, color_kind: String, callback: Callable
 ## The soul pack (paid in souls): two pacts, pick one.
 func _soul_pack_view() -> Control:
 	var box := VBoxContainer.new()
+	box.set_meta("text_fixed", true)  # card-sized panel
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	var style := StyleBoxFlat.new()
@@ -1259,6 +1285,7 @@ func _soul_pack_view() -> Control:
 ## A pack in the shop: tap to buy and open it.
 func _pack_view(index: int) -> Control:
 	var box := VBoxContainer.new()
+	box.set_meta("text_fixed", true)  # card-sized panel
 	var pack: Dictionary = _run.packs[index]
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE

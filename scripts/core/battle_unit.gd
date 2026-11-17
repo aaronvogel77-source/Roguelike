@@ -98,9 +98,11 @@ func effective_attack() -> int:
 
 
 ## Value of an ability for this unit's level (values hold one entry per level).
+## A fused ability carries the level its figure had ("level"), the unit's own otherwise.
 func level_value(ability: Dictionary) -> float:
 	var values: Array = ability["values"]
-	return float(values[mini(level, values.size()) - 1])
+	var at := maxi(level, int(ability.get("level", 1)))
+	return float(values[mini(at, values.size()) - 1])
 
 
 func snapshot() -> Dictionary:

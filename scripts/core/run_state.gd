@@ -995,7 +995,11 @@ func fuse(main_index: int, partner_index: int, keep: Array = []) -> bool:
 			if kept.size() != int(preview["keep"]):
 				return false
 		result = _new_figure(main["def_id"])
+		var kept_levels := {}
+		for id in kept:
+			kept_levels[id] = int(preview.get("ability_levels", {}).get(id, 1))
 		result["fusion"] = {"parts": preview["parts"], "suits": preview["suits"], "abilities": kept,
+			"ability_levels": kept_levels,
 			"attack": preview["attack"], "health": preview["health"],
 			"partner": row[partner_index]["def_id"]}
 	for key in ["equipment", "blessing", "bonus_attack", "bonus_health", "strength", "cursed"]:

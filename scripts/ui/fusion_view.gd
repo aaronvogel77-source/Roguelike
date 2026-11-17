@@ -197,7 +197,7 @@ func _secret_card() -> Control:
 	return panel
 
 
-## One toggle per ability that can stay (texts at level 1: the fusion restarts).
+## One toggle per ability that can stay, shown at the level its figure brings along.
 func _ability_list(preview: Dictionary) -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
@@ -207,7 +207,10 @@ func _ability_list(preview: Dictionary) -> Control:
 	for i in candidates.size():
 		var id: String = candidates[i]
 		var ability: Dictionary = _db.figures[id]["ability"]
-		var text := tr("ABIL_" + id.to_upper()).replace("{v}", NumberFormat.ability_value(ability["effect"], float(ability["values"][0])))
+		# Each ability keeps the level its figure had.
+		var at := clampi(int(preview.get("ability_levels", {}).get(id, 1)), 1, ability["values"].size())
+		var text := tr("ABIL_" + id.to_upper()).replace("{v}", NumberFormat.ability_value(ability["effect"], float(ability["values"][at - 1])))
+		text += " " + tr("UI_ABILITY_LEVEL") % ["", "I", "II", "III"][clampi(at, 1, 3)]
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(420, 0)
 		button.toggle_mode = true

@@ -173,9 +173,10 @@ func _fusion_lines(fusion: Dictionary, level: int) -> Array[String]:
 	for id in fusion["abilities"]:
 		var ability: Dictionary = figures[id]["ability"]
 		var values: Array = ability["values"]
-		var value: float = values[mini(level, values.size()) - 1]
+		var at := maxi(level, int(fusion.get("ability_levels", {}).get(id, 1)))
+		var value: float = values[mini(at, values.size()) - 1]
 		var text := tr("ABIL_" + String(id).to_upper()).replace("{v}", NumberFormat.ability_value(ability["effect"], value))
-		lines.append("[b]" + Keywords.colorize(text) + "[/b]")
+		lines.append("[b]" + Keywords.colorize(text) + "[/b] " + tr("UI_ABILITY_LEVEL") % ["", "I", "II", "III"][clampi(at, 1, 3)])
 	if fusion.get("master", "") != "":
 		var key := "MASTER_" + String(fusion["master"]).to_upper()
 		lines.append(Keywords.colorize(tr("UI_FUSION_MASTER") % ("[b]%s[/b]" % tr(key)) + " – " + tr(key + "_DESC")))
