@@ -17,21 +17,38 @@ const RARITY_ODDS := [[1, [85, 13, 2, 0]], [2, [75, 19, 5, 1]], [3, [65, 24, 8, 
 
 # --- Equipment --------------------------------------------------------------------
 
-static func roll_equipment(db: ContentDb, act: int, rng: RandomNumberGenerator, rarity_bonus: int = 0) -> Dictionary:
+## forced_rarity >= 0 skips the rarity roll (events that promise a rarity).
+## Every item follows AFFIX_COUNT for its rarity; affixes never repeat and
+## never duplicate the base effect (a torch gets no extra "burning hits").
+static func roll_equipment(db: ContentDb, act: int, rng: RandomNumberGenerator, rarity_bonus: int = 0,
+		forced_rarity: int = -1) -> Dictionary:
 	var bases: Array = db.items["equipment"]
 	var base: Dictionary = bases[rng.randi_range(0, bases.size() - 1)]
-	var rarity := mini(_roll_rarity(act, rng) + rarity_bonus, RARITY_CURSED)
+	var rarity := forced_rarity if forced_rarity >= 0 else mini(_roll_rarity(act, rng) + rarity_bonus, RARITY_CURSED)
 	var item := {"base": base["id"], "rarity": rarity, "affixes": [], "drawback": {}}
 	var pool: Array = db.items["affixes"].filter(func(a: Dictionary) -> bool:
-		return rarity >= int(a.get("min_rarity", 0)))
+		return rarity >= int(a.get("min_rarity", 0)) and not _same_effect(a, base["base"]))
 	for i in AFFIX_COUNT[rarity]:
-		var affix: Dictionary = pool[rng.randi_range(0, pool.size() - 1)]
+		if pool.is_empty():
+			break
+		var index := rng.randi_range(0, pool.size() - 1)
+		var affix: Dictionary = pool[index]
+		pool.remove_at(index)
 		item["affixes"].append({"id": affix["id"], "value": _roll_value(affix, rng)})
 	if rarity == RARITY_CURSED:
 		var drawbacks: Array = db.items["drawbacks"]
 		var drawback: Dictionary = drawbacks[rng.randi_range(0, drawbacks.size() - 1)]
 		item["drawback"] = {"id": drawback["id"], "value": _roll_value(drawback, rng)}
 	return item
+
+
+## Whether an affix does the same as an equipment base (same stat or same effect).
+static func _same_effect(affix: Dictionary, base: Dictionary) -> bool:
+	if affix.has("stat") and base.get("stat", "") == affix["stat"]:
+		return true
+	if affix.has("ability") and base.has("ability"):
+		return String(affix["ability"]).split("|")[2] == base["ability"]["effect"]
+	return false
 
 
 static func equipment_price(db: ContentDb, item: Dictionary) -> int:

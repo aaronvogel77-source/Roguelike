@@ -476,18 +476,14 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 			_place(event["figure"], targets[0])
 			final = false
 		"throw_3", "throw_6", "throw_10":
+			# 3 gold: magic item, 6: rare item, 10: pick one of three rare items.
 			var amount := int(option.split("_")[1])
 			gold -= amount
-			var item := Items.roll_equipment(db, act, rng.stream("events"), 0)
-			item["rarity"] = {3: Items.RARITY_MAGIC, 6: Items.RARITY_RARE, 10: Items.RARITY_RARE}[amount]
-			item["drawback"] = {}
-			var affix_count: int = {3: 1, 6: 2, 10: 3}[amount]
-			var pool: Array = db.items["affixes"]
-			item["affixes"] = []
-			for i in affix_count:
-				var affix: Dictionary = pool[rng.stream("events").randi_range(0, pool.size() - 1)]
-				item["affixes"].append({"id": affix["id"], "value": affix.get("max", affix.get("min", 1))})
-			open_pack = {"pack": {"type": "equipment", "size": "normal"}, "items": [{"kind": "equipment", "item": item}], "picks_left": 1}
+			var rarity: int = Items.RARITY_MAGIC if amount == 3 else Items.RARITY_RARE
+			var items: Array = []
+			for i in (3 if amount == 10 else 1):
+				items.append({"kind": "equipment", "item": Items.roll_equipment(db, act, rng.stream("events"), 0, rarity)})
+			open_pack = {"pack": {"type": "equipment", "size": "normal"}, "items": items, "picks_left": 1}
 		"drink":
 			var figure: Dictionary = row[targets[0]]
 			figure["bonus_attack"] = int(figure.get("bonus_attack", 0)) + 3

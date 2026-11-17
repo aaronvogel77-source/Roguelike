@@ -63,7 +63,11 @@ func test_black_market_offers_can_each_be_bought_once() -> void:
 func test_cursed_well_and_drinking() -> void:
 	var run := _event_run("cursed_well")
 	assert_true(run.resolve_event("throw_10"))
-	assert_eq(run.open_pack["items"][0]["item"]["affixes"].size(), 3)
+	# 10 gold: pick one of three rare items, each with exactly 2 affixes.
+	assert_eq(run.open_pack["items"].size(), 3)
+	for entry in run.open_pack["items"]:
+		assert_eq(entry["item"]["rarity"], Items.RARITY_RARE)
+		assert_eq(entry["item"]["affixes"].size(), 2)
 	var run2 := _event_run("cursed_well")
 	assert_true(run2.resolve_event("drink", [1]))
 	assert_true(run2.row[1]["cursed"])
@@ -116,3 +120,23 @@ func test_soul_trader_exchanges_repeatedly() -> void:
 	assert_eq(run.gold, 10)
 	assert_true(run.resolve_event("soul_to_gold"))
 	assert_eq(run.gold, 15)
+
+
+## Every rolled item follows its rarity: affix count, no repeats, nothing
+## that duplicates the base effect, drawbacks only on cursed items.
+func test_equipment_follows_rarity_rules() -> void:
+	var db := _db
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	for i in 600:
+		var item := Items.roll_equipment(db, 3, rng, 0, i % 4 if i < 400 else -1)
+		var rarity: int = item["rarity"]
+		assert_eq(item["affixes"].size(), Items.AFFIX_COUNT[rarity])
+		var ids: Array = item["affixes"].map(func(a: Dictionary) -> String: return a["id"])
+		for id in ids:
+			assert_eq(ids.count(id), 1, "no repeated affix")
+			var affix: Dictionary = Items._find(db.items["affixes"], id)
+			assert_true(rarity >= int(affix.get("min_rarity", 0)))
+			var base: Dictionary = Items._find(db.items["equipment"], item["base"])["base"]
+			assert_false(Items._same_effect(affix, base), "affix repeats base")
+		assert_eq(not item["drawback"].is_empty(), rarity == Items.RARITY_CURSED)

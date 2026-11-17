@@ -307,7 +307,7 @@ OPT_BUY_PACK,Mega-Pack kaufen: %s (6 Gold),Buy mega pack: %s (6 gold)
 OPT_BUY_FIGURE,%s zum halben Preis (%d Gold),%s at half price (%d gold)
 OPT_THROW_3,3 Gold hineinwerfen: magische Ausrüstung,Throw in 3 gold: magic equipment
 OPT_THROW_6,6 Gold hineinwerfen: seltene Ausrüstung,Throw in 6 gold: rare equipment
-OPT_THROW_10,10 Gold hineinwerfen: besonders starke Ausrüstung,Throw in 10 gold: exceptionally strong equipment
+OPT_THROW_10,10 Gold hineinwerfen: 1 von 3 seltenen Ausrüstungen,Throw in 10 gold: 1 of 3 rare equipment pieces
 OPT_DRINK,"Trinken: Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn Fluch 2)","Drink: a figure +3/+3 permanently, but cursed (battle start: 2 curse)"
 OPT_TAROT,Eine von 3 Tarot-Karten gratis,One of 3 tarot cards for free
 OPT_NO_BOSS_RULE,Die nächste Boss-Regel entfällt,The next boss rule is lifted
@@ -350,3 +350,48 @@ UI_MARKET_FIGURES,Figuren,Figures
 UI_BUY,Kaufen,Buy
 UI_SOLD,Verkauft,Sold
 UI_MARKET_FIGURE_HINT,Ziehe die Figur auf einen freien Platz oder tippe Kaufen und dann einen Platz an,"Drag the figure onto a free slot, or tap Buy and then a slot"
+OFFER_SACRIFICE_ONE,Einzelopfer,Single offering
+OFFER_SACRIFICE_ONE_DESC,Eine Figur geht. Du erhältst Seelen: Rangwert + Stufe.,One figure goes. You gain souls: rank value + level.
+OFFER_SACRIFICE_TWO,Doppelopfer,Double offering
+OFFER_SACRIFICE_TWO_DESC,Zwei Figuren gehen. Du wählst einen Pakt aus 3.,Two figures go. Choose a pact out of 3.
+OFFER_THROW_3,Kupfer,Copper
+OFFER_THROW_3_DESC,Eine magische Ausrüstung (1 Zusatz).,One magic equipment piece (1 bonus).
+OFFER_THROW_6,Silber,Silver
+OFFER_THROW_6_DESC,Eine seltene Ausrüstung (2 Zusätze).,One rare equipment piece (2 bonuses).
+OFFER_THROW_10,Gold,Gold
+OFFER_THROW_10_DESC,Du wählst 1 von 3 seltenen Ausrüstungen.,Choose 1 of 3 rare equipment pieces.
+OFFER_DRINK,Trinken,Drink
+OFFER_DRINK_DESC,"Eine Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn: Fluch 2).","A figure +3/+3 permanently, but cursed (battle start: 2 curse)."
+OFFER_TAROT,Die Karten,The cards
+OFFER_TAROT_DESC,Eine von 3 Tarot-Karten.,One of 3 tarot cards.
+OFFER_NO_BOSS_RULE,Die Prophezeiung,The prophecy
+OFFER_NO_BOSS_RULE_DESC,Die Regel des nächsten Bosses entfällt.,The next boss rule is lifted.
+OFFER_MEGA_ARCANA,Großes Blatt,Grand spread
+OFFER_MEGA_ARCANA_DESC,Ein Mega-Arcana-Pack.,A mega arcana pack.
+OFFER_ROB,Plündern,Plunder
+OFFER_ROB_DESC,+8 Gold und ein Relikt. Deine hinterste Figur bleibt im Grab.,+8 gold and a relic. Your rearmost figure stays in the grave.
+OFFER_SMALL,Wenig nehmen,Take a little
+OFFER_SMALL_DESC,"+3 Gold, ohne Risiko.","+3 gold, no risk."
+OFFER_DUPLICATE,Spiegelbild,Reflection
+OFFER_DUPLICATE_DESC,Eine Figur wird kopiert (Stufe 1). Braucht einen freien Platz.,Copies a figure (level 1). Needs a free slot.
+OFFER_TRAIN,Selbstbetrachtung,Reflection drill
+OFFER_TRAIN_DESC,Eine Figur erhält +1 Erfahrung.,A figure gains +1 experience.
+OFFER_FIGHT,Kämpfen,Fight
+OFFER_FIGHT_DESC,Sieg: ein Relikt und 2 Seelen. Niederlage: deine vorderste Figur fällt.,Win: a relic and 2 souls. Loss: your front figure falls.
+OFFER_SOUL_TO_GOLD,Seele verkaufen,Sell a soul
+OFFER_SOUL_TO_GOLD_DESC,Du erhältst 5 Gold.,You gain 5 gold.
+OFFER_GOLD_TO_SOUL,Seele kaufen,Buy a soul
+OFFER_GOLD_TO_SOUL_DESC,Du erhältst 1 Seele.,You gain 1 soul.
+OFFER_RETURN_PACT,Pakt lösen,Break a pact
+OFFER_RETURN_PACT_DESC,"Ein Pakt verschwindet, du erhältst 2 Seelen.","A pact vanishes, you gain 2 souls."
+COST_FREE,Gratis,Free
+COST_GOLD,%d Gold,%d gold
+COST_SOULS,%d Seelen,%d souls
+COST_SOUL,1 Seele,1 soul
+COST_FIGURE,1 Figur,1 figure
+COST_FIGURES,2 Figuren,2 figures
+COST_REAR_FIGURE,Hinterste Figur,Rearmost figure
+COST_PACT,1 Pakt,1 pact
+COST_RISK,Vorderste Figur riskieren,Risk your front figure
+UI_CHOOSE,Wählen,Choose
+UI_CHAMPION,Der Champion,The champion

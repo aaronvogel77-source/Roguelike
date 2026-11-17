@@ -1169,26 +1169,19 @@ func _build_event() -> void:
 	column.add_child(desc)
 
 	var options := VBoxContainer.new()
-	options.add_theme_constant_override("separation", 8)
-	if id == "black_market" and not event["resolved"]:
-		options.add_child(_market_coat())
-		options.add_child(_button(tr("OPT_LEAVE"), Vector2(400, 56), _on_event_option.bind("leave", 0)))
-	elif event["resolved"]:
+	options.add_theme_constant_override("separation", 10)
+	options.alignment = BoxContainer.ALIGNMENT_CENTER
+	if event["resolved"]:
 		var result_key: String = event.get("result", "")
 		var result := _label(tr("RESULT_" + result_key.to_upper()) if result_key != "" else tr("UI_EVENT_DONE"), 24, Palette.GOLD)
 		result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		options.add_child(result)
-		options.add_child(_button(tr("UI_CONTINUE"), Vector2(560, 60), _on_event_option.bind("leave", 0)))
+		options.add_child(_centered(_button(tr("UI_CONTINUE"), Vector2(560, 60), _on_event_option.bind("leave", 0))))
 	else:
-		for entry in EVENT_OPTIONS[id]:
-			var option: String = entry[0]
-			var button := _button(_event_option_text(option), Vector2(640, 56), _on_event_option.bind(option, entry[1]))
-			button.add_theme_font_size_override("font_size", 19)
-			var block := _run.event_option_block(option, [])
-			button.disabled = block == "cost" or block == "done"
-			if _event_option == option:
-				button.add_theme_color_override("font_color", Palette.GOLD)
-			options.add_child(button)
+		options.add_child(_market_coat() if id == "black_market" else _event_scene(id))
+		var exit_option := "decline" if id == "duel" else ("small" if id == "grave_robber" else "leave")
+		if id != "grave_robber":
+			options.add_child(_centered(_button(tr("OPT_" + exit_option.to_upper()), Vector2(400, 56), _on_event_option.bind(exit_option, 0))))
 	var options_center := CenterContainer.new()
 	options_center.add_child(options)
 	column.add_child(options_center)
@@ -1218,17 +1211,117 @@ func _build_event() -> void:
 	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
 
 
-## The trader's coat: three compartments (relics, packs, figures) with cards,
-## descriptions, prices and a buy button each.
-func _market_coat() -> Control:
-	var coat := PanelContainer.new()
+## Look of each event scene: panel colors and the big emblem on the left.
+const EVENT_SCENES := {
+	"altar": {"bg": Color(0.12, 0.05, 0.05), "border": Color(0.6, 0.15, 0.15), "emblem": "skull"},
+	"cursed_well": {"bg": Color(0.08, 0.05, 0.12), "border": Color(0.55, 0.3, 0.75), "emblem": "curse"},
+	"fortune_teller": {"bg": Color(0.09, 0.06, 0.14), "border": Color(0.75, 0.6, 0.95), "emblem": "tarot"},
+	"grave_robber": {"bg": Color(0.09, 0.08, 0.06), "border": Color(0.5, 0.45, 0.35), "emblem": "skull"},
+	"mirror": {"bg": Color(0.06, 0.09, 0.13), "border": Color(0.65, 0.78, 0.95), "emblem": "star"},
+	"duel": {"bg": Color(0.1, 0.08, 0.08), "border": Color(0.8, 0.8, 0.85), "emblem": "sword"},
+	"soul_trader": {"bg": Color(0.05, 0.08, 0.12), "border": Color(0.5, 0.8, 1.0), "emblem": "soul"},
+}
+## Emblem shown on each offer.
+const OFFER_EMBLEMS := {
+	"sacrifice_one": "soul", "sacrifice_two": "pact", "throw_3": "pack", "throw_6": "pack",
+	"throw_10": "pack", "drink": "curse", "tarot": "tarot", "no_boss_rule": "enemy",
+	"mega_arcana": "pack", "rob": "relic", "small": "coin", "duplicate": "star", "train": "level",
+	"fight": "sword", "soul_to_gold": "coin", "gold_to_soul": "soul", "return_pact": "pact",
+}
+
+
+## An event as its own scene: a themed panel with a big emblem and one
+## compartment per offer (emblem, name, description, cost, choose button).
+func _event_scene(id: String) -> Control:
+	var look: Dictionary = EVENT_SCENES.get(id, EVENT_SCENES["altar"])
+	var panel := _scene_panel(look["bg"], look["border"])
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	panel.add_child(row)
+	# Left: the scene's emblem (for a duel: the champion's team).
+	if id == "duel":
+		var champion := VBoxContainer.new()
+		champion.alignment = BoxContainer.ALIGNMENT_CENTER
+		var heading := _label(tr("UI_CHAMPION"), 20, look["border"])
+		heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		champion.add_child(heading)
+		var cards := HBoxContainer.new()
+		cards.add_theme_constant_override("separation", 6)
+		for unit in _run.event.get("team", []):
+			var card := UnitCard.for_definition(_db.enemies[unit["def_id"]], int(unit["level"]), true)
+			card.tapped.connect(_detail_panel.show_card)
+			cards.add_child(card)
+		champion.add_child(_scaled(cards, 0.75))
+		row.add_child(champion)
+	else:
+		var emblem := Emblem.create(look["emblem"], 130)
+		emblem.color = look["border"]
+		var holder := CenterContainer.new()
+		holder.custom_minimum_size = Vector2(170, 0)
+		holder.add_child(emblem)
+		row.add_child(holder)
+	for entry in EVENT_OPTIONS[id]:
+		var option: String = entry[0]
+		if option in ["leave", "decline", "small"] and id != "grave_robber":
+			continue
+		if option == "leave":
+			continue
+		var visual := Emblem.create(OFFER_EMBLEMS.get(option, "star"), 64)
+		if option.begins_with("throw_"):
+			visual.color = ItemText.RARITY_COLORS[Items.RARITY_MAGIC if option == "throw_3" else Items.RARITY_RARE]
+		var key := "OFFER_" + option.to_upper()
+		row.add_child(_compartment(tr(key), visual, _offer_cost(option), option, tr(key + "_DESC"), look["border"]))
+	return panel
+
+
+func _scene_panel(bg: Color, border: Color) -> PanelContainer:
+	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.13, 0.08, 0.06)
-	style.border_color = Palette.GOLD.darkened(0.3)
+	style.bg_color = bg
+	style.border_color = border.darkened(0.3)
 	style.set_border_width_all(3)
 	style.set_corner_radius_all(18)
 	style.set_content_margin_all(14)
-	coat.add_theme_stylebox_override("panel", style)
+	style.shadow_color = Color(border, 0.25)
+	style.shadow_size = 12
+	panel.add_theme_stylebox_override("panel", style)
+	return panel
+
+
+## What an offer costs, as shown under it.
+func _offer_cost(option: String) -> String:
+	match option:
+		"sacrifice_one", "drink", "train":
+			return tr("COST_FIGURE") if option == "sacrifice_one" else tr("COST_FREE")
+		"sacrifice_two":
+			return tr("COST_FIGURES")
+		"throw_3", "throw_6", "throw_10":
+			return tr("COST_GOLD") % int(option.split("_")[1])
+		"mega_arcana", "soul_to_gold":
+			return tr("COST_SOUL")
+		"duplicate":
+			return tr("COST_SOULS") % 2
+		"gold_to_soul":
+			return tr("COST_GOLD") % 5
+		"rob":
+			return tr("COST_REAR_FIGURE")
+		"return_pact":
+			return tr("COST_PACT")
+		"fight":
+			return tr("COST_RISK")
+	return tr("COST_FREE")
+
+
+func _centered(control: Control) -> CenterContainer:
+	var center := CenterContainer.new()
+	center.add_child(control)
+	return center
+
+
+## The trader's coat: three compartments (relics, packs, figures) with cards,
+## descriptions, prices and a buy button each.
+func _market_coat() -> Control:
+	var coat := _scene_panel(Color(0.13, 0.08, 0.06), Palette.GOLD)
 	var compartments := HBoxContainer.new()
 	compartments.add_theme_constant_override("separation", 14)
 	coat.add_child(compartments)
@@ -1237,7 +1330,7 @@ func _market_coat() -> Control:
 	if event.get("relic", "") != "":
 		var relic_card := ObjectCard.create(_db, {"kind": "relic", "id": event["relic"]}, Vector2(170, 210))
 		relic_card.tapped.connect(_detail_panel.show_object)
-		compartments.add_child(_compartment(tr("UI_MARKET_RELICS"), relic_card, 4, "buy_relic"))
+		compartments.add_child(_compartment(tr("UI_MARKET_RELICS"), relic_card, tr("UI_PRICE") % 4, "buy_relic"))
 	# Pack
 	var pack := {"type": event["pack_type"], "size": "mega"}
 	var pack_box := VBoxContainer.new()
@@ -1253,7 +1346,7 @@ func _market_coat() -> Control:
 	var pack_info := _label(tr("UI_PACK_CONTENT") % [Items.pack_choice_count(_db, pack), Items.pack_picks(_db, pack)], 14, Palette.MUTED)
 	pack_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	pack_box.add_child(pack_info)
-	compartments.add_child(_compartment(tr("UI_MARKET_PACKS"), pack_box, 6, "buy_pack"))
+	compartments.add_child(_compartment(tr("UI_MARKET_PACKS"), pack_box, tr("UI_PRICE") % 6, "buy_pack"))
 	# Figure (half price): drag onto a free slot or buy + tap a slot.
 	var def_id: String = event["figure"]
 	var figure_card := UnitCard.for_definition(_db.figures[def_id], 1, false)
@@ -1261,19 +1354,24 @@ func _market_coat() -> Control:
 	var figure_visual := _scaled(_with_rarity(figure_card, def_id), 1.3)
 	if not "buy_figure" in event["used"]:
 		_make_draggable(figure_visual, {"kind": "market_figure"})
-	compartments.add_child(_compartment(tr("UI_MARKET_FIGURES"), figure_visual, _run.price_of(def_id) / 2, "buy_figure"))
+	compartments.add_child(_compartment(tr("UI_MARKET_FIGURES"), figure_visual, tr("UI_PRICE") % (_run.price_of(def_id) / 2), "buy_figure"))
 	return coat
 
 
-func _compartment(title: String, visual: Control, price: int, option: String) -> Control:
+## One offer of an event scene (market: buy button; other events: choose).
+func _compartment(title: String, visual: Control, cost_text: String, option: String,
+		desc: String = "", accent: Color = Color(0.45, 0.32, 0.18)) -> Control:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.05, 0.04)
-	style.border_color = Color(0.45, 0.32, 0.18)
+	style.bg_color = Color(0.05, 0.04, 0.05, 0.85)
+	style.border_color = accent.darkened(0.2)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(12)
 	style.set_content_margin_all(10)
 	panel.add_theme_stylebox_override("panel", style)
+	var market := option in ["buy_relic", "buy_pack", "buy_figure"]
+	if not market:
+		panel.custom_minimum_size = Vector2(230, 0)
 	var box := VBoxContainer.new()
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_theme_constant_override("separation", 8)
@@ -1284,17 +1382,30 @@ func _compartment(title: String, visual: Control, price: int, option: String) ->
 	var center := CenterContainer.new()
 	center.add_child(visual)
 	box.add_child(center)
+	if desc != "":
+		var text := RichTextLabel.new()
+		text.bbcode_enabled = true
+		text.fit_content = true
+		text.scroll_active = false
+		text.custom_minimum_size = Vector2(210, 0)
+		text.add_theme_font_size_override("normal_font_size", 16)
+		text.add_theme_color_override("default_color", Palette.PARCHMENT)
+		text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		text.text = "[center]" + Keywords.colorize(desc) + "[/center]"
+		box.add_child(text)
 	var sold: bool = option in _run.event["used"]
 	if sold:
 		visual.modulate.a = 0.3
-	var price_label := _label(tr("UI_SOLD") if sold else tr("UI_PRICE") % price, 20, Palette.GOLD)
+	var price_label := _label(tr("UI_SOLD") if sold else cost_text, 18, Palette.GOLD)
 	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(price_label)
-	var buy := _button(tr("UI_BUY"), Vector2(150, 50), _on_event_option.bind(option, 1 if option == "buy_figure" else 0))
+	var buy := _button(tr("UI_BUY") if market else tr("UI_CHOOSE"), Vector2(150, 50),
+		_on_event_option.bind(option, 1 if option == "buy_figure" else _needed_targets(option)))
 	var block := _run.event_option_block(option, [])
 	buy.disabled = sold or block == "cost" or block == "done"
 	if _event_option == option:
 		buy.add_theme_color_override("font_color", Palette.GOLD)
+		style.border_color = Palette.GOLD
 	box.add_child(buy)
 	return panel
 
