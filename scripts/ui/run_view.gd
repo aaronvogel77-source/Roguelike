@@ -53,6 +53,8 @@ func _ready() -> void:
 
 func _show_menu() -> void:
 	_run = null
+	if is_instance_valid(_debug_panel):
+		_debug_panel.queue_free()
 	_detail_panel.hide()
 	for child in _screen.get_children():
 		child.queue_free()
@@ -215,19 +217,49 @@ func _top_bar(title: String) -> HBoxContainer:
 	glut.add_child(_label(tr("UI_GLUT_SHORT") % _meta.glut, 20, Color("ffb060")))
 	bar.add_child(glut)
 	if _url_flag("debug"):
-		# Debug tools in a compact row (small font).
-		var tools := HBoxContainer.new()
-		tools.add_theme_constant_override("separation", 4)
-		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion], ["+50 Glut", _debug_glut]]
-		if _run.stage == RunState.Stage.PLANNING:
-			entries.insert(2, ["Legende", _debug_legend])
-		for entry in entries:
-			var button := _button(entry[0], Vector2(0, 40), entry[1])
-			button.add_theme_font_size_override("font_size", 13)
-			tools.add_child(button)
-		bar.add_child(tools)
+		# One "Debug" button opens the tools as a column (the bar is full).
+		var toggle := _button("Debug", Vector2(0, 44), func() -> void:
+			_debug_open = not _debug_open
+			_show_debug_tools())
+		toggle.add_theme_font_size_override("font_size", 16)
+		bar.add_child(toggle)
+		_show_debug_tools.call_deferred()
 	bar.add_child(_spacer(8))
 	return bar
+
+
+var _debug_open := false
+var _debug_panel: Control
+
+
+## The debug tools as a column at the top right (stays open across screens).
+func _show_debug_tools() -> void:
+	if is_instance_valid(_debug_panel):
+		_debug_panel.queue_free()
+	if not _debug_open or _run == null:
+		return
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.05, 0.08, 0.95)
+	style.border_color = Palette.GOLD
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(6)
+	panel.add_theme_stylebox_override("panel", style)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 4)
+	panel.add_child(column)
+	var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion], ["+50 Glut", _debug_glut]]
+	if _run.stage == RunState.Stage.PLANNING:
+		entries.insert(2, ["Legende", _debug_legend])
+	for entry in entries:
+		var button := _button(entry[0], Vector2(170, 40), entry[1])
+		button.add_theme_font_size_override("font_size", 16)
+		column.add_child(button)
+	add_child(panel)
+	panel.reset_size()
+	panel.position = Vector2(get_viewport_rect().size.x - panel.size.x - 12, 64)
+	_debug_panel = panel
 
 
 # --- Debug tools ("?debug=1" in the address) ---------------------------------------
@@ -904,6 +936,8 @@ func _on_reroll() -> void:
 func _on_fight() -> void:
 	_undo.clear()
 	_detail_panel.hide()
+	if is_instance_valid(_debug_panel):
+		_debug_panel.queue_free()  # the debug column must not cover the battle
 	_battle_view = BattleScene.instantiate()
 	_battle_view.sandbox = false
 	add_child(_battle_view)
@@ -1704,6 +1738,8 @@ func _on_event_row_tapped(slot: SlotView) -> void:
 
 func _play_duel() -> void:
 	_detail_panel.hide()
+	if is_instance_valid(_debug_panel):
+		_debug_panel.queue_free()  # the debug column must not cover the battle
 	_battle_view = BattleScene.instantiate()
 	_battle_view.sandbox = false
 	add_child(_battle_view)
