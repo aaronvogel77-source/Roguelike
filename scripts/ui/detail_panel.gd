@@ -119,6 +119,9 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 	var figure: Dictionary = extras.get("figure", {})
 	if not figure.is_empty():
 		# Every category in its own color; equipment also shows its rarity.
+		if figure.has("xp"):  # own row figures: how many object slots are used
+			lines.append("[color=#%s]%s[/color]" % [Palette.MUTED.to_html(false),
+				tr("UI_OBJECT_SLOTS") % [RunState.objects_on(figure), RunState.slots_for(figure)]])
 		if figure.has("equipment"):
 			var item: Dictionary = figure["equipment"]
 			var rarity := int(item["rarity"])

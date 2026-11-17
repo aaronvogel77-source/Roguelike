@@ -330,7 +330,7 @@ RESULT_DUEL_LOST,Niederlage – deine vorderste Figur ist gefallen.,Defeat – y
 PACK_SOUL,Seelen-Pack,Soul Pack
 UI_DEBUG_EVENT,Ereignis,Event
 UI_PACTS_SOULS,Seelen,souls
-UI_OBJECT_LIMIT,Max. %d Objekte pro Figur,Max. %d objects per figure
+UI_OBJECT_LIMIT,"Kein freier Objekt-Platz. Neue Figuren haben 1 Platz, ab Stufe 3 sind es 2, jede Fusion gibt +1 (max. 3).","No free object slot. New figures have 1 slot, 2 from level 3, +1 per fusion (max 3)."
 UI_NEEDS_FREE_SLOT,Braucht einen freien Platz oder eine gleiche Figur (unter Stufe 3). Verkaufe oder verschmelze zuerst eine Figur.,Needs a free slot or an equal figure (below level 3). Sell or merge a figure first.
 UI_COMPARE_TITLE,Ausrüstung für %s tauschen?,Swap equipment on %s?
 UI_COMPARE_OLD,Ausgerüstet,Equipped
@@ -636,3 +636,4 @@ SPECIAL_SKIN_SUN_MIDAS,Sonnenaufgang,Sunrise
 UI_RARITY_LEGENDARY_SKIN,Legendär,Legendary
 UI_GLUT_SHORT,Glut: %d,Embers: %d
 UI_MENU_BUTTON,Menü,Menu
+UI_OBJECT_SLOTS,"Objekt-Plätze: %d / %d (1 · ab Stufe 3: 2 · je Fusion +1, max. 3)","Object slots: %d / %d (1 · from level 3: 2 · +1 per fusion, max 3)"

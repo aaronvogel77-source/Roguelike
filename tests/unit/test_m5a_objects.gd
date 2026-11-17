@@ -106,6 +106,7 @@ func test_beggars_bowl_pays_after_wins() -> void:
 func test_tarot_cards() -> void:
 	var run := _planning_run()
 	run.row[0] = _fig("coin_squire")
+	run.row[0]["xp"] = RunState.XP_FOR_LEVEL[2]  # level 3: two object slots
 	run.tarots = ["strength", "sun"]
 	assert_true(run.use_tarot(0, 0))
 	assert_eq(run.row[0]["bonus_attack"], 2)
@@ -267,17 +268,24 @@ func test_team_entries_list_what_modifies_a_figure() -> void:
 	assert_does_not_have(team[1]["sources"], "beggars_bowl", "gold relics affect no figure")
 
 
-func test_max_two_objects_per_figure() -> void:
+func test_object_slots_grow_with_level_and_fusion() -> void:
 	var run := _planning_run()
 	run.row[0] = _fig("coin_squire")
 	run.tarots = ["strength", "strength"]
 	assert_true(run.use_tarot(0, 0))
-	assert_true(run.use_tarot(0, 0))
-	run.tarots = ["sun"]
-	assert_false(run.use_tarot(0, 0), "third object blocked")
+	assert_false(run.use_tarot(0, 0), "a new figure has one slot")
 	var blade := {"base": "blade", "rarity": 0, "affixes": [], "drawback": {}}
 	run.open_pack = {"pack": {"type": "equipment", "size": "normal"}, "picks_left": 1, "items": [{"kind": "equipment", "item": blade}]}
 	assert_false(run.can_take_pack_item(0, 0))
+	run.row[0]["xp"] = RunState.XP_FOR_LEVEL[2]
+	assert_eq(run.object_limit(run.row[0]), 2, "level 3: two slots")
+	assert_true(run.can_take_pack_item(0, 0))
+	var fused := {"uid": 7, "def_id": "coin_squire", "xp": 0, "fusion": {"parts": ["coin_squire", "spark_bearer"],
+		"suits": ["coins", "wands"], "abilities": [], "attack": 3, "health": 3}}
+	assert_eq(run.object_limit(fused), 2, "F1 at level 1: 1 + 1")
+	fused["fusion"]["parts"] = ["coin_squire", "spark_bearer", "altar_server", "executioner"]
+	fused["xp"] = RunState.XP_FOR_LEVEL[2]
+	assert_eq(run.object_limit(fused), 3, "capped at three")
 
 
 func test_reroll_keeps_the_packs() -> void:

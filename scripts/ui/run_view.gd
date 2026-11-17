@@ -834,7 +834,7 @@ func _on_slot_tapped(slot: SlotView) -> void:
 		else:
 			_clear_selection()
 			if slot.card != null:
-				_detail_panel.show_message(ItemText.tarot_name(card_id), tr("UI_OBJECT_LIMIT") % RunState.MAX_OBJECTS)
+				_detail_panel.show_message(ItemText.tarot_name(card_id), tr("UI_OBJECT_LIMIT"))
 		return
 	if _selected.get("kind") == "shop":
 		_buy(_selected["index"], slot.index)
@@ -1322,7 +1322,7 @@ func _on_pack_target(slot: SlotView) -> void:
 		_pack_pick = -1
 		_show_stage()
 	elif entry["kind"] == "equipment" and figure != null:
-		_detail_panel.show_message(ItemText.equipment_name(entry["item"]), tr("UI_OBJECT_LIMIT") % RunState.MAX_OBJECTS)
+		_detail_panel.show_message(ItemText.equipment_name(entry["item"]), tr("UI_OBJECT_LIMIT"))
 	elif entry["kind"] == "figure":
 		_detail_panel.show_message(tr(ContentDb.name_key(_db.figures[entry["def_id"]])), tr("UI_NEEDS_FREE_SLOT"))
 

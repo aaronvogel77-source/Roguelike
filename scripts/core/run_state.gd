@@ -27,7 +27,10 @@ const MAX_PACTS := 3
 const BOSS_SOULS := 2
 const DEATH_SOUL_CHANCE := 0.05
 ## Objects per figure (equipment, blessing, each Strength card).
-const MAX_OBJECTS := 2
+## Object slots (equipment, blessing, Strength cards - any mix): 1 at the
+## start, 2 from level 3, +1 per fusion stage, at most 3 (plus event bonuses).
+const BASE_OBJECTS := 1
+const MAX_OBJECTS := 3
 const KILL_SOUL_CHANCE := 0.25  # Soul Hunger pact
 ## Soul value of a sacrificed figure: rank value + level.
 const RANK_SOUL_VALUE := {"page": 1, "knight": 2, "queen": 3, "king": 4, "legend": 5}
@@ -163,7 +166,16 @@ func figure_objects(figure: Dictionary) -> int:
 
 
 func object_limit(figure: Dictionary) -> int:
-	return MAX_OBJECTS + int(figure.get("extra_object_slots", 0))
+	return slots_for(figure)
+
+
+static func slots_for(figure: Dictionary) -> int:
+	var slots := BASE_OBJECTS + (1 if level_for_xp(int(figure["xp"])) >= 3 else 0) + Fusion.stage_of(figure)
+	return mini(slots, MAX_OBJECTS) + int(figure.get("extra_object_slots", 0))
+
+
+static func objects_on(figure: Dictionary) -> int:
+	return (1 if figure.has("equipment") else 0) + (1 if figure.has("blessing") else 0) + int(figure.get("strength", 0))
 
 
 ## Whether a new object fits (replacing equipment/blessing does not count).
