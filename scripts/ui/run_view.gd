@@ -57,6 +57,7 @@ func _show_menu() -> void:
 	for child in _screen.get_children():
 		child.queue_free()
 	var menu := MetaView.create(_db, _meta, FileAccess.file_exists(RUN_SAVE), _url_flag("debug"))
+	menu.detail_panel = _detail_panel
 	menu.continue_run.connect(_continue_run)
 	menu.start_run.connect(_new_run)
 	_screen.add_child(menu)
@@ -189,11 +190,11 @@ func _on_fusion_finished(title: String, text: String) -> void:
 func _top_bar(title: String) -> HBoxContainer:
 	var bar := HBoxContainer.new()
 	bar.custom_minimum_size = Vector2(0, 60)
-	bar.add_theme_constant_override("separation", 28)
+	bar.add_theme_constant_override("separation", 18)
 	bar.add_child(_spacer(8))
 	# Back to the main menu; the run is autosaved and can be continued.
-	var menu := _button("≡", Vector2(48, 44), _show_menu)
-	menu.add_theme_font_size_override("font_size", 26)
+	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(0, 44), _show_menu)
+	menu.add_theme_font_size_override("font_size", 18)
 	bar.add_child(menu)
 	bar.add_child(_label(title, 30, Palette.GOLD))
 	var fill := Control.new()
@@ -206,11 +207,18 @@ func _top_bar(title: String) -> HBoxContainer:
 	souls.add_child(Emblem.create("soul", 26))
 	souls.add_child(_label(tr("UI_SOULS") % _run.souls, 22, Emblem.COLORS["soul"]))
 	bar.add_child(souls)
+	# Seelenglut (meta currency) owned outside the run.
+	var glut := HBoxContainer.new()
+	var ember := Emblem.create("soul", 22)
+	ember.color = Color("ffb060")
+	glut.add_child(ember)
+	glut.add_child(_label(tr("UI_GLUT_SHORT") % _meta.glut, 20, Color("ffb060")))
+	bar.add_child(glut)
 	if _url_flag("debug"):
 		# Debug tools in a compact row (small font).
 		var tools := HBoxContainer.new()
 		tools.add_theme_constant_override("separation", 4)
-		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion]]
+		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion], ["+50 Glut", _debug_glut]]
 		if _run.stage == RunState.Stage.PLANNING:
 			entries.insert(2, ["Legende", _debug_legend])
 		for entry in entries:
@@ -223,6 +231,12 @@ func _top_bar(title: String) -> HBoxContainer:
 
 
 # --- Debug tools ("?debug=1" in the address) ---------------------------------------
+
+func _debug_glut() -> void:
+	_meta.glut += 50
+	_meta.save()
+	_show_stage()
+
 
 ## Starts the next event in the list (cycles through all eight).
 func _debug_event() -> void:

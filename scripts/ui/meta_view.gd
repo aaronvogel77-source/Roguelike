@@ -20,6 +20,8 @@ var _tab := "figures"
 var _rng := RandomNumberGenerator.new()
 var _last_chest: Array = []
 var _info: RichTextLabel
+## The run screen's detail panel, for the grimoire's full descriptions.
+var detail_panel: DetailPanel
 
 
 static func create(db: ContentDb, meta: MetaState, has_save: bool, debug: bool) -> MetaView:
@@ -324,7 +326,7 @@ func _build_grimoire(column: VBoxContainer) -> void:
 	tabs.add_theme_constant_override("separation", 8)
 	for tab in GRIMOIRE_TABS:
 		var all := _grimoire_entries(tab)
-		var known := all.filter(func(id: String) -> bool: return _meta.is_discovered(tab, id)).size()
+		var known := all.filter(func(id: String) -> bool: return _known(tab, id)).size()
 		var button := _button("%s %d/%d" % [tr("GRIMOIRE_" + tab.to_upper()), known, all.size()], Vector2(0, 46), func() -> void:
 			_tab = tab
 			_show("grimoire"))
@@ -343,21 +345,63 @@ func _build_grimoire(column: VBoxContainer) -> void:
 	grid.add_theme_constant_override("v_separation", 10)
 	scroll.add_child(grid)
 	for id in _grimoire_entries(_tab):
-		var known := _meta.is_discovered(_tab, id)
-		var entry := Button.new()
-		entry.custom_minimum_size = Vector2(200, 54)
-		entry.text = _content_name(_tab, id) if known else "???"
-		entry.add_theme_font_size_override("font_size", 17)
-		if known:
-			entry.pressed.connect(func() -> void:
-				_info.text = "[center][b]%s[/b] – %s[/center]" % [_content_name(_tab, id), Keywords.colorize(_content_text(_tab, id))])
-		else:
-			entry.add_theme_color_override("font_color", Palette.MUTED)
-		grid.add_child(entry)
-	_info = _rich(tr("UI_GRIMOIRE_HINT"), 18)
-	_info.custom_minimum_size = Vector2(0, 54)
+		grid.add_child(_grimoire_card(_tab, id))
+	_info = _rich(tr("UI_GRIMOIRE_HINT"), 16)
 	column.add_child(_info)
 	column.add_child(_back_button("menu"))
+
+
+## One picture card: figures and enemies as their animated pixel figure,
+## objects with their emblem; tapping opens the full description.
+func _grimoire_card(tab: String, id: String) -> Control:
+	if not _known(tab, id):
+		var unknown := _panel(Vector2(112, 150), Color(1, 1, 1, 0.15))
+		var box := _box(unknown)
+		box.add_child(_centered(Emblem.create("star", 34)))
+		box.get_child(0).modulate = Color(0.3, 0.3, 0.35)
+		box.add_child(_text_label("???", 26, Palette.MUTED))
+		return unknown
+	match tab:
+		"figures", "recipes", "enemies":
+			var enemy := tab == "enemies"
+			var definition: Dictionary = _db.enemies[id] if enemy else _db.figures[id]
+			var card := UnitCard.for_definition(definition, 1, enemy)
+			if detail_panel != null:
+				card.tapped.connect(detail_panel.show_card)
+			return _scaled(card, 0.9)
+		"relics", "tarot", "pacts":
+			var kind: String = {"relics": "relic", "tarot": "tarot", "pacts": "pact"}[tab]
+			var object := ObjectCard.create(_db, {"kind": kind, "id": id}, Vector2(140, 196))
+			if detail_panel != null:
+				object.tapped.connect(detail_panel.show_object)
+			return object
+	# Master abilities: the two suits of the combination and the effect.
+	var master := Fusion.master_by_id(_db, id)
+	var panel := _panel(Vector2(200, 196), Palette.GOLD)
+	var box := _box(panel)
+	var suits := HBoxContainer.new()
+	suits.alignment = BoxContainer.ALIGNMENT_CENTER
+	for suit in master.get("suits", []):
+		suits.add_child(Emblem.create("suit_" + String(suit), 34))
+	box.add_child(suits)
+	box.add_child(_text_label(_content_name(tab, id), 19, Palette.GOLD))
+	box.add_child(_rich(_content_text(tab, id), 14))
+	return panel
+
+
+## Debug mode ("?debug=1") shows the whole grimoire.
+func _known(tab: String, id: String) -> bool:
+	return _debug or _meta.is_discovered(tab, id)
+
+
+func _scaled(content: Control, factor: float) -> Control:
+	var holder := Control.new()
+	holder.add_child(content)
+	content.scale = Vector2(factor, factor)
+	var minimum := content.get_combined_minimum_size()
+	content.size = minimum
+	holder.custom_minimum_size = minimum * factor
+	return holder
 
 
 func _grimoire_entries(tab: String) -> Array:

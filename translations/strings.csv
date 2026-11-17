@@ -579,7 +579,7 @@ UI_WEAR,Anlegen,Wear
 UI_WORN,Angelegt,Worn
 UI_SKIN_FROM_CHEST,auch aus der Figuren-Truhe,also from the figure chest
 UI_GRIMOIRE_TITLE,Grimoire,Grimoire
-UI_GRIMOIRE_HINT,Tippe einen Eintrag an. Unentdecktes bleibt ???.,Tap an entry. Undiscovered things stay ???.
+UI_GRIMOIRE_HINT,Tippe eine Karte an für Bild und Beschreibung. Unentdecktes bleibt ???.,Tap a card for its picture and description. Undiscovered things stay ???.
 GRIMOIRE_FIGURES,Figuren,Figures
 GRIMOIRE_RELICS,Relikte,Relics
 GRIMOIRE_TAROT,Tarot,Tarot
@@ -634,3 +634,5 @@ SPECIAL_SKIN_FROST_KING,Ewiger Winter,Eternal Winter
 SPECIAL_SKIN_STAR_JUDGE,Urteil der Sterne,Judgement of the Stars
 SPECIAL_SKIN_SUN_MIDAS,Sonnenaufgang,Sunrise
 UI_RARITY_LEGENDARY_SKIN,Legendär,Legendary
+UI_GLUT_SHORT,Glut: %d,Embers: %d
+UI_MENU_BUTTON,Menü,Menu

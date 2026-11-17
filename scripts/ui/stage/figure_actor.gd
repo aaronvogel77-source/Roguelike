@@ -7,6 +7,9 @@ extends Node2D
 
 const SNAP := PI / 12.0
 const ARM_REST := -0.35
+## Weapons lean slightly forward at rest and are drawn behind the head, so
+## long ones (tridents, greatswords, axes) never cover a face.
+const WEAPON_TILT := PI / 12.0
 const FLASH_SHADER := """
 shader_type canvas_item;
 uniform float flash : hint_range(0.0, 1.0) = 0.0;
@@ -122,7 +125,7 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 	add_child(_rig)
 	if enemy:
 		_rig.scale.x = -1  # enemies face left
-	var order := ["ghost"] if _ghost else ["cape", "armB", "shield", "legB", "legF", "torso", "head", "armF", "weapon"]
+	var order := ["ghost"] if _ghost else ["cape", "armB", "shield", "legB", "legF", "torso", "weapon", "head", "armF"]
 	for key in order:
 		if not _parts.has(key):
 			continue
@@ -181,7 +184,7 @@ func _pose() -> void:
 	var a := _snap(ARM_REST + arm + step * 0.45)
 	_place("armF", shoulder, a)
 	var hand := shoulder + Vector2(-sin(a) * arm_len, cos(a) * arm_len)
-	_place("weapon", hand, a - ARM_REST)
+	_place("weapon", hand, a - ARM_REST + WEAPON_TILT)
 
 
 func _place(key: String, at: Vector2, angle: float) -> void:

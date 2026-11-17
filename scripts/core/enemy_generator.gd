@@ -23,6 +23,10 @@ const BOSS_BONUS := 4
 const MAX_TEAM := 6
 const THEME_WEIGHT := 3
 const ROLE_ORDER := {"front": 0, "any": 1, "back": 2}
+## Each harder option is at least this much stronger than the one before.
+const MIN_STEP := 1.3
+## The hard option always has at least this many enemies (one dragon alone was too easy).
+const HARD_MIN_UNITS := 2
 
 
 static func budget(act: int, fight: int, difficulty: int) -> int:
@@ -58,6 +62,13 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		teams.append({"theme": theme, "team": team, "power": power(db, team)})
 	# The labels follow the real strength: the weakest team is "easy".
 	teams.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["power"] < b["power"])
+	# Fixed steps: medium >= 1.3 × easy, hard >= 1.3 × medium and at least 2 enemies.
+	for difficulty in [1, 2]:
+		var team: Array = teams[difficulty]["team"]
+		var target: float = teams[difficulty - 1]["power"] * MIN_STEP
+		var min_units := HARD_MIN_UNITS if difficulty == 2 else 1
+		_strengthen(db, team, rng, teams[difficulty]["theme"], target, min_units)
+		teams[difficulty]["power"] = power(db, team)
 	var result: Array = []
 	for difficulty in 3:
 		result.append({"kind": "normal", "difficulty": difficulty, "theme": teams[difficulty]["theme"],
@@ -107,6 +118,30 @@ static func generate(db: ContentDb, team_budget: int, rng: RandomNumberGenerator
 		remaining -= int(db.enemies[unit["def_id"]]["cost"])
 	_order_by_role(db, team)
 	return team
+
+
+## Adds enemies (cheap ones first) or levels until the team reaches the
+## target strength and size.
+static func _strengthen(db: ContentDb, team: Array, rng: RandomNumberGenerator, theme: String,
+		target: float, min_units: int) -> void:
+	var pool: Array = db.regular_enemies()
+	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
+	var cheap := pool.filter(func(e: Dictionary) -> bool: return int(e["cost"]) <= 2)
+	var guard := 0
+	while (power(db, team) < target or team.size() < min_units) and guard < 30:
+		guard += 1
+		if team.size() < MAX_TEAM and (team.size() < min_units or rng.randf() < 0.5):
+			var pick := _weighted_pick(cheap, theme, rng)
+			team.append({"def_id": pick["id"], "level": 1})
+			continue
+		var upgradable := team.filter(func(u: Dictionary) -> bool: return u["level"] < 3)
+		if upgradable.is_empty():
+			if team.size() >= MAX_TEAM:
+				break
+			team.append({"def_id": _weighted_pick(cheap, theme, rng)["id"], "level": 1})
+			continue
+		upgradable[rng.randi_range(0, upgradable.size() - 1)]["level"] += 1
+	_order_by_role(db, team)
 
 
 static func _weighted_pick(candidates: Array, theme: String, rng: RandomNumberGenerator, prefer_strong := false) -> Dictionary:

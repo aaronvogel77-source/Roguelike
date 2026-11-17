@@ -269,3 +269,16 @@ func test_figures_can_be_moved_in_events_but_not_at_the_grave() -> void:
 	assert_true(run.move(0, 1))
 	run.start_event("grave_robber")
 	assert_false(run.move(0, 1), "the grave robber takes the rearmost figure")
+
+
+func test_difficulties_are_clearly_apart_and_hard_has_company() -> void:
+	for seed_value in 30:
+		var rng := RngStreams.new(seed_value).stream("enemy_gen")
+		for act in [1, 2]:
+			for fight in [0, 1]:
+				var options := EnemyGenerator.options(_db, "coins", act, fight, rng)
+				var powers: Array = options.map(func(o: Dictionary) -> float: return EnemyGenerator.power(_db, o["team"]))
+				assert_true(powers[1] >= powers[0] * 1.3 - 0.01, "medium clearly above easy: %s" % str(powers))
+				assert_true(powers[2] >= powers[1] * 1.3 - 0.01, "hard clearly above medium: %s" % str(powers))
+				assert_gte(options[2]["team"].size(), 2, "hard is never a lone enemy")
+
