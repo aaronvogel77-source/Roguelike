@@ -85,6 +85,9 @@ func _tear_open() -> void:
 	tween.tween_property(_pack, "rotation", 0.0, 0.05)
 	tween.parallel().tween_property(_pack, "scale", Vector2(1.15, 1.15), 0.1)
 	tween.tween_callback(func() -> void:
+		Sound.play("pack_open")
+		if best >= 4:
+			Sound.play("bell_big", -4.0)
 		_flash.color = Color(GLOW[best]).lerp(Color.WHITE, 0.6)
 		_flash.color.a = 0.9
 		_burst(size / 2, GLOW[best], 40)
@@ -165,6 +168,11 @@ func _turn(slot: Dictionary) -> void:
 	var tween := create_tween()
 	tween.tween_property(root, "scale:x", 0.0, 0.12)
 	tween.tween_callback(func() -> void:
+		Sound.play("card_flip", -2.0)
+		if slot["rarity"] >= 4:
+			Sound.play("bell")
+		elif slot["rarity"] >= 2:
+			Sound.play("gem", -4.0)
 		slot["back"].visible = false
 		slot["face"].visible = true
 		if slot["rarity"] >= 1:

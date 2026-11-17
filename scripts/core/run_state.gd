@@ -1054,7 +1054,7 @@ func battle_options() -> Dictionary:
 	if "golden_oath" in pacts:
 		options["gold_factor"] = 2
 	if "ash_pact" in pacts:
-		options["burn_factor_vs_enemy"] = 1.5
+		options["burn_factor_vs_enemy"] = 1.75
 		options["burn_spread"] = true
 	if "blade_oath" in pacts:
 		options["bleed_factor"] = 2

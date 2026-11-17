@@ -23,7 +23,7 @@ Screenshots go to the session scratchpad, never into the repository.
    `?arena=1&seed=N` (test battles with random fusions), `?arena=1&skins=1` (the four legendary skins).
 4. **Known taps** (CSS): region intro "Betreten" (375,264); enemy choice easy "Wählen" (130,231);
    planning first arcana pack (320,292); pack "Alle aufdecken"/"Weiter" (375,314); debug toggle (720,14);
-   main menu with debug: "+50 Seelenglut" (375,271), "Krypta-Lager" (375,205), "Grimoire" (375,241);
+   main menu with debug: "Krypta-Lager" (375,190), "Grimoire" (375,226), "Einstellungen" (375,259), "+50 Seelenglut" (375,286);
    vault stations "Öffnen": chests (185,232), mirror (565,232).
    Layouts change: always look at a screenshot before trusting a coordinate.
 5. Downscale or crop screenshots with PIL before viewing them; combine frames into a sheet for sequences.

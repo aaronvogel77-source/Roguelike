@@ -60,6 +60,10 @@ func _chest_rect() -> Rect2:
 
 func _burst_open() -> void:
 	_opened_at = _time
+	Sound.play("chest")
+	Sound.play("creak", -4.0)
+	Sound.play("coins")
+	Sound.play("bell_big", -6.0)
 	var mouth := _chest_rect().position + Vector2(CHEST.x / 2, 20)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
@@ -164,6 +168,7 @@ func _treasure_face(entry: Dictionary) -> Control:
 
 
 func _on_choose(index: int) -> void:
+	Sound.play("gem")
 	for box in _cards:
 		for child in box.get_children():
 			if child is Button:

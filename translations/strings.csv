@@ -267,7 +267,7 @@ PACT_GOLDEN_OATH,Goldener Schwur,Golden Oath
 PACT_GOLDEN_OATH_DESC,Zinsen bis +10. Gold-Effekte zählen doppeltes Gold.,Interest up to +10. Gold effects count double gold.
 PACT_GOLDEN_OATH_COST,Neuwürfeln kostet +1.,Rerolls cost +1.
 PACT_ASH_PACT,Aschepakt,Ash Pact
-PACT_ASH_PACT_DESC,Brennen-Schaden an Gegnern ×1,5. Brennende Gegner geben ihr Brennen beim Tod weiter.,Burn damage to enemies ×1.5. Burning enemies pass their burn on when they die.
+PACT_ASH_PACT_DESC,Brennen-Schaden an Gegnern ×1,75. Brennende Gegner geben ihr Brennen beim Tod weiter.,Burn damage to enemies ×1.75. Burning enemies pass their burn on when they die.
 PACT_ASH_PACT_COST,Kampfbeginn: Deine vorderste Figur erhält Brennen 1.,Battle start: your front figure gains 1 burn.
 PACT_BLADE_OATH,Klingenschwur,Blade Oath
 PACT_BLADE_OATH_DESC,Blutung deiner Figuren: doppelt so viele Stapel.,Bleed from your figures: twice the stacks.
@@ -721,3 +721,7 @@ UI_ENEMY_BAND,Gegnerbande,Enemy band
 UI_CAT_DANGER,Gefahr,Danger
 SOURCE_PLAGUE,Seuche: −2 Leben bis zum Ende des Akts.,Plague: −2 health until the end of the act.
 SOURCE_CURSE_FOG,Fluchnebel: Fluch 2 zu Kampfbeginn (nur der nächste Kampf).,Curse fog: 2 curse at battle start (next battle only).
+UI_MENU_SETTINGS,Einstellungen,Settings
+UI_SET_MUSIC,Musik,Music
+UI_SET_SFX,Effekte,Effects
+UI_SET_MUTE,Stumm,Mute

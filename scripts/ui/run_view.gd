@@ -24,6 +24,7 @@ var _battle_view: Control
 
 func _ready() -> void:
 	TranslationServer.set_locale("de")
+	Sound.setup(get_tree())
 	theme = UiTheme.build()
 	_db = ContentDb.load_default()
 	var background := ColorRect.new()
@@ -58,6 +59,7 @@ func _show_menu() -> void:
 	_detail_panel.hide()
 	for child in _screen.get_children():
 		child.queue_free()
+	Sound.music("menu")
 	var menu := MetaView.create(_db, _meta, FileAccess.file_exists(RUN_SAVE), _url_flag("debug"))
 	menu.detail_panel = _detail_panel
 	menu.continue_run.connect(_continue_run)
@@ -90,6 +92,32 @@ func _continue_run() -> void:
 
 
 ## Autosave after every action; a finished run pays out its Seelenglut once.
+## Music per screen and a sound when an event or the run's end appears.
+var _sound_marker := ""
+
+
+func _stage_sounds() -> void:
+	if _run == null:
+		return
+	match _run.stage:
+		RunState.Stage.WON, RunState.Stage.LOST:
+			Sound.music("menu")
+		_:
+			if _battle_view == null:
+				Sound.music("planning")
+	var marker := "%d:%s:%d:%d" % [_run.stage, _run.event.get("id", ""), _run.act, _run.fight]
+	if marker == _sound_marker:
+		return
+	_sound_marker = marker
+	match _run.stage:
+		RunState.Stage.EVENT:
+			Sound.play("creak" if _run.is_negative_event() else "book")
+		RunState.Stage.WON:
+			Sound.play("bell_big")
+		RunState.Stage.REWARD:
+			Sound.play("coins", -4.0)
+
+
 func _autosave() -> void:
 	if _run.stage in [RunState.Stage.WON, RunState.Stage.LOST]:
 		if not _run.flags.get("meta_done", false):
@@ -152,6 +180,7 @@ func _show_region_intro() -> void:
 
 func _show_stage() -> void:
 	_autosave()
+	_stage_sounds()
 	FigureArt.gold_hint = _run.gold  # gold-dependent looks (Gold-Armored)
 	_selected = {}
 	_sell_armed = -1
@@ -900,6 +929,7 @@ func _move(from_index: int, to_index: int) -> void:
 	var source: Variant = _run.row[from_index] if from_index < _run.row.size() else null
 	var merging: bool = target != null and source != null and target["def_id"] == source["def_id"]
 	var before_xp := int(target["xp"]) if merging else -1
+	Sound.play("card_slide")
 	_apply_action(func() -> bool: return _run.move(from_index, to_index))
 	if merging and _run.row[from_index] == null:
 		_show_merge(_run.row[to_index]["def_id"], before_xp, int(_run.row[to_index]["xp"]))
@@ -909,7 +939,11 @@ func _move(from_index: int, to_index: int) -> void:
 func _buy(shop_index: int, row_index: int) -> void:
 	var before: Variant = _run.row[row_index] if row_index < _run.row.size() else null
 	var before_xp := int(before["xp"]) if before != null else -1
+	var gold_before := _run.gold
 	_apply_action(func() -> bool: return _run.buy(shop_index, row_index))
+	if _run.gold < gold_before:
+		Sound.play("card_place")
+		Sound.play("coins", -8.0)
 	var after: Variant = _run.row[row_index] if row_index < _run.row.size() else null
 	if before != null and after != null and int(after["xp"]) > before_xp:
 		_show_merge(after["def_id"], before_xp, int(after["xp"]))
@@ -944,6 +978,7 @@ func _request_sell(index: int) -> void:
 		_sell_armed = index
 		_sell_zone.show_text(tr("UI_SELL_CONFIRM") % _run.sell_value(figure), true)
 		return
+	Sound.play("sell")
 	_apply_action(func() -> bool: return _run.sell(index))
 
 
@@ -956,12 +991,16 @@ func _on_undo() -> void:
 
 func _on_reroll() -> void:
 	if _run.reroll():
+		Sound.play("shuffle")
 		_undo.clear()  # rerolls are final: no undoing into old offers
 		_show_stage()
 
 
 func _on_fight() -> void:
 	_undo.clear()
+	Sound.music("boss" if _run.is_boss_fight() else "battle")
+	if _run.is_boss_fight():
+		Sound.play("roar")
 	_detail_panel.hide()
 	if is_instance_valid(_debug_panel):
 		_debug_panel.queue_free()  # the debug column must not cover the battle
@@ -2027,6 +2066,7 @@ func _show_merge(def_id: String, old_xp: int, new_xp: int) -> void:
 	info.custom_minimum_size = Vector2(460, 0)
 	row.add_child(info)
 	var levelled := new_level > old_level
+	Sound.play("level_up" if levelled else "card_place")
 	var title := _label(tr("UI_LEVEL_UP") % new_level if levelled else tr("UI_MERGED"), 32, Palette.GOLD)
 	info.add_child(title)
 	info.add_child(_label(tr(ContentDb.name_key(definition)), 22, Palette.PARCHMENT))

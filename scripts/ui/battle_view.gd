@@ -348,6 +348,7 @@ func _play_events(token: int) -> void:
 				_turn_label.text = tr("UI_TURN") % event["turn"]
 				_banner.text = ""
 			"burn_tick":
+				Sound.play("burn", -8.0)
 				_float_on(event["uid"], tr("UI_BURN_TICK") % [event["from"], event["to"]], Emblem.COLORS["burn"])
 			"blessing":
 				await _show_trigger({"uid": event["uid"], "effect": "gain_shield", "targets": [event["uid"]]})
@@ -358,23 +359,30 @@ func _play_events(token: int) -> void:
 				if unit != null:
 					unit.apply_snapshot(event["unit"])
 			"clash":
+				Sound.play("hit" if randf() < 0.6 else "punch", -3.0)
 				await _animate_clash(event)
 			"shielded":
+				Sound.play("shield", -6.0)
 				_float_on(event["uid"], "-%d %s" % [event["amount"], tr("STATUS_SHIELD")], Emblem.COLORS["shield"])
 			"damage":
 				_show_damage(event)
 				if next_type not in ["damage", "update", "shielded"]:
 					await _wait(0.25)
 			"heal":
+				Sound.play("heal", -8.0)
 				_float_on(event["uid"], "+%d" % event["amount"], Palette.SUIT_COLORS["coins"])
 			"gold":
+				Sound.play("coins", -6.0)
 				_set_gold(event["gold"])
 				_float_number("%+d Gold" % event["delta"], _gold_label.global_position + Vector2(40, 30), Palette.GOLD)
 			"decay":
 				_banner.text = tr("UI_DECAY") % event["amount"]
 			"dying":
+				var dying_actor := _stage.actor(event["uid"])
+				Sound.play("death_player" if dying_actor != null and not dying_actor.is_enemy else "death_enemy", -2.0)
 				await _animate_dying(event)
 			"revive":
+				Sound.play("revive")
 				await _animate_revive(event)
 			"removed":
 				await _animate_removed(event)
@@ -386,12 +394,19 @@ func _play_events(token: int) -> void:
 		i += 1
 
 
+## Sound of an ability by its emblem kind.
+const TRIGGER_SOUNDS := {"burn": "burn", "bleed": "bleed", "curse": "curse", "shield": "shield", "heart": "heal",
+	"coin": "coins", "skull": "hit_heavy", "sword": "hit_heavy", "soul": "magic", "star": "magic"}
+
+
 func _show_trigger(event: Dictionary) -> void:
 	var source := _stage.actor(event["uid"])
 	if source == null:
 		return
 	var kind := Emblem.kind_for_effect(event["effect"])
 	var color: Color = Emblem.COLORS.get(kind, Palette.GOLD)
+	if not _skipping:
+		Sound.play(TRIGGER_SOUNDS.get(kind, "magic"), -6.0)
 	var special := _special_name(source, event["effect"])
 	if special != "" and not _skipping and not _specials_shown.has(event["uid"]):
 		_specials_shown[event["uid"]] = true
@@ -550,6 +565,7 @@ func _set_gold(value: int) -> void:
 
 
 func _show_result(event: Dictionary) -> void:
+	Sound.play("bell" if event["outcome"] != BattleSimulator.Outcome.LOSS else "boom")
 	match event["outcome"]:
 		BattleSimulator.Outcome.WIN:
 			_banner.text = tr("UI_VICTORY")

@@ -249,6 +249,7 @@ func _on_fuse() -> void:
 		return
 	var preview := Fusion.preview(_run, _main, _partner)
 	var keep_ids: Array = _keep.map(func(i: int) -> String: return preview["candidates"][i])
+	Sound.play("fusion")
 	if not _run.fuse(_main, _partner, keep_ids):
 		_confirm = false
 		_rebuild()

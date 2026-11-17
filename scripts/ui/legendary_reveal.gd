@@ -30,6 +30,8 @@ static func create(skin_id: String) -> LegendaryReveal:
 
 
 func _ready() -> void:
+	Sound.play("bell_big")
+	Sound.play("magic", -4.0)
 	# The skinned figure, big and crisp (pixel art scaled by whole numbers).
 	var db := ContentDb.load_default()
 	var figure_id := String(MetaState.cosmetic(db, _skin).get("figure", "executioner"))

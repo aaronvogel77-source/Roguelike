@@ -44,6 +44,7 @@ func _ready() -> void:
 
 func _show(page: String) -> void:
 	_page = page
+	Sound.music("menu" if page in ["menu", "occultists"] else "vault")
 	for child in get_children():
 		child.queue_free()
 	# The crypt: the pixel vault of the battle stage, dimmed behind the pages.
@@ -74,6 +75,8 @@ func _show(page: String) -> void:
 			_build_station(column)
 		"grimoire":
 			_build_grimoire(column)
+		"settings":
+			_build_settings(column)
 
 
 # --- Main menu ------------------------------------------------------------------------
@@ -94,6 +97,7 @@ func _build_menu(column: VBoxContainer) -> void:
 	buttons.add_child(_button(tr("UI_MENU_NEW_RUN"), Vector2(360, 66), _show.bind("occultists")))
 	buttons.add_child(_button(tr("UI_MENU_VAULT"), Vector2(360, 66), _show.bind("vault")))
 	buttons.add_child(_button(tr("UI_MENU_GRIMOIRE"), Vector2(360, 66), _show.bind("grimoire")))
+	buttons.add_child(_button(tr("UI_MENU_SETTINGS"), Vector2(360, 52), _show.bind("settings")))
 	if _debug:
 		buttons.add_child(_button("+50 Seelenglut", Vector2(360, 44), func() -> void:
 			_meta.glut += 50
@@ -103,6 +107,52 @@ func _build_menu(column: VBoxContainer) -> void:
 	var stats := _label(tr("UI_MENU_STATS") % [_meta.runs, _meta.wins], 18, Palette.MUTED)
 	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(stats)
+
+
+# --- Settings: sound and first-time hints -----------------------------------------------
+
+func _build_settings(column: VBoxContainer) -> void:
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	var title := _label(tr("UI_MENU_SETTINGS"), 44, Palette.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 24)
+	grid.add_theme_constant_override("v_separation", 18)
+	var music := _slider(Sound.music_volume)
+	var effects := _slider(Sound.sfx_volume)
+	var mute := CheckButton.new()
+	mute.button_pressed = Sound.muted
+	mute.add_theme_font_size_override("font_size", 24)
+	var apply := func(_value: Variant = null) -> void:
+		Sound.set_volumes(music.value, effects.value, mute.button_pressed)
+	music.value_changed.connect(apply)
+	effects.value_changed.connect(func(value: float) -> void:
+		apply.call()
+		Sound.play("coins"))  # a sample at the new volume
+	mute.toggled.connect(apply)
+	for row in [[tr("UI_SET_MUSIC"), music], [tr("UI_SET_SFX"), effects], [tr("UI_SET_MUTE"), mute]]:
+		grid.add_child(_label(row[0], 26, Palette.PARCHMENT))
+		grid.add_child(row[1])
+	_settings_extra(grid)
+	column.add_child(_centered(grid))
+	column.add_child(_centered(_button(tr("UI_BACK"), Vector2(260, 60), _show.bind("menu"))))
+
+
+## Room for more settings rows (first-time hints).
+func _settings_extra(_grid: GridContainer) -> void:
+	pass
+
+
+func _slider(value: float) -> HSlider:
+	var slider := HSlider.new()
+	slider.min_value = 0.0
+	slider.max_value = 1.0
+	slider.step = 0.05
+	slider.value = value
+	slider.custom_minimum_size = Vector2(320, 40)
+	return slider
 
 
 # --- Occultist choice ------------------------------------------------------------------
