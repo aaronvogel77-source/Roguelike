@@ -181,10 +181,11 @@ func _clash() -> void:
 		var hit_unit: BattleUnit = pair[0]
 		if hit_unit.is_alive() and pair[2] > 0:
 			_fire_unit_abilities(hit_unit, "on_hit", {"attacker": pair[1]})
+	# The hits are simultaneous: an attacker that falls in this exchange still
+	# lands its "after attacking" effect (e.g. the Spark Bearer's burn).
 	for pair in [[player_front, enemy_front, dealt_to_enemy], [enemy_front, player_front, dealt_to_player]]:
 		var attacker: BattleUnit = pair[0]
-		if attacker.is_alive():
-			_fire_unit_abilities(attacker, "on_attack", {"attack_target": pair[1], "damage_dealt": pair[2]})
+		_fire_unit_abilities(attacker, "on_attack", {"attack_target": pair[1], "damage_dealt": pair[2]})
 
 
 ## Normal attack damage; "Glühhieb" (master) hits burning targets harder.

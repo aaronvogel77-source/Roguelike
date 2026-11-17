@@ -1317,9 +1317,11 @@ func _build_event() -> void:
 		var exit_option := "decline" if id == "duel" else ("small" if id == "grave_robber" else "leave")
 		if id != "grave_robber":
 			options.add_child(_centered(_button(tr("OPT_" + exit_option.to_upper()), Vector2(400, 56), _on_event_option.bind(exit_option, 0))))
-	var options_center := CenterContainer.new()
-	options_center.add_child(options)
-	column.add_child(options_center)
+	# Scene and own row share the height; both scale to fit (the row gets big
+	# enough to pick figures comfortably).
+	var scene_holder := _fitted(options, 1.0)
+	scene_holder.size_flags_stretch_ratio = 1.35
+	column.add_child(scene_holder)
 
 	if _event_option != "":
 		var needed: int = _needed_targets(_event_option)
@@ -1339,7 +1341,7 @@ func _build_event() -> void:
 	_sell_zone.tapped.connect(_on_sell_zone_tapped)
 	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
 	row_box.add_child(_sell_zone)
-	column.add_child(_fitted(row_box, 1.2))
+	column.add_child(_fitted(row_box, 1.6))
 	for slot in _row_slots:
 		if slot.index in _event_targets:
 			slot.set_selected(true)
@@ -1514,14 +1516,14 @@ func _compartment(title: String, visual: Control, cost_text: String, option: Str
 	style.set_corner_radius_all(12)
 	style.set_content_margin_all(10)
 	panel.add_theme_stylebox_override("panel", style)
-	var market := option in ["buy_relic", "buy_pack", "buy_figure"]
+	var market := option in ["buy_relic", "buy_pack", "buy_figure", "buy_candle"]
 	if not market:
-		panel.custom_minimum_size = Vector2(230, 0)
+		panel.custom_minimum_size = Vector2(260, 0)
 	var box := VBoxContainer.new()
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_theme_constant_override("separation", 8)
 	panel.add_child(box)
-	var heading := _label(title, 20, Palette.GOLD)
+	var heading := _label(title, 23, Palette.GOLD)
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(heading)
 	var center := CenterContainer.new()
@@ -1532,8 +1534,8 @@ func _compartment(title: String, visual: Control, cost_text: String, option: Str
 		text.bbcode_enabled = true
 		text.fit_content = true
 		text.scroll_active = false
-		text.custom_minimum_size = Vector2(210, 0)
-		text.add_theme_font_size_override("normal_font_size", 16)
+		text.custom_minimum_size = Vector2(240, 0)
+		text.add_theme_font_size_override("normal_font_size", 19)
 		text.add_theme_color_override("default_color", Palette.PARCHMENT)
 		text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		text.text = "[center]" + Keywords.colorize(desc) + "[/center]"
@@ -1541,7 +1543,7 @@ func _compartment(title: String, visual: Control, cost_text: String, option: Str
 	var sold: bool = option in _run.event["used"]
 	if sold:
 		visual.modulate.a = 0.3
-	var price_label := _label(tr("UI_SOLD") if sold else cost_text, 18, Palette.GOLD)
+	var price_label := _label(tr("UI_SOLD") if sold else cost_text, 21, Palette.GOLD)
 	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(price_label)
 	var buy := _button(tr("UI_BUY") if market else tr("UI_CHOOSE"), Vector2(150, 50),

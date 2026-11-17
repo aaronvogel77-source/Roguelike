@@ -22,6 +22,8 @@ var _db: ContentDb
 var _rng_streams: RngStreams
 var _speed := 1.0
 var _stage: BattleStage
+## The player's battle entries; battle uid i+1 belongs to entry i.
+var _player_entries: Array = []
 var _skipping := false
 var _battle: Dictionary = {}
 var _battle_gold := 0
@@ -53,6 +55,7 @@ func play_battle(player_team: Array, enemy_team: Array, gold: int, info: String,
 		options: Dictionary = {}, rule_text: String = "", boss_name: String = "") -> void:
 	_playback_token += 1
 	_battle_gold = gold
+	_player_entries = player_team
 	_battle = BattleSimulator.simulate(player_team, enemy_team, gold, options)
 	_seed_label.text = info
 	_set_gold(gold)
@@ -123,8 +126,7 @@ func _build_layout() -> void:
 	# The pixel battle stage fills the space between the bars.
 	_stage = BattleStage.new()
 	_stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_stage.unit_tapped.connect(func(a: FigureActor) -> void:
-		_detail_panel.show_unit(a.definition, a.snapshot, a.is_enemy))
+	_stage.unit_tapped.connect(_on_unit_tapped)
 	root.add_child(_stage)
 
 	root.add_child(_build_bottom_bar())
@@ -242,6 +244,7 @@ func _new_battle() -> void:
 	var enemy_team := DebugTeams.random_enemy_team(_db, rng, rng.randi_range(3, 6))
 	_battle_gold = rng.randi_range(0, 30)
 	_battle = BattleSimulator.simulate(player_team, enemy_team, _battle_gold)
+	_player_entries = player_team
 
 	_seed_label.text = "v%s · %s" % [ProjectSettings.get_setting("application/config/version"), tr("UI_SEED") % seed_value]
 	_set_gold(_battle_gold)
@@ -251,6 +254,18 @@ func _new_battle() -> void:
 	_start_button.disabled = false
 	_detail_panel.hide()
 	_show_start_state(_battle["events"][0])
+
+
+## Details of a tapped figure; own figures also show equipment, blessings and
+## what else is affecting them.
+func _on_unit_tapped(unit: FigureActor) -> void:
+	var extras := {}
+	var index := unit.uid - 1
+	if not unit.is_enemy and index >= 0 and index < _player_entries.size():
+		var entry: Dictionary = _player_entries[index]
+		if entry.has("figure"):
+			extras = {"figure": entry["figure"], "db": _db, "sources": entry.get("sources", [])}
+	_detail_panel.show_unit(unit.definition, unit.snapshot, unit.is_enemy, extras)
 
 
 func _show_start_state(start_event: Dictionary) -> void:

@@ -514,7 +514,7 @@ Reihenfolge **bestätigt**. Jeder Meilenstein endet mit einem spielbaren Browser
 ### Stäbe (Feuer) – Thema Brennen, Aggression
 | Rang | Name | A/L | Fähigkeit (Stufe 1 / 2 / 3) |
 |---|---|---|---|
-| Bube | **Funkenträger** | 2/2 | *Bei Angriff:* Ziel erhält Brennen 1 / 2 / 3 |
+| Bube | **Funkenträger** | 2/2 | *Bei Angriff:* Ziel erhält Brennen 2 / 3 / 4 (nach Feedback verstärkt) |
 | Ritter | **Wutentbrannter** | 4/3 | *Wenn getroffen:* Der Angreifer erhält Brennen 1 / 2 / 3 (nach Feedback statt Angriff) |
 | Königin | **Herrin der Glut** | 3/5 | *Aura (dauerhaft):* Brennen-Schaden an Gegnern ×1,5 / ×2 / ×2,5 (Mult) |
 | König | **Aschekönig** | 6/4 | *Bei Tod eines Gegners:* dessen Brennen springt auf den nächsten Gegner, König erhält ×1,1 / ×1,2 / ×1,3 Angriff (Mult, stapelt) |
@@ -785,3 +785,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Eigenes Design je Figur/Monster passend zu Name und Fähigkeit (Goldgepanzerter-Rüstung wächst mit Gold, Henker mit Axt und Kappe, Midas mit goldener Hand); Meta-Währung + Lager vorgemerkt für M7; Shop-Stil Tarot-Legung gewählt, Verkaufsfeld nur beim Gedrückthalten | Spieler-Feedback | Händlertisch, Schatzkammer-Regal, Reliquienschrein, Klar & Kompakt |
 | 2026-11-17 | v0.8.2: Shop im Stil Tarot-Legung umgesetzt: Samt-Hintergrund, Karten als Pergament-Tarotkarten mit animierter Pixel-Figur (Gegner auf dunklem Tuch), Preise als Gold-/Seelenmünzen über den Karten, Packs als verdeckte Karten, Wachssiegel-Knöpfe (Neu würfeln gold, Rückgängig grau, Kampf groß rot); Verkaufsfeld erscheint nur beim Ziehen/Gedrückthalten oder bei Auswahl einer Figur bzw. eines Relikts | Shop-Wahl des Spielers | – |
 | 2026-11-17 | v0.8.3: Positiv beeinflusste Angriffs-/Lebenswerte gelb (Kampf und Karten); Figuren in Ereignissen verschiebbar, außer beim Grabräuber (nimmt die hinterste Figur); Preis-Münzen liegen nicht mehr über Infofenstern; Verkaufsfeld unten rechts; Gegneroptionen nach echter Stärke geordnet (schwerste = Schwer, Schwer bevorzugt teure Gegner); weniger Königinnen/Könige im Shop (Akt 1: 76/20/3/1 %); Wutentbrannter: wenn getroffen erhält der Angreifer Brennen 1/2/3; erstes Boss-Gefolge kleiner (Budget 1) | Spieler-Feedback | – |
+| 2026-11-17 | v0.8.4: Ereignis-Bildschirme teilen die Höhe zwischen Szene und eigener Reihe (Figuren deutlich größer), größere Schrift in den Angeboten; Karten insgesamt größer (112×164, größere Namen, Werte und Symbole); Ausrüstung und Segen im Kampf per Antippen sichtbar; „Nach dem Angriff“-Fähigkeiten wirken auch, wenn der Angreifer im selben Schlagabtausch fällt (gleichzeitige Treffer); Funkenträger Brennen 2/3/4 | Spieler-Feedback | Funkenträger mit mehr Leben |

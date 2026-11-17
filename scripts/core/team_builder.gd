@@ -64,6 +64,8 @@ static func _figure_entry(run: RunState, figure: Dictionary) -> Dictionary:
 		"suits": run.figure_suits(figure),
 		# What is modifying this figure (shown as marks on its card).
 		"sources": [],
+		# The run figure itself (equipment, blessing ... for the detail panel).
+		"figure": figure,
 	}
 	if fused:
 		entry["abilities"].append_array(Fusion.abilities(run.db, figure))

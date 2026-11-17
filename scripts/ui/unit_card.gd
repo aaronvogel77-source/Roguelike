@@ -6,7 +6,7 @@ extends Control
 
 signal tapped(card: UnitCard)
 
-const CARD_SIZE := Vector2(96, 140)
+const CARD_SIZE := Vector2(112, 164)
 ## Gap between cards in a row; a card "width" units wide also spans the gaps.
 const ROW_GAP := 6.0
 const STATUS_ORDER := ["shield", "burn", "curse", "bleed"]
@@ -138,12 +138,12 @@ func _add_portrait(initial: Dictionary, unit_definition: Dictionary, enemy: bool
 	shown["uid"] = 0
 	actor.setup(unit_definition, shown, enemy)
 	var height := maxf(actor.hit_rect().size.y - 26.0, 20.0)
-	var room := card_size.y - 62.0
+	var room := card_size.y - 70.0
 	var factor := clampf(room / height, 0.6, 1.5)
 	if factor > 1.0:
 		factor = maxf(1.0, floorf(factor * 4.0) / 4.0)
 	actor.scale = Vector2(factor, factor)
-	actor.position = Vector2(card_size.x / 2.0, card_size.y - 40.0)
+	actor.position = Vector2(card_size.x / 2.0, card_size.y - 46.0)
 	actor.home_x = randf() * 10.0
 	body.add_child(actor)
 	body.move_child(actor, 0)
@@ -275,7 +275,7 @@ func _fitting_font_size(label: Label) -> int:
 	var font := label.get_theme_font("font")
 	var available := card_size.x - 14.0
 	var words := label.text.split(" ")
-	var largest := 19 if definition.get("boss", false) else 14
+	var largest := 21 if definition.get("boss", false) else 17
 	for font_size in range(largest, 8, -1):
 		if _wrapped_line_count(words, font, font_size, available) <= 2:
 			return font_size
@@ -303,25 +303,25 @@ func _rebuild_identity(level: int) -> void:
 	for child in _identity.get_children():
 		child.queue_free()
 	for kind in identity_kinds(definition, is_enemy, snapshot.get("suit", "")):
-		_identity.add_child(Emblem.create(kind, 16))
-	var chevrons := Emblem.create("level", 16)
+		_identity.add_child(Emblem.create(kind, 19))
+	var chevrons := Emblem.create("level", 19)
 	chevrons.count = level
 	_identity.add_child(chevrons)
 	var stage := int(definition.get("fusion", {}).get("stage", 0))
 	if stage > 0:
 		var badge := _small_label(Palette.GOLD)
 		badge.text = "F%d" % stage
-		badge.add_theme_font_size_override("font_size", 13)
+		badge.add_theme_font_size_override("font_size", 15)
 		_identity.add_child(badge)
 	# Equipment and blessing marks for row figures.
 	var figure: Dictionary = extras.get("figure", {})
 	if figure.has("equipment"):
-		_identity.add_child(Emblem.create(Emblem.EQUIPMENT_KINDS.get(figure["equipment"]["base"], "sword"), 16))
+		_identity.add_child(Emblem.create(Emblem.EQUIPMENT_KINDS.get(figure["equipment"]["base"], "sword"), 19))
 	if figure.has("blessing"):
-		_identity.add_child(Emblem.create("blessing_" + String(figure["blessing"]), 16))
+		_identity.add_child(Emblem.create("blessing_" + String(figure["blessing"]), 19))
 	var sources: Array = extras.get("sources", [])
 	if "tarot_strength" in sources:
-		_identity.add_child(Emblem.create("tarot", 16))
+		_identity.add_child(Emblem.create("tarot", 19))
 
 
 
@@ -339,15 +339,15 @@ static func identity_kinds(unit_definition: Dictionary, enemy: bool, suit: Strin
 ## Attack / health: the number sits in the middle of its emblem.
 func _add_stat_badge(parent: Control, kind: String) -> Label:
 	var holder := Control.new()
-	holder.custom_minimum_size = Vector2(38, 38)
+	holder.custom_minimum_size = Vector2(44, 44)
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(holder)
-	holder.add_child(Emblem.create(kind, 38))
+	holder.add_child(Emblem.create(kind, 44))
 	var label := Label.new()
-	label.size = Vector2(38, 38)
+	label.size = Vector2(44, 44)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 19)
+	label.add_theme_font_size_override("font_size", 23)
 	label.add_theme_color_override("font_color", Color.WHITE)
 	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	label.add_theme_constant_override("outline_size", 5)
