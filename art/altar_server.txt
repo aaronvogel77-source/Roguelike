@@ -1,0 +1,16 @@
+kind = figure
+[palette]
+h = 6a4a30
+H = 8a6a48
+[head pivot=6,13]
+....HHHHH....
+...HhmmmlhH..
+..hhmmmmmllh.
+..hmmmmmmmll.
+..hmmmmmkmll.
+..hmmmmmmmml.
+..hsmmmmmmml.
+...smmmmmmm..
+...ssmmmmm...
+....sssss....
+.....sss.....
