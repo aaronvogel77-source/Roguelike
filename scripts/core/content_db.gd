@@ -52,9 +52,9 @@ func regular_figures() -> Array:
 
 
 ## Legendary aces from arcana packs (secret recipe figures never appear there).
-func legendary_figures() -> Array:
+func legendary_figures(include_locked: bool = false) -> Array:
 	var result := figures.values().filter(func(f: Dictionary) -> bool:
-		return f["rank"] == LEGEND_RANK and not f.get("recipe", false) and not f["id"] in locked_figures)
+		return f["rank"] == LEGEND_RANK and not f.get("recipe", false) and (include_locked or not f["id"] in locked_figures))
 	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	return result
 

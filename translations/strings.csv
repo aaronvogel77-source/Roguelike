@@ -393,7 +393,6 @@ COST_FIGURES,2 Figuren,2 figures
 COST_REAR_FIGURE,Hinterste Figur,Rearmost figure
 COST_PACT,1 Pakt,1 pact
 COST_RISK,Vorderste Figur riskieren,Risk your front figure
-UI_CHOOSE,Wählen,Choose
 UI_CHAMPION,Der Champion,The champion
 RARITY_4,Einzigartig,Unique
 RARITY_4_DESC,"+2 Zusatzeffekte, 1 einzigartiger Effekt","+2 bonus effects, 1 unique effect"
@@ -545,3 +544,88 @@ UI_CAT_ABILITY,Fähigkeit,Ability
 UI_CAT_TAROT,Tarot,Tarot
 UI_CAT_RELIC,Relikt,Relic
 UI_CAT_PACT,Pakt,Pact
+UI_MENU_SUBTITLE,Ein düsteres Tarot-Auto-Battler-Roguelite,A dark tarot auto-battler roguelite
+UI_MENU_CONTINUE,Fortsetzen,Continue
+UI_MENU_NEW_RUN,Neuer Run,New Run
+UI_MENU_VAULT,Krypta-Lager,Crypt Vault
+UI_MENU_GRIMOIRE,Grimoire,Grimoire
+UI_MENU_STATS,Runs: %d · Siege: %d,Runs: %d · Wins: %d
+UI_CHOOSE_OCCULTIST,Wähle deinen Okkultisten,Choose your occultist
+UI_NEW_RUN_WARNING,Ein neuer Run ersetzt deinen gespeicherten Run.,A new run replaces your saved run.
+UI_OCC_START_RANDOM,Start: zufälliger Bube,Start: a random page
+UI_OCC_START,Start: %s,Start: %s
+UI_OCC_LOCKED,"Gesperrt – Herausforderung: %s, oder im Lager für %d Seelenglut","Locked – challenge: %s, or in the vault for %d embers"
+UI_OCC_CHALLENGE,Gratis durch: %s,Free through: %s
+UI_OWNED,Freigeschaltet,Unlocked
+UI_VAULT_TITLE,Krypta-Lager,Crypt Vault
+UI_STATION_CHESTS,Truhen,Chests
+UI_STATION_CHESTS_DESC,Öffne Themen-Truhen und schalte neue Inhalte für künftige Runs frei.,Open themed chests to unlock new content for future runs.
+UI_STATION_ALTAR,Altar,Altar
+UI_STATION_ALTAR_DESC,Kleine dauerhafte Verbesserungen für jeden Run.,Small permanent upgrades for every run.
+UI_STATION_PORTRAITS,Bildnisse,Portraits
+UI_STATION_PORTRAITS_DESC,Neue Okkultisten mit eigener Grundregel.,New occultists with their own rule.
+UI_STATION_MIRROR,Spiegel,Mirror
+UI_STATION_MIRROR_DESC,"Kartenrücken, Hintergründe, Aura-Farben und Skins.","Card backs, backgrounds, aura colours and skins."
+UI_OPEN,Öffnen,Open
+UI_BUY_FOR,%d Seelenglut,%d embers
+UI_GLUT,Seelenglut: %d,Soul embers: %d
+UI_BACK,Zurück,Back
+UI_CHEST_MISSING,Noch nicht gefunden: %d von %d,Not found yet: %d of %d
+UI_CHEST_NEW,neu!,new!
+UI_CHEST_DUPLICATE,"doppelt, +%d Seelenglut","duplicate, +%d embers"
+UI_UPGRADE_LEVEL,Stufe %d / %d,Level %d / %d
+UI_MAXED,Höchststufe,Maxed
+UI_WEAR,Anlegen,Wear
+UI_WORN,Angelegt,Worn
+UI_SKIN_FROM_CHEST,auch aus der Figuren-Truhe,also from the figure chest
+UI_GRIMOIRE_TITLE,Grimoire,Grimoire
+UI_GRIMOIRE_HINT,Tippe einen Eintrag an. Unentdecktes bleibt ???.,Tap an entry. Undiscovered things stay ???.
+GRIMOIRE_FIGURES,Figuren,Figures
+GRIMOIRE_RELICS,Relikte,Relics
+GRIMOIRE_TAROT,Tarot,Tarot
+GRIMOIRE_PACTS,Pakte,Pacts
+GRIMOIRE_MASTERS,Meister,Masters
+GRIMOIRE_RECIPES,Rezepte,Recipes
+GRIMOIRE_ENEMIES,Gegner,Enemies
+UI_RUN_GLUT,Übrige Seelen: %d → +%d Seelenglut (jetzt %d),Leftover souls: %d → +%d embers (now %d)
+UI_RUN_NEW_OCCULTIST,Neuer Okkultist freigeschaltet: %s,New occultist unlocked: %s
+UI_TO_MENU,Zum Hauptmenü,To the main menu
+OCC_NOVICE,Der Novize,The Novice
+OCC_NOVICE_RULE,Keine Sonderregel. Zinsen bis +5.,No special rule. Interest up to +5.
+OCC_USURER,Der Wucherer,The Usurer
+OCC_USURER_RULE,"Zinsen bis +7 statt +5, aber nur 6 Startgold.","Interest up to +7 instead of +5, but only 6 starting gold."
+OCC_FENCER,Die Fechtmeisterin,The Fencing Master
+OCC_FENCER_RULE,"Start mit 4 statt 3 Plätzen, dafür keine Zinsen.","Start with 4 instead of 3 slots, but no interest."
+CHALLENGE_BEAT_ACT1_BOSS,Besiege den Akt-1-Boss,Defeat the act 1 boss
+CHALLENGE_WIN_RUN,Gewinne einen Run,Win a run
+CHEST_FIGURES,Figuren-Truhe,Figure Chest
+CHEST_FIGURES_DESC,Asse und Figuren-Skins.,Aces and figure skins.
+CHEST_RELICS,Relikt-Truhe,Relic Chest
+CHEST_RELICS_DESC,"Relikte, Tarot-Karten und Pakte.","Relics, tarot cards and pacts."
+CHEST_EVENTS,Ereignis-Truhe,Event Chest
+CHEST_EVENTS_DESC,Neue okkulte Ereignisse.,New occult events.
+UPGRADE_START_GOLD,Erbstück,Heirloom
+UPGRADE_START_GOLD_DESC,+1 Startgold pro Stufe.,+1 starting gold per level.
+UPGRADE_CHEAP_REROLL,Gezinkte Würfel,Loaded Dice
+UPGRADE_CHEAP_REROLL_DESC,Das erste Neuwürfeln in jedem Shop kostet 1 Gold weniger pro Stufe.,The first reroll in each shop costs 1 gold less per level.
+UPGRADE_START_SOUL,Gebundene Seele,Bound Soul
+UPGRADE_START_SOUL_DESC,Jeder Run beginnt mit 1 Seele mehr pro Stufe.,Each run starts with 1 more soul per level.
+UPGRADE_PACK_LUCK,Glückliche Hand,Lucky Hand
+UPGRADE_PACK_LUCK_DESC,Legendäre Karten in Arcana-Packs +50 % häufiger pro Stufe.,Legendary cards in arcana packs 50 % more often per level.
+COSMETIC_KIND_BACK,Kartenrücken,Card back
+COSMETIC_KIND_STAGE,Hintergrund,Background
+COSMETIC_KIND_AURA,Aura,Aura
+COSMETIC_KIND_SKIN,Skin,Skin
+COSMETIC_BACK_TAROT,Tarot-Samt,Tarot Velvet
+COSMETIC_BACK_BLOOD,Blutsiegel,Blood Seal
+COSMETIC_BACK_GOLD,Goldprägung,Gold Leaf
+COSMETIC_STAGE_VAULT,Schatzgewölbe,Treasure Vault
+COSMETIC_STAGE_CATHEDRAL,Zerfallene Kathedrale,Ruined Cathedral
+COSMETIC_STAGE_GRAVEYARD,Mondfriedhof,Moonlit Graveyard
+COSMETIC_AURA_SUITS,Farben der Teile,Suit colours
+COSMETIC_AURA_VIOLET,Violetter Schleier,Violet Veil
+COSMETIC_AURA_EMBER,Glutfunken,Ember Sparks
+COSMETIC_SKIN_BONE_EXECUTIONER,Knochen-Henker,Bone Executioner
+COSMETIC_SKIN_FROST_MIDAS,Frost-Midas,Frost Midas
+COSMETIC_SKIN_SHADOW_JUDGE,Schattenrichter,Shadow Judge
+COSMETIC_SKIN_EMBER_SPARK,Glutträger,Ember Bearer

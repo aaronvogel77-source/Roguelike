@@ -97,6 +97,8 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 		order.sort_custom(func(x: String, y: String) -> bool: return counts[x] > counts[y])
 		for s in order.slice(0, 2):
 			_aura_colors.append(Color(FigureArt.GEMS.get(s, "ffffff")).lightened(0.25))
+		if not Cosmetics.aura_colors().is_empty():
+			_aura_colors = Cosmetics.aura_colors()
 		if stage >= 3 and counts[order[0]] >= 3:
 			_pure_suit = order[0]
 		_aura = Node2D.new()

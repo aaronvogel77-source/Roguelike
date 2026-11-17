@@ -1,0 +1,516 @@
+class_name MetaView
+extends Control
+## Everything outside a run: the main menu, the occultist choice, the vault
+## (crypt with chests, altar, portraits and mirror) and the grimoire.
+## Purchases change the MetaState and save it at once.
+
+signal continue_run
+signal start_run(occultist: String)
+
+const PAGES_IN_VAULT := ["chests", "altar", "portraits", "mirror"]
+const GRIMOIRE_TABS := ["figures", "relics", "tarot", "pacts", "masters", "recipes", "enemies"]
+const COSMETIC_KINDS := ["back", "stage", "aura", "skin"]
+
+var _db: ContentDb
+var _meta: MetaState
+var _has_save := false
+var _debug := false
+var _page := "menu"
+var _tab := "figures"
+var _rng := RandomNumberGenerator.new()
+var _last_chest: Array = []
+var _info: RichTextLabel
+
+
+static func create(db: ContentDb, meta: MetaState, has_save: bool, debug: bool) -> MetaView:
+	var view := MetaView.new()
+	view._db = db
+	view._meta = meta
+	view._has_save = has_save
+	view._debug = debug
+	view._rng.randomize()
+	view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	return view
+
+
+func _ready() -> void:
+	_show("menu")
+
+
+func _show(page: String) -> void:
+	_page = page
+	for child in get_children():
+		child.queue_free()
+	# The crypt: the pixel vault of the battle stage, dimmed behind the pages.
+	var backdrop := TextureRect.new()
+	backdrop.texture = FigureArt.background(Cosmetics.stage, 300, 130, 106)
+	backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	backdrop.modulate = Color(0.55, 0.5, 0.55) if page == "menu" else Color(0.32, 0.3, 0.34)
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(backdrop)
+	var margin := MarginContainer.new()
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 24)
+	add_child(margin)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 12)
+	margin.add_child(column)
+	match page:
+		"menu":
+			_build_menu(column)
+		"occultists":
+			_build_occultists(column)
+		"vault":
+			_build_vault(column)
+		"chests", "altar", "portraits", "mirror":
+			_build_station(column)
+		"grimoire":
+			_build_grimoire(column)
+
+
+# --- Main menu ------------------------------------------------------------------------
+
+func _build_menu(column: VBoxContainer) -> void:
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	var title := _label("ARCANA", 92, Palette.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+	var sub := _label(tr("UI_MENU_SUBTITLE"), 24, Palette.MUTED)
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(sub)
+	column.add_child(_centered(_glut_badge()))
+	var buttons := VBoxContainer.new()
+	buttons.add_theme_constant_override("separation", 10)
+	if _has_save:
+		buttons.add_child(_button(tr("UI_MENU_CONTINUE"), Vector2(360, 66), func() -> void: continue_run.emit()))
+	buttons.add_child(_button(tr("UI_MENU_NEW_RUN"), Vector2(360, 66), _show.bind("occultists")))
+	buttons.add_child(_button(tr("UI_MENU_VAULT"), Vector2(360, 66), _show.bind("vault")))
+	buttons.add_child(_button(tr("UI_MENU_GRIMOIRE"), Vector2(360, 66), _show.bind("grimoire")))
+	if _debug:
+		buttons.add_child(_button("+50 Seelenglut", Vector2(360, 44), func() -> void:
+			_meta.glut += 50
+			_meta.save()
+			_show("menu")))
+	column.add_child(_centered(buttons))
+	var stats := _label(tr("UI_MENU_STATS") % [_meta.runs, _meta.wins], 18, Palette.MUTED)
+	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(stats)
+
+
+# --- Occultist choice ------------------------------------------------------------------
+
+func _build_occultists(column: VBoxContainer) -> void:
+	column.add_child(_header(tr("UI_CHOOSE_OCCULTIST")))
+	if _has_save:
+		var warn := _label(tr("UI_NEW_RUN_WARNING"), 18, Palette.HEALTH)
+		warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		column.add_child(warn)
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 18)
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(row)
+	for entry in _db.meta["occultists"]:
+		var id: String = entry["id"]
+		var owned := id in _meta.occultists
+		var card := _panel(Vector2(330, 360), Palette.GOLD if owned else Color(1, 1, 1, 0.2))
+		var box := _box(card)
+		box.add_child(_centered(Emblem.create("skull" if id == "novice" else ("coin" if id == "usurer" else "sword"), 56)))
+		box.add_child(_text_label(tr("OCC_" + id.to_upper()), 28, Palette.GOLD if owned else Palette.MUTED))
+		box.add_child(_rich(tr("OCC_" + id.to_upper() + "_RULE"), 17))
+		var start := String(entry.get("start", ""))
+		var start_text := tr("UI_OCC_START_RANDOM") if start == "" else tr("UI_OCC_START") % ContentDb.display_name(_db.figures[start])
+		box.add_child(_rich(start_text + " · " + tr("UI_GOLD") % int(entry["start_gold"]), 16))
+		if owned:
+			box.add_child(_button(tr("UI_CHOOSE"), Vector2(220, 56), func() -> void: start_run.emit(id)))
+		else:
+			box.add_child(_rich("[color=#%s]%s[/color]" % [Palette.MUTED.to_html(false),
+				tr("UI_OCC_LOCKED") % [tr("CHALLENGE_" + String(entry["challenge"]).to_upper()), int(entry["price"])]], 16))
+		row.add_child(card)
+	column.add_child(_back_button("menu"))
+
+
+# --- Vault (crypt) ---------------------------------------------------------------------
+
+func _build_vault(column: VBoxContainer) -> void:
+	column.add_child(_header(tr("UI_VAULT_TITLE")))
+	column.add_child(_centered(_glut_badge()))
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 16)
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(row)
+	var icons := {"chests": "pack", "altar": "star", "portraits": "skull", "mirror": "soul"}
+	for station in PAGES_IN_VAULT:
+		var card := _panel(Vector2(250, 300), Palette.GOLD)
+		var box := _box(card)
+		box.add_child(_centered(Emblem.create(icons[station], 72)))
+		box.add_child(_text_label(tr("UI_STATION_" + station.to_upper()), 28, Palette.GOLD))
+		box.add_child(_rich(tr("UI_STATION_" + station.to_upper() + "_DESC"), 16))
+		box.add_child(_button(tr("UI_OPEN"), Vector2(170, 52), _show.bind(station)))
+		row.add_child(card)
+	column.add_child(_back_button("menu"))
+
+
+func _build_station(column: VBoxContainer) -> void:
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 20)
+	top.add_child(_label(tr("UI_STATION_" + _page.to_upper()), 40, Palette.GOLD))
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_child(spacer)
+	top.add_child(_glut_badge())
+	column.add_child(top)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	column.add_child(scroll)
+	var grid := HFlowContainer.new()
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 14)
+	grid.add_theme_constant_override("v_separation", 14)
+	scroll.add_child(grid)
+	match _page:
+		"chests":
+			for chest in _db.meta["chests"]:
+				grid.add_child(_chest_card(chest))
+		"altar":
+			for entry in _db.meta["upgrades"]:
+				grid.add_child(_upgrade_card(entry))
+		"portraits":
+			for entry in _db.meta["occultists"]:
+				if entry.has("price"):
+					grid.add_child(_portrait_card(entry))
+		"mirror":
+			for kind in COSMETIC_KINDS:
+				for entry in _db.meta["cosmetics"]:
+					if entry["kind"] == kind:
+						grid.add_child(_cosmetic_card(entry))
+	_info = _rich("", 18)
+	column.add_child(_info)
+	if _page == "chests" and not _last_chest.is_empty():
+		_info.text = "[center]" + _chest_result_text() + "[/center]"
+	column.add_child(_back_button("vault"))
+
+
+func _chest_card(chest: Dictionary) -> Control:
+	var id: String = chest["id"]
+	var price := int(chest["price"])
+	var pool := MetaState.chest_pool(_db, id)
+	var missing := pool.filter(func(p: Array) -> bool: return not _owns(p[0], p[1])).size()
+	var card := _panel(Vector2(300, 260), Cosmetics.back_colors()["border"])
+	var box := _box(card)
+	box.add_child(_centered(Emblem.create("pack", 56)))
+	box.add_child(_text_label(tr("CHEST_" + id.to_upper()), 24, Palette.GOLD))
+	box.add_child(_rich(tr("CHEST_" + id.to_upper() + "_DESC") + "\n" + tr("UI_CHEST_MISSING") % [missing, pool.size()], 15))
+	var open := _button(tr("UI_BUY_FOR") % price, Vector2(200, 50), func() -> void:
+		_last_chest = _meta.open_chest(_db, id, _rng)
+		_meta.save()
+		_show("chests"))
+	open.disabled = _meta.glut < price
+	box.add_child(open)
+	return card
+
+
+func _chest_result_text() -> String:
+	var parts: Array = []
+	for found in _last_chest:
+		var name := _content_name(found["kind"], found["id"])
+		if found["new"]:
+			parts.append("[color=#ffe08a][b]%s[/b] – %s[/color]" % [name, tr("UI_CHEST_NEW")])
+		else:
+			parts.append("[color=#9a9488]%s – %s[/color]" % [name, tr("UI_CHEST_DUPLICATE") % int(_db.meta["duplicate_refund"])])
+	return "   ·   ".join(parts)
+
+
+func _upgrade_card(entry: Dictionary) -> Control:
+	var id: String = entry["id"]
+	var level := int(_meta.upgrades.get(id, 0))
+	var max_level: int = entry["prices"].size()
+	var price := _meta.upgrade_price(_db, id)
+	var card := _panel(Vector2(300, 250), Palette.GOLD if level > 0 else Color(1, 1, 1, 0.25))
+	var box := _box(card)
+	box.add_child(_text_label(tr("UPGRADE_" + id.to_upper()), 24, Palette.GOLD))
+	box.add_child(_rich(tr("UPGRADE_" + id.to_upper() + "_DESC"), 15))
+	box.add_child(_text_label(tr("UI_UPGRADE_LEVEL") % [level, max_level], 18, Palette.PARCHMENT))
+	if price < 0:
+		box.add_child(_text_label(tr("UI_MAXED"), 20, Palette.MUTED))
+	else:
+		var buy := _button(tr("UI_BUY_FOR") % price, Vector2(200, 50), func() -> void:
+			if _meta.buy_upgrade(_db, id):
+				_meta.save()
+			_show("altar"))
+		buy.disabled = _meta.glut < price
+		box.add_child(buy)
+	return card
+
+
+func _portrait_card(entry: Dictionary) -> Control:
+	var id: String = entry["id"]
+	var owned := id in _meta.occultists
+	var card := _panel(Vector2(320, 280), Palette.GOLD if owned else Color(1, 1, 1, 0.25))
+	var box := _box(card)
+	box.add_child(_text_label(tr("OCC_" + id.to_upper()), 26, Palette.GOLD))
+	box.add_child(_rich(tr("OCC_" + id.to_upper() + "_RULE"), 15))
+	box.add_child(_rich("[color=#%s]%s[/color]" % [Palette.MUTED.to_html(false),
+		tr("UI_OCC_CHALLENGE") % tr("CHALLENGE_" + String(entry["challenge"]).to_upper())], 15))
+	if owned:
+		box.add_child(_text_label(tr("UI_OWNED"), 20, Palette.LIFE))
+	else:
+		var buy := _button(tr("UI_BUY_FOR") % int(entry["price"]), Vector2(200, 50), func() -> void:
+			if _meta.buy_occultist(_db, id):
+				_meta.save()
+			_show("portraits"))
+		buy.disabled = _meta.glut < int(entry["price"])
+		box.add_child(buy)
+	return card
+
+
+func _cosmetic_card(entry: Dictionary) -> Control:
+	var id: String = entry["id"]
+	var owned := id in _meta.cosmetics
+	var worn := _is_worn(entry)
+	var card := _panel(Vector2(240, 200), Palette.GOLD if worn else (Palette.PARCHMENT if owned else Color(1, 1, 1, 0.2)))
+	var box := _box(card)
+	box.add_child(_text_label(tr("COSMETIC_KIND_" + String(entry["kind"]).to_upper()), 14, Palette.MUTED))
+	box.add_child(_text_label(tr("COSMETIC_" + id.to_upper()), 20, Palette.GOLD if owned else Palette.PARCHMENT))
+	if entry["kind"] == "back":
+		var swatch := ColorRect.new()
+		swatch.custom_minimum_size = Vector2(46, 30)
+		swatch.color = Color(Cosmetics.BACKS[id]["bg"])
+		box.add_child(_centered(swatch))
+	if owned:
+		box.add_child(_button(tr("UI_WORN") if worn else tr("UI_WEAR"), Vector2(170, 46), func() -> void:
+			_meta.equip(_db, id)
+			_meta.save()
+			Cosmetics.apply(_meta)
+			_show("mirror")))
+	elif entry["kind"] == "skin":
+		box.add_child(_rich("[color=#%s]%s[/color]" % [Palette.MUTED.to_html(false), tr("UI_SKIN_FROM_CHEST")], 13))
+		box.add_child(_buy_cosmetic_button(id, int(entry["price"])))
+	else:
+		box.add_child(_buy_cosmetic_button(id, int(entry["price"])))
+	return card
+
+
+func _buy_cosmetic_button(id: String, price: int) -> Button:
+	var buy := _button(tr("UI_BUY_FOR") % price, Vector2(170, 46), func() -> void:
+		if _meta.buy_cosmetic(_db, id):
+			_meta.save()
+		_show("mirror"))
+	buy.disabled = _meta.glut < price
+	return buy
+
+
+func _is_worn(entry: Dictionary) -> bool:
+	if entry["kind"] == "skin":
+		return _meta.equipped["skins"].get(entry["figure"], "") == entry["id"]
+	return _meta.equipped.get(entry["kind"], "") == entry["id"]
+
+
+func _owns(kind: String, id: String) -> bool:
+	return id in _meta.cosmetics if kind == "skins" else _meta.is_unlocked(kind, id)
+
+
+# --- Grimoire ------------------------------------------------------------------------------
+
+func _build_grimoire(column: VBoxContainer) -> void:
+	column.add_child(_header(tr("UI_GRIMOIRE_TITLE")))
+	var tabs := HBoxContainer.new()
+	tabs.alignment = BoxContainer.ALIGNMENT_CENTER
+	tabs.add_theme_constant_override("separation", 8)
+	for tab in GRIMOIRE_TABS:
+		var all := _grimoire_entries(tab)
+		var known := all.filter(func(id: String) -> bool: return _meta.is_discovered(tab, id)).size()
+		var button := _button("%s %d/%d" % [tr("GRIMOIRE_" + tab.to_upper()), known, all.size()], Vector2(0, 46), func() -> void:
+			_tab = tab
+			_show("grimoire"))
+		button.add_theme_font_size_override("font_size", 17)
+		if tab == _tab:
+			button.add_theme_color_override("font_color", Palette.GOLD)
+		tabs.add_child(button)
+	column.add_child(tabs)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	column.add_child(scroll)
+	var grid := HFlowContainer.new()
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
+	scroll.add_child(grid)
+	for id in _grimoire_entries(_tab):
+		var known := _meta.is_discovered(_tab, id)
+		var entry := Button.new()
+		entry.custom_minimum_size = Vector2(200, 54)
+		entry.text = _content_name(_tab, id) if known else "???"
+		entry.add_theme_font_size_override("font_size", 17)
+		if known:
+			entry.pressed.connect(func() -> void:
+				_info.text = "[center][b]%s[/b] – %s[/center]" % [_content_name(_tab, id), Keywords.colorize(_content_text(_tab, id))])
+		else:
+			entry.add_theme_color_override("font_color", Palette.MUTED)
+		grid.add_child(entry)
+	_info = _rich(tr("UI_GRIMOIRE_HINT"), 18)
+	_info.custom_minimum_size = Vector2(0, 54)
+	column.add_child(_info)
+	column.add_child(_back_button("menu"))
+
+
+func _grimoire_entries(tab: String) -> Array:
+	var ids: Array = []
+	match tab:
+		"figures":
+			for f in _db.figures.values():
+				if not f.get("recipe", false):
+					ids.append(f["id"])
+		"recipes":
+			for f in _db.figures.values():
+				if f.get("recipe", false):
+					ids.append(f["id"])
+		"relics":
+			ids = _db.items["relics"].map(func(r: Dictionary) -> String: return r["id"])
+		"tarot":
+			ids = _db.items["tarot"].duplicate()
+		"pacts":
+			ids = _db.items["pacts"].duplicate()
+		"masters":
+			ids = _db.fusion["masters"].map(func(m: Dictionary) -> String: return m["id"])
+		"enemies":
+			for e in _db.enemies.values():
+				ids.append(e["id"])
+	ids.sort()
+	return ids
+
+
+func _content_name(kind: String, id: String) -> String:
+	match kind:
+		"figures", "recipes":
+			return ContentDb.display_name(_db.figures[id])
+		"enemies":
+			return ContentDb.display_name(_db.enemies[id])
+		"relics":
+			return ItemText.relic_name(id)
+		"tarot":
+			return ItemText.tarot_name(id)
+		"pacts":
+			return tr("PACT_" + id.to_upper())
+		"masters":
+			return tr("MASTER_" + id.to_upper())
+		"events":
+			return tr("EVENT_" + id.to_upper())
+		"skins":
+			return tr("COSMETIC_" + id.to_upper())
+	return id
+
+
+func _content_text(kind: String, id: String) -> String:
+	match kind:
+		"figures", "recipes", "enemies":
+			var definition: Dictionary = _db.figures[id] if kind != "enemies" else _db.enemies[id]
+			var stats := "%d/%d" % [int(definition.get("attack", 0)), int(definition.get("health", 0))]
+			if not definition.has("ability"):
+				return stats
+			var ability: Dictionary = definition["ability"]
+			var text := tr("ABIL_" + id.to_upper())
+			return stats + " · " + text.replace("{v}", NumberFormat.ability_value(ability["effect"], ability["values"][0]))
+		"relics":
+			return ItemText.relic_text(id)
+		"tarot":
+			return ItemText.tarot_text(id)
+		"pacts":
+			return tr("PACT_" + id.to_upper() + "_DESC")
+		"masters":
+			return tr("MASTER_" + id.to_upper() + "_DESC")
+	return ""
+
+
+# --- Building blocks -------------------------------------------------------------------
+
+func _glut_badge() -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	row.add_child(Emblem.create("soul", 30))
+	row.add_child(_label(tr("UI_GLUT") % _meta.glut, 28, Color("ffb060")))
+	return row
+
+
+func _header(text: String) -> Label:
+	var label := _label(text, 42, Palette.GOLD)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	return label
+
+
+func _back_button(page: String) -> Control:
+	return _centered(_button(tr("UI_BACK"), Vector2(220, 54), _show.bind(page)))
+
+
+func _panel(min_size: Vector2, border: Color) -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = min_size
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.065, 0.1, 0.94)
+	style.border_color = border
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(10)
+	style.content_margin_left = 12
+	style.content_margin_right = 12
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", style)
+	return panel
+
+
+func _box(panel: PanelContainer) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 8)
+	panel.add_child(box)
+	return box
+
+
+func _centered(control: Control) -> CenterContainer:
+	var center := CenterContainer.new()
+	center.add_child(control)
+	return center
+
+
+func _label(text: String, font_size: int, color: Color) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", color)
+	return label
+
+
+func _text_label(text: String, font_size: int, color: Color) -> Label:
+	var label := _label(text, font_size, color)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	return label
+
+
+func _rich(text: String, font_size: int) -> RichTextLabel:
+	var label := RichTextLabel.new()
+	label.bbcode_enabled = true
+	label.fit_content = true
+	label.scroll_active = false
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	label.custom_minimum_size = Vector2(200, 0)
+	label.add_theme_font_size_override("normal_font_size", font_size)
+	label.add_theme_font_size_override("bold_font_size", font_size)
+	label.add_theme_color_override("default_color", Palette.PARCHMENT)
+	label.text = "[center]" + Keywords.colorize(text) + "[/center]" if text != "" else ""
+	return label
+
+
+func _button(text: String, min_size: Vector2, callback: Callable) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.custom_minimum_size = min_size
+	button.add_theme_font_size_override("font_size", 22)
+	button.pressed.connect(callback)
+	return button

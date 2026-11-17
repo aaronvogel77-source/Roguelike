@@ -48,7 +48,7 @@ func _init() -> void:
 	add_child(_viewport)
 
 	var background := Sprite2D.new()
-	background.texture = FigureArt.vault(VIEW.x, VIEW.y, FLOOR - 4)
+	background.texture = FigureArt.background(Cosmetics.stage, VIEW.x, VIEW.y, FLOOR - 4)
 	background.centered = false
 	_viewport.add_child(background)
 	_ambient = Node2D.new()

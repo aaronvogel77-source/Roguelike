@@ -7,9 +7,12 @@ const DIFFICULTY_NAMES := ["UI_EASY", "UI_MEDIUM", "UI_HARD"]
 const ROW_GAP := 56
 const CARD_SPACING := 6
 const BattleScene := preload("res://scenes/battle.tscn")
+const RUN_SAVE := "user://run.save"
 
 var _db: ContentDb
 var _run: RunState
+var _meta: MetaState
+var _run_summary: Dictionary = {}  # Seelenglut and unlocks of the finished run
 var _undo: Array = []  # RunState.to_dict() snapshots taken before shop actions
 var _selected: Dictionary = {}  # {"kind": "row"/"shop", "index": int}
 var _sell_armed := -1  # row index whose sale awaits a confirming second tap
@@ -39,17 +42,65 @@ func _ready() -> void:
 	if _url_flag("arena"):
 		add_child(BattleScene.instantiate())
 		return
-	_new_run()
+	_meta = MetaState.load_saved()
+	Cosmetics.apply(_meta)
+	# "?seed=N" starts a run directly (testing); otherwise the main menu.
+	if _url_seed() >= 0:
+		_new_run("novice")
+	else:
+		_show_menu()
 
 
-func _new_run() -> void:
+func _show_menu() -> void:
+	_run = null
+	_detail_panel.hide()
+	for child in _screen.get_children():
+		child.queue_free()
+	var menu := MetaView.create(_db, _meta, FileAccess.file_exists(RUN_SAVE), _url_flag("debug"))
+	menu.continue_run.connect(_continue_run)
+	menu.start_run.connect(_new_run)
+	_screen.add_child(menu)
+
+
+func _new_run(occultist: String = "novice") -> void:
 	var seed_value := _url_seed()
 	if seed_value < 0:
 		seed_value = randi() % 1000000
-	_run = RunState.new_run(_db, seed_value)
+	_run = RunState.new_run(_db, seed_value, _meta.run_options(_db, occultist))
+	_run_summary = {}
 	_undo.clear()
 	_show_stage()
 	_show_region_intro()
+
+
+## Loads the autosaved run (there is no manual saving or loading).
+func _continue_run() -> void:
+	var data = str_to_var(FileAccess.get_file_as_string(RUN_SAVE))
+	if not data is Dictionary:
+		DirAccess.remove_absolute(RUN_SAVE)
+		_show_menu()
+		return
+	_run = RunState.from_dict(_db, data)
+	_run_summary = {}
+	_undo.clear()
+	_show_stage()
+
+
+## Autosave after every action; a finished run pays out its Seelenglut once.
+func _autosave() -> void:
+	if _run.stage in [RunState.Stage.WON, RunState.Stage.LOST]:
+		if not _run.flags.get("meta_done", false):
+			_run.flags["meta_done"] = true
+			_run_summary = _meta.finish_run(_run)
+			_meta.save()
+		if FileAccess.file_exists(RUN_SAVE):
+			DirAccess.remove_absolute(RUN_SAVE)
+		return
+	var file := FileAccess.open(RUN_SAVE, FileAccess.WRITE)
+	if file != null:
+		file.store_string(var_to_str(_run.to_dict()))
+	_meta.discover_from_run(_run)
+	_meta.save()
 
 
 ## Interstitial before entering a region: background, name, mood, blessing,
@@ -97,6 +148,7 @@ func _show_region_intro() -> void:
 
 
 func _show_stage() -> void:
+	_autosave()
 	FigureArt.gold_hint = _run.gold  # gold-dependent looks (Gold-Armored)
 	_selected = {}
 	_sell_armed = -1
@@ -139,6 +191,10 @@ func _top_bar(title: String) -> HBoxContainer:
 	bar.custom_minimum_size = Vector2(0, 60)
 	bar.add_theme_constant_override("separation", 28)
 	bar.add_child(_spacer(8))
+	# Back to the main menu; the run is autosaved and can be continued.
+	var menu := _button("≡", Vector2(48, 44), _show_menu)
+	menu.add_theme_font_size_override("font_size", 26)
+	bar.add_child(menu)
 	bar.add_child(_label(title, 30, Palette.GOLD))
 	var fill := Control.new()
 	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1051,8 +1107,9 @@ func _pack_view(index: int) -> Control:
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("2a0e3a") if not pack.is_empty() else Color(1, 1, 1, 0.03)
-	style.border_color = Palette.GOLD if not pack.is_empty() else Color(1, 1, 1, 0.15)
+	var back := Cosmetics.back_colors()  # the card back worn from the vault mirror
+	style.bg_color = back["bg"] if not pack.is_empty() else Color(1, 1, 1, 0.03)
+	style.border_color = back["border"] if not pack.is_empty() else Color(1, 1, 1, 0.15)
 	style.set_border_width_all(4 if pack.get("size", "") == "mega" else 2)
 	style.set_corner_radius_all(10)
 	style.set_content_margin_all(4)
@@ -1876,7 +1933,13 @@ func _build_run_end() -> void:
 	var own := CenterContainer.new()
 	own.add_child(_scaled(_own_team_row(), 0.8))
 	column.add_child(own)
-	var again := _button(tr("UI_NEW_RUN"), Vector2(280, 72), _new_run)
+	# What the run leaves behind: Seelenglut and newly won occultists.
+	if not _run_summary.is_empty():
+		var glut_text := tr("UI_RUN_GLUT") % [_run.souls, int(_run_summary["glut"]), _meta.glut]
+		for id in _run_summary.get("occultists", []):
+			glut_text += "\n" + tr("UI_RUN_NEW_OCCULTIST") % tr("OCC_" + String(id).to_upper())
+		column.add_child(_rich_line(glut_text, 24))
+	var again := _button(tr("UI_TO_MENU"), Vector2(280, 72), _show_menu)
 	again.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	column.add_child(again)
 

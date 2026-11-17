@@ -14,6 +14,7 @@ func test_battle_scene_runs() -> void:
 func test_run_scene_runs_through_its_screens() -> void:
 	var view: Node = load("res://scenes/run.tscn").instantiate()
 	add_child_autofree(view)
+	view._new_run()
 	await wait_frames(3)
 	view._on_choose_enemy(0)
 	await wait_frames(2)
@@ -38,6 +39,7 @@ func test_run_scene_runs_through_its_screens() -> void:
 func test_merge_screen_and_sell_zone() -> void:
 	var view: Node = load("res://scenes/run.tscn").instantiate()
 	add_child_autofree(view)
+	view._new_run()
 	await wait_frames(3)
 	view._on_choose_enemy(0)
 	await wait_frames(2)
@@ -54,6 +56,7 @@ func test_merge_screen_and_sell_zone() -> void:
 func test_pack_overlay_tarot_and_insert() -> void:
 	var view: Node = load("res://scenes/run.tscn").instantiate()
 	add_child_autofree(view)
+	view._new_run()
 	await wait_frames(3)
 	view._on_choose_enemy(0)
 	await wait_frames(2)
@@ -82,6 +85,7 @@ func test_pack_overlay_tarot_and_insert() -> void:
 func test_event_screens_skip_and_soul_pack() -> void:
 	var view: Node = load("res://scenes/run.tscn").instantiate()
 	add_child_autofree(view)
+	view._new_run()
 	await wait_frames(3)
 	for id in view._db.items["events"]["ids"]:
 		view._run.start_event(id)
@@ -116,6 +120,7 @@ func test_event_screens_skip_and_soul_pack() -> void:
 func test_market_mirror_and_equipment_compare() -> void:
 	var view: Node = load("res://scenes/run.tscn").instantiate()
 	add_child_autofree(view)
+	view._new_run()
 	await wait_frames(3)
 	view._run.gold = 30
 	view._run.souls = 3
@@ -144,3 +149,15 @@ func test_market_mirror_and_equipment_compare() -> void:
 	view._on_slot_dropped({"kind": "pack", "index": 0}, view._slot_for("row", 0))
 	await wait_frames(2)
 	assert_eq(view._run.row[0]["equipment"]["base"], "amulet", "nothing swapped before confirming")
+
+
+func test_main_menu_vault_and_grimoire_pages_build() -> void:
+	var view: Node = load("res://scenes/run.tscn").instantiate()
+	add_child_autofree(view)
+	await wait_frames(2)
+	var menu: MetaView = view._screen.get_child(view._screen.get_child_count() - 1)
+	for page in ["occultists", "vault", "chests", "altar", "portraits", "mirror", "grimoire", "menu"]:
+		menu._show(page)
+		await wait_frames(1)
+	assert_true(is_instance_valid(menu))
+

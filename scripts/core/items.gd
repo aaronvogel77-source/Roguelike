@@ -154,7 +154,8 @@ static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: Random
 			var chance: float = db.items["packs"]["legend_chance"][pack["size"]]
 			var cards: Array = []
 			for i in count:
-				var legends := db.legendary_figures()
+				# The debug "Legende" button still finds aces that are locked.
+				var legends := db.legendary_figures(force_legend and i == 0)
 				if not legends.is_empty() and ((force_legend and i == 0) or rng.randf() < chance):
 					result.append({"kind": "figure", "def_id": legends[rng.randi_range(0, legends.size() - 1)]["id"]})
 					continue
