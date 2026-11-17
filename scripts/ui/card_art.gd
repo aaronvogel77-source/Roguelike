@@ -168,15 +168,23 @@ static func _tarot(w: int, h: int) -> Dictionary:
 static func _fusion(w: int, h: int, ranks: Array, suit: String, stage: int) -> Dictionary:
 	var c := PixelCanvas.new(w, h)
 	var main: Dictionary = TIERS.get(ranks[0], TIERS["page"])
+	# Calm and elegant: the main figure's parchment, the braided frame of all
+	# fused figures, and one small gold stone per fusion stage at the bottom.
 	_gradient(c, w, h, Color(main["bg"][0]), Color(main["bg"][1]))
 	_fibres(c, w, h, Color(main["bg"][1]))
-	_rays(c, w, h, Color(_colors(main["frame"])[2], 0.18 + 0.08 * stage), 10 + stage * 2)
-	_watermark(c, w, h, suit, Color(_colors(main["frame"])[1], 0.3), false)
+	_watermark(c, w, h, suit, Color(_colors(main["frame"])[1], 0.22), false)
 	var frames: Array = ranks.map(func(r: String) -> Array: return _colors(TIERS.get(r, TIERS["page"])["frame"]))
 	_frame(c, w, h, frames)
+	var gold := _colors(TIERS["king"]["frame"])
+	for x in range(5, w - 5):  # a fine gold inner line
+		c.px(Color(gold[2], 0.55), x, 4)
+		c.px(Color(gold[2], 0.55), x, h - 5)
+	for i in clampi(stage, 1, 3):
+		var x := w / 2 + (i - (clampi(stage, 1, 3) - 1) / 2.0) * 5.0
+		c.px(OUTLINE, int(x) - 1, h - 3, 3, 3)
+		c.px(gold[3], int(x), h - 2)
 	_round(c, w, h)
-	var fx := {"gloss": [0.0, 0.45, 0.75, 1.0][clampi(stage, 0, 3)], "sparkle": 1.0 if stage >= 2 else 0.0,
-		"poly": 0.45 if stage >= 3 else 0.0}
+	var fx := {"gloss": [0.0, 0.15, 0.22, 0.3][clampi(stage, 0, 3)]}
 	return {"tex": c.texture(), "fx": fx, "accent": frames[0][2], "dark": false}
 
 

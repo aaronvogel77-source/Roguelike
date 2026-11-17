@@ -82,8 +82,8 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	var stage := int(unit_definition.get("fusion", {}).get("stage", 0))
 	if stage > 0:
 		var suits: Array = unit_definition["fusion"]["suits"]
-		_style.shadow_color = Color(Palette.SUIT_COLORS.get(suits[-1], Palette.GOLD), 0.75)
-		_style.shadow_size = 3 + 3 * stage
+		_style.shadow_color = Color(Palette.SUIT_COLORS.get(suits[-1], Palette.GOLD), 0.4)
+		_style.shadow_size = 1 + stage  # a soft, narrow glow behind the card
 		if stage >= 3:
 			_cycle_glow.call_deferred(suits)  # after the glow panel exists
 	# Legendary skins: a glowing frame in the skin's theme colour.
@@ -209,7 +209,7 @@ func apply_snapshot(new_snapshot: Dictionary) -> void:
 
 ## F3: the glow slowly cycles through the fused suits' colors.
 func _cycle_glow(suits: Array) -> void:
-	var colors: Array = suits.map(func(s: String) -> Color: return Color(Palette.SUIT_COLORS.get(s, Palette.GOLD), 0.8))
+	var colors: Array = suits.map(func(s: String) -> Color: return Color(Palette.SUIT_COLORS.get(s, Palette.GOLD), 0.45))
 	var tween := create_tween().set_loops()
 	for color in colors:
 		tween.tween_property(_glow_style, "shadow_color", color, 0.8)
