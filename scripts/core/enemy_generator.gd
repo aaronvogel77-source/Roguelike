@@ -10,11 +10,11 @@ extends RefCounted
 ## Budget per fight in act 1: small, big, boss.
 ## The boss budget pays only for the retinue; the boss figure comes on top.
 ## (static vars, not consts: tools/auto_tune.gd tries other values.)
-static var FIGHT_BUDGET := [3.35, 6.3, 2.0]
+static var FIGHT_BUDGET := [2.8, 5.6, 2.0]
 ## Budget grows exponentially per act.
-static var ACT_GROWTH := 4.8
+static var ACT_GROWTH := 5.4
 ## Extra factor for the small fight from act 2 on (act 1 small fights stay as they are).
-static var LATE_SMALL_FACTOR := 1.19
+static var LATE_SMALL_FACTOR := 1.26
 ## Retinue budget of the boss fight per act (act 1 kept small: the boss itself is strong).
 static var BOSS_RETINUE := [2.0, 43.0]
 ## Easy / medium / hard options in the enemy choice.
@@ -28,6 +28,9 @@ const THEME_WEIGHT := 3
 const ROLE_ORDER := {"front": 0, "any": 1, "back": 2}
 ## Each harder option is at least this much stronger than the one before.
 const MIN_STEP := 1.3
+## Act 1 is gentler: the hard band is only 1.2 × the medium one (later acts 1.3).
+static var ACT1_HARD_FACTOR := 1.15
+const ACT1_MIN_STEP := 1.2
 ## The hard option always has at least this many enemies (one dragon alone was too easy).
 const HARD_MIN_UNITS := 2
 
@@ -39,7 +42,7 @@ static func budget(act: int, fight: int, difficulty: int) -> int:
 	if fight == 2:
 		value = BOSS_RETINUE[act - 1] if act <= BOSS_RETINUE.size() else BOSS_RETINUE[-1] * pow(ACT_GROWTH, act - BOSS_RETINUE.size())
 	if fight < 2:
-		value *= DIFFICULTY_FACTOR[difficulty]
+		value *= ACT1_HARD_FACTOR if act == 1 and difficulty == 2 else DIFFICULTY_FACTOR[difficulty]
 	return maxi(int(round(value)), 1)
 
 
@@ -70,14 +73,15 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 	# Fixed steps: medium >= 1.3 × easy, hard >= 1.3 × medium and at least 2 enemies.
 	for difficulty in [1, 2]:
 		var team: Array = teams[difficulty]["team"]
-		var target: float = teams[difficulty - 1]["power"] * MIN_STEP
+		var step := ACT1_MIN_STEP if act == 1 else MIN_STEP
+		var target: float = teams[difficulty - 1]["power"] * step
 		var min_units := HARD_MIN_UNITS if difficulty == 2 else 1
 		_strengthen(db, team, rng, teams[difficulty]["theme"], target, min_units)
 		teams[difficulty]["power"] = power(db, team)
 	# A full row cannot grow further (late acts): then the easier options step down.
 	for difficulty in [1, 0]:
 		var team: Array = teams[difficulty]["team"]
-		var limit: float = teams[difficulty + 1]["power"] / MIN_STEP
+		var limit: float = teams[difficulty + 1]["power"] / (ACT1_MIN_STEP if act == 1 else MIN_STEP)
 		_weaken(db, team, limit)
 		teams[difficulty]["power"] = power(db, team)
 	var result: Array = []

@@ -1,12 +1,34 @@
 {
   "comment": "Target win rates (in %) of all bots per station; auto_tune.gd searches the enemy values until each station lies inside its corridor.",
   "stations": {
-    "A1 K1": [75, 85],
-    "A1 K2": [65, 78],
-    "A1 K3": [20, 30],
-    "A2 K1": [70, 85],
-    "A2 K2": [60, 75],
-    "A2 K3": [45, 60]
+    "A1 K1": [
+      82,
+      92
+    ],
+    "A1 K2": [
+      72,
+      84
+    ],
+    "A1 K3": [
+      20,
+      30
+    ],
+    "A2 K1": [
+      70,
+      85
+    ],
+    "A2 K2": [
+      60,
+      75
+    ],
+    "A2 K3": [
+      45,
+      60
+    ]
   },
-  "runs_won": [8, 20]
+  "runs_won": [
+    8,
+    20
+  ],
+  "hard_act1_min": 45
 }

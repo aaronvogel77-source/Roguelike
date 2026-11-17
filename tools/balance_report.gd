@@ -40,7 +40,7 @@ func _init() -> void:
 			for b in bot.log["battles"]:
 				var st: Dictionary = report.get("stations", {})
 				if not st.has(b["station"]):
-					st[b["station"]] = {"n": 0, "won": 0, "mine": 0.0, "theirs": 0.0, "filled": 0, "diff": [0, 0, 0]}
+					st[b["station"]] = {"n": 0, "won": 0, "mine": 0.0, "theirs": 0.0, "filled": 0, "diff": [0, 0, 0], "diff_won": [0, 0, 0]}
 				var e: Dictionary = st[b["station"]]
 				e["n"] += 1
 				e["won"] += 1 if b["won"] else 0
@@ -48,6 +48,7 @@ func _init() -> void:
 				e["theirs"] += b["theirs"]
 				e["filled"] += b["filled"]
 				e["diff"][clampi(b["difficulty"], 0, 2)] += 1
+				e["diff_won"][clampi(b["difficulty"], 0, 2)] += 1 if b["won"] else 0
 				report["stations"] = st
 			if not won:
 				report["deaths"][where] = report["deaths"].get(where, 0) + 1
@@ -117,6 +118,14 @@ func _print(report: Dictionary, runs: int) -> void:
 			change = "  " + BalanceLab.delta(int(o["won"]), int(o["n"]), int(e["won"]), int(e["n"]))
 		print("  %-7s %5d  %s%s  %7.0f  %7.0f  %.1f  %s" % [k, e["n"], BalanceLab.rate(int(e["won"]), int(e["n"])), change,
 			e["mine"] / e["n"], e["theirs"] / e["n"], float(e["filled"]) / e["n"], str(e["diff"])])
+		# Win rate per chosen difficulty (only where it was chosen).
+		var parts: Array = []
+		for d in 3:
+			var n := int(e["diff"][d])
+			if n > 0 and not k.ends_with("K3"):
+				parts.append("%s %s" % [["leicht", "mittel", "schwer"][d], BalanceLab.rate(int(e["diff_won"][d]), n)])
+		if not parts.is_empty():
+			print("            ", "  ·  ".join(parts))
 	print("=== Niederlagen nach Ort ===")
 	for k in report["deaths"]:
 		print("  %-16s %d" % [k, report["deaths"][k]])

@@ -282,7 +282,8 @@ func test_difficulties_are_clearly_apart_and_hard_has_company() -> void:
 			for fight in [0, 1]:
 				var options := EnemyGenerator.options(_db, "coins", act, fight, rng)
 				var powers: Array = options.map(func(o: Dictionary) -> float: return EnemyGenerator.power(_db, o["team"]))
-				assert_true(powers[1] >= powers[0] * 1.3 - 0.01, "medium clearly above easy: %s" % str(powers))
-				assert_true(powers[2] >= powers[1] * 1.3 - 0.01, "hard clearly above medium: %s" % str(powers))
+				var step := EnemyGenerator.ACT1_MIN_STEP if act == 1 else EnemyGenerator.MIN_STEP
+				assert_true(powers[1] >= powers[0] * step - 0.01, "medium clearly above easy: %s" % str(powers))
+				assert_true(powers[2] >= powers[1] * step - 0.01, "hard clearly above medium: %s" % str(powers))
 				assert_gte(options[2]["team"].size(), 2, "hard is never a lone enemy")
 
