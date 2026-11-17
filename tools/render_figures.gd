@@ -47,7 +47,12 @@ func _draw(sheet: Image, p: Dictionary, feet: Vector2i) -> void:
 	_blit(sheet, p["legB"], hip + Vector2i(-2, 0))
 	_blit(sheet, p["legF"], hip + Vector2i(1, 0))
 	_blit(sheet, p["torso"], hip)
-	_blit(sheet, p["head"], neck + Vector2i(1, 1))
+	# Same order as on the stage: the weapon behind the head, the arm in front.
 	var shoulder := neck + Vector2i(half - 2, 3)
+	var small: bool = p["weapon"]["tex"].get_height() <= 18
+	if not small:
+		_blit(sheet, p["weapon"], shoulder + Vector2i(0, int(p["arm_len"])))
+	_blit(sheet, p["head"], neck + Vector2i(1, 1))
 	_blit(sheet, p["armF"], shoulder)
-	_blit(sheet, p["weapon"], shoulder + Vector2i(0, int(p["arm_len"])))
+	if small:
+		_blit(sheet, p["weapon"], shoulder + Vector2i(0, int(p["arm_len"])))

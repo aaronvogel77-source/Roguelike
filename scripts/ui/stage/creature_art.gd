@@ -45,6 +45,9 @@ static func build(id: String) -> Dictionary:
 
 
 static func _make(id: String) -> Dictionary:
+	if HandmadeArt.has_creature(id):  # pixel-by-pixel art wins over drawn art
+		var made := HandmadeArt.creature(id)
+		return _result(made["canvas"], made["feet"], made["hand"])
 	match id:
 		"debt_collector":
 			return _debt_collector()
