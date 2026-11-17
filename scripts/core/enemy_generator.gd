@@ -11,9 +11,9 @@ extends RefCounted
 ## The boss budget pays only for the retinue; the boss figure comes on top.
 const FIGHT_BUDGET := [1.5, 3.0, 2.0]
 ## Budget grows exponentially per act.
-const ACT_GROWTH := 1.5
+const ACT_GROWTH := 3.2
 ## Retinue budget of the boss fight per act (act 1 kept small: the boss itself is strong).
-const BOSS_RETINUE := [1.0, 3.0]
+const BOSS_RETINUE := [1.0, 6.0]
 ## Easy / medium / hard options in the enemy choice.
 const DIFFICULTY_FACTOR := [0.75, 1.0, 1.35]
 ## Extra gold for winning against easy / medium / hard (and bosses).

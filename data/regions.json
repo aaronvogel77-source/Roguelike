@@ -54,7 +54,7 @@
         "region": "coins",
         "cost": 0,
         "attack": 3,
-        "health": 20,
+        "health": 23,
         "width": 3,
         "role": "front",
         "themes": [],
