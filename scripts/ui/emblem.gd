@@ -53,6 +53,9 @@ const EFFECT_KINDS := {
 	"execute": "skull",
 	"break_shields": "shield", "burn_immune": "burn", "heal_block": "heart", "cleanse_bleed": "bleed",
 	"gain_attack": "sword", "wind_up": "sword",
+	"absorb": "heart", "copy_ability": "star", "double_bleed": "bleed", "gain_stats": "star",
+	"midas_scales": "coin", "shield_from_interest": "shield", "spread_burn_and_mult": "burn", "swap_stats": "star",
+	"mult_attack": "star", "scales_gold": "coin",
 }
 
 var kind := "star"

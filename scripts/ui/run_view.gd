@@ -261,24 +261,18 @@ func _top_bar(title: String) -> HBoxContainer:
 	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(0, 44), _show_menu)
 	menu.add_theme_font_size_override("font_size", 18)
 	bar.add_child(menu)
-	bar.add_child(_label(title, 30, Palette.GOLD))
+	bar.add_child(_label(title, 26, Palette.GOLD))
 	var fill := Control.new()
 	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_child(fill)
-	bar.add_child(_label(tr("UI_GOLD") % _run.gold, 30, Palette.GOLD))
-	bar.add_child(_label(tr("UI_INTEREST") % _run.interest(), 20, Palette.MUTED))
-	bar.add_child(_label(tr("UI_SLOTS") % [_filled_slots(), _run.slot_count()], 22, Palette.PARCHMENT))
-	var souls := HBoxContainer.new()
-	souls.add_child(Emblem.create("soul", 26))
-	souls.add_child(_label(tr("UI_SOULS") % _run.souls, 22, Emblem.COLORS["soul"]))
-	bar.add_child(souls)
-	# Seelenglut (meta currency) owned outside the run.
-	var glut := HBoxContainer.new()
-	var ember := Emblem.create("soul", 22)
-	ember.color = Color("ffb060")
-	glut.add_child(ember)
-	glut.add_child(_label(tr("UI_GLUT_SHORT") % _meta.glut, 20, Color("ffb060")))
-	bar.add_child(glut)
+	# Resources as symbols with numbers; a tap explains each one.
+	bar.add_child(_resource_chip("coin", str(_run.gold), Palette.GOLD, tr("UI_RES_GOLD") % [_run.gold, _run.interest()],
+		"+%d" % _run.interest() if _run.interest() > 0 else ""))
+	bar.add_child(_resource_chip("soul", str(_run.souls), Emblem.COLORS["soul"], tr("UI_RES_SOULS") % _run.souls))
+	bar.add_child(_resource_chip("level", "%d/%d" % [_filled_slots(), _run.slot_count()], Palette.PARCHMENT,
+		tr("UI_RES_SLOTS") % [_filled_slots(), _run.slot_count()]))
+	bar.add_child(_resource_chip("star", "", Palette.SUIT_COLORS.get(_run.region, Palette.GOLD), _info_text()))
+
 	if _url_flag("debug"):
 		# One "Debug" button opens the tools as a column (the bar is full).
 		var toggle := _button("Debug", Vector2(0, 44), func() -> void:
@@ -292,6 +286,207 @@ func _top_bar(title: String) -> HBoxContainer:
 
 
 var _debug_open := false
+## The item drawer (relics, tarot, pacts) at the left edge is open.
+var _items_open := false
+
+
+## One resource in the top bar: symbol, number, a small extra (interest); tap = explanation.
+func _resource_chip(kind: String, value: String, color: Color, explanation: String, extra: String = "") -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.custom_minimum_size = Vector2(0, 44)
+	row.mouse_filter = Control.MOUSE_FILTER_STOP
+	var emblem := Emblem.create(kind, 28)
+	emblem.color = color
+	emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(emblem)
+	if value != "":
+		var number := _label(value, 28, color)
+		number.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(number)
+	if extra != "":
+		var small := _label(extra, 18, Palette.MUTED)
+		small.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(small)
+	row.gui_input.connect(func(event: InputEvent) -> void:
+		if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) \
+				or (event is InputEventScreenTouch and event.pressed):
+			_detail_panel.show_message(tr("UI_RES_TITLE"), explanation))
+	return row
+
+
+## Region, blessing and (for bosses) the rule, for the region symbol.
+func _info_text() -> String:
+	var text := tr("REGION_" + _run.region.to_upper()) + ": " + tr("BLESSING_" + _run.region.to_upper())
+	if _rule_text() != "":
+		text += "\n" + _rule_text()
+	return text
+
+
+## The shop counter: a framed panel with a title bar (reroll, undo) and two
+## clearly separated shelves - figures with their prices, packs.
+func _shop_counter() -> Control:
+	var panel := _elegant_panel(0.85)
+	_hint_targets["shop"] = panel
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 6)
+	panel.add_child(column)
+	var title_row := HBoxContainer.new()
+	title_row.add_theme_constant_override("separation", 14)
+	title_row.add_child(_label(tr("UI_SHOP"), 18, Palette.GOLD))
+	var fill := Control.new()
+	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_row.add_child(fill)
+	var reroll_text := tr("UI_REROLL_FREE") % _run.free_rerolls if _run.free_rerolls > 0 else tr("UI_REROLL_BUTTON") % _run.reroll_price()
+	var reroll := _button(reroll_text, Vector2(0, 40), _on_reroll)
+	reroll.add_theme_font_size_override("font_size", 16)
+	reroll.disabled = _run.gold < _run.reroll_price() and _run.free_rerolls <= 0
+	title_row.add_child(reroll)
+	_undo_button = _button(tr("UI_UNDO"), Vector2(0, 40), _on_undo)
+	_undo_button.add_theme_font_size_override("font_size", 16)
+	_undo_button.disabled = _undo.is_empty()
+	title_row.add_child(_undo_button)
+	if _run.can_skip_boss():
+		var skip_boss := _button(tr("UI_SKIP_BOSS"), Vector2(0, 40), _on_skip_boss)
+		skip_boss.add_theme_font_size_override("font_size", 16)
+		title_row.add_child(skip_boss)
+	column.add_child(title_row)
+	var shelves := HBoxContainer.new()
+	shelves.add_theme_constant_override("separation", 22)
+	shelves.add_theme_constant_override("separation", 22)
+	# Figures shelf
+	var figures := VBoxContainer.new()
+	figures.add_child(_label(tr("UI_SHOP_FIGURES"), 15, Palette.PARCHMENT))
+	var figure_row := HBoxContainer.new()
+	figure_row.add_theme_constant_override("separation", 10)
+	_shop_slots.clear()
+	for i in _run.shop.size():
+		var slot := SlotView.new("shop", i)
+		if _run.shop[i] != "":
+			slot.set_card(UnitCard.for_definition(_db.figures[_run.shop[i]], 1, false))
+			_add_rarity_effect(slot, _run.shop[i])
+			var merge_into := _run.reward_target(_run.shop[i])
+			if merge_into >= 0 and _run.row[merge_into] != null:
+				slot.add_child(_merge_badge())  # buying it levels up a figure in the row
+		slot.accepts_drops = false
+		slot.tapped.connect(_on_slot_tapped)
+		figure_row.add_child(_with_price(slot, _run.price_of(_run.shop[i]) if _run.shop[i] != "" else -1, false))
+		_shop_slots.append(slot)
+	figures.add_child(figure_row)
+	shelves.add_child(figures)
+	shelves.add_child(VSeparator.new())
+	# Packs shelf
+	var packs := VBoxContainer.new()
+	packs.add_child(_label(tr("UI_SHOP_PACKS"), 15, Palette.PARCHMENT))
+	var pack_row := HBoxContainer.new()
+	pack_row.add_theme_constant_override("separation", 10)
+	for i in _run.packs.size():
+		var pack_view := _pack_view(i)
+		pack_row.add_child(pack_view)
+		if not _run.packs[i].is_empty() and not _hint_targets.has("pack"):
+			_hint_targets["pack"] = pack_view
+	var soul_view := _soul_pack_view()
+	pack_row.add_child(soul_view)
+	if _run.souls > 0:
+		_hint_targets["souls"] = soul_view
+	packs.add_child(pack_row)
+	shelves.add_child(packs)
+	column.add_child(_scaled(shelves, 0.8))  # shop cards a little smaller than the team
+	return panel
+
+
+## The one panel look of the planning screen: dark glass, a fine gold edge,
+## soft shadow (team stage, item shelf, shop counter).
+func _elegant_panel(alpha: float) -> PanelContainer:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.03, 0.06, alpha)
+	style.border_color = Color(Palette.GOLD, 0.45)
+	style.set_border_width_all(1)
+	style.border_width_top = 2
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(10)
+	style.shadow_color = Color(0, 0, 0, 0.45)
+	style.shadow_size = 8
+	panel.add_theme_stylebox_override("panel", style)
+	return panel
+
+
+## A card with its price as a tag below ("3 Gold"); -1 = sold out.
+func _with_price(content: Control, price: int, soul: bool) -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+	box.add_child(content)
+	var tag := _label(("%d %s" % [price, tr("UI_SOULS_SHORT") if soul else "Gold"]) if price >= 0 else tr("UI_SOLD_OUT"), 16,
+		Emblem.COLORS["soul"] if soul else Palette.GOLD)
+	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tag.add_theme_color_override("font_color", Palette.MUTED if price < 0 or (not soul and price > _run.gold) else tag.get_theme_color("font_color"))
+	box.add_child(tag)
+	return box
+
+
+## Relics, tarot and pacts on their own shelf beside the team: roomy slots.
+func _item_shelf() -> Control:
+	var panel := _elegant_panel(0.55)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 4)
+	panel.add_child(column)
+	for group in [["UI_RELICS", "relic", RunState.MAX_RELICS, _run.relics], ["UI_TAROTS", "tarot", RunState.MAX_TAROTS, _run.tarots],
+			["UI_PACTS", "pact", RunState.MAX_PACTS, _run.pacts]]:
+		column.add_child(_label(tr(group[0]), 14, Emblem.COLORS[group[1]]))
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		for i in int(group[2]):
+			var list: Array = group[3]
+			row.add_child(_strip_slot(group[1], i, list[i] if i < list.size() else ""))
+		column.add_child(row)
+	return panel
+
+
+## The chosen enemy band as a window (the planning screen shows only your team).
+func _show_enemy_popup() -> void:
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.8)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_screen.add_child(overlay)
+	var column := VBoxContainer.new()
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 18)
+	overlay.add_child(column)
+	var title := _label(tr("UI_NEXT_ENEMY"), 30, Palette.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+	column.add_child(_centered(_scaled(_card_row(_run.chosen_enemy["team"], true, false), 1.3)))
+	column.add_child(_centered(_button(tr("UI_CLOSE"), Vector2(240, 56), overlay.queue_free)))
+
+
+## The item drawer at the left edge: relics, tarot and pacts stacked.
+func _item_drawer() -> Control:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.05, 0.03, 0.07, 0.95)
+	style.border_color = Palette.GOLD.darkened(0.3)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.set_content_margin_all(10)
+	panel.add_theme_stylebox_override("panel", style)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 6)
+	panel.add_child(column)
+	for group in [["UI_RELICS", "relic", RunState.MAX_RELICS, _run.relics], ["UI_TAROTS", "tarot", RunState.MAX_TAROTS, _run.tarots],
+			["UI_PACTS", "pact", RunState.MAX_PACTS, _run.pacts]]:
+		column.add_child(_label(tr(group[0]), 18, Emblem.COLORS[group[1]]))
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+		for i in int(group[2]):
+			var list: Array = group[3]
+			row.add_child(_strip_slot(group[1], i, list[i] if i < list.size() else ""))
+		column.add_child(row)
+	column.add_child(_label(tr("UI_ITEMS_HINT"), 14, Palette.MUTED))
+	return panel
 var _debug_panel: Control
 
 
@@ -691,88 +886,58 @@ func _build_planning() -> void:
 	_screen.add_child(_velvet())
 	var column := _column()
 	column.add_child(_top_bar(_stage_title()))
-	column.add_child(_info_line())
-	column.add_child(_object_strip())
+	_strip_cards.clear()
+	if _rule_text() != "":  # a boss rule matters for planning: it stays in sight
+		column.add_child(_rich_line(_rule_text(), 17))
 
-	# Battle field preview: own slots (front next to the middle) and the chosen
-	# enemy. Scaled up to fill the free space, so cards are as large as possible.
-	var field := HBoxContainer.new()
-	field.alignment = BoxContainer.ALIGNMENT_CENTER
-	field.add_theme_constant_override("separation", ROW_GAP)
+	# Middle: your team alone (front on the right) and the item shelf beside it.
+	var middle := HBoxContainer.new()
+	middle.alignment = BoxContainer.ALIGNMENT_CENTER
+	middle.add_theme_constant_override("separation", 28)
 	var own_box := VBoxContainer.new()
 	own_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	own_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	own_box.add_child(_label(tr("UI_YOUR_TEAM_FRONT"), 16, Palette.MUTED))
-	own_box.add_child(_own_row_slots())
-	own_box.add_child(_xp_hint_row())
+	own_box.add_theme_constant_override("separation", 4)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 16)
+	head.add_child(_label(tr("UI_YOUR_TEAM"), 16, Palette.GOLD))
+	var head_fill := Control.new()
+	head_fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(head_fill)
+	var peek := _button(tr("UI_SHOW_ENEMY"), Vector2(0, 34), _show_enemy_popup)
+	peek.add_theme_font_size_override("font_size", 13)
+	head.add_child(peek)
+	head.add_child(_label(tr("UI_FRONT_ARROW"), 14, Palette.MUTED))
+	own_box.add_child(head)
+	var stage := _elegant_panel(0.55)
+	var stage_box := VBoxContainer.new()
+	stage_box.add_theme_constant_override("separation", 2)
+	stage_box.add_child(_own_row_slots())
+	stage_box.add_child(_xp_hint_row())
+	stage.add_child(stage_box)
+	own_box.add_child(stage)
 	var suit_line := _suit_bonus_text()
 	if suit_line != "":
-		var suit_label := _rich_line(suit_line, 16)
+		var suit_label := _rich_line(suit_line, 13)
 		own_box.add_child(suit_label)
 		_hint_targets["suit"] = suit_label
-	field.add_child(own_box)
-	var enemy_box := VBoxContainer.new()
-	enemy_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	enemy_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	enemy_box.add_child(_label(tr("UI_NEXT_ENEMY"), 16, Palette.MUTED))
-	enemy_box.add_child(_card_row(_run.chosen_enemy["team"], true, false))
-	field.add_child(enemy_box)
-	column.add_child(_fitted(field, 1.7))
+	middle.add_child(own_box)
+	middle.add_child(_item_shelf())
+	var middle_fit := _fitted(middle, 1.9)
+	middle_fit.size_flags_stretch_ratio = 1.6  # the team gets most of the height
+	column.add_child(middle_fit)
 
-	# Shop and actions.
+	# Bottom: the shop as one framed counter - figures, packs, actions - and the fight seal.
 	var bottom := HBoxContainer.new()
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
-	bottom.add_theme_constant_override("separation", 14)
-	bottom.custom_minimum_size = Vector2(0, 200)
-	bottom.add_child(_label(tr("UI_SHOP"), 22, Palette.GOLD))
-	_hint_targets["shop"] = bottom
-	_shop_slots.clear()
-	for i in _run.shop.size():
-		var shop_box := VBoxContainer.new()
-		var slot := SlotView.new("shop", i)
-		if _run.shop[i] != "":
-			slot.set_card(UnitCard.for_definition(_db.figures[_run.shop[i]], 1, false))
-			_add_rarity_effect(slot, _run.shop[i])
-		slot.accepts_drops = false
-		slot.tapped.connect(_on_slot_tapped)
-		shop_box.add_child(_with_coin(slot, str(_run.price_of(_run.shop[i])) if _run.shop[i] != "" else "", false))
-		bottom.add_child(shop_box)
-		_shop_slots.append(slot)
-
-	for i in _run.packs.size():
-		var pack_view := _pack_view(i)
-		bottom.add_child(pack_view)
-		if not _run.packs[i].is_empty() and not _hint_targets.has("pack"):
-			_hint_targets["pack"] = pack_view
-	var soul_view := _soul_pack_view()
-	bottom.add_child(soul_view)
-	if _run.souls > 0:
-		_hint_targets["souls"] = soul_view
-
-	# Wax seals: reroll (gold), undo (grey), fight (big, red).
-	var seals := HBoxContainer.new()
-	seals.add_theme_constant_override("separation", 12)
-	seals.alignment = BoxContainer.ALIGNMENT_CENTER
-	var reroll_text := tr("UI_REROLL_FREE") % _run.free_rerolls if _run.free_rerolls > 0 else tr("UI_REROLL_SEAL") % _run.reroll_price()
-	var reroll := _seal(reroll_text, 104, "gold", _on_reroll)
-	reroll.disabled = _run.gold < _run.reroll_price()
-	seals.add_child(reroll)
-	_undo_button = _seal(tr("UI_UNDO"), 104, "grey", _on_undo)
-	_undo_button.disabled = _undo.is_empty()
-	seals.add_child(_undo_button)
-	if _run.can_skip_boss():
-		var skip_boss := _seal(tr("UI_SKIP_BOSS"), 104, "grey", _on_skip_boss)
-		skip_boss.add_theme_font_size_override("font_size", 13)
-		seals.add_child(skip_boss)
-	var fight := _seal(tr("UI_FIGHT"), 150, "red", _on_fight)
+	bottom.add_theme_constant_override("separation", 18)
+	bottom.add_child(_shop_counter())
+	var fight := _seal(tr("UI_FIGHT"), 132, "red", _on_fight)
 	_hint_targets["fight"] = fight
-	fight.add_theme_font_size_override("font_size", 30)
+	fight.add_theme_font_size_override("font_size", 28)
 	fight.disabled = _filled_slots() == 0
-	seals.add_child(fight)
-	bottom.add_child(_spacer(12))
-	bottom.add_child(seals)
+	bottom.add_child(fight)
 	column.add_child(bottom)
-	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
 
 	# The sell zone only shows up while a figure or object is held or selected.
 	_sell_zone = SellZone.new()
@@ -799,6 +964,7 @@ func _own_row_slots() -> HBoxContainer:
 		slot.tapped.connect(_on_slot_tapped)
 		slot.dropped.connect(_on_slot_dropped)
 		slot.inserted.connect(_on_slot_inserted)
+		slot.drop_check = _drop_state
 		own_row.add_child(slot)
 		_row_slots.append(slot)
 	return own_row
@@ -839,13 +1005,13 @@ func _xp_hint_row() -> HBoxContainer:
 	var hints := HBoxContainer.new()
 	hints.add_theme_constant_override("separation", CARD_SPACING)
 	for i in range(_run.slot_count() - 1, -1, -1):
-		var label := _label("", 13, Palette.MUTED)
-		label.custom_minimum_size = Vector2(UnitCard.CARD_SIZE.x, 18)
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		var figure: Variant = _run.row[i]
-		if figure != null:
-			label.text = _xp_text(figure)
-		hints.add_child(label)
+		if figure != null and not figure.has("fusion") and not figure.has("recipe_parts"):
+			hints.add_child(LevelPips.create(figure, _run))
+		else:
+			var empty := Control.new()
+			empty.custom_minimum_size = Vector2(UnitCard.CARD_SIZE.x, 20)
+			hints.add_child(empty)
 	return hints
 
 
@@ -971,6 +1137,45 @@ func _on_slot_inserted(data: Dictionary, slot: SlotView, side: String) -> void:
 		return
 	var after_index := slot.index if side == "left" else slot.index - 1
 	_apply_action(func() -> bool: return _run.insert_between(from, after_index))
+
+
+## What dropping the dragged thing on a row place would do (for the glow).
+func _drop_state(data: Dictionary, index: int) -> String:
+	if _run == null or index >= _run.row.size():
+		return ""
+	var target: Variant = _run.row[index]
+	var def_id := ""
+	var cost := 0
+	match String(data.get("kind", "")):
+		"row":
+			var from: int = data.get("index", -1)
+			if from == index or from < 0 or from >= _run.row.size() or _run.row[from] == null:
+				return ""
+			if target == null:
+				return "free"
+			return "merge" if merging_possible(target, _run.row[from]) else "swap"
+		"shop":
+			def_id = _run.shop[data["index"]] if int(data["index"]) < _run.shop.size() else ""
+			cost = _run.price_of(def_id) if def_id != "" else 0
+		"reward":
+			def_id = _run.rewards[data["index"]] if int(data["index"]) < _run.rewards.size() else ""
+		"market_figure":
+			def_id = String(_run.event.get("figure", ""))
+			cost = _run.price_of(def_id) / 2 if def_id != "" else 0
+		"pack":
+			var entry: Dictionary = _run.open_pack.get("items", [])[data["index"]] if not _run.open_pack.is_empty() else {}
+			if entry.get("kind", "") == "equipment":
+				return "free" if target != null and _run.can_add_object(target, "equipment") else "no"
+			def_id = String(entry.get("def_id", ""))
+		_:
+			return ""
+	if def_id == "":
+		return ""
+	if _run.gold < cost:
+		return "no"
+	if target == null:
+		return "free"
+	return "merge" if _run.can_place(def_id, index) else "no"
 
 
 func merging_possible(target: Dictionary, source: Dictionary) -> bool:
@@ -1170,6 +1375,29 @@ func _velvet() -> Control:
 	return rect
 
 
+## Green "+1" with an arrow: this shop figure would level up one in the row.
+func _merge_badge() -> Control:
+	var badge := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.45, 0.18, 0.95)
+	style.border_color = Color(0.6, 1.0, 0.65)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.content_margin_left = 6
+	style.content_margin_right = 6
+	badge.add_theme_stylebox_override("panel", style)
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.set_meta("text_fixed", true)
+	var label := _label("+1 Stufe", 14, Color.WHITE)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.add_child(label)
+	badge.position = Vector2(UnitCard.CARD_SIZE.x / 2 - 28, 34)  # below the level seal, clear of the stats
+	var tween := badge.create_tween().set_loops()
+	tween.tween_property(badge, "modulate:a", 0.55, 0.6)
+	tween.tween_property(badge, "modulate:a", 1.0, 0.6)
+	return badge
+
+
 ## A price as a gold (or soul-blue) coin above a card.
 func _coin_badge(text: String, soul: bool) -> Control:
 	var center := CenterContainer.new()
@@ -1276,7 +1504,7 @@ func _soul_pack_view() -> Control:
 				_undo.clear()
 				_pack_pick = -1
 				_show_stage())
-	box.add_child(_with_coin(panel, str(_run.soul_pack_price()), true))
+	box.add_child(_with_price(panel, _run.soul_pack_price(), true))
 	if _run.pacts.size() >= RunState.MAX_PACTS:
 		panel.modulate.a = 0.4
 	return box
@@ -1302,7 +1530,8 @@ func _pack_view(index: int) -> Control:
 		style.shadow_color = Color(Palette.GOLD, 0.6)
 		style.shadow_size = 8
 	panel.add_theme_stylebox_override("panel", style)
-	box.add_child(_with_coin(panel, str(_run.pack_cost(pack)) if not pack.is_empty() else "", false))
+	panel.custom_minimum_size = UnitCard.CARD_SIZE
+	box.add_child(_with_price(panel, _run.pack_cost(pack) if not pack.is_empty() else -1, false))
 	var price_text := ""
 	if not pack.is_empty():
 		var inner := VBoxContainer.new()

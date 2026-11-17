@@ -23,6 +23,11 @@ var _frame: Panel
 var _frame_style: StyleBoxFlat
 var _press_position := Vector2.INF
 var _hover_zone := ""  # "", "left", "right", "center" while a drag hovers
+## Set by the run screen: (drag data, slot index) -> "merge", "free", "swap", "no" or "".
+var drop_check: Callable
+var _drop_state := ""
+const DROP_COLORS := {"merge": Color(0.35, 0.95, 0.45), "free": Color(1.0, 0.82, 0.35),
+	"swap": Color(0.85, 0.85, 0.95), "no": Color(0.95, 0.25, 0.25)}
 
 
 func _init(slot_kind: String, slot_index: int) -> void:
@@ -117,6 +122,14 @@ func _zone(at: Vector2, data: Dictionary) -> String:
 
 
 func _notification(what: int) -> void:
+	# While anything is dragged, every row place shows what a drop would do.
+	if what == NOTIFICATION_DRAG_BEGIN and kind == "row" and drop_check.is_valid():
+		var data: Variant = get_viewport().gui_get_drag_data()
+		_drop_state = String(drop_check.call(data, index)) if data is Dictionary else ""
+		queue_redraw()
+	if what == NOTIFICATION_DRAG_END and _drop_state != "":
+		_drop_state = ""
+		queue_redraw()
 	if what == NOTIFICATION_DRAG_END or what == NOTIFICATION_MOUSE_EXIT:
 		if _hover_zone != "":
 			_hover_zone = ""
@@ -125,6 +138,17 @@ func _notification(what: int) -> void:
 
 ## Insert marker: a gold bar at the edge; a gold frame when swapping/merging.
 func _draw() -> void:
+	if _drop_state != "":
+		var color: Color = DROP_COLORS.get(_drop_state, Color.WHITE)
+		var pulse := 0.65 + 0.35 * sin(Time.get_ticks_msec() / 160.0)
+		draw_rect(Rect2(Vector2(-5, -5), size + Vector2(10, 10)), Color(color, 0.18 * pulse))
+		draw_rect(Rect2(Vector2(-5, -5), size + Vector2(10, 10)), Color(color, pulse), false, 4.0)
+		var font := ThemeDB.fallback_font
+		var text: String = {"merge": "+1", "no": "×"}.get(_drop_state, "")
+		if text != "":
+			draw_string(font, Vector2(size.x / 2 - 14, size.y / 2 + 14), text, HORIZONTAL_ALIGNMENT_CENTER, 28, 34,
+				Color(color, 0.95))
+		queue_redraw()  # keeps the pulse going while dragging
 	match _hover_zone:
 		"left":
 			draw_rect(Rect2(-7, -6, 6, size.y + 12), Palette.GOLD)

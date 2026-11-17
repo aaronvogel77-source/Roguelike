@@ -757,3 +757,16 @@ UI_SET_TEXT,Schriftgröße,Text size
 UI_MERGE_MAX,"Diese Figur hat schon Stufe 3 (Maximum) – die beiden haben nur den Platz getauscht.","This figure is already at level 3 (maximum) – the two only swapped places."
 UI_MERGE_FUSED,"Fusionen und Rezeptfiguren verschmelzen nicht mit Duplikaten – die beiden haben nur den Platz getauscht.","Fusions and recipe figures do not merge with duplicates – the two only swapped places."
 UI_ABILITY_LEVEL,(Stufe %s),(level %s)
+UI_ITEMS,Gegenstände (%d),Items (%d)
+UI_ITEMS_HINT,"Tarot: antippen, dann eine Figur antippen.","Tarot: tap it, then tap a figure."
+UI_RES_TITLE,Übersicht,Overview
+UI_RES_GOLD,"Gold: %d. Nach jedem Sieg bekommst du Einkommen und Zinsen (+%d jetzt: 1 je 5 Gold).","Gold: %d. After every win you get income and interest (+%d now: 1 per 5 gold)."
+UI_RES_SOULS,"Seelen: %d. Damit kaufst du Pakte (Seelen-Pack) und zahlst Opfer und Altäre.","Souls: %d. They buy pacts (soul pack) and pay for offerings and altars."
+UI_RES_SLOTS,"Plätze: %d von %d belegt. Jeder besiegte Boss gibt einen Platz mehr (bis 6).","Slots: %d of %d used. Every defeated boss adds a slot (up to 6)."
+UI_SHOW_ENEMY,Gegner ansehen,View enemy
+UI_SHOP_FIGURES,Figuren,Figures
+UI_SHOP_PACKS,Packs,Packs
+UI_REROLL_BUTTON,Neu würfeln (%d Gold),Reroll (%d gold)
+UI_SOLD_OUT,verkauft,sold
+UI_SOULS_SHORT,Seelen,souls
+UI_FRONT_ARROW,vorne = rechts,front = right
