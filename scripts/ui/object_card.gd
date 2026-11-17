@@ -34,7 +34,7 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 			emblem_kind = Emblem.EQUIPMENT_KINDS.get(item["base"], "sword")
 			title = ItemText.equipment_name(item)
 			border = ItemText.RARITY_COLORS[int(item["rarity"])]
-			subtitle = ItemText.rarity_line(int(item["rarity"]))
+			subtitle = ItemText.rarity_name(int(item["rarity"]))  # short; the lines show the rest
 			lines = ItemText.equipment_lines(db, item)
 		"tarot":
 			emblem_kind = "tarot"

@@ -175,22 +175,22 @@ EQUIP_PURSE,Geldkatze,Purse
 EQUIP_BLADE_DESC,+{v} Angriff,+{v} attack
 EQUIP_BUCKLER_DESC,Kampfbeginn: Schild {v},Battle start: {v} shield
 EQUIP_AMULET_DESC,+{v} Leben,+{v} health
-EQUIP_TORCH_DESC,Nach dem Angriff: Ziel erhält Brennen {v},After attacking: target gains {v} burn
-EQUIP_DAGGER_DESC,Nach dem Angriff: Ziel erhält Blutung {v},After attacking: target gains {v} bleed
-EQUIP_PURSE_DESC,Kampfbeginn: +{v} Angriff je 10 Gold,Battle start: +{v} attack per 10 gold
+EQUIP_TORCH_DESC,Nach Angriff: Brennen {v},After attack: {v} burn
+EQUIP_DAGGER_DESC,Nach Angriff: Blutung {v},After attack: {v} bleed
+EQUIP_PURSE_DESC,+{v} Angriff je 10 Gold,Battle start: +{v} attack per 10 gold
 AFFIX_PLUS_ATTACK,+{v} Angriff,+{v} attack
 AFFIX_PLUS_HEALTH,+{v} Leben,+{v} health
 AFFIX_START_SHIELD,Kampfbeginn: Schild {v},Battle start: {v} shield
-AFFIX_REGEN,Zugbeginn: heilt sich um {v},Turn start: heals {v}
+AFFIX_REGEN,Zugbeginn: heilt {v},Turn start: heals {v}
 AFFIX_RAGE,Wenn getroffen: +{v} Angriff,When hit: +{v} attack
 AFFIX_DEATH_GOLD,Bei Tod: +{v} Gold,On death: +{v} gold
 AFFIX_MULTIPLIER,×{v} Angriff,×{v} attack
-AFFIX_BURNING_HITS,Nach dem Angriff: Ziel erhält Brennen {v},After attacking: target gains {v} burn
-AFFIX_BLEEDING_HITS,Nach dem Angriff: Ziel erhält Blutung {v},After attacking: target gains {v} bleed
+AFFIX_BURNING_HITS,Nach Angriff: Brennen {v},After attack: {v} burn
+AFFIX_BLEEDING_HITS,Nach Angriff: Blutung {v},After attack: {v} bleed
 AFFIX_FRAIL,{v} Leben,{v} health
-AFFIX_SELF_CURSE,Kampfbeginn: erhält selbst Fluch {v},Battle start: gains {v} curse itself
-AFFIX_SELF_BURN,Kampfbeginn: erhält selbst Brennen {v},Battle start: gains {v} burn itself
-AFFIX_GOLD_DRAIN,{v} Gold nach jedem Kampf,{v} gold after every battle
+AFFIX_SELF_CURSE,Kampfbeginn: selbst Fluch {v},Battle start: {v} curse on itself
+AFFIX_SELF_BURN,Kampfbeginn: selbst Brennen {v},Battle start: {v} burn on itself
+AFFIX_GOLD_DRAIN,{v} Gold pro Kampf,{v} gold after every battle
 RELIC_WAR_CHEST,Kriegskasse,War Chest
 RELIC_WAR_CHEST_DESC,Münz-Figuren +1 Angriff.,Coin figures +1 attack.
 RELIC_ETERNAL_EMBER,Ewige Glut,Eternal Ember
@@ -307,7 +307,7 @@ OPT_BUY_PACK,Mega-Pack kaufen: %s (6 Gold),Buy mega pack: %s (6 gold)
 OPT_BUY_FIGURE,%s zum halben Preis (%d Gold),%s at half price (%d gold)
 OPT_THROW_3,3 Gold hineinwerfen: magische Ausrüstung,Throw in 3 gold: magic equipment
 OPT_THROW_6,6 Gold hineinwerfen: seltene Ausrüstung,Throw in 6 gold: rare equipment
-OPT_THROW_10,10 Gold hineinwerfen: 1 von 3 seltenen Ausrüstungen (selten einzigartig),Throw in 10 gold: 1 of 3 rare equipment pieces
+OPT_THROW_10,10 Gold hineinwerfen: 1 von 3 seltenen Ausrüstungen,Throw in 10 gold: 1 of 3 rare equipment pieces
 OPT_DRINK,"Trinken: Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn Fluch 2)","Drink: a figure +3/+3 permanently, but cursed (battle start: 2 curse)"
 OPT_TAROT,Eine von 3 Tarot-Karten gratis,One of 3 tarot cards for free
 OPT_NO_BOSS_RULE,Die nächste Boss-Regel entfällt,The next boss rule is lifted
@@ -337,7 +337,7 @@ UI_COMPARE_OLD,Ausgerüstet,Equipped
 UI_COMPARE_NEW,Neu,New
 UI_COMPARE_SWAP,Tauschen,Swap
 UI_COMPARE_KEEP,Altes behalten,Keep the old one
-UI_BASE_EFFECT,Grundwirkung,Base effect
+UI_BASE_EFFECT,Basis,Base
 UI_EXTRA_EFFECT,Zusatz,Bonus
 UI_DRAWBACK,Nachteil,Drawback
 RARITY_0_DESC,nur Grundwirkung,base effect only
@@ -359,7 +359,7 @@ OFFER_THROW_3_DESC,Eine magische Ausrüstung (1 Zusatz).,One magic equipment pie
 OFFER_THROW_6,Silber,Silver
 OFFER_THROW_6_DESC,Eine seltene Ausrüstung (2 Zusätze).,One rare equipment piece (2 bonuses).
 OFFER_THROW_10,Gold,Gold
-OFFER_THROW_10_DESC,Du wählst 1 von 3 seltenen Ausrüstungen. Mit viel Glück ist eine davon einzigartig.,"Choose 1 of 3 rare equipment pieces. With great luck, one of them is unique."
+OFFER_THROW_10_DESC,Du wählst 1 von 3 seltenen Ausrüstungen.,Choose 1 of 3 rare equipment pieces.
 OFFER_DRINK,Trinken,Drink
 OFFER_DRINK_DESC,"Eine Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn: Fluch 2).","A figure +3/+3 permanently, but cursed (battle start: 2 curse)."
 OFFER_TAROT,Die Karten,The cards
@@ -399,7 +399,7 @@ RARITY_4,Einzigartig,Unique
 RARITY_4_DESC,"+2 Zusatzeffekte, 1 einzigartiger Effekt","+2 bonus effects, 1 unique effect"
 UI_UNIQUE_EFFECT,Einzigartig,Unique
 UI_RARE_UNIQUE,Einzigartig!,Unique!
-UNIQUE_PHOENIX_FEATHER,"Phönixfeder: Stirbt der Träger, kehrt er einmal pro Kampf mit halbem Leben zurück.","Phoenix Feather: if the bearer dies, it returns once per battle with half its health."
-UNIQUE_BLOODTHIRST,Blutdurst: Nach dem Angriff heilt sich der Träger um 50 % des verursachten Schadens.,Bloodthirst: after attacking the bearer heals 50 % of the damage dealt.
-UNIQUE_WARLORD,"Kriegsherr: ×1,5 Angriff.",Warlord: ×1.5 attack.
-UNIQUE_SOUL_HARVEST,Seelenernte: Tötet der Träger einen Gegner mit seinem Angriff: 15 % Chance auf +1 Seele.,Soul Harvest: when the bearer kills an enemy with its attack: 15 % chance for +1 soul.
+UNIQUE_PHOENIX_FEATHER,Phönixfeder – kehrt nach dem Tod 1× mit halbem Leben zurück,Phoenix Feather – returns once after death with half health
+UNIQUE_BLOODTHIRST,Blutdurst – heilt sich um 50 % seines Schadens,Bloodthirst – heals 50 % of its damage
+UNIQUE_WARLORD,"Kriegsherr – ×1,5 Angriff",Warlord – ×1.5 attack
+UNIQUE_SOUL_HARVEST,Seelenernte – tötet er mit seinem Angriff: 15 % Chance auf +1 Seele,Soul Harvest – kills with its attack: 15 % chance for +1 soul
