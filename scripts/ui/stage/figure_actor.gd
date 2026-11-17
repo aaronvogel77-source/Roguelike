@@ -56,6 +56,12 @@ var _creature_hand := Vector2(8, -20)
 var _floating := false
 var _wispy := false
 var _revive_time := -1.0
+## Fusions: aura in the two main suit colours, stronger per stage; pure
+## fusions (3+ of one suit on F3) carry their suit symbol above the head.
+var _aura: Node2D
+var _fusion_stage := 0
+var _aura_colors: Array = []
+var _pure_suit := ""
 
 
 func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) -> void:
@@ -80,6 +86,22 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 	_height = float(_parts["dim"]["H"])
 	var stage := int(unit_definition.get("fusion", {}).get("stage", 0))
 	_sparkle = 2 if look.get("shimmer", false) else (1 if stage >= 3 else 0)
+	_fusion_stage = stage
+	if stage > 0:
+		var counts := {}
+		var order: Array = []
+		for s in unit_definition["fusion"].get("suits", []):
+			if not counts.has(s):
+				order.append(s)
+			counts[s] = counts.get(s, 0) + 1
+		order.sort_custom(func(x: String, y: String) -> bool: return counts[x] > counts[y])
+		for s in order.slice(0, 2):
+			_aura_colors.append(Color(FigureArt.GEMS.get(s, "ffffff")).lightened(0.25))
+		if stage >= 3 and counts[order[0]] >= 3:
+			_pure_suit = order[0]
+		_aura = Node2D.new()
+		_aura.draw.connect(_draw_aura)
+		add_child(_aura)  # added before the rig, so it is drawn behind the figure
 
 	if _shader == null:
 		_shader = Shader.new()
@@ -118,6 +140,8 @@ func _process(delta: float) -> void:
 	step = sin(_time * 22.0) if walking else 0.0
 	_pose()
 	_fx.queue_redraw()
+	if _aura != null:
+		_aura.queue_redraw()
 
 
 func _pose() -> void:
@@ -467,3 +491,67 @@ func _draw_statuses(statuses: Dictionary, h: float) -> void:
 		_draw_icon(kind, Vector2(x, y + 0), STATUS_COLORS[kind])
 		_draw_number(entries[i][1], Vector2(x + 6, y + 0), Color.WHITE)
 		x += widths[i] + 2
+
+
+# --- Fusion aura and the pure suit symbol ---------------------------------------------
+
+func _draw_aura() -> void:
+	if dead or _aura_colors.is_empty():
+		return
+	var h := _height
+	var n := 6 + _fusion_stage * 6
+	# Rising motes around the body, alternating the two main colours.
+	for i in n:
+		var ph := fmod(_time * (0.35 + 0.08 * _fusion_stage) + i * 0.618, 1.0)
+		var col: Color = _aura_colors[i % _aura_colors.size()]
+		var x := -9.0 - _fusion_stage + float((i * 37) % (19 + _fusion_stage * 2))
+		var p := Vector2(x + sin(_time * 2.0 + i) * 1.5, -2.0 - ph * (h + 6))
+		col.a = (1.0 - ph * 0.8) * (0.6 + 0.13 * _fusion_stage)
+		var mote := Vector2(2, 2) if i % 3 == 0 else Vector2(1, 2)
+		_aura.draw_rect(Rect2(p.round(), mote), col)
+	# A soft glow on the ground, wider per stage.
+	var glow: Color = _aura_colors[0]
+	glow.a = 0.3 + 0.1 * _fusion_stage
+	var w := 14.0 + _fusion_stage * 4.0
+	_aura.draw_rect(Rect2(-w / 2, -1, w, 2), glow)
+	glow.a *= 0.5
+	_aura.draw_rect(Rect2(-w / 2 - 3, -2, w + 6, 4), glow)
+	if _pure_suit != "":
+		_draw_suit_symbol(Vector2(0, -h - 10 + round(sin(_time * 2.2))))
+
+
+## Pure fusions: a small glowing coin, flame, cup or blade above the head.
+func _draw_suit_symbol(at: Vector2) -> void:
+	var col := Color(FigureArt.GEMS.get(_pure_suit, "ffffff")).lightened(0.3)
+	var light := col.lightened(0.6)
+	var dark := col.darkened(0.45)
+	var pulse := 0.5 + 0.5 * sin(_time * 3.0)
+	var rows: Array
+	match _pure_suit:
+		"coins":
+			rows = ["..ooo..", ".o###o.", "o##+##o", "o#+++#o", "o##+##o", ".o###o.", "..ooo.."]
+		"wands":
+			rows = ["...#...", "..##...", "..#+#..", ".#+#+#.", "##+++##", "#++++##", ".#####."]
+		"cups":
+			rows = ["#######", "#++++#.", ".#+++#.", "..###..", "...#...", "...#...", ".#####."]
+		_:
+			rows = ["...#...", "..#+#..", "..#+#..", "..#+#..", "#######", "...o...", "...#..."]
+	for y in rows.size():
+		var row: String = rows[y]
+		for x in row.length():
+			var c: Color
+			match row[x]:
+				"#":
+					c = col
+				"+":
+					c = light.lerp(Color.WHITE, pulse * 0.4)
+				"o":
+					c = dark
+				_:
+					continue
+			_aura.draw_rect(Rect2(at + Vector2(x - 3, y - 3), Vector2.ONE), c)
+	# Little rays flicker around the symbol.
+	var ray := col
+	ray.a = 0.35 + 0.35 * pulse
+	for d in [Vector2(-5, 0), Vector2(5, 0), Vector2(0, -5)]:
+		_aura.draw_rect(Rect2(at + d, Vector2.ONE), ray)

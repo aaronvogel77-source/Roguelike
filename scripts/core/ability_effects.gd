@@ -132,6 +132,36 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			next_unit.add_status(BattleUnit.STATUS_BURN, burn * int(value))
 			battle.emit_update(next_unit)
 			return true
+		"shield_per_five_gold":
+			# Goldene Festung: shield 1 per 5 gold (max = value) on every target.
+			var amount := mini(battle.gold / 5, int(value))
+			if amount <= 0:
+				return false
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_SHIELD, amount)
+		"eternal_spring":
+			# Ewige Quelle: the first two fallen allies return at full health,
+			# the second one with +2/+2.
+			if owner.flags.get("full_revives", 0) >= int(value) or targets.is_empty():
+				return false
+			var risen: BattleUnit = targets[0]
+			if risen.is_alive():
+				return false
+			owner.flags["full_revives"] = owner.flags.get("full_revives", 0) + 1
+			if owner.flags["full_revives"] >= 2:
+				risen.attack += 2
+				risen.max_health += 2
+			risen.health = risen.max_health
+			risen.statuses.clear()
+			battle.events.append({"type": "revive", "uid": risen.uid, "health": risen.health})
+			battle.emit_update(risen)
+			return true
+		"execute_below":
+			# Hinrichtung: an attacked enemy below the threshold share of its life dies.
+			for t: BattleUnit in targets:
+				if t.is_alive() and t.health < t.max_health * value:
+					battle.deal_damage(t, t.health + t.status(BattleUnit.STATUS_SHIELD), "execute")
+					return true
+			return false
 		"revive_full":
 			# Tränenmeer: the first fallen ally per battle returns at full health.
 			if owner.flags.get("full_revives", 0) >= int(value) or targets.is_empty():
@@ -166,7 +196,7 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 				t.multipliers.append(factor)
 				battle.emit_update(t)
 			return not targets.is_empty()
-		"overflow", "glow_strike", "bloodletting":
+		"overflow", "glow_strike", "bloodletting", "fortress_gold", "ember_heal":
 			return false  # auras, read directly by the simulator
 		"harvest_soul":
 			# Only the owner's own kills count; the run rolls the chance.

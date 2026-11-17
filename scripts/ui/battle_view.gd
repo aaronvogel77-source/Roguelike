@@ -244,6 +244,7 @@ func _new_battle() -> void:
 	_rng_streams = RngStreams.new(seed_value)
 	var rng := _rng_streams.stream("debug_teams")
 	var player_team := DebugTeams.random_player_team(_db, rng, rng.randi_range(3, 6))
+	DebugTeams.add_fusions(_db, rng, player_team)
 	var enemy_team := DebugTeams.random_enemy_team(_db, rng, rng.randi_range(3, 6))
 	_battle_gold = rng.randi_range(0, 30)
 	_battle = BattleSimulator.simulate(player_team, enemy_team, _battle_gold)

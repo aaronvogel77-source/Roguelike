@@ -114,7 +114,7 @@ func test_secret_recipe_makes_a_final_figure() -> void:
 
 
 func test_master_ability_by_suit_combination() -> void:
-	assert_eq(Fusion.master_for(_db, ["coins", "coins", "coins", "wands"])["id"], "golden_wall", "3 of a suit = pure")
+	assert_eq(Fusion.master_for(_db, ["coins", "coins", "coins", "wands"])["id"], "golden_fortress", "3 of a suit = pure")
 	assert_eq(Fusion.master_for(_db, ["coins", "coins", "wands", "wands"])["id"], "gold_ember")
 	assert_eq(Fusion.master_for(_db, ["swords", "cups", "wands", "cups"])["id"], "bloodletting", "cups most, then swords first")
 	assert_eq(Fusion.master_for(_db, ["wands", "swords", "swords", "wands"])["id"], "glow_strike")
@@ -132,20 +132,39 @@ func _entry(figure: Dictionary) -> Dictionary:
 		"pierce": Fusion.pierces(_db, figure), "suits": figure["fusion"]["suits"]}
 
 
-func test_golden_wall_shields_all_allies() -> void:
+func test_golden_fortress_shields_all_allies_and_pays_gold() -> void:
 	var entry := _entry(_fused("coin_squire", ["coins", "coins", "coins", "coins"]))
 	var result := BattleSimulator.simulate([entry, {"def": _db.figures["executioner"], "level": 1}],
-		[{"def": _db.enemies["beggar_ghost"], "level": 1}], 25)
+		[{"def": _db.enemies["beggar_ghost"], "level": 1}], 45)
 	var shielded := _events(result, "update").filter(func(e: Dictionary) -> bool:
-		return e["unit"]["uid"] == 2 and e["unit"]["statuses"].get("shield", 0) == 5)
-	assert_false(shielded.is_empty(), "25 gold -> shield 5 for the ally too")
+		return e["unit"]["uid"] == 2 and e["unit"]["statuses"].get("shield", 0) == 8)
+	assert_false(shielded.is_empty(), "45 gold -> shield 8 (max) for the ally too")
+	assert_true(result["victory"])
+	assert_eq(result["fortress_gold"], 3, "leftover shields pay up to 3 gold")
 
 
-func test_piercing_ignores_shield_and_bleeds() -> void:
+func test_execution_pierces_bleeds_and_executes() -> void:
 	var entry := _entry(_fused("executioner", ["swords", "swords", "swords", "swords"]))
 	var result := BattleSimulator.simulate([entry], [{"def": _db.enemies["vault_warden"], "level": 1}])
 	var pierced := _events(result, "damage").filter(func(e: Dictionary) -> bool: return e["source"] == "pierce")
 	assert_false(pierced.is_empty())
+	var fused := _fused("executioner", ["swords", "swords", "swords", "swords"])
+	fused["fusion"]["attack"] = 8
+	var tank := {"id": "dummy", "attack": 0, "health": 10}  # 10 - 8 = 2 < 30 %
+	var executed := BattleSimulator.simulate([_entry(fused)], [tank])
+	assert_false(_events(executed, "damage").filter(func(e: Dictionary) -> bool: return e["source"] == "execute").is_empty(),
+		"a hit leaving the enemy below 30 % executes it")
+
+
+func test_ember_core_doubles_burn_and_heals() -> void:
+	var figure := _fused("spark_bearer", ["wands", "wands", "wands", "cups"])
+	figure["fusion"]["abilities"] = ["spark_bearer"]
+	var result := BattleSimulator.simulate([_entry(figure)], [{"def": _db.enemies["greedy_dragon"], "level": 3}])
+	var burns := _events(result, "damage").filter(func(e): return e["source"] == "burn")
+	assert_gt(burns.size(), 0)
+	assert_eq(burns[0]["amount"], 4, "burn 2 × 2")
+	var heals := _events(result, "heal").filter(func(e: Dictionary) -> bool: return e["uid"] == 1)
+	assert_false(heals.is_empty(), "burn ticks heal the fusion")
 
 
 func test_glow_strike_hits_burning_targets_harder() -> void:
@@ -160,13 +179,18 @@ func test_glow_strike_hits_burning_targets_harder() -> void:
 	assert_eq(hits[1]["amount"], 6, "4 attack × 1.5 once the target burns")
 
 
-func test_sea_of_tears_revives_first_fallen_ally_fully() -> void:
+func test_eternal_spring_revives_two_allies() -> void:
 	var entry := _entry(_fused("altar_server", ["cups", "cups", "cups", "cups"]))
 	var weak := {"def": _db.figures["blade_apprentice"], "level": 1}
-	var result := BattleSimulator.simulate([weak, entry], [{"def": _db.enemies["vault_warden"], "level": 3}])
+	var weak2 := {"def": _db.figures["coin_squire"], "level": 1}
+	var result := BattleSimulator.simulate([weak, weak2, entry], [{"def": _db.enemies["vault_warden"], "level": 3}])
 	var revives := _events(result, "revive")
-	assert_eq(revives.size(), 1)
-	assert_eq(revives[0]["health"], 2, "full health")
+	assert_eq(revives.size(), 2)
+	assert_eq(revives[0]["health"], 2, "first: full health")
+	var max_health := {}
+	for unit in _events(result, "start")[0]["player"]:
+		max_health[unit["uid"]] = unit["max_health"]
+	assert_eq(revives[1]["health"], max_health[revives[1]["uid"]] + 2, "second: +2/+2")
 
 
 func test_steam_cloud_and_gold_ember() -> void:

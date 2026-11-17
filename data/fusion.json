@@ -15,7 +15,7 @@
   "blood_moon_chance": 0.03,
   "masters": [
     {
-      "id": "golden_wall",
+      "id": "golden_fortress",
       "suits": [
         "coins",
         "coins"
@@ -24,7 +24,46 @@
         {
           "trigger": "battle_start",
           "target": "all_allies",
-          "effect": "shield_from_interest",
+          "effect": "shield_per_five_gold",
+          "values": [
+            8,
+            8,
+            8
+          ]
+        },
+        {
+          "trigger": "aura",
+          "target": "self",
+          "effect": "fortress_gold",
+          "values": [
+            3,
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ember_core",
+      "suits": [
+        "wands",
+        "wands"
+      ],
+      "abilities": [
+        {
+          "trigger": "aura",
+          "target": "self",
+          "effect": "burn_mult",
+          "values": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "trigger": "aura",
+          "target": "self",
+          "effect": "ember_heal",
           "values": [
             1,
             1,
@@ -34,16 +73,16 @@
       ]
     },
     {
-      "id": "fire_leap",
+      "id": "eternal_spring",
       "suits": [
-        "wands",
-        "wands"
+        "cups",
+        "cups"
       ],
       "abilities": [
         {
-          "trigger": "on_enemy_death",
-          "target": "self",
-          "effect": "fire_leap",
+          "trigger": "on_ally_death",
+          "target": "dying_unit",
+          "effect": "eternal_spring",
           "values": [
             2,
             2,
@@ -53,26 +92,7 @@
       ]
     },
     {
-      "id": "sea_of_tears",
-      "suits": [
-        "cups",
-        "cups"
-      ],
-      "abilities": [
-        {
-          "trigger": "on_ally_death",
-          "target": "dying_unit",
-          "effect": "revive_full",
-          "values": [
-            1,
-            1,
-            1
-          ]
-        }
-      ]
-    },
-    {
-      "id": "piercing",
+      "id": "execution",
       "suits": [
         "swords",
         "swords"
@@ -84,9 +104,19 @@
           "target": "attack_target",
           "effect": "apply_bleed",
           "values": [
-            2,
-            2,
-            2
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "trigger": "on_attack",
+          "target": "attack_target",
+          "effect": "execute_below",
+          "values": [
+            0.3,
+            0.3,
+            0.3
           ]
         }
       ]

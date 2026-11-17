@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M6 abgeschlossen, Kampfbühne Schritt 1 abgeschlossen. Schritt 2 (eigenes Design je Figur, Fähigkeits-Effekte, Spezialangriff-Szene) gebaut (v0.9.0), Feedback-Runden v0.9.1–v0.9.2 umgesetzt, wartet auf Feedback.
+**Status:** Umsetzung – M0–M6 abgeschlossen, Kampfbühne Schritt 1 abgeschlossen. Schritt 2 (eigenes Design je Figur, Fähigkeits-Effekte, Spezialangriff-Szene) gebaut (v0.9.0), Feedback-Runden v0.9.1–v0.9.2 umgesetzt; Fusionsgestalten + reine Meister (v0.10.0) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -215,7 +215,7 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - Rezept-Figuren sind **endgültig** (keine weitere Fusion), dafür etwas stärker (+1/+1 gegenüber dem Vorschlag)
 - **Hinweis:** Wählt man am Altar ein Rezept-Paar, leuchtet die Vorschau als „???“. Was entsteht, zeigt sich erst nach der Fusion
 
-### Fusionsgestalten + reine Meister (beantwortet 2026-11-17, Plan wartet auf Freigabe)
+### Fusionsgestalten + reine Meister (beantwortet 2026-11-17, freigegeben und umgesetzt in v0.10.0)
 - **Teile:** Rumpf, Kopf, Haut, Robe und Umhang kommen von der **Hauptfigur**; Waffe, Schild und Extras (z. B. Kelch, Fackel, Geldbeutel) vom **Partner**. Bei F2/F3 steuern das 3. und 4. Teil weitere Stücke bei (z. B. Umhang bzw. Schild oder Extra)
 - **Stufe:** Mit jeder Stufe etwas **größer** und mit stärkerer **Aura** in den Hauptfarben; Schimmer nur bei F3 und Rezepten (wie vereinbart)
 - **Farben:** Jedes übernommene Teil **behält seine Originalfarben**; zweifarbige Aura aus den zwei Hauptfarben
@@ -801,3 +801,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.9.1: Neu würfeln kostet 5 Gold (+1 je Wurf), neue Überspringen-Marke „2× gratis neu würfeln“, Relikte zum Verbilligen vorgemerkt; eigene Truppe in Gegnerauswahl und Run-Ende zeigt beim Antippen alle Infos (Ausrüstung, Segen, Fusion, Relikt-Wirkungen); Oberkategorien überall in fester Farbe (Ausrüstung hellstahl, Segen gold, Tarot violett, Relikt türkis, Pakt rot, Fähigkeit bernstein) mit Kategorie-Schild auf Objektkarten und farbigen Labels im Info-Fenster; Seltenheit als Farbe des Ausrüstungs-Symbols auf der Karte und farbiger Seltenheitsname | Spieler-Feedback | Reroll 3 Gold; Seltenheit als Sterne |
 | 2026-11-17 | v0.9.2: Aschekönig verursacht selbst Brandschaden: „Nach dem Angriff: Ziel erhält Brennen 3“ (fest, zusätzlich zu Brennen-Weitergabe und Angriffs-Multiplikator) | Spieler-Feedback | Brennen nach Stufe 2/3/4 |
 | 2026-11-17 | Fusionsgestalten: Körper von der Hauptfigur + Waffe/Extras vom Partner, Größe + Aura je Stufe, Teile behalten Farben; reine Fusion mit Farbsymbol und eigener Meisterfähigkeit (Goldene Festung, Glutkern, Ewige Quelle, Hinrichtung), ersetzt die alten reinen Meister | Spieler-Wahl | Hälften, Chimäre; nur Aura, Insignien; Mischpalette, Meisterfarbe; Königsschatz, Münzregen, Feuersturm, Phönixflamme, Flut der Gnade, Seelenkelch, Klingenwirbel, Blutrausch |
+| 2026-11-17 | v0.10.0 umgesetzt: Fusionsgestalten (Körper der Hauptfigur, Waffe/Schild/Schmuck des Partners in dessen Metall und Edelstein, Umhang des 3. Teils in dessen Farbe, Schild/Schmuck des 4. Teils), pro Stufe größer, Aura aus aufsteigenden Funken in den zwei Hauptfarben plus Bodenschein, reines Farbsymbol über dem Kopf; 4 neue reine Meisterfähigkeiten; Arena (?arena=1) zeigt zufällige Fusionen; Vorschau-Werkzeug tools/render_fusions.gd | Plan freigegeben | – |

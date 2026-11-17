@@ -411,14 +411,14 @@ FUSION_PREFIX_COINS,Gold-,Gold-
 FUSION_PREFIX_WANDS,Glut-,Ember-
 FUSION_PREFIX_CUPS,Tränen-,Tear-
 FUSION_PREFIX_SWORDS,Klingen-,Blade-
-MASTER_GOLDEN_WALL,Goldene Mauer,Golden Wall
-MASTER_GOLDEN_WALL_DESC,Kampfbeginn: alle Verbündeten erhalten Schild 1 pro 5 Gold (max. 5).,Battle start: all allies gain 1 shield per 5 gold (max 5).
-MASTER_FIRE_LEAP,Feuerspringen,Fire Leap
-MASTER_FIRE_LEAP_DESC,"Stirbt ein brennender Gegner, springt sein Brennen doppelt auf den nächsten Gegner über.","When a burning enemy dies, its burn leaps doubled to the next enemy."
-MASTER_SEA_OF_TEARS,Tränenmeer,Sea of Tears
-MASTER_SEA_OF_TEARS_DESC,Der erste gefallene Verbündete pro Kampf kehrt mit vollem Leben zurück.,The first fallen ally each battle returns at full health.
-MASTER_PIERCING,Durchbohren,Impale
-MASTER_PIERCING_DESC,Angriffe durchdringen Schild und verursachen Blutung 2.,Attacks pierce shields and cause 2 bleed.
+MASTER_GOLDEN_FORTRESS,Goldene Festung,Golden Fortress
+MASTER_GOLDEN_FORTRESS_DESC,"Kampfbeginn: alle Verbündeten erhalten Schild 1 pro 5 Gold (max. 8). Nach einem Sieg +1 Gold pro übrigem Schild (max. 3).","Battle start: all allies gain 1 shield per 5 gold (max 8). After a win +1 gold per remaining shield (max 3)."
+MASTER_EMBER_CORE,Glutkern,Ember Core
+MASTER_EMBER_CORE_DESC,"Brennen-Schaden an Gegnern ×2, und jedes Brennen-Ticken bei Gegnern heilt diese Figur um 1.","Burn damage to enemies ×2, and every enemy burn tick heals this figure by 1."
+MASTER_ETERNAL_SPRING,Ewige Quelle,Eternal Spring
+MASTER_ETERNAL_SPRING_DESC,"Die ersten zwei gefallenen Verbündeten kehren mit vollem Leben zurück, der zweite mit +2/+2.","The first two fallen allies return at full health, the second with +2/+2."
+MASTER_EXECUTION,Hinrichtung,Execution
+MASTER_EXECUTION_DESC,"Angriffe durchdringen Schild und verursachen Blutung 3. Gegner unter 30 % Leben sterben sofort.","Attacks pierce shields and cause 3 bleed. Enemies below 30 % health die instantly."
 MASTER_GOLD_EMBER,Goldglut,Gold Ember
 MASTER_GOLD_EMBER_DESC,Kampfbeginn: alle Gegner erhalten Brennen 1 pro 10 Gold (max. 3).,Battle start: all enemies gain 1 burn per 10 gold (max 3).
 MASTER_OVERFLOW,Überfluss,Overflow

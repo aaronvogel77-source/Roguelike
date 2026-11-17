@@ -138,7 +138,8 @@ static func definition(db: ContentDb, figure: Dictionary) -> Dictionary:
 		"id": figure["def_id"], "rank": main["rank"], "suit": data["suits"][0],
 		"attack": int(data["attack"]), "health": int(data["health"]),
 		"fusion": {"stage": stage, "suits": data["suits"].duplicate(), "parts": data["parts"].duplicate(),
-			"abilities": data["abilities"].duplicate(), "master": master.get("id", "")},
+			"abilities": data["abilities"].duplicate(), "master": master.get("id", ""), "partner": partner,
+			"part_ranks": data["parts"].map(func(id: String) -> String: return String(db.figures[id]["rank"]))},
 		"fusion_name": TranslationServer.translate("NAME_STEM_" + partner.to_upper()) + "-"
 			+ TranslationServer.translate("NAME_CORE_" + String(figure["def_id"]).to_upper()),
 	}

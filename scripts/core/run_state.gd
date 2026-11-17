@@ -912,7 +912,7 @@ func apply_battle_result(result: Dictionary) -> Stage:
 			figure["xp"] = mini(int(figure["xp"]) + XP_PER_WIN, XP_FOR_LEVEL[2])
 	var paid_interest := interest()
 	var bonus := int(chosen_enemy.get("bonus", 0))
-	var extra := TeamBuilder.gold_after_win(self)
+	var extra := TeamBuilder.gold_after_win(self) + int(result.get("fortress_gold", 0))
 	gold = maxi(gold + BASE_INCOME + bonus + paid_interest + extra, 0)
 	last_income = {"base": BASE_INCOME, "bonus": bonus, "interest": paid_interest, "extra": extra}
 	if is_boss_fight():

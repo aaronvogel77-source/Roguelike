@@ -146,10 +146,68 @@ static func look_for_figure(definition: Dictionary) -> Dictionary:
 	for key in spec:
 		if key != "bulk_by_gold":
 			look[key] = spec[key]
+	if stage > 0 and fusion.has("parts"):
+		_fuse_look(look, fusion)
 	if look["eyes"] is String:
 		look["eyes"] = Color(look["eyes"])
-	look["key"] = "fig:%s:%s:%d:%d:%d" % [id, suit, stage, 1 if recipe else 0, bulk]
+	look["key"] = "fig:%s:%s:%d:%d:%d:%s" % [id, suit, stage, 1 if recipe else 0, bulk, ",".join(fusion.get("parts", []))]
 	return look
+
+
+## A fusion keeps the main figure's body (torso, head, skin, robe, cape) and
+## takes the weapon, shield and extras of the partner; a third part lends its
+## cape, a fourth its shield or trinkets. Every part keeps its own colours.
+## Each stage makes the figure a little taller and broader.
+static func _fuse_look(look: Dictionary, fusion: Dictionary) -> void:
+	var parts: Array = fusion["parts"]
+	var suits: Array = fusion.get("suits", [])
+	var ranks: Array = fusion.get("part_ranks", [])
+	var stage := int(fusion.get("stage", parts.size() - 1))
+	var partner := String(fusion.get("partner", parts[1]))
+	var partner_index := maxi(parts.find(partner), 1)
+	var others: Array = []
+	for i in range(1, parts.size()):
+		if i != partner_index:
+			others.append(i)
+	look["grow"] = stage
+	var colours := func(i: int) -> Array:
+		var spec: Dictionary = SPECS.get(parts[i], {})
+		var r: int = RANK_INDEX.get(ranks[i] if i < ranks.size() else "page", 0)
+		var metal := String(spec.get("metal", MATERIAL_BY_RANK[r]))
+		return [metal, GEMS.get(suits[i] if i < suits.size() else "coins", "1e9a4e"), r]
+	# Partner: weapon, shield and trinkets in its own metal and gem.
+	var p_spec: Dictionary = SPECS.get(partner, {})
+	var p_col: Array = colours.call(partner_index)
+	look["weapon"] = p_spec.get("weapon", "sword")
+	look["weapon_metal"] = p_col[0]
+	look["weapon_gem"] = p_col[1]
+	var p_shield := String(p_spec.get("shield", "round" if p_col[2] == 1 else "none"))
+	if p_shield != "none":
+		look["shield"] = p_shield
+		look["shield_metal"] = p_col[0]
+		look["shield_gem"] = p_col[1]
+	var extras: Array = look.get("extras", []).duplicate()
+	for extra in p_spec.get("extras", []):
+		if extra in ["satchel", "golden_hand", "drip", "halo"] and not extra in extras:
+			extras.append(extra)
+	# Third part: its cloak (in its suit colour), fourth: shield or trinkets.
+	if others.size() >= 1:
+		var i: int = others[0]
+		look["cape"] = maxi(int(look.get("cape", 0)), 26)
+		look["cape_cloth"] = suits[i] if i < suits.size() else look["cloth"]
+	if others.size() >= 2:
+		var i: int = others[1]
+		var spec: Dictionary = SPECS.get(parts[i], {})
+		var col: Array = colours.call(i)
+		var shield := String(spec.get("shield", "round" if col[2] == 1 else "none"))
+		if shield != "none" and not look.has("shield_metal"):
+			look["shield"] = shield
+			look["shield_metal"] = col[0]
+			look["shield_gem"] = col[1]
+		for extra in spec.get("extras", []):
+			if extra in ["satchel", "golden_hand", "drip", "halo"] and not extra in extras:
+				extras.append(extra)
+	look["extras"] = extras
 
 
 ## Enemies without their own creature art: corrupted figure bodies.
@@ -181,6 +239,14 @@ static func build(look: Dictionary) -> Dictionary:
 
 static func _build_figure(look: Dictionary) -> Dictionary:
 	var d: Dictionary = look["dim"].duplicate()
+	var grow := int(look.get("grow", 0))
+	if grow > 0:  # fusions: a little taller and broader per stage
+		d["H"] = int(d["H"]) + grow * 3
+		d["leg"] = int(d["leg"]) + grow
+		d["torso"] = int(d["torso"]) + grow
+		d["tw"] = int(d["tw"]) + grow
+		d["arm"] = int(d["arm"]) + (grow + 1) / 2
+		d["legW"] = int(d["legW"]) + (1 if grow >= 2 else 0)
 	var bulk := int(look.get("bulk", 0))
 	if look.get("bulky", false):  # Gold-Armored: slim with little gold, massive with a lot
 		d["tw"] = int(d["tw"]) - 3 + bulk * 3
@@ -249,26 +315,32 @@ static func _build_figure(look: Dictionary) -> Dictionary:
 		parts["arm" + side] = c.outline().part(Vector2i(3, 2))
 	parts["arm_len"] = arm - 3
 
-	parts["weapon"] = _weapon(look["weapon"], metal, gold, gem)
+	var weapon_metal := ramp(look["weapon_metal"]) if look.has("weapon_metal") else metal
+	var weapon_gem := Color(look["weapon_gem"]) if look.has("weapon_gem") else gem
+	parts["weapon"] = _weapon(look["weapon"], weapon_metal, gold, weapon_gem)
 	var shield: String = look.get("shield", "none")
 	if shield == "round" or shield == "tower":
 		var tall := shield == "tower"
+		var metal_s := ramp(look["shield_metal"]) if look.has("shield_metal") else metal
+		var gem_s := Color(look["shield_gem"]) if look.has("shield_gem") else gem
 		var s := PixelCanvas.new(12 if not tall else 14, 15 if not tall else 24)
 		var sh_w := 10 if not tall else 12
 		var sh_h := 10 if not tall else 20
-		s.shade(1, 1, sh_w, sh_h, metal)
-		s.px(metal[1], 2, sh_h + 1, sh_w - 2, 1)
-		s.px(metal[0], sh_w / 2, sh_h + 2, 2, 1)
-		s.px(gem.darkened(0.2), sh_w / 2 - 1, 3, 4, 4)
-		s.px(gem.lightened(0.4), sh_w / 2 - 1, 3)
+		s.shade(1, 1, sh_w, sh_h, metal_s)
+		s.px(metal_s[1], 2, sh_h + 1, sh_w - 2, 1)
+		s.px(metal_s[0], sh_w / 2, sh_h + 2, 2, 1)
+		s.px(gem_s.darkened(0.2), sh_w / 2 - 1, 3, 4, 4)
+		s.px(gem_s.lightened(0.4), sh_w / 2 - 1, 3)
 		if tall:
 			for y in range(9, sh_h, 4):
-				s.px(metal[3], 2, y, sh_w - 2, 1)
+				s.px(metal_s[3], 2, y, sh_w - 2, 1)
 		parts["shield"] = s.outline().part(Vector2i(sh_w / 2 + 1, 5))
 	var cape_len: int = look["cape"]
 	if cape_len > 0:
 		var c := PixelCanvas.new(18, cape_len + 3)
 		var cape_col := ramp("wands") if look["metal"] == "ash" else cloth
+		if look.has("cape_cloth"):
+			cape_col = ramp(look["cape_cloth"])
 		if "collar" in extras:
 			cape_col = ramp("blood")
 		for y in cape_len:

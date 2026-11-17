@@ -114,12 +114,26 @@ func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dict
 			_process_deaths()
 
 	var outcome := _outcome()
+	# "Goldene Festung" (master): remaining player shields turn into gold after a win.
+	var fortress_gold := 0
+	if outcome != Outcome.LOSS:
+		for unit: BattleUnit in living(PLAYER):
+			var fortress := unit.aura("fortress_gold")
+			if not fortress.is_empty():
+				var shields := 0
+				for ally: BattleUnit in living(PLAYER):
+					shields += ally.status(BattleUnit.STATUS_SHIELD)
+				fortress_gold = mini(shields, int(unit.level_value(fortress)))
+				break
+	if fortress_gold > 0:
+		events.append({"type": "fortress_gold", "amount": fortress_gold})
 	events.append({"type": "end", "outcome": outcome, "turn": turn})
 	return {
 		"outcome": outcome,
 		"victory": outcome != Outcome.LOSS,  # a draw counts as a victory
 		"turns": turn,
 		"gold_after": real_gold,
+		"fortress_gold": fortress_gold,
 		"events": events,
 	}
 
@@ -207,6 +221,11 @@ func _tick_damage_over_time() -> void:
 			if burn > 0:
 				var amount := int(floor(burn * _burn_multiplier_against(unit)))
 				_deal_damage(unit, amount, "burn")
+				# "Glutkern" (master): every burn tick on an opponent heals 1.
+				for healer: BattleUnit in living(1 - unit.side):
+					var ember := healer.aura("ember_heal")
+					if amount > 0 and not ember.is_empty():
+						_heal(healer, int(healer.level_value(ember)))
 				unit.add_status(BattleUnit.STATUS_BURN, -1)
 				events.append({"type": "burn_tick", "uid": unit.uid, "from": burn, "to": burn - 1})
 				_emit_update(unit)
