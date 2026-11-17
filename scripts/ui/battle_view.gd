@@ -244,7 +244,14 @@ func _new_battle() -> void:
 	_rng_streams = RngStreams.new(seed_value)
 	var rng := _rng_streams.stream("debug_teams")
 	var player_team := DebugTeams.random_player_team(_db, rng, rng.randi_range(3, 6))
-	DebugTeams.add_fusions(_db, rng, player_team)
+	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search", true)).contains("skins=1"):
+		# Skin showcase: the four legendary skins against a strong team.
+		Cosmetics.skins = {"executioner": "skin_hell_executioner", "drowned_king": "skin_frost_king",
+			"the_judge": "skin_star_judge", "king_midas": "skin_sun_midas"}
+		player_team = ["king_midas", "the_judge", "drowned_king", "executioner"].map(
+			func(id: String) -> Dictionary: return {"def": _db.figures[id], "level": 3})
+	else:
+		DebugTeams.add_fusions(_db, rng, player_team)
 	var enemy_team := DebugTeams.random_enemy_team(_db, rng, rng.randi_range(3, 6))
 	_battle_gold = rng.randi_range(0, 30)
 	_battle = BattleSimulator.simulate(player_team, enemy_team, _battle_gold)
@@ -388,7 +395,8 @@ func _show_trigger(event: Dictionary) -> void:
 	var special := _special_name(source, event["effect"])
 	if special != "" and not _skipping and not _specials_shown.has(event["uid"]):
 		_specials_shown[event["uid"]] = true
-		_show_special_banner(special, ContentDb.display_name(source.definition))
+		_show_special_banner(special, ContentDb.display_name(source.definition),
+			Color(FigureArt.FX_COLORS[source.fx_theme][0]) if source.fx_theme != "" else Palette.GOLD)
 		await _stage.special(event["uid"], _stage_speed())
 	source.glow(color, 0.45 / _stage_speed())
 	if _skipping:
@@ -405,6 +413,10 @@ func _show_trigger(event: Dictionary) -> void:
 ## F3 fusions for their master ability. "" for everything else.
 func _special_name(source: FigureActor, effect: String) -> String:
 	var definition := source.definition
+	# Legendary skins bring their own special scene.
+	var skin := String(Cosmetics.skins.get(String(definition.get("id", "")), "")) if not source.is_enemy else ""
+	if skin != "" and source.fx_theme != "":
+		return tr("SPECIAL_" + skin.to_upper())
 	var master: String = definition.get("fusion", {}).get("master", "")
 	if master != "":
 		for ability in Fusion.master_by_id(_db, master).get("abilities", []):
@@ -418,7 +430,7 @@ func _special_name(source: FigureActor, effect: String) -> String:
 
 
 ## The special attack's name in big letters over the stage.
-func _show_special_banner(title: String, subtitle: String) -> void:
+func _show_special_banner(title: String, subtitle: String, color: Color = Palette.GOLD) -> void:
 	if _special_title == null:
 		_special_title = _make_label("", 54, Palette.GOLD)
 		_special_sub = _make_label("", 24, Palette.PARCHMENT)
@@ -429,6 +441,7 @@ func _show_special_banner(title: String, subtitle: String) -> void:
 			label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_fx_layer.add_child(label)
 	_special_title.text = title
+	_special_title.add_theme_color_override("font_color", color)
 	_special_sub.text = subtitle
 	_special_title.size = Vector2(size.x, 70)
 	_special_sub.size = Vector2(size.x, 30)

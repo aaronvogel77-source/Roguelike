@@ -79,6 +79,14 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 		_style.set_border_width_all(3 + stage)
 		if stage >= 3:
 			_cycle_glow(suits)
+	# Legendary skins: a glowing frame in the skin's theme colour.
+	var skin := String(Cosmetics.skins.get(String(unit_definition.get("id", "")), "")) if not enemy else ""
+	if skin != "" and FigureArt.SKINS.has(skin):
+		var theme_color := Color(FigureArt.FX_COLORS[FigureArt.SKINS[skin]["fx"]][0])
+		_style.border_color = theme_color
+		_style.shadow_color = Color(theme_color, 0.8)
+		_style.shadow_size = maxi(_style.shadow_size, 8)
+		_style.set_border_width_all(maxi(_style.border_width_left, 4))
 	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
 		_style.set_content_margin(side, 5)
 	body.add_theme_stylebox_override("panel", _style)
@@ -154,6 +162,9 @@ func base_border_color() -> Color:
 		return Palette.GOLD
 	if is_enemy:
 		return Palette.ENEMY_BORDER
+	var skin := String(Cosmetics.skins.get(String(definition.get("id", "")), ""))
+	if FigureArt.SKINS.has(skin):
+		return Color(FigureArt.FX_COLORS[FigureArt.SKINS[skin]["fx"]][0])
 	return Palette.SUIT_COLORS.get(snapshot.get("suit", definition.get("suit", "")), Palette.GOLD)
 
 

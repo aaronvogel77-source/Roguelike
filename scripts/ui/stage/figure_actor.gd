@@ -62,6 +62,9 @@ var _aura: Node2D
 var _fusion_stage := 0
 var _aura_colors: Array = []
 var _pure_suit := ""
+## Legendary skin effect theme ("hellfire", "frost", "void", "sun") or "".
+var fx_theme := ""
+var _strike_time := -1.0
 
 
 func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) -> void:
@@ -87,6 +90,7 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 	var stage := int(unit_definition.get("fusion", {}).get("stage", 0))
 	_sparkle = 2 if look.get("shimmer", false) else (1 if stage >= 3 else 0)
 	_fusion_stage = stage
+	fx_theme = String(look.get("fx", "")) if not enemy else ""
 	if stage > 0:
 		var counts := {}
 		var order: Array = []
@@ -101,6 +105,7 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 			_aura_colors = Cosmetics.aura_colors()
 		if stage >= 3 and counts[order[0]] >= 3:
 			_pure_suit = order[0]
+	if stage > 0 or fx_theme != "":
 		_aura = Node2D.new()
 		_aura.draw.connect(_draw_aura)
 		add_child(_aura)  # added before the rig, so it is drawn behind the figure
@@ -233,6 +238,7 @@ func wind_up(duration: float) -> void:
 
 
 func strike(duration: float) -> void:
+	_strike_time = _time + duration * 0.3
 	var tween := create_tween()
 	tween.tween_property(self, "arm", -1.1, duration * 0.4)
 	tween.tween_interval(duration * 0.3)
@@ -283,6 +289,23 @@ func die(duration: float) -> void:
 	_death_duration = duration
 	var tween := create_tween()
 	match _death_style():
+		"skin_hellfire":  # glows like lava, then crumbles to ash
+			tween.tween_property(_rig, "modulate", Color(2.2, 0.9, 0.3, 1.0), duration * 0.35)
+			tween.tween_property(_rig, "modulate", Color(0.1, 0.06, 0.05, 0.0), duration * 0.65)
+		"skin_frost":  # freezes solid and shatters into shards
+			tween.tween_property(_rig, "modulate", Color(1.4, 1.8, 2.4, 1.0), duration * 0.35)
+			for key in _sprites:
+				var sprite: Sprite2D = _sprites[key]
+				var dir := Vector2(randf_range(-14, 14), randf_range(-10, 0))
+				tween.parallel().tween_property(sprite, "position", sprite.position + dir + Vector2(0, 16), duration * 0.65).set_delay(duration * 0.35)
+			tween.tween_property(_rig, "modulate:a", 0.0, duration * 0.3)
+		"skin_void":  # collapses into a point of darkness
+			tween.tween_property(_rig, "modulate", Color(0.6, 0.3, 1.2, 1.0), duration * 0.3)
+			tween.tween_property(_rig, "scale", Vector2(0.05 * signf(_rig.scale.x), 0.05), duration * 0.7).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		"skin_sun":  # dissolves into light and rises
+			tween.tween_property(_rig, "modulate", Color(3.0, 2.6, 1.6, 1.0), duration * 0.4)
+			tween.parallel().tween_property(_rig, "position:y", -12.0, duration)
+			tween.tween_property(_rig, "modulate:a", 0.0, duration * 0.6)
 		"cups":  # melts down
 			tween.tween_property(_rig, "scale:y", 0.15, duration)
 			tween.parallel().tween_property(_rig, "modulate", Color(0.4, 0.6, 1.0, 0.0), duration)
@@ -326,6 +349,8 @@ var _death_duration := 0.5
 func _death_style() -> String:
 	if is_enemy:
 		return "enemy"
+	if fx_theme != "":
+		return "skin_" + fx_theme
 	return suit
 
 
@@ -384,9 +409,32 @@ func _draw_fx() -> void:
 				if ph < 0.15:
 					_fx.draw_rect(Rect2(p - Vector2(1, 0), Vector2(3, 1)), col)
 					_fx.draw_rect(Rect2(p - Vector2(0, 1), Vector2(1, 3)), col)
+		if fx_theme != "":
+			_draw_skin_front()
 	elif _death_time >= 0.0:
 		var q := clampf((_time - _death_time) / maxf(_death_duration, 0.05), 0.0, 1.0)
 		match _death_style():
+			"skin_hellfire":
+				for i in 18:
+					var p := Vector2(-8 + (i * 7) % 17 + sin(q * 5 + i) * 3, -4 - (i * 9) % int(maxf(h, 1)) * (1.0 - q * 0.3) - q * 30)
+					_fx.draw_rect(Rect2(p.round(), Vector2(1, 1)), Color("ffb040") if i % 3 else Color("ff4010", 1.0 - q))
+			"skin_frost":
+				for i in 16:
+					var a := i / 16.0 * TAU
+					var p := Vector2(cos(a) * q * 26, -h * 0.5 + sin(a) * q * 18 + q * q * 18)
+					_fx.draw_rect(Rect2(p.round(), Vector2(2, 1) if i % 2 else Vector2(1, 2)), Color(0.75, 0.9, 1.0, 1.0 - q))
+			"skin_void":
+				var radius := (1.0 - q) * 24.0
+				for i in 20:
+					var a := i / 20.0 * TAU + q * 4.0
+					_fx.draw_rect(Rect2(Vector2(cos(a) * radius, -h * 0.5 + sin(a) * radius * 0.8).round(), Vector2.ONE), Color(0.75, 0.45, 1.0, 1.0 - q * 0.5))
+				if q > 0.85:
+					_fx.draw_rect(Rect2(-2, -h * 0.5 - 2, 4, 4), Color(1, 1, 1, (1.0 - q) * 6.0))
+			"skin_sun":
+				_fx.draw_rect(Rect2(-4, -160, 8, 160), Color(1.0, 0.9, 0.5, 0.35 * (1.0 - q)))
+				for i in 16:
+					var p := Vector2(-8 + (i * 5) % 17, -2 - (i * 11) % int(maxf(h, 1)) - q * 40)
+					_fx.draw_rect(Rect2(p.round(), Vector2.ONE), Color(1.0, 0.95, 0.6, 1.0 - q))
 			"coins":
 				for i in 14:
 					var a := i / 14.0 * TAU
@@ -498,7 +546,11 @@ func _draw_statuses(statuses: Dictionary, h: float) -> void:
 # --- Fusion aura and the pure suit symbol ---------------------------------------------
 
 func _draw_aura() -> void:
-	if dead or _aura_colors.is_empty():
+	if dead:
+		return
+	if fx_theme != "":
+		_draw_skin_back()
+	if _aura_colors.is_empty():
 		return
 	var h := _height
 	var n := 6 + _fusion_stage * 6
@@ -557,3 +609,127 @@ func _draw_suit_symbol(at: Vector2) -> void:
 	ray.a = 0.35 + 0.35 * pulse
 	for d in [Vector2(-5, 0), Vector2(5, 0), Vector2(0, -5)]:
 		_aura.draw_rect(Rect2(at + d, Vector2.ONE), ray)
+
+
+# --- Legendary skin effects --------------------------------------------------------------
+
+## Where the top of the head is (stage space relative to the actor).
+func _head_top() -> Vector2:
+	var head: Sprite2D = _sprites["head"]
+	var p := head.position + Vector2(1, -float(_parts["dim"]["head"]) - 2)
+	return Vector2(p.x * _rig.scale.x, p.y)
+
+
+## The tip of the weapon (rotates with the arm).
+func _weapon_tip() -> Vector2:
+	var weapon: Sprite2D = _sprites["weapon"]
+	var reach := float(weapon.texture.get_height()) - float(_parts["weapon"]["pivot"].y)
+	var p := weapon.position + Vector2(0, -reach).rotated(weapon.rotation)
+	return Vector2(p.x * _rig.scale.x, p.y)
+
+
+func _fx_color(index: int) -> Color:
+	return Color(FigureArt.FX_COLORS[fx_theme][index])
+
+
+## Behind the figure: heat, cold mist, a nebula, sun rays.
+func _draw_skin_back() -> void:
+	var h := _height
+	var pulse := 0.5 + 0.5 * sin(_time * 2.6)
+	match fx_theme:
+		"hellfire":
+			_aura.draw_rect(Rect2(-12, -2, 24, 3), Color(1.0, 0.35, 0.05, 0.25 + 0.15 * pulse))
+			_aura.draw_rect(Rect2(-8, -3, 16, 1), Color(1.0, 0.6, 0.1, 0.35 * pulse))
+		"frost":
+			for i in 10:
+				var ph := fmod(_time * 0.15 + i * 0.1, 1.0)
+				_aura.draw_rect(Rect2(Vector2(-16 + ph * 32, -1 - (i % 3)).round(), Vector2(3, 1)), Color(0.8, 0.9, 1.0, 0.25 * sin(ph * PI)))
+		"void":
+			for i in 14:
+				var a := i / 14.0 * TAU + _time * 0.4
+				var r := 13.0 + 2.0 * sin(_time * 1.5 + i)
+				_aura.draw_rect(Rect2(Vector2(cos(a) * r, -h * 0.55 + sin(a) * r * 1.4).round(), Vector2.ONE), Color(0.55, 0.3, 0.95, 0.35 + 0.25 * sin(_time * 3 + i)))
+		"sun":
+			var head := _head_top() + Vector2(0, 6)
+			for i in 12:
+				var a := i / 12.0 * TAU + _time * 0.3
+				var length := 10.0 + 4.0 * pulse + (3.0 if i % 2 == 0 else 0.0)
+				for r in range(6, int(length)):
+					_aura.draw_rect(Rect2((head + Vector2(cos(a), sin(a)) * r).round(), Vector2.ONE), Color(1.0, 0.88, 0.4, 0.45 * (1.0 - float(r) / length)))
+
+
+## In front: flames on the helm and axe, snowflakes and frost breath,
+## orbiting runes and twinkling stars, golden sparks; plus the theme's
+## weapon trail right after a strike.
+func _draw_skin_front() -> void:
+	var h := _height
+	var head := _head_top()
+	var tip := _weapon_tip()
+	match fx_theme:
+		"hellfire":
+			for i in 7:  # flames licking up from the helm spikes and the axe
+				var ph := fmod(_time * 2.2 + i * 0.37, 1.0)
+				var base := head + Vector2(-5 + i * 2, -2) if i < 5 else tip + Vector2(i - 5, 0)
+				var col := Color("fff0a0") if ph < 0.25 else (Color("ff9a20") if ph < 0.6 else Color("e04010"))
+				col.a = 1.0 - ph
+				_fx.draw_rect(Rect2((base + Vector2(sin(_time * 9 + i), -ph * 6)).round(), Vector2.ONE), col)
+			for i in 5:  # embers rising from the body
+				var ph := fmod(_time * 0.5 + i * 0.21, 1.0)
+				_fx.draw_rect(Rect2(Vector2(-6 + (i * 5) % 13 + sin(_time * 3 + i) * 2, -4 - ph * (h + 10)).round(), Vector2.ONE), Color(1.0, 0.55, 0.1, 1.0 - ph))
+		"frost":
+			for i in 9:  # snowflakes drifting down around the king
+				var ph := fmod(_time * 0.22 + i * 0.113, 1.0)
+				var p := Vector2(-16 + (i * 37) % 33 + sin(_time * 1.3 + i) * 3, -h - 14 + ph * (h + 14))
+				_fx.draw_rect(Rect2(p.round(), Vector2.ONE), Color(0.92, 0.97, 1.0, 0.9 * sin(ph * PI)))
+				if i % 3 == 0:
+					_fx.draw_rect(Rect2(p.round() - Vector2(1, 0), Vector2(3, 1)), Color(0.85, 0.93, 1.0, 0.5 * sin(ph * PI)))
+			var breath := fmod(_time * 0.45, 1.0)  # frost breath
+			if breath < 0.4:
+				var dir := -1.0 if is_enemy else 1.0
+				for i in 4:
+					_fx.draw_rect(Rect2((head + Vector2(dir * (5 + breath * 20 + i * 2), 8 + i % 2)).round(), Vector2(2, 1)), Color(0.85, 0.95, 1.0, 0.6 * (1.0 - breath / 0.4)))
+			if fmod(_time, 1.6) < 0.15:  # glint on the crown
+				_fx.draw_rect(Rect2(head + Vector2(-1, -4), Vector2(3, 1)), Color.WHITE)
+				_fx.draw_rect(Rect2(head + Vector2(0, -5), Vector2(1, 3)), Color.WHITE)
+		"void":
+			for i in 3:  # runes circling the head
+				var a := _time * 1.2 + i * TAU / 3.0
+				var p := (head + Vector2(cos(a) * 10, 4 + sin(a) * 3)).round()
+				var col := Color(0.8, 0.55, 1.0, 0.6 + 0.4 * sin(a))
+				_fx.draw_rect(Rect2(p, Vector2(1, 3)), col)
+				_fx.draw_rect(Rect2(p + Vector2(-1, 1), Vector2(3, 1)), col)
+			for i in 6:  # stars twinkling around the body
+				var ph := fmod(_time * 0.7 + i * 0.29, 1.0)
+				if ph < 0.3:
+					var p := Vector2(-14 + (i * 41) % 29, -6 - (i * 23) % int(h))
+					_fx.draw_rect(Rect2(p, Vector2.ONE), Color(0.95, 0.9, 1.0))
+					if ph < 0.1:
+						_fx.draw_rect(Rect2(p - Vector2(1, 0), Vector2(3, 1)), Color(0.85, 0.7, 1.0, 0.7))
+		"sun":
+			for i in 8:  # golden sparks drifting upwards
+				var ph := fmod(_time * 0.4 + i * 0.125, 1.0)
+				var p := Vector2(-14 + (i * 29) % 29 + sin(_time * 2 + i) * 2, -2 - ph * (h + 16))
+				_fx.draw_rect(Rect2(p.round(), Vector2.ONE), Color(1.0, 0.85 + 0.15 * (i % 2), 0.35 + 0.4 * (i % 2), 1.0 - ph))
+			if fmod(_time + 0.4, 1.3) < 0.12:
+				_fx.draw_rect(Rect2(tip + Vector2(-2, 0), Vector2(5, 1)), Color.WHITE)
+				_fx.draw_rect(Rect2(tip + Vector2(0, -2), Vector2(1, 5)), Color.WHITE)
+	# Weapon trail and impact sparks in the theme colours, right after a strike.
+	var since := _time - _strike_time
+	if _strike_time >= 0.0 and since >= 0.0 and since < 0.35:
+		var q := since / 0.35
+		var dir := -1.0 if is_enemy else 1.0
+		var main := _fx_color(0)
+		var light := _fx_color(1)
+		for i in 14:  # a bright arc in front of the figure
+			var a := -1.4 + i / 13.0 * 2.2
+			var p := Vector2(dir * (6 + cos(a) * 14), -h * 0.55 + sin(a) * 16)
+			var col := light if i % 3 == 0 else main
+			col.a = 1.0 - q
+			_fx.draw_rect(Rect2(p.round(), Vector2(2, 2) if i % 2 else Vector2.ONE), col)
+		for i in 10:  # impact burst
+			var a := i / 10.0 * TAU
+			var p := Vector2(dir * 20, -h * 0.5) + Vector2(cos(a), sin(a)) * q * 12
+			var col := light if i % 2 else main
+			col.a = 1.0 - q
+			_fx.draw_rect(Rect2(p.round(), Vector2.ONE), col)
+

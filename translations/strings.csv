@@ -625,7 +625,12 @@ COSMETIC_STAGE_GRAVEYARD,Mondfriedhof,Moonlit Graveyard
 COSMETIC_AURA_SUITS,Farben der Teile,Suit colours
 COSMETIC_AURA_VIOLET,Violetter Schleier,Violet Veil
 COSMETIC_AURA_EMBER,Glutfunken,Ember Sparks
-COSMETIC_SKIN_BONE_EXECUTIONER,Knochen-Henker,Bone Executioner
-COSMETIC_SKIN_FROST_MIDAS,Frost-Midas,Frost Midas
-COSMETIC_SKIN_SHADOW_JUDGE,Schattenrichter,Shadow Judge
-COSMETIC_SKIN_EMBER_SPARK,Glutträger,Ember Bearer
+COSMETIC_SKIN_HELL_EXECUTIONER,Höllenhenker,Hell Executioner
+COSMETIC_SKIN_FROST_KING,Frostkönig,Frost King
+COSMETIC_SKIN_STAR_JUDGE,Sternenrichter,Star Judge
+COSMETIC_SKIN_SUN_MIDAS,Sonnenkönig Midas,Sun King Midas
+SPECIAL_SKIN_HELL_EXECUTIONER,Höllenschlag,Hellstrike
+SPECIAL_SKIN_FROST_KING,Ewiger Winter,Eternal Winter
+SPECIAL_SKIN_STAR_JUDGE,Urteil der Sterne,Judgement of the Stars
+SPECIAL_SKIN_SUN_MIDAS,Sonnenaufgang,Sunrise
+UI_RARITY_LEGENDARY_SKIN,Legendär,Legendary

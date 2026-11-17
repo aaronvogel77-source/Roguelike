@@ -107,12 +107,12 @@ func test_save_round_trip_and_run_meta_survives_serialization() -> void:
 
 func test_cosmetics_buy_and_equip() -> void:
 	var meta := MetaState.new()
-	meta.glut = 50
+	meta.glut = 150
 	assert_true(meta.buy_cosmetic(_db, "back_blood"))
 	assert_true(meta.equip(_db, "back_blood"))
 	assert_eq(meta.equipped["back"], "back_blood")
-	assert_true(meta.buy_cosmetic(_db, "skin_bone_executioner"))
-	meta.equip(_db, "skin_bone_executioner")
-	assert_eq(meta.equipped["skins"]["executioner"], "skin_bone_executioner")
-	meta.equip(_db, "skin_bone_executioner")
+	assert_true(meta.buy_cosmetic(_db, "skin_hell_executioner"))
+	meta.equip(_db, "skin_hell_executioner")
+	assert_eq(meta.equipped["skins"]["executioner"], "skin_hell_executioner")
+	meta.equip(_db, "skin_hell_executioner")
 	assert_false(meta.equipped["skins"].has("executioner"), "equipping again takes the skin off")

@@ -114,9 +114,15 @@ func open_chest(db: ContentDb, id: String, rng: RandomNumberGenerator) -> Array:
 	if pool.is_empty() or glut < price:
 		return []
 	glut -= price
+	# Legendary skins are very rare: each draw finds one only with a small chance.
+	var skins := pool.filter(func(p: Array) -> bool: return p[0] == "skins")
+	var others := pool.filter(func(p: Array) -> bool: return p[0] != "skins")
 	var results: Array = []
 	for i in int(db.meta["chest_size"]):
-		var pick: Array = pool[rng.randi_range(0, pool.size() - 1)]
+		var from := others
+		if others.is_empty() or (not skins.is_empty() and rng.randf() < float(db.meta.get("legendary_skin_weight", 0.05))):
+			from = skins
+		var pick: Array = from[rng.randi_range(0, from.size() - 1)]
 		var kind: String = pick[0]
 		var content_id: String = pick[1]
 		var fresh := not (content_id in cosmetics if kind == "skins" else is_unlocked(kind, content_id))

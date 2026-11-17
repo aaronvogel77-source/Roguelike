@@ -41,6 +41,13 @@ const RAMPS := {
 	"bronze": ["1e140a", "4a3218", "7a5428", "a87e44"],
 	"sick": ["1e2418", "3e4a32", "66764e", "94a274"],
 	"blood": ["1e0608", "3c0c10", "601820", "88282e"],
+	# Legendary skins
+	"charcoal": ["0e0a08", "241a16", "3a2c26", "54443a"],
+	"lava": ["8a1a04", "e04010", "ff9a20", "fff0a0"],
+	"ice": ["2a5a8a", "6aa8d8", "b8e4ff", "ffffff"],
+	"frost": ["1c2e4a", "3a5a8a", "8ab0dc", "dcefff"],
+	"void": ["06040c", "120c22", "221838", "3a2c5a"],
+	"polished": ["7a5410", "d8a830", "ffe070", "fffbe0"],
 }
 const GEMS := {"coins": "1e9a4e", "wands": "e0402a", "cups": "2a7ae0", "swords": "a65ae0"}
 const RANK_INDEX := {"page": 0, "knight": 1, "queen": 2, "king": 3, "legend": 3}
@@ -90,12 +97,22 @@ const SPECS := {
 	"ash_flood_king": {"torso": "plate", "metal": "ash", "head": "ash_crown", "skin": "drowned", "beard": true, "weapon": "trident", "extras": ["drip"], "cape": 34},
 }
 
-## Skins from the vault mirror: overrides on a figure's own design.
+## Legendary skins from the vault mirror: completely new parts plus an
+## animated effect theme ("fx"), drawn by the FigureActor.
 const SKINS := {
-	"skin_bone_executioner": {"skin": "linen", "eyes": "ff3040", "torso": "plate", "metal": "linen", "cloth": "blood", "cape": 20},
-	"skin_frost_midas": {"robe": "spirit_water", "metal": "silver", "skin": "pale", "cloth": "cups", "extras": ["golden_hand", "drip"]},
-	"skin_shadow_judge": {"robe": "swords", "skin": "ghost", "eyes": "c080ff", "metal": "ash", "cloth": "shadow"},
-	"skin_ember_spark": {"skin": "fire", "head": "flame_hair", "torso": "bare", "cape": 16, "cloth": "wands", "metal": "gold"},
+	"skin_hell_executioner": {"skin": "charcoal", "torso": "bare", "head": "spike_helm", "weapon": "hell_axe",
+		"extras": ["lava_cracks", "apron"], "eyes": "ff8020", "cape": 0, "fx": "hellfire"},
+	"skin_frost_king": {"skin": "frost", "robe": "ice", "head": "ice_crown", "weapon": "ice_trident",
+		"extras": ["frost_beard"], "cloth": "frost", "cape": 32, "eyes": "b8e4ff", "fx": "frost"},
+	"skin_star_judge": {"robe": "void", "head": "void_hood", "weapon": "void_greatsword", "extras": ["starry"],
+		"cloth": "void", "cape": 32, "eyes": "c080ff", "skin": "void", "fx": "void"},
+	"skin_sun_midas": {"torso": "plate", "metal": "polished", "robe": "polished", "head": "ray_crown",
+		"weapon": "sun_scepter", "extras": ["golden_hand", "light_wings"], "cape": 0, "fur": false, "fx": "sun"},
+}
+## Theme colours of the skin effects (trails, sparks, banner).
+const FX_COLORS := {
+	"hellfire": ["ff5a10", "ffd060"], "frost": ["8ad0ff", "ffffff"],
+	"void": ["9a50ff", "e0c0ff"], "sun": ["ffd040", "fffbe0"],
 }
 
 static var _cache: Dictionary = {}
@@ -347,8 +364,25 @@ static func _build_figure(look: Dictionary) -> Dictionary:
 			for y in range(9, sh_h, 4):
 				s.px(metal_s[3], 2, y, sh_w - 2, 1)
 		parts["shield"] = s.outline().part(Vector2i(sh_w / 2 + 1, 5))
+	if "light_wings" in extras:  # Sonnenkönig: wings of light behind the shoulders
+		var wc := PixelCanvas.new(40, 40)
+		var pol := ramp("polished")
+		var root := Vector2(34, 26)
+		# A filled wing sweeping up and back, feather tips scalloped.
+		for step in 60:
+			var a := -3.0 + step / 60.0 * 1.55
+			var feather := float(step % 10) / 10.0
+			var reach := 30.0 - absf(a + 2.2) * 14.0 - feather * 4.0
+			for r in int(reach):
+				var p := root + Vector2(cos(a), sin(a)) * r
+				var q := r / maxf(reach, 1.0)
+				var col: Color = Color("fffbe0") if q > 0.8 else (Color("fff0b0") if q > 0.5 else pol[2])
+				if step % 10 == 0 and q > 0.35:
+					col = pol[1]  # feather lines
+				wc.px(col, int(p.x), int(p.y))
+		parts["cape"] = wc.outline().part(Vector2i(32, 24))
 	var cape_len: int = look["cape"]
-	if cape_len > 0:
+	if cape_len > 0 and not "light_wings" in extras:
 		var c := PixelCanvas.new(18, cape_len + 3)
 		var cape_col := ramp("wands") if look["metal"] == "ash" else cloth
 		if look.has("cape_cloth"):
@@ -435,6 +469,14 @@ static func _torso(look: Dictionary, d: Dictionary, metal: Array, robe: Array, s
 			c.px(ramp("iron")[3], cx, belt)
 			if "apron" in extras:  # executioner's leather apron
 				c.shade(x0 + 2, belt + 1, tw - 4, 5, ramp("leather"))
+			if "lava_cracks" in extras:  # glowing cracks through charred skin
+				var lava := ramp("lava")
+				var x := cx - 3
+				for y in range(1, th - 2):
+					x += [-1, 1, 0, 1, -1][y % 5]
+					c.px(lava[1] if y % 3 else lava[2], x, y0 + y)
+				for p in [Vector2i(x0 + 1, y0 + 4), Vector2i(x0 + 2, y0 + 5), Vector2i(x0 + tw - 3, y0 + 7), Vector2i(x0 + tw - 2, y0 + 8)]:
+					c.px(lava[2], p.x, p.y)
 		_:  # plate armour with filigree and a chest gem
 			_torso_shape(c, x0, y0, tw, th, metal)
 			for y in range(3, th - 1, 3):
@@ -456,6 +498,12 @@ static func _torso(look: Dictionary, d: Dictionary, metal: Array, robe: Array, s
 					c.px(metal[3], x0 + tw - 2 + i * 2, y0 - 3 - (i % 2), 1, 3)
 	if gild >= 2:
 		c.px(gold[2], x0 + 1, y0, tw - 2, 1)
+	if "starry" in extras:  # a robe full of stars
+		for i in 18:
+			var sx := x0 + (i * 7) % tw
+			var sy := y0 + 2 + (i * 11) % maxi(1, th + extra_h - 4)
+			c.px(Color("f0e8ff") if i % 3 == 0 else Color("9a70e0"), sx, sy)
+		c.px(Color("c080ff"), cx, y0 + 3, 3, 3)
 	if "drip" in extras:
 		for p in [Vector2i(x0 + 2, y0 + th - 2), Vector2i(x0 + tw - 3, y0 + th + 2)]:
 			c.px(Color("7ac8e8"), p.x, p.y, 1, 2)
@@ -493,6 +541,32 @@ static func _head(look: Dictionary, d: Dictionary, metal: Array, skin: Array, go
 		c.px(eye, hx + 1, hy)
 		c.px(eye, hx + 4, hy)
 		return c.outline().part(Vector2i(hx - 1, hh - 3))
+	if kind == "spike_helm":  # Höllenhenker: closed iron helm, glowing visor, lava-tipped spikes
+		var iron := ramp("charcoal")
+		var lava := ramp("lava")
+		c.blob(hx, hy, rr + 1, rr + 1, iron)
+		c.px(iron[0], hx - rr - 1, hy + rr - 1, rr * 2 + 3, 2)
+		c.px(lava[2], hx, hy - 1, rr + 1, 1)  # glowing visor slit
+		c.px(lava[3], hx + 2, hy - 1, 2, 1)
+		c.px(lava[1], hx + 1, hy + 1, 1, 3)
+		for i in 5:
+			var sx := hx - rr + i * (rr * 2) / 4
+			var tall := 6 + (3 if i == 2 else (1 if i % 2 else 0))
+			c.px(iron[2], sx, top - tall + 1, 1, tall)
+			c.px(lava[2], sx, top - tall)
+			c.px(lava[3], sx, top - tall - 1)
+		return c.outline().part(Vector2i(hx - 1, hh - 3))
+	if kind == "void_hood":  # Sternenrichter: a hood of night sky with violet eyes
+		var night := ramp("void")
+		c.blob(hx - 1, hy - 1, rr + 2, rr + 2, night)
+		c.blob(hx + 2, hy + 1, rr - 1, rr - 1, [Color("020104"), Color("040208"), Color("06040c"), Color("080610")])
+		for i in 6:
+			c.px(Color("e0d0ff") if i % 2 else Color("8a70c0"), hx - rr + (i * 5) % (rr * 2), top + (i * 3) % rr)
+		c.px(Color("c080ff"), hx + 1, hy, 2, 1)
+		c.px(Color("c080ff"), hx + 4, hy, 2, 1)
+		c.px(Color("f0e0ff"), hx + 1, hy)
+		c.px(Color("f0e0ff"), hx + 4, hy)
+		return c.outline().part(Vector2i(hx - 1, hh - 3))
 	if kind == "exec_hood":  # black executioner's hood with eye holes, pointed top
 		var black := ramp("judge")
 		c.blob(hx, hy, rr + 1, rr + 1, black)
@@ -524,7 +598,10 @@ static func _head(look: Dictionary, d: Dictionary, metal: Array, skin: Array, go
 		c.px(hair[1], hx - rr - 1, hy - 2, 3, hs + 2)
 		c.px(hair[2], hx - rr - 1, hy - 2, 1, hs)
 	if look["beard"]:
-		c.shade(hx - 1, hy + 2, 6, 6, ramp("seaweed") if look["skin"] == "drowned" else ramp("beard"))
+		var beard_ramp := ramp("seaweed") if look["skin"] == "drowned" else ramp("beard")
+		if "frost_beard" in extras:
+			beard_ramp = ramp("ice")
+		c.shade(hx - 1, hy + 2, 6, 6, beard_ramp)
 	match kind:
 		"cap":
 			c.shade(hx - rr, top - 2, hs + 1, 4, metal)
@@ -561,6 +638,24 @@ static func _head(look: Dictionary, d: Dictionary, metal: Array, skin: Array, go
 				c.px(flame[3], hx - rr - 1 + i, top - tall + 2)
 			if kind == "flame_crown":
 				c.shade(hx - rr, top - 1, hs, 2, gold)
+		"ice_crown":  # Frostkönig: jagged shards of ice
+			var ice := ramp("ice")
+			c.shade(hx - rr, top - 1, hs, 2, ice)
+			for i in hs:
+				var tall := 4 + (i * 5) % 7
+				if i % 2:
+					continue
+				c.px(ice[1], hx - rr + i, top - tall, 2, tall)
+				c.px(ice[2], hx - rr + i, top - tall, 1, tall - 1)
+				c.px(ice[3], hx - rr + i, top - tall)
+		"ray_crown":  # Sonnenkönig: golden crown with long sun rays
+			var pol := ramp("polished")
+			for i in 9:
+				var a := PI + (i + 0.5) / 9.0 * PI
+				var length := 9 if i % 2 == 0 else 6
+				for r in range(3, length):
+					c.px(pol[3] if r > length - 3 else pol[2], hx + int(cos(a) * (rr + r)), top + 2 + int(sin(a) * (rr + r) * 0.8))
+			_crown(c, hx, rr, hs, top, pol, 4, true)
 		"seaweed_crown":
 			var sea := ramp("seaweed")
 			_crown(c, hx, rr, hs, top, ramp("sea"), 2, false)
@@ -750,6 +845,57 @@ static func _weapon(kind: String, metal: Array, gold: Array, gem: Color) -> Dict
 				for y in range(2, length, 4):
 					c.px(flame[3], 7, y)
 			pivot = Vector2i(5, length + 5)
+		"hell_axe":  # Höllenhenker: a huge charred axe with a lava edge
+			var iron := ramp("charcoal")
+			var lava := ramp("lava")
+			c = PixelCanvas.new(22, 38)
+			c.shade(10, 4, 2, 33, iron)
+			for y in 16:
+				var w := 4 + mini(y, 15 - y)
+				c.px(iron[1], 12, 2 + y, w, 1)
+				c.px(iron[2], 12, 2 + y, 1, 1)
+				c.px(lava[2], 12 + w - 1, 2 + y)
+				c.px(lava[3] if y % 3 == 0 else lava[1], 12 + w - 2, 2 + y)
+			for y in range(6, 34, 5):
+				c.px(lava[1], 10, y, 2, 1)
+			c.px(lava[2], 9, 1, 4, 2)
+			pivot = Vector2i(11, 30)
+		"ice_trident":  # Frostkönig: a trident of clear ice
+			var ice := ramp("ice")
+			c = PixelCanvas.new(16, 40)
+			c.shade(7, 10, 2, 29, ice)
+			c.px(ice[3], 7, 11, 1, 26)
+			c.px(ice[2], 2, 9, 12, 2)
+			for x in [2, 7, 12]:
+				c.px(ice[1], x, 1, 2, 9)
+				c.px(ice[3], x, 1, 1, 7)
+				c.px(Color.WHITE, x, 0)
+			c.px(ice[2], 5, 24, 6, 2)
+			pivot = Vector2i(8, 30)
+		"void_greatsword":  # Sternenrichter: a black blade with a violet core
+			var night := ramp("void")
+			c = PixelCanvas.new(14, 46)
+			c.shade(4, 1, 6, 32, night)
+			c.px(Color("c080ff"), 6, 2, 2, 30)
+			c.px(Color("f0e0ff"), 6, 3, 1, 26)
+			for y in range(4, 32, 6):
+				c.px(Color("e0d0ff"), 5 if y % 12 else 8, y)
+			c.shade(1, 33, 12, 2, night)
+			c.px(Color("c080ff"), 6, 33, 2, 2)
+			c.shade(5, 35, 4, 6, ramp("shadow"))
+			c.px(Color("c080ff"), 6, 41, 2, 2)
+			pivot = Vector2i(7, 38)
+		"sun_scepter":  # Sonnenkönig: a golden staff crowned by the sun
+			var pol := ramp("polished")
+			c = PixelCanvas.new(20, 34)
+			c.shade(9, 11, 2, 22, pol)
+			c.blob(10, 7, 4, 4, pol)
+			c.px(Color.WHITE, 9, 5, 2, 2)
+			for i in 12:
+				var a := i / 12.0 * TAU
+				var r := 7 if i % 2 == 0 else 6
+				c.px(pol[3] if i % 2 == 0 else pol[2], 10 + int(cos(a) * r), 7 + int(sin(a) * r))
+			pivot = Vector2i(10, 26)
 		"axe":  # executioner's great axe
 			c = PixelCanvas.new(18, 34)
 			c.shade(8, 4, 2, 29, wood)
