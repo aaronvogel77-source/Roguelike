@@ -5,6 +5,8 @@ extends Control
 var epic := false
 ## Legendary: polychrome rays cycling through all colors.
 var legend := false
+## Unique equipment: turquoise-silver rays.
+var unique := false
 var _angle := 0.0
 
 
@@ -25,6 +27,8 @@ func _draw() -> void:
 	for i in rays:
 		var a := _angle + TAU * i / rays
 		var spread := PI / rays * 0.45
+		if unique:
+			color = Color(0.45, 0.95, 0.88, 0.3) if i % 2 == 0 else Color(0.85, 0.9, 0.95, 0.22)
 		if legend:
 			color = Color.from_hsv(fmod(float(i) / rays + _angle * 0.15, 1.0), 0.7, 1.0, 0.42)
 		draw_colored_polygon(PackedVector2Array([
@@ -32,5 +36,8 @@ func _draw() -> void:
 			c + Vector2(cos(a - spread), sin(a - spread)) * radius * (1.15 if legend else 1.0),
 			c + Vector2(cos(a + spread), sin(a + spread)) * radius * (1.15 if legend else 1.0),
 		]), color)
+	if unique:
+		draw_circle(c, radius * 0.45, Color(0.45, 0.95, 0.88, 0.18))
+		return
 	var glow := Color.from_hsv(fmod(_angle * 0.15, 1.0), 0.5, 1.0, 0.25) if legend else Color(1.0, 0.85, 0.35, 0.18 if epic else 0.1)
 	draw_circle(c, radius * 0.45, glow)

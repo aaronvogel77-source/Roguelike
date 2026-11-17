@@ -307,7 +307,7 @@ OPT_BUY_PACK,Mega-Pack kaufen: %s (6 Gold),Buy mega pack: %s (6 gold)
 OPT_BUY_FIGURE,%s zum halben Preis (%d Gold),%s at half price (%d gold)
 OPT_THROW_3,3 Gold hineinwerfen: magische Ausrüstung,Throw in 3 gold: magic equipment
 OPT_THROW_6,6 Gold hineinwerfen: seltene Ausrüstung,Throw in 6 gold: rare equipment
-OPT_THROW_10,10 Gold hineinwerfen: 1 von 3 seltenen Ausrüstungen,Throw in 10 gold: 1 of 3 rare equipment pieces
+OPT_THROW_10,10 Gold hineinwerfen: 1 von 3 seltenen Ausrüstungen (selten einzigartig),Throw in 10 gold: 1 of 3 rare equipment pieces
 OPT_DRINK,"Trinken: Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn Fluch 2)","Drink: a figure +3/+3 permanently, but cursed (battle start: 2 curse)"
 OPT_TAROT,Eine von 3 Tarot-Karten gratis,One of 3 tarot cards for free
 OPT_NO_BOSS_RULE,Die nächste Boss-Regel entfällt,The next boss rule is lifted
@@ -359,7 +359,7 @@ OFFER_THROW_3_DESC,Eine magische Ausrüstung (1 Zusatz).,One magic equipment pie
 OFFER_THROW_6,Silber,Silver
 OFFER_THROW_6_DESC,Eine seltene Ausrüstung (2 Zusätze).,One rare equipment piece (2 bonuses).
 OFFER_THROW_10,Gold,Gold
-OFFER_THROW_10_DESC,Du wählst 1 von 3 seltenen Ausrüstungen.,Choose 1 of 3 rare equipment pieces.
+OFFER_THROW_10_DESC,Du wählst 1 von 3 seltenen Ausrüstungen. Mit viel Glück ist eine davon einzigartig.,"Choose 1 of 3 rare equipment pieces. With great luck, one of them is unique."
 OFFER_DRINK,Trinken,Drink
 OFFER_DRINK_DESC,"Eine Figur dauerhaft +3/+3, aber verflucht (Kampfbeginn: Fluch 2).","A figure +3/+3 permanently, but cursed (battle start: 2 curse)."
 OFFER_TAROT,Die Karten,The cards
@@ -395,3 +395,11 @@ COST_PACT,1 Pakt,1 pact
 COST_RISK,Vorderste Figur riskieren,Risk your front figure
 UI_CHOOSE,Wählen,Choose
 UI_CHAMPION,Der Champion,The champion
+RARITY_4,Einzigartig,Unique
+RARITY_4_DESC,"+2 Zusatzeffekte, 1 einzigartiger Effekt","+2 bonus effects, 1 unique effect"
+UI_UNIQUE_EFFECT,Einzigartig,Unique
+UI_RARE_UNIQUE,Einzigartig!,Unique!
+UNIQUE_PHOENIX_FEATHER,"Phönixfeder: Stirbt der Träger, kehrt er einmal pro Kampf mit halbem Leben zurück.","Phoenix Feather: if the bearer dies, it returns once per battle with half its health."
+UNIQUE_BLOODTHIRST,Blutdurst: Nach dem Angriff heilt sich der Träger um 50 % des verursachten Schadens.,Bloodthirst: after attacking the bearer heals 50 % of the damage dealt.
+UNIQUE_WARLORD,"Kriegsherr: ×1,5 Angriff.",Warlord: ×1.5 attack.
+UNIQUE_SOUL_HARVEST,Seelenernte: Tötet der Träger einen Gegner mit seinem Angriff: 15 % Chance auf +1 Seele.,Soul Harvest: when the bearer kills an enemy with its attack: 15 % chance for +1 soul.

@@ -137,12 +137,12 @@ func _top_bar(title: String) -> HBoxContainer:
 		# Debug tools in a compact row (small font).
 		var tools := HBoxContainer.new()
 		tools.add_theme_constant_override("separation", 4)
-		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls]]
+		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique]]
 		if _run.stage == RunState.Stage.PLANNING:
-			entries.insert(2, [tr("UI_DEBUG_LEGEND"), _debug_legend])
+			entries.insert(2, ["Legende", _debug_legend])
 		for entry in entries:
 			var button := _button(entry[0], Vector2(0, 40), entry[1])
-			button.add_theme_font_size_override("font_size", 14)
+			button.add_theme_font_size_override("font_size", 13)
 			tools.add_child(button)
 		bar.add_child(tools)
 	bar.add_child(_spacer(8))
@@ -156,6 +156,16 @@ func _debug_event() -> void:
 	var ids: Array = _db.items["events"]["ids"]
 	var current: String = _run.event.get("id", ids[-1])
 	_run.start_event(ids[(ids.find(current) + 1) % ids.size()])
+	_event_option = ""
+	_undo.clear()
+	_show_stage()
+
+
+## Cursed well with +10 gold; throwing in 10 gold surely gives a unique item.
+func _debug_unique() -> void:
+	_run.gold += 10
+	_run.flags["force_unique"] = true
+	_run.start_event("cursed_well")
 	_event_option = ""
 	_undo.clear()
 	_show_stage()

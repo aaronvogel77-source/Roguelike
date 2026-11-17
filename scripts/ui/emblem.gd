@@ -48,7 +48,7 @@ const EFFECT_KINDS := {
 	"apply_bleed": "bleed", "shields_to_bleed": "bleed", "detonate_bleed": "bleed",
 	"apply_curse": "curse",
 	"damage": "sword",
-	"heal": "heart", "lifesteal": "heart", "revive": "heart",
+	"heal": "heart", "lifesteal": "heart", "revive": "heart", "revive_half": "heart", "harvest_soul": "soul",
 	"steal_gold": "coin", "health_per_gold": "coin", "attack_per_ten_gold": "coin", "midas": "coin",
 	"execute": "skull",
 }

@@ -165,6 +165,11 @@ func _clash() -> void:
 	events.append({"type": "clash", "player_uid": player_front.uid, "enemy_uid": enemy_front.uid})
 	var dealt_to_enemy := _deal_damage(enemy_front, damage_to_enemy, "pierce" if player_front.pierce else "attack")
 	var dealt_to_player := _deal_damage(player_front, damage_to_player, "pierce" if enemy_front.pierce else "attack")
+	# Who struck the killing blow (read by "Soul Harvest").
+	if not enemy_front.is_alive():
+		enemy_front.flags["killed_by"] = player_front.uid
+	if not player_front.is_alive():
+		player_front.flags["killed_by"] = enemy_front.uid
 
 	# Reactions: the hit units first, then the attackers.
 	# "on_hit" counts any attack that connects, even if a shield absorbed it.

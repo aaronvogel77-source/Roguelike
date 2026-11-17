@@ -2,7 +2,8 @@ class_name ItemText
 extends RefCounted
 ## Names and description lines for objects (equipment, relics, tarot, packs).
 
-const RARITY_COLORS := [Color(0.75, 0.72, 0.65), Color(0.4, 0.6, 1.0), Color(0.95, 0.78, 0.3), Color(0.75, 0.25, 0.85)]
+## Common, magic, rare, cursed, unique (turquoise silver).
+const RARITY_COLORS := [Color(0.75, 0.72, 0.65), Color(0.4, 0.6, 1.0), Color(0.95, 0.78, 0.3), Color(0.75, 0.25, 0.85), Color(0.45, 0.95, 0.88)]
 
 
 static func equipment_name(item: Dictionary) -> String:
@@ -24,6 +25,8 @@ static func equipment_lines(db: ContentDb, item: Dictionary) -> Array:
 		lines.append(t.translate("UI_EXTRA_EFFECT") + ": " + _fill("AFFIX_" + String(affix["id"]).to_upper(), affix["value"]))
 	if not item.get("drawback", {}).is_empty():
 		lines.append(t.translate("UI_DRAWBACK") + ": " + _fill("AFFIX_" + String(item["drawback"]["id"]).to_upper(), item["drawback"]["value"]))
+	if item.has("unique"):
+		lines.append(t.translate("UI_UNIQUE_EFFECT") + ": " + t.translate("UNIQUE_" + String(item["unique"]).to_upper()))
 	return lines
 
 

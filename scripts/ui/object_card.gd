@@ -62,6 +62,11 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 		_style.set_content_margin(side, 4 if compact else 8)
 	add_theme_stylebox_override("panel", _style)
 
+	var unique := kind == "equipment" and int(entry["item"]["rarity"]) == Items.RARITY_UNIQUE
+	if unique:
+		_style.shadow_color = Color(border, 0.6)
+		_style.shadow_size = 14
+		_style.set_border_width_all(4)
 	if compact:
 		var holder := CenterContainer.new()
 		holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -88,11 +93,41 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	text.add_theme_color_override("default_color", Palette.PARCHMENT)
 	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return _highlight_label(Keywords.colorize(l)))) + "[/center]"
 	column.add_child(text)
+	if unique:
+		_add_unique_shine(card_size)
+
+
+## Turquoise rays behind a unique item and an "Einzigartig!" tag above it.
+func _add_unique_shine(card_size: Vector2) -> void:
+	var shine := RareShine.new()
+	shine.unique = true
+	shine.show_behind_parent = true
+	shine.top_level = false
+	var holder := Control.new()
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.show_behind_parent = true
+	add_child(holder)
+	holder.add_child(shine)
+	# Anchored to the card: the rays stay centred whatever size it ends up with.
+	shine.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var pad := card_size * 0.4
+	shine.offset_left = -pad.x
+	shine.offset_right = pad.x
+	shine.offset_top = -pad.y
+	shine.offset_bottom = pad.y
+	var tag := _label(TranslationServer.translate("UI_RARE_UNIQUE"), 16, ItemText.RARITY_COLORS[Items.RARITY_UNIQUE])
+	tag.add_theme_color_override("font_outline_color", Color.BLACK)
+	tag.add_theme_constant_override("outline_size", 6)
+	tag.size = Vector2(card_size.x, 24)
+	resized.connect(func() -> void: tag.size.x = size.x)
+	tag.position = Vector2(0, -26)
+	holder.add_child(tag)
 
 
 ## "Grundwirkung:" / "Zusatz:" / "Nachteil:" labels in their own colors.
 func _highlight_label(line: String) -> String:
-	for pair in [["UI_BASE_EFFECT", Palette.PARCHMENT], ["UI_EXTRA_EFFECT", Color(0.5, 0.75, 1.0)], ["UI_DRAWBACK", Palette.HEALTH]]:
+	for pair in [["UI_BASE_EFFECT", Palette.PARCHMENT], ["UI_EXTRA_EFFECT", Color(0.5, 0.75, 1.0)], ["UI_DRAWBACK", Palette.HEALTH],
+			["UI_UNIQUE_EFFECT", ItemText.RARITY_COLORS[Items.RARITY_UNIQUE]]]:
 		var label := TranslationServer.translate(pair[0]) + ":"
 		if line.begins_with(label):
 			return "[color=#%s][b]%s[/b][/color]%s" % [(pair[1] as Color).to_html(false), label, line.substr(label.length())]

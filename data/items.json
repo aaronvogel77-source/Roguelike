@@ -4,13 +4,15 @@
     "common",
     "magic",
     "rare",
-    "cursed"
+    "cursed",
+    "unique"
   ],
   "equipment_prices": [
     3,
     4,
     6,
-    7
+    7,
+    9
   ],
   "equipment": [
     {
@@ -290,5 +292,52 @@
       "duel",
       "soul_trader"
     ]
-  }
+  },
+  "uniques": [
+    {
+      "id": "phoenix_feather",
+      "ability": {
+        "trigger": "on_death",
+        "target": "self",
+        "effect": "revive_half",
+        "values": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "id": "bloodthirst",
+      "ability": {
+        "trigger": "on_attack",
+        "target": "self",
+        "effect": "lifesteal",
+        "values": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      }
+    },
+    {
+      "id": "warlord",
+      "mult": true,
+      "value": 1.5
+    },
+    {
+      "id": "soul_harvest",
+      "ability": {
+        "trigger": "on_enemy_death",
+        "target": "self",
+        "effect": "harvest_soul",
+        "values": [
+          0.15,
+          0.15,
+          0.15
+        ]
+      }
+    }
+  ],
+  "unique_chance": 0.025
 }

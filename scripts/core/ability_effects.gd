@@ -114,6 +114,13 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			return _add_status(battle, owner, targets, BattleUnit.STATUS_SHIELD, shield)
 		"revive_half":
 			return _revive_half(battle, owner, int(value), targets)
+		"harvest_soul":
+			# Only the owner's own kills count; the run rolls the chance.
+			var dying: BattleUnit = context.get("dying_unit")
+			if dying == null or dying.flags.get("killed_by", -1) != owner.uid:
+				return false
+			battle.events.append({"type": "harvest", "uid": owner.uid, "chance": float(value)})
+			return true
 		"double_bleed":
 			for t: BattleUnit in targets:
 				var bleed := t.status(BattleUnit.STATUS_BLEED)

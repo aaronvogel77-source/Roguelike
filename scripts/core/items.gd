@@ -10,7 +10,9 @@ const RARITY_COMMON := 0
 const RARITY_MAGIC := 1
 const RARITY_RARE := 2
 const RARITY_CURSED := 3
-const AFFIX_COUNT := [0, 1, 2, 2]
+## Only from the cursed well (10 gold, small chance): 2 affixes + 1 unique effect.
+const RARITY_UNIQUE := 4
+const AFFIX_COUNT := [0, 1, 2, 2, 2]
 ## Equipment rarity odds by act (common, magic, rare, cursed) - good items are rare.
 const RARITY_ODDS := [[1, [85, 13, 2, 0]], [2, [75, 19, 5, 1]], [3, [65, 24, 8, 3]]]
 
@@ -39,6 +41,9 @@ static func roll_equipment(db: ContentDb, act: int, rng: RandomNumberGenerator, 
 		var drawbacks: Array = db.items["drawbacks"]
 		var drawback: Dictionary = drawbacks[rng.randi_range(0, drawbacks.size() - 1)]
 		item["drawback"] = {"id": drawback["id"], "value": _roll_value(drawback, rng)}
+	if rarity == RARITY_UNIQUE:
+		var uniques: Array = db.items["uniques"]
+		item["unique"] = uniques[rng.randi_range(0, uniques.size() - 1)]["id"]
 	return item
 
 
@@ -65,6 +70,9 @@ static func equipment_modifiers(db: ContentDb, item: Dictionary) -> Dictionary:
 	if not item.get("drawback", {}).is_empty():
 		var drawback: Dictionary = item["drawback"]
 		_apply_part(mods, _find(db.items["drawbacks"], drawback["id"]), drawback["value"])
+	if item.has("unique"):
+		var unique := _find(db.items["uniques"], item["unique"])
+		_apply_part(mods, unique, unique.get("value", 0))
 	return mods
 
 

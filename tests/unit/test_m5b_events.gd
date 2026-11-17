@@ -129,7 +129,7 @@ func test_equipment_follows_rarity_rules() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
 	for i in 600:
-		var item := Items.roll_equipment(db, 3, rng, 0, i % 4 if i < 400 else -1)
+		var item := Items.roll_equipment(db, 3, rng, 0, i % 5 if i < 400 else -1)
 		var rarity: int = item["rarity"]
 		assert_eq(item["affixes"].size(), Items.AFFIX_COUNT[rarity])
 		var ids: Array = item["affixes"].map(func(a: Dictionary) -> String: return a["id"])
@@ -140,3 +140,40 @@ func test_equipment_follows_rarity_rules() -> void:
 			var base: Dictionary = Items._find(db.items["equipment"], item["base"])["base"]
 			assert_false(Items._same_effect(affix, base), "affix repeats base")
 		assert_eq(not item["drawback"].is_empty(), rarity == Items.RARITY_CURSED)
+		assert_eq(item.has("unique"), rarity == Items.RARITY_UNIQUE)
+		if i >= 400:
+			assert_ne(rarity, Items.RARITY_UNIQUE, "unique only from the well")
+
+
+func test_well_can_give_one_unique_item() -> void:
+	var run := _event_run("cursed_well")
+	run.flags["force_unique"] = true
+	assert_true(run.resolve_event("throw_10"))
+	var uniques: Array = run.open_pack["items"].filter(func(e: Dictionary) -> bool:
+		return e["item"]["rarity"] == Items.RARITY_UNIQUE)
+	assert_eq(uniques.size(), 1)
+	assert_true(uniques[0]["item"].has("unique"))
+	assert_eq(uniques[0]["item"]["affixes"].size(), 2)
+
+
+func _with_unique(def_id: String, unique: String) -> Dictionary:
+	var item := {"base": "amulet", "rarity": Items.RARITY_UNIQUE, "affixes": [], "drawback": {}, "unique": unique}
+	var mods := Items.equipment_modifiers(_db, item)
+	return {"def": _db.figures[def_id], "level": 1, "bonus_attack": mods["attack"], "bonus_health": mods["health"],
+		"multipliers": mods["multipliers"], "abilities": mods["abilities"]}
+
+
+func test_unique_effects_work_in_battle() -> void:
+	var warlord := Items.equipment_modifiers(_db, {"base": "blade", "rarity": 4, "affixes": [], "drawback": {}, "unique": "warlord"})
+	assert_eq(warlord["multipliers"], [1.5])
+	# Phoenix feather: the bearer dies once and returns.
+	var result := BattleSimulator.simulate([_with_unique("coin_squire", "phoenix_feather")],
+		[{"def": _db.enemies["vault_warden"], "level": 3}])
+	var revives: Array = result["events"].filter(func(e: Dictionary) -> bool: return e["type"] == "revive")
+	assert_eq(revives.size(), 1)
+	# Soul harvest: a kill by the bearer's attack creates a harvest roll.
+	var harvest := BattleSimulator.simulate([_with_unique("the_judge", "soul_harvest")],
+		[{"def": _db.enemies["beggar_ghost"], "level": 1}])
+	var rolls: Array = harvest["events"].filter(func(e: Dictionary) -> bool: return e["type"] == "harvest")
+	assert_eq(rolls.size(), 1)
+	assert_almost_eq(float(rolls[0]["chance"]), 0.15, 0.001)

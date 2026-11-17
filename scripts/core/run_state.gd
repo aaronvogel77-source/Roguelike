@@ -283,6 +283,10 @@ func _collect_souls(result: Dictionary) -> void:
 	var stream := rng.stream("souls")
 	var gained := 0
 	for event in result.get("events", []):
+		if event["type"] == "harvest":  # unique "Soul Harvest": chance per kill
+			if stream.randf() < float(event["chance"]):
+				gained += 1
+			continue
 		if event["type"] != "removed":
 			continue
 		if event["side"] == BattleSimulator.PLAYER and stream.randf() < DEATH_SOUL_CHANCE:
@@ -481,8 +485,14 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 			gold -= amount
 			var rarity: int = Items.RARITY_MAGIC if amount == 3 else Items.RARITY_RARE
 			var items: Array = []
+			var stream := rng.stream("events")
+			# 10 gold: small chance that one of the three is a unique item.
+			var unique_at := -1
+			if amount == 10 and (stream.randf() < float(db.items["unique_chance"]) or flags.get("force_unique", false)):
+				unique_at = stream.randi_range(0, 2)
 			for i in (3 if amount == 10 else 1):
-				items.append({"kind": "equipment", "item": Items.roll_equipment(db, act, rng.stream("events"), 0, rarity)})
+				items.append({"kind": "equipment", "item": Items.roll_equipment(db, act, stream, 0,
+					Items.RARITY_UNIQUE if i == unique_at else rarity)})
 			open_pack = {"pack": {"type": "equipment", "size": "normal"}, "items": items, "picks_left": 1}
 		"drink":
 			var figure: Dictionary = row[targets[0]]
