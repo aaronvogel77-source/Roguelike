@@ -277,10 +277,14 @@ static func _add_status(battle: BattleSimulator, owner: BattleUnit, targets: Arr
 		amount += battle.bonus_stacks(owner, status)
 	if status == BattleUnit.STATUS_BLEED and owner.side == BattleSimulator.PLAYER:
 		amount *= battle.bleed_factor
+	var changed := false
 	for t: BattleUnit in targets:
+		var before := t.status(status)
 		t.add_status(status, amount)
-		battle.emit_update(t)
-	return not targets.is_empty() and amount > 0
+		if t.status(status) != before:  # e.g. the Salt Golem shrugs burn off
+			changed = true
+			battle.emit_update(t)
+	return changed and amount > 0
 
 
 static func _health_per_gold(battle: BattleSimulator, owner: BattleUnit, gold_per_health: int) -> bool:
@@ -417,7 +421,7 @@ static func _eat_shield(battle: BattleSimulator, owner: BattleUnit, targets: Arr
 			t.statuses.erase(BattleUnit.STATUS_SHIELD)
 			battle.emit_update(t)
 			owner.max_health = maxi(owner.max_health, owner.health + shield)
-			battle.heal(owner, shield)
+			battle.heal(owner, shield, true)  # part of its own attack, like lifesteal
 			return true
 	return false
 

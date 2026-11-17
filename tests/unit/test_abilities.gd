@@ -301,3 +301,24 @@ func test_lifesteal_heals_right_after_the_hit_and_can_save_the_drinker() -> void
 		if e["type"] == "dying" and e["uid"] == 1:
 			first_turn_deaths.append(e)
 	assert_eq(first_turn_deaths.size(), 0, "saved by its own lifesteal")
+
+
+func test_enraged_one_burns_its_attacker_even_when_the_hit_kills_it() -> void:
+	# Enraged One L1 (4/3) is killed by a 5/20 brute in the same exchange - its burn still lands.
+	var result := BattleSimulator.simulate([_fig("enraged_one")], [_unit(5, 20)])
+	assert_true(_ever(result, 2, func(u): return u["statuses"].get("burn", 0) >= 1), "dying retaliation still burns")
+
+
+func test_lifesteal_ignores_overkill() -> void:
+	# Blood drinker L3 (5/6, 100 %) kills a 1-health enemy: it heals 1, not 5.
+	var wounded := {"def": _db.figures["blood_drinker"], "level": 3, "bonus_health": 0}
+	var result := BattleSimulator.simulate([wounded], [_unit(3, 1), _unit(0, 50)])
+	var heals := _events(result, "heal").filter(func(e): return e["uid"] == 1)
+	assert_false(heals.is_empty())
+	assert_eq(heals[0]["amount"], 1)
+
+
+func test_burn_on_the_salt_golem_is_not_shown_as_triggered() -> void:
+	var result := BattleSimulator.simulate([_fig("spark_bearer")], [{"def": _db.enemies["salt_golem"], "level": 1}])
+	var burns := _events(result, "trigger").filter(func(e): return e["effect"] == "apply_burn")
+	assert_eq(burns.size(), 0)

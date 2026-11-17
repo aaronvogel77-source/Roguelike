@@ -190,10 +190,12 @@ func _clash() -> void:
 		player_front.flags["killed_by"] = enemy_front.uid
 
 	# Reactions: the hit units first, then the attackers.
-	# "on_hit" counts any attack that connects, even if a shield absorbed it.
+	# "on_hit" counts any attack that connects, even if a shield absorbed it,
+	# and - the hits being simultaneous - also when the hit was deadly
+	# (e.g. the Enraged One still burns its attacker).
 	for pair in [[enemy_front, player_front, damage_to_enemy], [player_front, enemy_front, damage_to_player]]:
 		var hit_unit: BattleUnit = pair[0]
-		if hit_unit.is_alive() and pair[2] > 0:
+		if pair[2] > 0:
 			_fire_unit_abilities(hit_unit, "on_hit", {"attacker": pair[1]})
 	# The hits are simultaneous: an attacker that falls in this exchange still
 	# lands its "after attacking" effect (e.g. the Spark Bearer's burn).
@@ -270,7 +272,8 @@ func _burn_multiplier_against(unit: BattleUnit) -> float:
 
 # --- Damage, healing, deaths -----------------------------------------------------
 
-## Applies damage, shield first (decay ignores shields). Returns damage to health.
+## Applies damage, shield first (decay ignores shields). Returns the health
+## actually taken (overkill does not count, e.g. for lifesteal).
 func _deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 	if amount <= 0 or not unit.is_alive():
 		return 0
@@ -282,14 +285,16 @@ func _deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 		unit.add_status(BattleUnit.STATUS_SHIELD, -absorbed)
 		remaining -= absorbed
 		events.append({"type": "shielded", "uid": unit.uid, "amount": absorbed})
+	var taken := 0
 	if remaining > 0:
+		taken = mini(remaining, unit.health)
 		unit.health -= remaining
 		events.append({
 			"type": "damage", "uid": unit.uid, "amount": remaining,
 			"health_after": unit.health, "source": source,
 		})
 	_emit_update(unit)
-	return remaining
+	return taken
 
 
 func _heal(unit: BattleUnit, amount: int, same_exchange := false) -> void:
