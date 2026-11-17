@@ -1,0 +1,34 @@
+kind = figure
+[palette]
+h = 6a8ab0
+d = 1c2e4a
+s = 3a5a8a
+m = 8ab0dc
+l = dcefff
+i = 2a5a8a
+I = 6aa8d8
+W = b8e4ff
+w = ffffff
+b = 6aa8d8
+B = b8e4ff
+Z = ffffff
+y = b8e4ff
+[head pivot=8,17]
+..w.....w.....w..
+..W..w..W..w..W..
+..IW.W.IWI.W.IW..
+..IIWIIIIIIWIII..
+..iIIWIIWIIWIIi..
+..iiiiiiiiiiiii..
+..hhhhhmmmmmll...
+.hhhhhmmmmmmlll..
+.hhhhmmmmmmymll..
+.hhhhmmmmmmmmlm..
+.hhhhmmmmmmmmmml.
+.hhhsmmmmmmmmmm..
+.hhhbBBZmmZZBs...
+.hhbBBZZZZZZBB...
+..bBBZZZZZZZB....
+..bBBBZZZZZBB....
+...bBBBBBBBB.....
+.....ssss........

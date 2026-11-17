@@ -51,13 +51,13 @@ static func has(id: String) -> bool:
 
 
 ## Replaces the procedural parts of a figure with the hand-made ones.
-static func apply(id: String, parts: Dictionary) -> void:
+static func apply(id: String, parts: Dictionary, only: Array = []) -> void:
 	var figure: Dictionary = FIGURES[id]
 	var palette := {}
 	for key in figure["palette"]:
 		palette[key] = Color(figure["palette"][key])
 	for part in ["head", "torso", "armF", "armB", "legF", "legB", "weapon", "cape"]:
-		if figure.has(part):
+		if figure.has(part) and (only.is_empty() or part in only):
 			parts[part] = _build(figure[part], palette)
 
 

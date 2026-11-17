@@ -177,9 +177,14 @@ static func look_for_figure(definition: Dictionary) -> Dictionary:
 		look[key] = skin[key]
 	if stage > 0 and fusion.has("parts"):
 		_fuse_look(look, fusion)
-	# Hand-made pixel art replaces the drawn parts (not for skins or fusions).
-	if skin_id == "" and stage == 0 and HandmadeArt.has(id):
+	# Hand-made pixel art replaces the drawn parts: a skin's own art first,
+	# fusions keep the main figure's head and body (weapons come from the partner).
+	if skin_id != "" and HandmadeArt.has(skin_id):
+		look["handmade"] = skin_id
+	elif HandmadeArt.has(id):
 		look["handmade"] = id
+	if stage > 0:
+		look["handmade_only"] = ["head", "torso"]
 	if look["eyes"] is String:
 		look["eyes"] = Color(look["eyes"])
 	look["key"] = "fig:%s:%s:%d:%d:%d:%s:%s" % [id, suit, stage, 1 if recipe else 0, bulk, ",".join(fusion.get("parts", [])), skin_id]
@@ -412,7 +417,7 @@ static func _build_figure(look: Dictionary) -> Dictionary:
 			c.px(cape_col[2], 11, 0, 5, 3)
 		parts["cape"] = c.outline().part(Vector2i(14, 1))
 	if look.has("handmade"):
-		HandmadeArt.apply(look["handmade"], parts)
+		HandmadeArt.apply(look["handmade"], parts, look.get("handmade_only", []))
 	return parts
 
 
