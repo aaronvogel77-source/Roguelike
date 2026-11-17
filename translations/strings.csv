@@ -659,3 +659,65 @@ SUITB_SHORT_COINS,Münzen: Zins-Grenze +%d,Coins: interest cap +%d
 SUITB_SHORT_CUPS,Kelche: +%d Leben,Cups: +%d health
 SUITB_SHORT_SWORDS,Schwerter: %d Blutung auf alle,Swords: %d bleed on all
 SUITB_SHORT_WANDS,Stäbe: %d Brennen vorne,Wands: %d burn on the front
+ENEMY_CURSE_WEAVER,Fluchweber,Curse Weaver
+ENEMY_CANDLE_BEARER,Kerzenträger,Candle Bearer
+ENEMY_SALT_GOLEM,Salzgolem,Salt Golem
+ENEMY_BAN_PRIOR,Bannprior,Ban Prior
+ENEMY_SHIELD_BREAKER,Schildbrecher,Shield Breaker
+ENEMY_WOUND_SEALER,Wundversiegler,Wound Sealer
+ENEMY_VAULT_CARDINAL,Tresorkardinal,Vault Cardinal
+ENEMY_CLOCKWORK_WARDEN,Uhrwerk-Wächter,Clockwork Warden
+ABIL_CURSE_WEAVER,Kampfbeginn: Deine vorderste Figur erhält Fluch {v}.,Battle start: your front figure gains {v} curse.
+ABIL_CANDLE_BEARER,Zugbeginn: Heilt den vordersten Gegner um {v}.,Turn start: heals its front ally by {v}.
+ABIL_SALT_GOLEM,Immun gegen Brennen.,Immune to burn.
+ABIL_BAN_PRIOR,"Solange er lebt, können deine Figuren nicht geheilt werden.","While it lives, your figures cannot be healed."
+ABIL_SHIELD_BREAKER,Kampfbeginn (zuletzt): Zerstört alle Schilde deiner Figuren.,Battle start (last): destroys every shield of your figures.
+ABIL_WOUND_SEALER,Zugbeginn: Entfernt bis zu {v} Blutung von sich und seinen Verbündeten.,Turn start: removes up to {v} bleed from itself and each of its allies.
+ABIL_VAULT_CARDINAL,Kampfbeginn: Alle Gegner erhalten Schild {v}.,Battle start: all of its allies gain {v} shield.
+ABIL_CLOCKWORK_WARDEN,Zugbeginn: +{v} Angriff.,Turn start: +{v} attack.
+UI_ELITE,Elite (ab Akt 2),Elite (act 2 on)
+EVENT_TAX_RAID,Steuerrazzia,Tax Raid
+EVENT_TAX_RAID_DESC,Die Steuertruppe des Eintreibers stellt dich. Zahl oder wehr dich.,The collector's tax squad corners you. Pay up or fight back.
+EVENT_PLAGUE,Seuche,Plague
+EVENT_PLAGUE_DESC,"Ein fauliger Wind zieht durch das Lager. Ohne Heilmittel erkrankt eine deiner Figuren.","A foul wind blows through the camp. Without a cure one of your figures falls ill."
+EVENT_AMBUSH,Hinterhalt,Ambush
+EVENT_AMBUSH_DESC,Eine Bande springt aus dem Dunkel – keine Zeit zum Einkaufen. Kämpfen oder fliehen?,A band leaps out of the dark – no time to shop. Fight or flee?
+EVENT_CURSE_FOG,Fluchnebel,Curse Fog
+EVENT_CURSE_FOG_DESC,"Violetter Nebel kriecht heran. Wer ihn atmet, kämpft verflucht – es sei denn, du opferst etwas.","Violet fog creeps in. Whoever breathes it fights cursed – unless you sacrifice something."
+OFFER_PAY_TAX,Steuer zahlen,Pay the tax
+OFFER_PAY_TAX_DESC,Du verlierst 30 % deines Golds.,You lose 30 % of your gold.
+OFFER_FIGHT_TAX,Gegen die Steuertruppe kämpfen,Fight the tax squad
+OFFER_FIGHT_TAX_DESC,Sieg: Gold bleibt und +3 Gold. Niederlage: deine vorderste Figur fällt.,Win: keep your gold and +3 gold. Loss: your front figure falls.
+OFFER_PLAGUE_GOLD,Heiler bezahlen,Pay a healer
+OFFER_PLAGUE_GOLD_DESC,Für 5 Gold bleibt alles gesund.,For 5 gold everyone stays healthy.
+OFFER_PLAGUE_SOUL,Seele opfern,Offer a soul
+OFFER_PLAGUE_SOUL_DESC,Eine Seele vertreibt die Seuche.,A soul drives the plague away.
+OFFER_PLAGUE_ACCEPT,Durchhalten,Endure it
+OFFER_PLAGUE_ACCEPT_DESC,Eine zufällige Figur hat bis zum Ende des Akts −2 Leben.,A random figure has −2 health until the end of the act.
+OFFER_FIGHT_AMBUSH,Kämpfen,Fight
+OFFER_FIGHT_AMBUSH_DESC,Sofort kämpfen. Sieg: +3 Gold. Niederlage: deine vorderste Figur fällt.,Fight right away. Win: +3 gold. Loss: your front figure falls.
+OFFER_FLEE,Fliehen,Flee
+OFFER_FLEE_DESC,Du entkommst – aber deine hinterste Figur bleibt zurück.,You escape – but your rearmost figure is left behind.
+OFFER_FOG_GOLD,Räucherwerk kaufen,Buy incense
+OFFER_FOG_GOLD_DESC,6 Gold vertreiben den Nebel.,6 gold drive the fog away.
+OFFER_FOG_TAROT,Tarotkarte verbrennen,Burn a tarot card
+OFFER_FOG_TAROT_DESC,Deine zuletzt erhaltene Tarotkarte vergeht und lichtet den Nebel.,Your most recent tarot card burns up and clears the fog.
+OFFER_FOG_ACCEPT,Durch den Nebel gehen,Walk through the fog
+OFFER_FOG_ACCEPT_DESC,Im nächsten Kampf erhalten alle deine Figuren Fluch 2.,In the next battle all your figures gain 2 curse.
+COST_PLAGUE,1 Figur −2 Leben,1 figure −2 health
+COST_TAROT,1 Tarotkarte,1 tarot card
+COST_FOG,Fluch im nächsten Kampf,Curse in the next battle
+RESULT_TAX_PAID,Die Steuertruppe zieht mit deinem Gold ab.,The tax squad leaves with your gold.
+RESULT_TAX_RAID_WON,Die Steuertruppe flieht! Du behältst dein Gold und erbeutest 3 Gold.,The tax squad flees! You keep your gold and take 3 gold.
+RESULT_TAX_RAID_LOST,Niederlage – deine vorderste Figur ist gefallen.,Defeat – your front figure has fallen.
+RESULT_PLAGUE_CURED,Die Seuche zieht vorüber.,The plague passes.
+RESULT_PLAGUE_SICK,Eine Figur ist erkrankt: −2 Leben bis zum Ende des Akts.,A figure fell ill: −2 health until the end of the act.
+RESULT_AMBUSH_WON,Hinterhalt zerschlagen! +3 Gold.,Ambush crushed! +3 gold.
+RESULT_AMBUSH_LOST,Niederlage – deine vorderste Figur ist gefallen.,Defeat – your front figure has fallen.
+RESULT_AMBUSH_FLED,Du bist entkommen – ohne deine hinterste Figur.,You escaped – without your rearmost figure.
+RESULT_FOG_CLEARED,Der Nebel lichtet sich.,The fog clears.
+RESULT_FOG_CURSED,Der Nebel legt sich auf deine Figuren.,The fog settles on your figures.
+UI_ENEMY_BAND,Gegnerbande,Enemy band
+UI_CAT_DANGER,Gefahr,Danger
+SOURCE_PLAGUE,Seuche: −2 Leben bis zum Ende des Akts.,Plague: −2 health until the end of the act.
+SOURCE_CURSE_FOG,Fluchnebel: Fluch 2 zu Kampfbeginn (nur der nächste Kampf).,Curse fog: 2 curse at battle start (next battle only).

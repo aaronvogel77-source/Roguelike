@@ -37,6 +37,14 @@ const DEATH_SOUL_CHANCE := 0.05
 const BASE_OBJECTS := 1
 const MAX_OBJECTS := 3
 const KILL_SOUL_CHANCE := 0.25  # Soul Hunger pact
+## Negative events: what they take and give.
+const NEGATIVE_EVENTS := ["tax_raid", "plague", "ambush", "curse_fog"]
+const TAX_SHARE := 0.3
+const PLAGUE_GOLD := 5
+const PLAGUE_HEALTH := 2
+const FOG_GOLD := 6
+const FOG_CURSE := 2
+const RAID_WIN_GOLD := 3
 ## Soul value of a sacrificed figure: rank value + level.
 const RANK_SOUL_VALUE := {"page": 1, "knight": 2, "queen": 3, "king": 4, "legend": 5}
 const REWARD_CHOICES := 3
@@ -488,6 +496,8 @@ func _next_enemy_choice() -> void:
 func _roll_event() -> bool:
 	var rules: Dictionary = db.items["events"]
 	fights_since_event += 1
+	if _roll_negative_event(rules):
+		return true
 	# Events stay special: at most one per act, 50 % chance after a fight.
 	if int(flags.get("event_act", 0)) == act:
 		return false
@@ -517,6 +527,24 @@ func _roll_event() -> bool:
 	return true
 
 
+## Negative events are rare (about one run in three), at most one per run and
+## never right before a boss fight; each one has a way out that costs something.
+func _roll_negative_event(rules: Dictionary) -> bool:
+	if flags.get("negative_event", false) or is_boss_fight():
+		return false
+	var ids: Array = rules.get("negative_ids", [])
+	var stream := rng.stream("negative_events")
+	if ids.is_empty() or stream.randf() >= float(rules.get("negative_chance", 0.0)):
+		return false
+	flags["negative_event"] = true
+	start_event(ids[stream.randi_range(0, ids.size() - 1)])
+	return true
+
+
+func is_negative_event() -> bool:
+	return String(event.get("id", "")) in NEGATIVE_EVENTS
+
+
 ## Starts an event (also used by tests and the debug menu).
 func start_event(id: String) -> void:
 	var stream := rng.stream("events")
@@ -534,7 +562,14 @@ func start_event(id: String) -> void:
 			event["candle"] = stream.randf() < float(db.fusion["market_candle_chance"]) or flags.get("force_candle", false)
 		"duel":
 			var budget := int(round(EnemyGenerator.budget(act, 1, 2) * 1.2))
-			event["team"] = EnemyGenerator.generate(db, budget, rng.stream("enemy_gen"), "")
+			event["team"] = EnemyGenerator.generate(db, budget, rng.stream("enemy_gen"), "", EnemyGenerator.MAX_TEAM, [], false, act)
+		"tax_raid":  # the tax squad: a medium big band of the greedy kind
+			event["team"] = EnemyGenerator.generate(db, EnemyGenerator.budget(act, 1, 1), rng.stream("enemy_gen"), "greed",
+				EnemyGenerator.MAX_TEAM, [], false, act)
+			event["tax"] = int(ceil(gold * TAX_SHARE))
+		"ambush":  # a medium band of the coming fight, no shop before it
+			event["team"] = EnemyGenerator.generate(db, EnemyGenerator.budget(act, fight, 1), rng.stream("enemy_gen"), "",
+				EnemyGenerator.MAX_TEAM, [], false, act)
 	stage = Stage.EVENT
 
 
@@ -542,6 +577,8 @@ func start_event(id: String) -> void:
 func event_option_block(option: String, targets: Array = []) -> String:
 	if event.is_empty() or (event["resolved"] and option != "leave"):
 		return "done"
+	if option == "leave" and not event["resolved"] and is_negative_event():
+		return "cost"  # a danger cannot simply be ignored
 	if option in event["used"]:
 		return "done"
 	var figures := targets.filter(func(i: int) -> bool: return i >= 0 and i < row.size() and row[i] != null)
@@ -585,6 +622,16 @@ func event_option_block(option: String, targets: Array = []) -> String:
 			return "" if gold >= 5 else "cost"
 		"return_pact":
 			return "" if targets.size() == 1 and targets[0] < pacts.size() else "target"
+		"plague_gold":
+			return "" if gold >= PLAGUE_GOLD else "cost"
+		"plague_soul":
+			return "" if souls >= 1 else "cost"
+		"plague_accept", "flee":
+			return "" if row.any(func(f: Variant) -> bool: return f != null) else "cost"
+		"fog_tarot":
+			return "" if not tarots.is_empty() else "cost"
+		"fog_gold":
+			return "" if gold >= FOG_GOLD else "cost"
 	return ""
 
 
@@ -687,8 +734,41 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 		"return_pact":
 			return_pact(targets[0])
 			final = false
-		"fight":
-			return true  # the UI plays the duel, then calls apply_duel_result()
+		"fight", "fight_tax", "fight_ambush":
+			return true  # the UI plays the fight, then calls apply_duel_result()
+		"pay_tax":
+			gold -= int(event.get("tax", 0))
+			gold = maxi(gold, 0)
+			event["result"] = "tax_paid"
+		"plague_gold":
+			gold -= PLAGUE_GOLD
+			event["result"] = "plague_cured"
+		"plague_soul":
+			souls -= 1
+			event["result"] = "plague_cured"
+		"plague_accept":
+			var sick: Array = []
+			for i in row.size():
+				if row[i] != null:
+					sick.append(i)
+			var victim: int = sick[rng.stream("negative_events").randi_range(0, sick.size() - 1)]
+			row[victim]["sick_act"] = act
+			event["result"] = "plague_sick"
+		"fog_tarot":
+			tarots.remove_at(tarots.size() - 1)
+			event["result"] = "fog_cleared"
+		"fog_gold":
+			gold -= FOG_GOLD
+			event["result"] = "fog_cleared"
+		"fog_accept":
+			flags["curse_fog"] = true
+			event["result"] = "fog_cursed"
+		"flee":
+			for i in range(row.size() - 1, -1, -1):
+				if row[i] != null:
+					row[i] = null
+					break
+			event["result"] = "ambush_fled"
 		"decline":
 			pass
 		_:
@@ -709,6 +789,19 @@ func duel_team() -> Array:
 ## Win: a relic (or gold) and 2 souls. Loss: the front figure is lost, not the run.
 func apply_duel_result(result: Dictionary) -> void:
 	gold = int(result.get("gold_after", gold))
+	if event.get("id", "") in ["tax_raid", "ambush"]:
+		# Danger fights: a win keeps everything and pays a little, a loss costs the front figure.
+		if result["victory"]:
+			gold += RAID_WIN_GOLD
+			event["result"] = event["id"] + "_won"
+		else:
+			for i in row.size():
+				if row[i] != null:
+					row[i] = null
+					break
+			event["result"] = event["id"] + "_lost"
+		event["resolved"] = true
+		return
 	if result["victory"]:
 		souls += 2
 		var pool: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
@@ -978,6 +1071,7 @@ func apply_battle_result(result: Dictionary) -> Stage:
 		stage = Stage.LOST
 		return stage
 	battles_won += 1
+	flags.erase("curse_fog")  # the fog lifts after one battle
 	_collect_souls(result)
 	for figure in row:
 		if figure != null:

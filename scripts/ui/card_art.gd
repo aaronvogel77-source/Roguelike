@@ -46,7 +46,7 @@ static func for_unit(definition: Dictionary, enemy: bool, suit: String, size_px:
 	var h := int(size_px.y / 2.0)
 	if enemy:
 		var boss := bool(definition.get("boss", false))
-		var tier := clampi(int(definition.get("cost", 1)), 1, 3)
+		var tier := clampi(int(definition.get("cost", 1)), 1, 4)  # 4 = act-2 elites
 		return _cached("e:%d:%d:%s:%d" % [w, h, boss, tier], func() -> Dictionary: return _enemy(w, h, tier, boss))
 	suit = suit if suit != "" else String(definition.get("suit", "coins"))
 	var id := String(definition.get("id", ""))

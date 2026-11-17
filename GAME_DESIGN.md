@@ -447,7 +447,7 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Umsetzungsdetails v0.26.0:** Startgold bei allen Okkultisten −2 (Novize 6, Wucherer 4, Fechter 6). Startgold allein reichte laut Bots nicht → Gegnerbudgets Akt 1 klein 1,5 → 2,6, groß 3,0 → 4,6, Boss-Gefolge Akt 1 1,0 → 1,5; Akt-Wachstum 3,2 → 3,4; Gefolge Akt-2-Boss 6 → 13 (die Schatzkammer macht Akt 2 sonst zu leicht). Das Ass-Pack zieht aus allen Assen, auch aus noch nicht im Lager freigeschalteten. Relikt beim Schwarzmarkt (gegen Gold) und beim Duell-Sieg bleiben als seltene Quellen; Relikt-Packs gibt es nicht mehr. Beutepack: Ausrüstung oder Arkana, normal groß, gratis, golden leuchtend im nächsten Shop. Die Kelch-, Schwert- und Stab-Boni stehen im Info-Fenster der Figur, alle aktiven Boni als Zeile unter der eigenen Reihe
 - **Messung v0.26.0 (150 Runs je Bot):** Siegquote Verschwender 18 %, Farbspezialist 12 %, Sparer 11 %, Taktiker 11 %, Fusionist 9 %, Leveler 5 % (v0.25.0: 1–12 %). Stationen: A1 K1 77 % (vorher 92 %), A1 K2 72 % (81 %), A1 Boss 35 % (16 %), A2 K1 95 %, A2 K2 82 %, A2 Boss 75 % (59 %). König Midas am Run-Ende 71 % Siegquote (vorher 10 %)
 
-### Neue Gegner und negative Ereignisse (beantwortet 2026-11-17, Pixel-Vorschau ausstehend)
+### Neue Gegner und negative Ereignisse (beantwortet 2026-11-17, Pixel-Vorschau freigegeben, umgesetzt in v0.28.0)
 - **Anlass:** Nur 8 normale Gegner (max. Kosten 3) – in Akt 2 ist die Reihe voll, mehr Budget macht Akt 2 nicht schwerer (Duell-Matrix, Auto-Tuning)
 - **8 neue Gegner** mit eigenem Pixel-Art:
   - Akt 1 (billig): **Fluchweber** (hinten, Kampfbeginn: Fluch 1 auf die vorderste Spielerfigur), **Kerzenträger** (hinten, heilt jede Runde den vordersten Gegner)
@@ -459,6 +459,8 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
   - **Hinterhalt:** sofort ein Kampf ohne Einkauf oder fliehen und die hinterste Figur verlieren
   - **Fluchnebel:** alle Figuren im nächsten Kampf verflucht oder eine Tarotkarte / 6 Gold opfern
 - **Ablauf:** erst Pixel-Vorschau der 8 Gegner, nach Freigabe Einbau, Balancing mit den neuen Werkzeugen, Deploy
+- **Werte v0.28.0:** Fluchweber 1/3 (Kosten 1, Fluch 1/1/2), Kerzenträger 1/5 (Kosten 2, Heilung 1/2/3), Salzgolem 4/14 (Kosten 4), Bannprior 3/9 (Kosten 4), Schildbrecher 6/8 (Kosten 4, wirkt nach allen Schild-Effekten), Wundversiegler 3/10 (Kosten 4, entfernt 2/4/6 Blutung je Verbündetem), Tresorkardinal 2/12 (Kosten 5, Schild 3/4/5 für alle), Uhrwerk-Wächter 4/12 (Kosten 5, +2/+2/+3 Angriff je Runde); Elite-Karten mit dem Rahmen der höchsten Stufe, im Info-Fenster „Elite (ab Akt 2)“
+- **Ereignisse v0.28.0:** Chance 13 % nach jedem Kampf, der nicht direkt vor einem Boss liegt, höchstens eins pro Run, zusätzlich zu den normalen Ereignissen; kein „Weitergehen“ ohne Wahl. Steuerrazzia: 30 % Gold (aufgerundet) oder Kampf gegen eine mittlere gierige Bande (Sieg +3 Gold, Niederlage: vorderste Figur fällt). Seuche: 5 Gold, 1 Seele oder zufällige Figur −2 Leben bis Aktende. Hinterhalt: Kampf gegen eine mittlere Bande der aktuellen Station (Sieg +3 Gold) oder Flucht ohne die hinterste Figur. Fluchnebel: 6 Gold, die zuletzt erhaltene Tarotkarte oder Fluch 2 auf alle Figuren im nächsten Kampf
 
 ## Phase 11 – Benutzeroberfläche und Bedienung
 

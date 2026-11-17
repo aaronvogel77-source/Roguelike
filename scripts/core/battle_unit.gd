@@ -75,6 +75,9 @@ func status(name: String) -> int:
 
 
 func add_status(name: String, amount: int) -> void:
+	# Salzgolem: burn never sticks to it.
+	if name == STATUS_BURN and amount > 0 and not aura("burn_immune").is_empty():
+		return
 	statuses[name] = maxi(status(name) + amount, 0)
 	if statuses[name] == 0:
 		statuses.erase(name)

@@ -49,7 +49,7 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		if boss.has("unit"):
 			capacity -= int(boss["unit"].get("width", 1))
 			team.append({"def_id": boss["unit"]["id"], "level": 1})
-		team.append_array(generate(db, budget(act, fight, 2), rng, theme, capacity))
+		team.append_array(generate(db, budget(act, fight, 2), rng, theme, capacity, [], false, act))
 		return [{"kind": "boss", "difficulty": 2, "bonus": BOSS_BONUS, "theme": theme,
 			"boss_id": boss.get("id", ""), "rule": boss.get("rule", ""), "team": team}]
 	var teams: Array = []
@@ -57,7 +57,7 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 	for difficulty in 3:
 		var theme := _pick_theme(db, region, rng)
 		# Hard teams prefer the stronger (more expensive) enemies.
-		var team := generate(db, budget(act, fight, difficulty), rng, theme, MAX_TEAM, used, difficulty == 2)
+		var team := generate(db, budget(act, fight, difficulty), rng, theme, MAX_TEAM, used, difficulty == 2, act)
 		for unit in team:
 			used.append(unit["def_id"])
 		teams.append({"theme": theme, "team": team, "power": power(db, team)})
@@ -96,8 +96,8 @@ static func power(db: ContentDb, team: Array) -> float:
 ## Spends the budget on enemies (cost = their "cost"), then on level-ups.
 ## Returns entries {"def_id": String, "level": int}, front first.
 static func generate(db: ContentDb, team_budget: int, rng: RandomNumberGenerator,
-		theme: String = "", max_team: int = MAX_TEAM, avoid: Array = [], prefer_strong := false) -> Array:
-	var pool: Array = db.regular_enemies()
+		theme: String = "", max_team: int = MAX_TEAM, avoid: Array = [], prefer_strong := false, act: int = 1) -> Array:
+	var pool: Array = db.regular_enemies(act)
 	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	var team: Array = []
 	var remaining := team_budget

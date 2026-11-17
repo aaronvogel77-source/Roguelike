@@ -290,7 +290,7 @@ func _debug_glut() -> void:
 
 ## Starts the next event in the list (cycles through all eight).
 func _debug_event() -> void:
-	var ids: Array = _db.items["events"]["ids"]
+	var ids: Array = _db.items["events"]["ids"] + _db.items["events"].get("negative_ids", [])
 	var current: String = _run.event.get("id", ids[-1])
 	_run.start_event(ids[(ids.find(current) + 1) % ids.size()])
 	_event_option = ""
@@ -1484,7 +1484,14 @@ const EVENT_OPTIONS := {
 	"soul_trader": [["soul_to_gold", 0], ["gold_to_soul", 0], ["return_pact", 0], ["leave", 0]],
 	"fusion_altar": [["fuse", 0], ["leave", 0]],
 	"blood_moon": [["blood_fuse", 0], ["leave", 0]],
+	# Negative events: no free way out, every option costs something.
+	"tax_raid": [["pay_tax", 0], ["fight_tax", 0]],
+	"plague": [["plague_gold", 0], ["plague_soul", 0], ["plague_accept", 0]],
+	"ambush": [["fight_ambush", 0], ["flee", 0]],
+	"curse_fog": [["fog_gold", 0], ["fog_tarot", 0], ["fog_accept", 0]],
 }
+## Events whose scene shows the enemy band and whose fight option starts a battle.
+const FIGHT_EVENTS := {"duel": "fight", "tax_raid": "fight_tax", "ambush": "fight_ambush"}
 
 var _event_option := ""  # option waiting for figure targets
 var _event_targets: Array = []
@@ -1518,7 +1525,7 @@ func _build_event() -> void:
 	else:
 		options.add_child(_market_coat() if id == "black_market" else _event_scene(id))
 		var exit_option := "decline" if id == "duel" else ("small" if id == "grave_robber" else "leave")
-		if id != "grave_robber":
+		if id != "grave_robber" and not _run.is_negative_event():
 			options.add_child(_centered(_button(tr("OPT_" + exit_option.to_upper()), Vector2(400, 56), _on_event_option.bind(exit_option, 0))))
 	# Scene and own row share the height; both scale to fit (the row gets big
 	# enough to pick figures comfortably).
@@ -1562,6 +1569,10 @@ const EVENT_SCENES := {
 	"soul_trader": {"bg": Color(0.05, 0.08, 0.12), "border": Color(0.5, 0.8, 1.0), "emblem": "soul"},
 	"fusion_altar": {"bg": Color(0.1, 0.05, 0.12), "border": Color(0.95, 0.75, 0.35), "emblem": "star"},
 	"blood_moon": {"bg": Color(0.16, 0.02, 0.04), "border": Color(0.95, 0.15, 0.2), "emblem": "bleed"},
+	"tax_raid": {"bg": Color(0.12, 0.09, 0.03), "border": Color(0.85, 0.6, 0.2), "emblem": "coin"},
+	"plague": {"bg": Color(0.06, 0.1, 0.05), "border": Color(0.55, 0.75, 0.3), "emblem": "skull"},
+	"ambush": {"bg": Color(0.12, 0.04, 0.04), "border": Color(0.85, 0.3, 0.25), "emblem": "sword"},
+	"curse_fog": {"bg": Color(0.07, 0.04, 0.1), "border": Color(0.6, 0.4, 0.85), "emblem": "curse"},
 }
 ## Emblem shown on each offer.
 const OFFER_EMBLEMS := {
@@ -1570,6 +1581,8 @@ const OFFER_EMBLEMS := {
 	"mega_arcana": "pack", "rob": "relic", "small": "coin", "duplicate": "star", "train": "level",
 	"fight": "sword", "soul_to_gold": "coin", "gold_to_soul": "soul", "return_pact": "pact",
 	"fuse": "star", "blood_fuse": "bleed",
+	"pay_tax": "coin", "fight_tax": "sword", "plague_gold": "coin", "plague_soul": "soul", "plague_accept": "skull",
+	"fight_ambush": "sword", "flee": "skull", "fog_gold": "coin", "fog_tarot": "tarot", "fog_accept": "curse",
 }
 
 
@@ -1581,11 +1594,11 @@ func _event_scene(id: String) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 14)
 	panel.add_child(row)
-	# Left: the scene's emblem (for a duel: the champion's team).
-	if id == "duel":
+	# Left: the scene's emblem (for fights: the enemy band).
+	if FIGHT_EVENTS.has(id):
 		var champion := VBoxContainer.new()
 		champion.alignment = BoxContainer.ALIGNMENT_CENTER
-		var heading := _label(tr("UI_CHAMPION"), 20, look["border"])
+		var heading := _label(tr("UI_CHAMPION") if id == "duel" else tr("UI_ENEMY_BAND"), 20, look["border"])
 		heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		champion.add_child(heading)
 		var cards := HBoxContainer.new()
@@ -1654,6 +1667,24 @@ func _offer_cost(option: String) -> String:
 			return tr("COST_RISK")
 		"fuse":
 			return tr("COST_ALTAR")
+		"pay_tax":
+			return tr("COST_GOLD") % int(_run.event.get("tax", 0))
+		"fight_tax", "fight_ambush":
+			return tr("COST_RISK")
+		"plague_gold":
+			return tr("COST_GOLD") % RunState.PLAGUE_GOLD
+		"plague_soul":
+			return tr("COST_SOUL")
+		"plague_accept":
+			return tr("COST_PLAGUE")
+		"fog_gold":
+			return tr("COST_GOLD") % RunState.FOG_GOLD
+		"fog_tarot":
+			return tr("COST_TAROT")
+		"fog_accept":
+			return tr("COST_FOG")
+		"flee":
+			return tr("COST_REAR_FIGURE")
 	return tr("COST_FREE")
 
 
@@ -1781,7 +1812,7 @@ func _needed_targets(option: String) -> int:
 
 
 func _on_event_option(option: String, needed: int) -> void:
-	if option == "fight":
+	if option in FIGHT_EVENTS.values():
 		_play_duel()
 		return
 	if needed > 0 or option == "return_pact":

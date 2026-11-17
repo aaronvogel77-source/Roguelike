@@ -121,6 +121,13 @@ static func _figure_entry(run: RunState, figure: Dictionary) -> Dictionary:
 		entry["abilities"].append_array(mods["abilities"])
 	if figure.get("cursed", false):  # cursed well: +3/+3, but cursed every battle
 		entry["abilities"].append(_ability("battle_start", "self", "apply_curse", 2))
+	# Negative events: plague (-2 health until the act ends), curse fog (next battle).
+	if int(figure.get("sick_act", 0)) == run.act:
+		entry["bonus_health"] -= RunState.PLAGUE_HEALTH
+		entry["sources"].append("plague")
+	if run.flags.get("curse_fog", false):
+		entry["abilities"].append(_ability("battle_start", "self", "apply_curse", RunState.FOG_CURSE))
+		entry["sources"].append("curse_fog")
 	match figure.get("blessing", ""):
 		"star":
 			entry["abilities"].append(_ability("battle_start", "self", "gain_shield", 3))

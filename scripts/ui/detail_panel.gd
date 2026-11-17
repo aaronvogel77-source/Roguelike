@@ -80,7 +80,8 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 	for child in _subtitle.get_children():
 		child.queue_free()
 	var kinds := UnitCard.identity_kinds(definition, is_enemy, snapshot.get("suit", ""))
-	var texts: Array = [tr("UI_ENEMY")] if is_enemy else [
+	var enemy_label := tr("UI_ELITE") if is_enemy and int(definition.get("min_act", 1)) >= 2 else tr("UI_ENEMY")
+	var texts: Array = [enemy_label] if is_enemy else [
 		tr("RANK_" + String(definition["rank"]).to_upper()),
 		tr("SUIT_" + String(snapshot.get("suit", definition["suit"])).to_upper()),
 	]
@@ -142,6 +143,8 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 		for source in extras.get("sources", []):
 			if source == "tarot_strength":
 				continue
+			elif source in ["plague", "curse_fog"]:
+				lines.append("%s %s" % [_tag("UI_CAT_DANGER", Color(0.7, 0.45, 0.85)), Keywords.colorize(tr("SOURCE_" + String(source).to_upper()))])
 			elif String(source).begins_with("suit_"):
 				lines.append("%s %s" % [_tag("UI_CAT_SUIT_BONUS", CATEGORY_COLORS["ability"]),
 					Keywords.colorize(tr("SUITBONUS_" + String(source).substr(5).to_upper()))])

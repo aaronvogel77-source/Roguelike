@@ -141,3 +141,136 @@ func test_treasure_survives_saving() -> void:
 	run.treasure = [{"kind": "gold", "amount": 12}]
 	var loaded := RunState.from_dict(_db, str_to_var(var_to_str(run.to_dict())))
 	assert_eq(loaded.treasure, run.treasure)
+
+
+# --- New enemies -----------------------------------------------------------------
+
+func _enemy(id: String, level := 1) -> Dictionary:
+	return {"def": _db.enemies[id], "level": level}
+
+
+func _events_of(result: Dictionary, kind: String) -> Array:
+	return result["events"].filter(func(e: Dictionary) -> bool: return e["type"] == kind)
+
+
+func test_elites_only_from_act_two() -> void:
+	var act1: Array = _db.regular_enemies(1).map(func(e: Dictionary) -> String: return e["id"])
+	assert_does_not_have(act1, "salt_golem")
+	assert_has(act1, "curse_weaver")
+	assert_has(_db.regular_enemies(2).map(func(e: Dictionary) -> String: return e["id"]), "clockwork_warden")
+	for seed_value in 20:
+		var rng := RngStreams.new(seed_value).stream("enemy_gen")
+		for option in EnemyGenerator.options(_db, "coins", 1, 1, rng):
+			for unit in option["team"]:
+				assert_lt(int(_db.enemies[unit["def_id"]].get("min_act", 1)), 2, "no elite in act 1")
+
+
+func test_salt_golem_ignores_burn() -> void:
+	var spark := {"def": _db.figures["spark_bearer"], "level": 3, "bonus_health": 30}
+	var result := BattleSimulator.simulate([spark], [_enemy("salt_golem")])
+	var burns := _events_of(result, "damage").filter(func(e: Dictionary) -> bool: return e["source"] == "burn")
+	assert_eq(burns.size(), 0)
+
+
+func test_ban_prior_blocks_player_healing() -> void:
+	var front := {"def": _db.figures["coin_squire"], "level": 1, "bonus_health": 20}
+	var server := {"def": _db.figures["altar_server"], "level": 3}
+	var blocked := BattleSimulator.simulate([front, server], [_enemy("vault_warden"), _enemy("ban_prior")])
+	assert_eq(_events_of(blocked, "heal").filter(func(e: Dictionary) -> bool: return e["uid"] <= 2).size(), 0)
+
+
+func test_shield_breaker_shatters_shields() -> void:
+	var squire := {"def": _db.figures["coin_squire"], "level": 3}
+	var result := BattleSimulator.simulate([squire], [_enemy("shield_breaker")])
+	var first_clash: int = result["events"].find(result["events"].filter(func(e: Dictionary) -> bool: return e["type"] == "clash")[0])
+	var shielded := false
+	for i in first_clash:
+		var e: Dictionary = result["events"][i]
+		if e["type"] == "update" and e["unit"]["uid"] == 1:
+			shielded = int(e["unit"]["statuses"].get("shield", 0)) > 0
+	assert_false(shielded, "no shield left before the first clash")
+
+
+func test_wound_sealer_and_clockwork() -> void:
+	var blade := {"def": _db.figures["blade_apprentice"], "level": 3, "bonus_health": 40}
+	var result := BattleSimulator.simulate([blade], [_enemy("wound_sealer")])
+	var cleaned := _events_of(result, "trigger").filter(func(e: Dictionary) -> bool: return e["effect"] == "cleanse_bleed")
+	assert_gt(cleaned.size(), 0)
+	var tank := {"def": HELPER_DEF, "level": 1}
+	var clock := BattleSimulator.simulate([tank], [_enemy("clockwork_warden")])
+	var grew := false
+	for e in clock["events"]:
+		if e["type"] == "update" and e["unit"]["side"] == 1 and int(e["unit"]["attack"]) >= 8:
+			grew = true
+	assert_true(grew, "4 attack + 2 per turn")
+
+
+const HELPER_DEF := {"id": "wall", "attack": 0, "health": 200}
+
+
+# --- Negative events ---------------------------------------------------------------
+
+func _event_run(id: String) -> RunState:
+	var run := _planning_run()
+	run.row = [_fig("coin_squire"), _fig("the_judge"), _fig("blade_apprentice")]
+	run.gold = 20
+	run.start_event(id)
+	return run
+
+
+func test_negative_events_cannot_be_left_for_free() -> void:
+	for id in RunState.NEGATIVE_EVENTS:
+		var run := _event_run(id)
+		assert_ne(run.event_option_block("leave"), "", "%s needs a choice" % id)
+
+
+func test_tax_raid_takes_thirty_percent() -> void:
+	var run := _event_run("tax_raid")
+	assert_true(run.resolve_event("pay_tax"))
+	assert_eq(run.gold, 14)
+	assert_false(run.event["team"].is_empty())
+
+
+func test_plague_makes_one_figure_sick_until_the_act_ends() -> void:
+	var run := _event_run("plague")
+	assert_true(run.resolve_event("plague_accept"))
+	var sick: Array = run.row.filter(func(f: Variant) -> bool: return f != null and f.has("sick_act"))
+	assert_eq(sick.size(), 1)
+	var entry: Dictionary = run.player_battle_team().filter(func(e: Dictionary) -> bool: return e["figure"] == sick[0])[0]
+	assert_eq(entry["bonus_health"], -RunState.PLAGUE_HEALTH + (2 if "cups" in entry["suits"] else 0))
+	run.act += 1
+	var later: Dictionary = run.player_battle_team().filter(func(e: Dictionary) -> bool: return e["figure"] == sick[0])[0]
+	assert_false(later["sources"].has("plague"), "healthy again in the next act")
+
+
+func test_curse_fog_curses_the_next_battle_only() -> void:
+	var run := _event_run("curse_fog")
+	assert_true(run.resolve_event("fog_accept"))
+	assert_has(run.player_battle_team()[0]["sources"], "curse_fog")
+	run.event = {}
+	run.stage = RunState.Stage.PLANNING
+	run.apply_battle_result({"victory": true, "gold_after": run.gold})
+	assert_false(run.flags.has("curse_fog"))
+
+
+func test_ambush_flee_loses_the_rearmost_figure_and_lost_fight_the_front() -> void:
+	var run := _event_run("ambush")
+	assert_true(run.resolve_event("flee"))
+	assert_null(run.row[2])
+	var fight := _event_run("ambush")
+	fight.apply_duel_result({"victory": false, "gold_after": fight.gold})
+	assert_null(fight.row[0])
+	assert_eq(fight.event["result"], "ambush_lost")
+
+
+func test_negative_events_are_rare_and_never_before_a_boss() -> void:
+	var hits := 0
+	for seed_value in 300:
+		var run := RunState.new_run(_db, seed_value)
+		run.fight = 1
+		if run._roll_negative_event(_db.items["events"]):
+			hits += 1
+		var boss_run := RunState.new_run(_db, seed_value)
+		boss_run.fight = 2
+		assert_false(boss_run._roll_negative_event(_db.items["events"]))
+	assert_between(hits, 20, 65, "about 13 % per chance")

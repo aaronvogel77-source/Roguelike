@@ -214,7 +214,26 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 				t.multipliers.append(factor)
 				battle.emit_update(t)
 			return not targets.is_empty()
-		"overflow", "glow_strike", "bloodletting", "fortress_gold", "ember_heal":
+		"break_shields":
+			# Schildbrecher: every shield of the targets shatters.
+			var broke := false
+			for t: BattleUnit in targets:
+				if t.status(BattleUnit.STATUS_SHIELD) > 0:
+					t.add_status(BattleUnit.STATUS_SHIELD, -t.status(BattleUnit.STATUS_SHIELD))
+					battle.emit_update(t)
+					broke = true
+			return broke
+		"cleanse_bleed":
+			# Wundversiegler: removes up to value bleed from each target.
+			var cleaned := false
+			for t: BattleUnit in targets:
+				var bleed := mini(t.status(BattleUnit.STATUS_BLEED), int(value))
+				if bleed > 0:
+					t.add_status(BattleUnit.STATUS_BLEED, -bleed)
+					battle.emit_update(t)
+					cleaned = true
+			return cleaned
+		"overflow", "glow_strike", "bloodletting", "fortress_gold", "ember_heal", "burn_immune", "heal_block":
 			return false  # auras, read directly by the simulator
 		"harvest_soul":
 			# Only the owner's own kills count; the run rolls the chance.

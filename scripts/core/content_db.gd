@@ -89,8 +89,10 @@ func for_run(locked: Dictionary, pack_luck: int = 0) -> ContentDb:
 
 
 ## Normal enemies (without boss figures) - the pool the generator draws from.
-func regular_enemies() -> Array:
-	return enemies.values().filter(func(e: Dictionary) -> bool: return not e.get("boss", false))
+## act: only enemies that may appear in that act (elites have "min_act": 2).
+func regular_enemies(act: int = 99) -> Array:
+	return enemies.values().filter(func(e: Dictionary) -> bool:
+		return not e.get("boss", false) and int(e.get("min_act", 1)) <= act)
 
 
 ## Bosses of a region for an act (the pool the boss is drawn from).

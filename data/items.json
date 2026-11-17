@@ -297,6 +297,13 @@
     "weights": {
       "altar": 0.5
     },
+    "negative_ids": [
+      "tax_raid",
+      "plague",
+      "ambush",
+      "curse_fog"
+    ],
+    "negative_chance": 0.13,
     "max_per_act": 1
   },
   "uniques": [

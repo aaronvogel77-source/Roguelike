@@ -34,6 +34,14 @@ func test_at_most_one_event_per_act() -> void:
 			elif run.stage == RunState.Stage.REWARD:
 				run.skip_reward()
 			elif run.stage == RunState.Stage.EVENT:
+				if run.is_negative_event():
+					# Dangers come on top of the normal events: pay / endure, then move on.
+					for option in ["pay_tax", "plague_accept", "flee", "fog_accept"]:
+						if run.event_option_block(option) == "":
+							run.resolve_event(option)
+							break
+					run.resolve_event("leave")
+					continue
 				var key := "%d-%d" % [seed_value, run.act]
 				events_per_act[key] = int(events_per_act.get(key, 0)) + 1
 				run.resolve_event("leave")

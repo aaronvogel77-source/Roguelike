@@ -597,7 +597,20 @@ func _event() -> void:
 			tries = [["duplicate", [_strongest()]]]
 		"fortune_teller", "grave_robber", "duel":
 			tries = []
+		"tax_raid", "ambush":
+			# Fight when a test battle (best order) wins, otherwise pay / flee.
+			var fight := "fight_tax" if id == "tax_raid" else "fight_ambush"
+			if _best_arrangement(run.duel_team()) >= WIN_SCORE and run.resolve_event(fight):
+				var result := BattleSimulator.simulate(run.player_battle_team(), run.duel_team(), run.gold, run.battle_options())
+				run.apply_duel_result(result)
+			tries = [["pay_tax"]] if id == "tax_raid" else [["flee"]]
+		"plague":
+			tries = [["plague_gold"], ["plague_soul"], ["plague_accept"]]
+		"curse_fog":
+			tries = [["fog_gold"], ["fog_tarot"], ["fog_accept"]]
 	for attempt in tries:
+		if run.event.get("resolved", false):
+			break
 		var option: String = attempt[0]
 		var targets: Array = attempt[1] if attempt.size() > 1 else []
 		if targets.has(-1):

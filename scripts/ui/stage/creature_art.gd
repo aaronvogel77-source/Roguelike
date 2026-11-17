@@ -34,8 +34,8 @@ static func ramp(name: String) -> Array:
 
 
 static func has_art(id: String) -> bool:
-	return id in ["beggar_ghost", "debt_collector", "the_changer", "greedmaw", "vault_warden", "coin_thrower",
-		"greedy_dragon", "mirror_coin", "boss_tax_collector", "boss_golden_wall"]
+	return HandmadeArt.has_creature(id) or id in ["beggar_ghost", "debt_collector", "the_changer", "greedmaw",
+		"vault_warden", "coin_thrower", "greedy_dragon", "mirror_coin", "boss_tax_collector", "boss_golden_wall"]
 
 
 static func build(id: String) -> Dictionary:
