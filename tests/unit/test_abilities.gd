@@ -266,3 +266,22 @@ func test_ash_king_burns_his_target() -> void:
 	var burns := _events(result, "damage").filter(func(e): return e["source"] == "burn")
 	assert_gt(burns.size(), 0, "the ash king sets his target on fire")
 	assert_eq(burns[0]["amount"], 3)
+
+
+func test_ash_king_stops_spreading_burn_once_he_is_dead() -> void:
+	# The king burns the front enemy and falls in the same clash; when that
+	# enemy later dies, its burn must NOT jump on (his ability ends with him).
+	var king: Dictionary = _db.figures["ash_king"].duplicate(true)
+	king["health"] = 1
+	var filler := _unit(3, 60, null, "filler")
+	var front := _unit(10, 20, null, "front")
+	var back := _unit(0, 30, null, "back")
+	var result := BattleSimulator.simulate([{"def": king, "level": 1}, filler], [front, back])
+	var back_uid := -1
+	for unit in _events(result, "start")[0]["enemy"]:
+		if unit.get("def_id", "") == "back":
+			back_uid = unit["uid"]
+	assert_ne(back_uid, -1, "the back enemy is in the battle")
+	var back_burned := _events(result, "update").any(func(e: Dictionary) -> bool:
+		return e["unit"]["uid"] == back_uid and e["unit"]["statuses"].get("burn", 0) > 0)
+	assert_false(back_burned, "no burn jumps over after the ash king has died")
