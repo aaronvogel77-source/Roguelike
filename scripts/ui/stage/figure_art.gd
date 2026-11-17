@@ -92,10 +92,10 @@ const SPECS := {
 
 ## Skins from the vault mirror: overrides on a figure's own design.
 const SKINS := {
-	"skin_bone_executioner": {"skin": "pale", "eyes": "ff3040", "metal": "ash", "extras": ["apron", "collar"]},
-	"skin_frost_midas": {"robe": "spirit_water", "metal": "silver", "skin": "pale", "extras": ["golden_hand", "drip"]},
-	"skin_shadow_judge": {"robe": "shadow", "skin": "ash", "eyes": "c080ff", "metal": "ash"},
-	"skin_ember_spark": {"skin": "fire", "torso": "bare", "cape": 14, "metal": "gold"},
+	"skin_bone_executioner": {"skin": "linen", "eyes": "ff3040", "torso": "plate", "metal": "linen", "cloth": "blood", "cape": 20},
+	"skin_frost_midas": {"robe": "spirit_water", "metal": "silver", "skin": "pale", "cloth": "cups", "extras": ["golden_hand", "drip"]},
+	"skin_shadow_judge": {"robe": "swords", "skin": "ghost", "eyes": "c080ff", "metal": "ash", "cloth": "shadow"},
+	"skin_ember_spark": {"skin": "fire", "head": "flame_hair", "torso": "bare", "cape": 16, "cloth": "wands", "metal": "gold"},
 }
 
 static var _cache: Dictionary = {}

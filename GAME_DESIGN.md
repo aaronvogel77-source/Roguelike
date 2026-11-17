@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M6 abgeschlossen, Kampfbühne Schritt 1 abgeschlossen. Schritt 2 (eigenes Design je Figur, Fähigkeits-Effekte, Spezialangriff-Szene) gebaut (v0.9.0), Feedback-Runden v0.9.1–v0.9.2 umgesetzt; Fusionsgestalten + reine Meister (v0.10.0) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0–M6 abgeschlossen, Kampfbühne Schritt 1 abgeschlossen. Schritt 2 (eigenes Design je Figur, Fähigkeits-Effekte, Spezialangriff-Szene) gebaut (v0.9.0), Feedback-Runden v0.9.1–v0.9.2 umgesetzt; Fusionsgestalten + reine Meister (v0.10.0) gebaut; M7 Meta/Lager/Grimoire (v0.11.0) gebaut, wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -397,7 +397,7 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Sammelbuch („Grimoire“):** Enthält alle entdeckten Figuren, Relikte, Meisterfähigkeiten und geheimen Rezepte. Unentdecktes erscheint als „???“.
 - **Save-Scumming:** **Verhindert.** Autosave nach jeder Aktion, kein manuelles Laden.
 
-### M7 – Meta, Lager und Grimoire (beantwortet 2026-11-17, Plan wartet auf Freigabe)
+### M7 – Meta, Lager und Grimoire (beantwortet 2026-11-17, freigegeben und umgesetzt in v0.11.0)
 - **Meta-Währung „Seelenglut“:** entsteht aus den **am Run-Ende übrigen Seelen** (Sieg oder Niederlage) mit **abnehmender Staffel**: die ersten 5 Seelen zählen voll, die nächsten 5 zur Hälfte, jede weitere ein Viertel, **max. 12 Seelenglut pro Run** (gegen endlose Seelen in langen/Endlos-Runs). Dilemma: Seelen im Run ausgeben oder fürs Lager sparen
 - **Lager = Krypta-Gewölbe** mit Truhen (Packs), Altar (Upgrades), Bildnissen (Okkultisten) und Spiegel (Optik)
 - **Themen-Truhen** (je 3 Inhalte, Preis **8**): Figuren-Truhe (Asse, Figuren-Skins), Relikt-Truhe (gesperrte Relikte, Tarot, Pakte), Ereignis-Truhe (gesperrte Ereignisse). **Duplikate** geben einen Teil des Preises als Seelenglut zurück
@@ -815,3 +815,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | v0.10.0 umgesetzt: Fusionsgestalten (Körper der Hauptfigur, Waffe/Schild/Schmuck des Partners in dessen Metall und Edelstein, Umhang des 3. Teils in dessen Farbe, Schild/Schmuck des 4. Teils), pro Stufe größer, Aura aus aufsteigenden Funken in den zwei Hauptfarben plus Bodenschein, reines Farbsymbol über dem Kopf; 4 neue reine Meisterfähigkeiten; Arena (?arena=1) zeigt zufällige Fusionen; Vorschau-Werkzeug tools/render_fusions.gd | Plan freigegeben | – |
 | 2026-11-17 | Feedback v0.10.0: Fusionsgestalten fürs Erste gut, Feinschliff (z. B. mehr Partner-Teile wie Kopfbedeckung/Haut) kommt später | Spieler-Feedback | – |
 | 2026-11-17 | M7-Planung: Seelenglut aus übrigen Seelen (abnehmende Staffel, max. 12/Run), Krypta-Lager mit Themen-Truhen (8), Upgrades 25/50/90, Okkultisten per Herausforderung oder Kauf, Novize als Start, Kern frei/Seltenes gesperrt, Duplikate → Seelenglut, Optik inkl. Skins, Hauptmenü + Autosave + Grimoire | Spieler-Wahl | Währung aus Run-Fortschritt; Kurs pro Akt; Misch-Pack; keine Duplikate; alles frei/stark gesperrt; zäher/sehr zäher Grind; Wagen/Bibliothek |
+| 2026-11-17 | M7 umgesetzt (v0.11.0): Hauptmenü (Fortsetzen / Neuer Run / Krypta-Lager / Grimoire), Okkultisten-Wahl (Novize, Wucherer, Fechtmeisterin), Autosave nach jeder Aktion in user://run.save, Meta-Speicher user://meta.json, Seelenglut am Run-Ende mit Staffel, Krypta-Lager (Truhen, Altar, Bildnisse, Spiegel) vor dem Pixel-Gewölbe, Grimoire mit 7 Reitern und ???, Optik: 3 Kartenrücken, 3 Hintergründe (Schatzgewölbe, Zerfallene Kathedrale, Mondfriedhof), 3 Aura-Stile, 4 Figuren-Skins; Menü-Knopf ≡ im Run; Debug „+50 Seelenglut“ im Menü | Plan freigegeben | – |
