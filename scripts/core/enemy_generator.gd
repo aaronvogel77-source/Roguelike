@@ -14,9 +14,9 @@ static var FIGHT_BUDGET := [3.35, 6.3, 2.0]
 ## Budget grows exponentially per act.
 static var ACT_GROWTH := 4.8
 ## Extra factor for the small fight from act 2 on (act 1 small fights stay as they are).
-static var LATE_SMALL_FACTOR := 1.0
+static var LATE_SMALL_FACTOR := 1.19
 ## Retinue budget of the boss fight per act (act 1 kept small: the boss itself is strong).
-static var BOSS_RETINUE := [2.0, 16.0]
+static var BOSS_RETINUE := [2.0, 43.0]
 ## Easy / medium / hard options in the enemy choice.
 static var DIFFICULTY_FACTOR := [0.75, 1.0, 1.35]
 ## Extra gold for winning against easy / medium / hard (and bosses).

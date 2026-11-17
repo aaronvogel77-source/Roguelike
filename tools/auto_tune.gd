@@ -15,7 +15,8 @@ var _knobs := [
 	{"name": "Akt 1 Boss: Leben Steuereintreiber", "station": "A1 K3", "lo": 10.0, "hi": 30.0, "boss": "boss_tax_collector", "stat": "health"},
 	{"name": "Akt 2: Wachstum je Akt", "station": "A2 K2", "lo": 2.5, "hi": 5.0, "set": func(v: float) -> void: EnemyGenerator.ACT_GROWTH = v},
 	{"name": "Akt 2 klein: Zusatzfaktor", "station": "A2 K1", "lo": 1.0, "hi": 2.5, "set": func(v: float) -> void: EnemyGenerator.LATE_SMALL_FACTOR = v},
-	{"name": "Akt 2 Boss: Gefolge-Budget", "station": "A2 K3", "lo": 10.0, "hi": 70.0, "set": func(v: float) -> void: EnemyGenerator.BOSS_RETINUE[1] = v},
+	# The act-2 retinue is full from a budget of about 43 (7 places, the wall takes 3): the boss itself is tuned.
+	{"name": "Akt 2 Boss: Angriff Goldene Mauer", "station": "A2 K3", "lo": 3.0, "hi": 12.0, "boss": "boss_golden_wall", "stat": "attack"},
 ]
 
 
@@ -88,7 +89,6 @@ func _knob_value(db: ContentDb, knob: Dictionary) -> float:
 		"A1 K2": return float(EnemyGenerator.FIGHT_BUDGET[1])
 		"A2 K2": return EnemyGenerator.ACT_GROWTH
 		"A2 K1": return EnemyGenerator.LATE_SMALL_FACTOR
-		"A2 K3": return float(EnemyGenerator.BOSS_RETINUE[1])
 	return 0.0
 
 
