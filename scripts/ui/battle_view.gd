@@ -22,6 +22,9 @@ var _db: ContentDb
 var _rng_streams: RngStreams
 var _speed := 1.0
 var _stage: BattleStage
+var _specials_shown: Dictionary = {}  # uid -> true (special scene once per figure and battle)
+var _special_title: Label
+var _special_sub: Label
 ## The player's battle entries; battle uid i+1 belongs to entry i.
 var _player_entries: Array = []
 var _skipping := false
@@ -270,6 +273,7 @@ func _on_unit_tapped(unit: FigureActor) -> void:
 
 func _show_start_state(start_event: Dictionary) -> void:
 	_skipping = false
+	_specials_shown.clear()
 	_stage.setup(start_event, _db)
 
 
@@ -380,20 +384,61 @@ func _show_trigger(event: Dictionary) -> void:
 		return
 	var kind := Emblem.kind_for_effect(event["effect"])
 	var color: Color = Emblem.COLORS.get(kind, Palette.GOLD)
-	source.glow(Palette.GOLD, 0.4 / _stage_speed())
-	var other_targets: Array = event["targets"].filter(func(uid: int) -> bool: return uid != event["uid"])
-	if other_targets.is_empty():
-		# Ability on itself: the figure glows and the emblem rises out of it.
-		source.glow(color, 0.45 / _stage_speed())
-		if not _skipping:
-			_rise_emblem(kind, _stage.screen_center(event["uid"]))
+	var special := _special_name(source, event["effect"])
+	if special != "" and not _skipping and not _specials_shown.has(event["uid"]):
+		_specials_shown[event["uid"]] = true
+		_show_special_banner(special, ContentDb.display_name(source.definition))
+		await _stage.special(event["uid"], _stage_speed())
+	source.glow(color, 0.45 / _stage_speed())
+	if _skipping:
 		await _wait(0.5)
 		return
-	# Ability on others: the emblem flies from the source to every target.
-	for uid in other_targets:
-		if _stage.actor(uid) != null and not _skipping:
-			_fly_emblem(kind, _stage.screen_center(event["uid"]), uid)
+	# Pixel projectiles fly to every other target; on itself it bursts around
+	# the figure. The emblem rises above to name the effect.
+	_stage.ability_fx(event["uid"], kind, event["targets"], _stage_speed())
+	_rise_emblem(kind, _stage.screen_top(event["uid"]))
 	await _wait(0.55)
+
+
+## Name of a special attack: kings, aces, recipe figures and bosses have one,
+## F3 fusions for their master ability. "" for everything else.
+func _special_name(source: FigureActor, effect: String) -> String:
+	var definition := source.definition
+	var master: String = definition.get("fusion", {}).get("master", "")
+	if master != "":
+		for ability in Fusion.master_by_id(_db, master).get("abilities", []):
+			if ability["effect"] == effect:
+				return tr("MASTER_" + master.to_upper())
+	var rank := String(definition.get("rank", ""))
+	if definition.get("boss", false) or rank in ["king", "legend"]:
+		var key := "SPECIAL_" + String(definition.get("id", "")).to_upper()
+		return tr(key) if tr(key) != key else ContentDb.display_name(definition)
+	return ""
+
+
+## The special attack's name in big letters over the stage.
+func _show_special_banner(title: String, subtitle: String) -> void:
+	if _special_title == null:
+		_special_title = _make_label("", 54, Palette.GOLD)
+		_special_sub = _make_label("", 24, Palette.PARCHMENT)
+		for label in [_special_title, _special_sub]:
+			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			label.add_theme_color_override("font_outline_color", Color(0.15, 0.05, 0.0))
+			label.add_theme_constant_override("outline_size", 10)
+			label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_fx_layer.add_child(label)
+	_special_title.text = title
+	_special_sub.text = subtitle
+	_special_title.size = Vector2(size.x, 70)
+	_special_sub.size = Vector2(size.x, 30)
+	_special_title.position = Vector2(0, size.y * 0.16)
+	_special_sub.position = Vector2(0, size.y * 0.16 + 64)
+	for label in [_special_title, _special_sub]:
+		label.modulate.a = 0.0
+		var tween := create_tween()
+		tween.tween_property(label, "modulate:a", 1.0, 0.15 / _stage_speed())
+		tween.tween_interval(0.75 / _stage_speed())
+		tween.tween_property(label, "modulate:a", 0.0, 0.25 / _stage_speed())
 
 
 func _rise_emblem(kind: String, at: Vector2) -> void:

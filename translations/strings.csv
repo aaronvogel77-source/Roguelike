@@ -520,3 +520,15 @@ UI_SKIP_BATTLE,Überspringen,Skip
 UI_REROLL_SEAL,"Neu würfeln
 %d Gold","Reroll
 %d gold"
+SPECIAL_KING_MIDAS,Goldrausch,Gold Rush
+SPECIAL_ASH_KING,Aschenregen,Rain of Ash
+SPECIAL_DROWNED_KING,Sog der Tiefe,Pull of the Deep
+SPECIAL_THE_JUDGE,Das Urteil,The Verdict
+SPECIAL_ACE_OF_COINS,Zinsflut,Flood of Interest
+SPECIAL_ACE_OF_WANDS,Krone der Flammen,Crown of Flames
+SPECIAL_ACE_OF_CUPS,Tränenflut,Flood of Tears
+SPECIAL_ACE_OF_SWORDS,Schnitt der Wahrheit,Cut of Truth
+SPECIAL_MIDAS_SCALES,Goldenes Gleichgewicht,Golden Balance
+SPECIAL_ASH_FLOOD_KING,Asche und Flut,Ash and Flood
+SPECIAL_BOSS_TAX_COLLECTOR,Pfändung,Seizure
+SPECIAL_BOSS_GOLDEN_WALL,Goldener Wall,Golden Rampart

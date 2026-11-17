@@ -24,6 +24,18 @@ var _player_order: Array = []  # uids, front first
 var _enemy_order: Array = []
 var _time := 0.0
 var _shot_textures: Dictionary = {}
+var _camera: Camera2D
+var _dim: Node2D
+var _dim_amount := 0.0
+var _particles: Node2D
+var _sparks: Array = []  # {pos, vel, color, life, max}
+
+## Colors of ability effects (by emblem kind).
+const FX_COLORS := {
+	"burn": Color("ff8a2a"), "bleed": Color("e0263a"), "curse": Color("b06ae8"), "shield": Color("a8c4ea"),
+	"heart": Color("5fd06a"), "coin": Color("ffd24a"), "skull": Color("d8d0c4"), "sword": Color("e8ecf4"),
+	"star": Color("ffe08a"),
+}
 
 
 func _init() -> void:
@@ -42,11 +54,23 @@ func _init() -> void:
 	_ambient = Node2D.new()
 	_ambient.draw.connect(_draw_ambient)
 	_viewport.add_child(_ambient)
+	# Darkens the scene behind a figure during its special attack.
+	_dim = Node2D.new()
+	_dim.draw.connect(func() -> void:
+		if _dim_amount > 0.0:
+			_dim.draw_rect(Rect2(-40, -40, VIEW.x + 80, VIEW.y + 80), Color(0, 0, 0, _dim_amount)))
+	_viewport.add_child(_dim)
 	_actors_layer = Node2D.new()
 	_actors_layer.y_sort_enabled = false
 	_viewport.add_child(_actors_layer)
 	_shots_layer = Node2D.new()
 	_viewport.add_child(_shots_layer)
+	_particles = Node2D.new()
+	_particles.draw.connect(_draw_particles)
+	_viewport.add_child(_particles)
+	_camera = Camera2D.new()
+	_camera.position = Vector2(VIEW) / 2.0
+	_viewport.add_child(_camera)
 
 	_display = TextureRect.new()
 	_display.texture = _viewport.get_texture()
@@ -61,12 +85,20 @@ func _init() -> void:
 func _process(delta: float) -> void:
 	_time += delta
 	_ambient.queue_redraw()
+	_dim.queue_redraw()
+	for spark in _sparks:
+		spark["pos"] += spark["vel"] * delta
+		spark["vel"].y += spark.get("gravity", 0.0) * delta
+		spark["life"] -= delta
+	_sparks = _sparks.filter(func(s: Dictionary) -> bool: return s["life"] > 0.0)
+	_particles.queue_redraw()
 
 
 # --- Setup and layout -----------------------------------------------------------------
 
 func setup(start_event: Dictionary, db: ContentDb) -> void:
 	_db = db
+	FigureArt.gold_hint = int(start_event.get("gold", 0))
 	for child in _actors_layer.get_children():
 		child.queue_free()
 	for child in _shots_layer.get_children():
@@ -238,6 +270,88 @@ func remove(uid: int, speed: float) -> void:
 	_actors.erase(uid)
 	a.queue_free()
 	_layout(0.3 / speed)
+
+
+# --- Ability effects and special attacks ----------------------------------------------
+
+## An ability fires: a projectile in the ability's color flies to every other
+## target and bursts there; an ability on the figure itself bursts around it.
+func ability_fx(source_uid: int, kind: String, targets: Array, speed: float) -> void:
+	var source := actor(source_uid)
+	if source == null:
+		return
+	var color: Color = FX_COLORS.get(kind, Color("ffe08a"))
+	var others: Array = targets.filter(func(uid: int) -> bool: return uid != source_uid and actor(uid) != null)
+	if others.is_empty():
+		burst(source.center(), color, 14, 26.0, -30.0)
+		return
+	for uid in others:
+		var target := actor(uid)
+		var from := source.center()
+		var to := target.center()
+		var orb := Node2D.new()
+		orb.draw.connect(func() -> void:
+			orb.draw_rect(Rect2(-2, -2, 4, 4), color.darkened(0.4))
+			orb.draw_rect(Rect2(-1, -1, 3, 3), color)
+			orb.draw_rect(Rect2(0, -1, 1, 1), Color.WHITE))
+		_shots_layer.add_child(orb)
+		var fly := func(t: float) -> void:
+			orb.position = (from.lerp(to, t) + Vector2(0, -sin(t * PI) * 14.0)).round()
+			if randf() < 0.6:
+				_sparks.append({"pos": orb.position, "vel": Vector2(randf_range(-6, 6), randf_range(-6, 6)), "color": color, "life": 0.25, "max": 0.25})
+		var tween := create_tween()
+		tween.tween_method(fly, 0.0, 1.0, 0.3 / speed)
+		tween.tween_callback(func() -> void:
+			orb.queue_free()
+			if is_instance_valid(target):
+				burst(target.center(), color, 10, 22.0, 0.0))
+
+
+## A small burst of pixel sparks.
+func burst(at: Vector2, color: Color, count: int, spread: float, rise: float) -> void:
+	for i in count:
+		var angle := randf() * TAU
+		_sparks.append({"pos": at, "vel": Vector2(cos(angle), sin(angle)) * randf_range(spread * 0.4, spread) + Vector2(0, rise),
+			"color": color.lightened(randf() * 0.4), "life": randf_range(0.3, 0.6), "max": 0.6, "gravity": 40.0})
+
+
+func _draw_particles() -> void:
+	for spark in _sparks:
+		var c: Color = spark["color"]
+		c.a = clampf(spark["life"] / spark["max"], 0.0, 1.0)
+		_particles.draw_rect(Rect2((spark["pos"] as Vector2).round(), Vector2.ONE), c)
+
+
+## Special attack: the scene darkens, the camera closes in on the figure and a
+## golden burst marks the moment (the battle view shows the ability's name).
+func special(uid: int, speed: float) -> void:
+	var a := actor(uid)
+	if a == null:
+		return
+	var duration := 1.1 / speed
+	for other in _actors.values():
+		if other != a:
+			(other as FigureActor).modulate = Color(0.35, 0.35, 0.4)
+	a.z_index = 2
+	var focus := a.center()
+	var tween := create_tween().set_parallel(true)
+	tween.tween_method(func(v: float) -> void: _dim_amount = v, 0.0, 0.55, duration * 0.25)
+	tween.tween_property(_camera, "zoom", Vector2(1.45, 1.45), duration * 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(_camera, "position", focus, duration * 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	a.raise_weapon(duration)
+	await get_tree().create_timer(duration * 0.35).timeout
+	burst(a.center() + Vector2(0, -6), Color("ffe08a"), 40, 40.0, -20.0)
+	a.glow(Color("ffe08a"), duration * 0.5)
+	await get_tree().create_timer(duration * 0.45).timeout
+	var back := create_tween().set_parallel(true)
+	back.tween_method(func(v: float) -> void: _dim_amount = v, 0.55, 0.0, duration * 0.2)
+	back.tween_property(_camera, "zoom", Vector2.ONE, duration * 0.2)
+	back.tween_property(_camera, "position", Vector2(VIEW) / 2.0, duration * 0.2)
+	for other in _actors.values():
+		back.tween_property(other, "modulate", Color.WHITE, duration * 0.2)
+	await back.finished
+	if is_instance_valid(a):
+		a.z_index = 0
 
 
 # --- Input ---------------------------------------------------------------------------

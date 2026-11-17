@@ -97,6 +97,7 @@ func _show_region_intro() -> void:
 
 
 func _show_stage() -> void:
+	FigureArt.gold_hint = _run.gold  # gold-dependent looks (Gold-Armored)
 	_selected = {}
 	_sell_armed = -1
 	_detail_panel.hide()
