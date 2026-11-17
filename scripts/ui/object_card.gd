@@ -15,6 +15,7 @@ var entry: Dictionary = {}
 var title := ""
 var lines: Array = []
 var _style: StyleBoxFlat
+var _dark_face := true  # light card faces (most equipment) need dark headings
 
 
 static func create(db: ContentDb, object_entry: Dictionary, card_size: Vector2 = SIZE, compact := false) -> ObjectCard:
@@ -70,7 +71,9 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	var face_holder := Control.new()
 	face_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(face_holder)
-	var face := CardArt.face_rect(CardArt.for_object(kind, rarity, card_size))
+	var face_info := CardArt.for_object(kind, rarity, card_size)
+	_dark_face = face_info.get("dark", false)
+	var face := CardArt.face_rect(face_info)
 	face_holder.add_child(face)
 	face.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["offset_left", "offset_top"]:
@@ -109,16 +112,24 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	if category_keys.has(kind) and kind != "tarot":
 		var category_color: Color = DetailPanel.CATEGORY_COLORS[kind] if kind != "tarot" else Emblem.COLORS["tarot"]
 		column.add_child(_label(TranslationServer.translate(category_keys[kind]).to_upper(), 12, category_color))
-	column.add_child(_label(title, 18 if card_size.y >= 240 else 16, Palette.PARCHMENT))
-	if subtitle != "":
-		column.add_child(_label(subtitle, 14, border))
+	var heading := _label(title, 18 if card_size.y >= 240 else 16, Palette.PARCHMENT if _dark_face else Color("2a1a10"))
+	heading.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85) if _dark_face else Color(1, 0.97, 0.9, 0.9))
+	heading.add_theme_constant_override("outline_size", 4)
+	column.add_child(heading)
+	if subtitle != "":  # rarity name on a small dark band so it reads on every face
+		var rarity_label := _label(subtitle, 14, border.lightened(0.15))
+		var band := StyleBoxFlat.new()
+		band.bg_color = Color(0.03, 0.02, 0.06, 0.8)
+		band.set_corner_radius_all(5)
+		rarity_label.add_theme_stylebox_override("normal", band)
+		column.add_child(rarity_label)
 	var text := RichTextLabel.new()
 	text.bbcode_enabled = true
 	text.fit_content = true
 	text.scroll_active = false
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text.add_theme_font_size_override("normal_font_size", 13 if card_size.y >= 240 else 12)
-	if kind in ["tarot", "relic", "pact"]:  # a dark plate keeps the text readable on the card art
+	if kind in ["tarot", "relic", "pact", "equipment"]:  # a dark plate keeps the text readable on the card art
 		var plate := StyleBoxFlat.new()
 		plate.bg_color = Color(0.03, 0.02, 0.06, 0.82)
 		plate.set_corner_radius_all(6)
