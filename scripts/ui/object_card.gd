@@ -89,6 +89,9 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 		holder.add_child(_symbol(emblem_kind, card_size.y * 0.7))
 		add_child(holder)
 		return
+	if kind == "tarot":
+		_build_tarot(card_size, margin)
+		return
 	var column := VBoxContainer.new()
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_theme_constant_override("separation", 4)
@@ -206,4 +209,42 @@ func _symbol(emblem_kind: String, symbol_size: float) -> Control:
 	rect.custom_minimum_size = Vector2(side, side)
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return rect
+
+
+## Tarot cards have fixed areas matching CardArt._tarot: the numeral and the
+## picture inside the arch, the name on the plate, the text in its own field.
+func _build_tarot(card_size: Vector2, margin: int) -> void:
+	var area := Control.new()
+	area.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(area)
+	var h := card_size.y
+	var w := card_size.x
+	var place := func(node: Control, top: float, bottom: float, inset := 16.0) -> void:
+		node.position = Vector2(inset - margin, h * top - margin)
+		node.size = Vector2(w - inset * 2.0, h * (bottom - top))
+		area.add_child(node)
+	var numeral := _label(String(TAROT_NUMERALS.get(String(entry.get("id", "")), "")), 14, Color("ffe08a"))
+	place.call(numeral, 0.105, 0.165)
+	var picture := CenterContainer.new()
+	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	picture.add_child(_symbol("tarot", 54 if h < 240 else 72))
+	place.call(picture, 0.165, CardArt.TAROT_ARCH_END - 0.01)
+	# The name shrinks until it fits on the plate (long names like "Das Rad des Schicksals").
+	var font_size := 14 if h < 240 else 16
+	var font := get_theme_default_font()
+	while font_size > 9 and font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > w - 32.0:
+		font_size -= 1
+	var name := _label(title, font_size, Palette.PARCHMENT)
+	name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name.clip_text = true
+	name.autowrap_mode = TextServer.AUTOWRAP_OFF
+	place.call(name, CardArt.TAROT_NAME[0], CardArt.TAROT_NAME[1], 14.0)
+	var text := RichTextLabel.new()
+	text.bbcode_enabled = true
+	text.scroll_active = false
+	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text.add_theme_font_size_override("normal_font_size", 12 if h < 240 else 13)
+	text.add_theme_color_override("default_color", Color("f6f0e2"))
+	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return Keywords.colorize(l))) + "[/center]"
+	place.call(text, CardArt.TAROT_TEXT[0] + 0.01, CardArt.TAROT_TEXT[1] - 0.005, 18.0)
 

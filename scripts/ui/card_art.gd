@@ -117,37 +117,50 @@ static func _figure(w: int, h: int, look: Dictionary, suit: String, special: Str
 
 ## A real tarot card: midnight sky, a gold arch framing the picture, a name
 ## plate at the bottom and a double gold frame.
+## Layout of a tarot card as fractions of its height (shared with ObjectCard):
+## the arch ("gate") with the picture, the name plate below it, then the text field.
+const TAROT_ARCH_END := 0.47
+const TAROT_NAME := [0.49, 0.585]
+const TAROT_TEXT := [0.61, 0.935]
+
+
+## A real tarot card: midnight sky, a gold arch framing the picture, a name
+## plate and a separate text field, all inside a double gold frame.
 static func _tarot(w: int, h: int) -> Dictionary:
 	var c := PixelCanvas.new(w, h)
 	var gold := _colors(TIERS["king"]["frame"])
 	_gradient(c, w, h, Color("221a44"), Color("0e0a22"))
 	_stars(c, w, h, Color("e8dcff"))
 	var cx := w / 2
-	var top := 9
-	var r := (w - 16) / 2
-	var bottom := int(h * 0.62)
+	var top := 8
+	var r := (w - 18) / 2
+	var bottom := int(h * TAROT_ARCH_END)
 	for y in range(top, bottom + 1):  # the arch window (lighter sky inside)
-		for x in range(8, w - 8):
-			var inside := y >= top + r or Vector2(x, y).distance_to(Vector2(cx, top + r)) <= r
-			if inside:
+		for x in range(9, w - 9):
+			if y >= top + r or Vector2(x, y).distance_to(Vector2(cx, top + r)) <= r:
 				var base: Color = c.image.get_pixel(x, y)
 				c.image.set_pixel(x, y, base.lerp(Color("3a2c6a"), 0.55))
 	for i in 48:  # gold arch line
 		var a := PI + PI * i / 47.0
 		c.px(gold[2], cx + int(cos(a) * r), top + r + int(sin(a) * r))
-	c.px(gold[2], 8, top + r, 1, bottom - top - r)
-	c.px(gold[2], w - 9, top + r, 1, bottom - top - r)
-	c.px(gold[2], 8, bottom, w - 16, 1)
-	_rays(c, w, h, Color(gold[2], 0.18), 12)
-	c.px(gold[1], 6, bottom + 3, w - 12, 1)  # name plate lines
-	c.px(gold[1], 6, h - 8, w - 12, 1)
+	c.px(gold[2], 9, top + r, 1, bottom - top - r)
+	c.px(gold[2], w - 10, top + r, 1, bottom - top - r)
+	c.px(gold[2], 9, bottom, w - 18, 1)
+	# Name plate: a gold-edged band.
+	var n0 := int(h * TAROT_NAME[0])
+	var n1 := int(h * TAROT_NAME[1])
+	c.px(gold[0], 7, n0, w - 14, n1 - n0)
+	c.px(gold[2], 7, n0, w - 14, 1)
+	c.px(gold[1], 7, n1, w - 14, 1)
+	# Text field: a dark panel with a thin gold border.
+	var t0 := int(h * TAROT_TEXT[0])
+	var t1 := int(h * TAROT_TEXT[1])
+	c.px(Color("0a0716"), 7, t0, w - 14, t1 - t0)
+	c.px(gold[1], 7, t0, w - 14, 1)
+	c.px(gold[1], 7, t1, w - 14, 1)
+	c.px(gold[1], 7, t0, 1, t1 - t0)
+	c.px(gold[1], w - 8, t0, 1, t1 - t0 + 1)
 	_frame(c, w, h, [gold])
-	for x in range(3, w - 3):  # second, thin inner gold line
-		c.px(gold[1], x, 5)
-		c.px(gold[1], x, h - 6)
-	for y in range(5, h - 5):
-		c.px(gold[1], 5, y)
-		c.px(gold[1], w - 6, y)
 	_round(c, w, h)
 	return {"tex": c.texture(), "fx": {"gloss": 0.7, "sparkle": 0.8}, "accent": gold[2], "dark": true}
 
