@@ -181,40 +181,59 @@ static func _skin(w: int, h: int, suit: String, theme: Array) -> Dictionary:
 	return {"tex": c.texture(), "fx": {"gloss": 1.0, "sparkle": 1.0}, "accent": main, "dark": true}
 
 
+## Enemy cards: the same bold card as the player's, but cursed - dark
+## blood-red parchment, iron/bone frames, skulls with glowing eyes and smoke
+## that grow with the enemy's strength (tier 1-3, bosses strongest).
 static func _enemy(w: int, h: int, tier: int, boss: bool) -> Dictionary:
 	var c := PixelCanvas.new(w, h)
-	_gradient(c, w, h, Color(ENEMY_BG[0]), Color(ENEMY_BG[1]))
-	for i in 5:  # cracks through the old parchment
+	var level := 4 if boss else tier
+	var bg_top := Color("3a1a20").lerp(Color("4a0c14"), level / 4.0)
+	_gradient(c, w, h, bg_top, Color("0e0406"))
+	for i in 4 + level * 2:  # cracks through the cursed parchment
 		var x := (i * 17 + 9) % w
 		var y := (i * 31 + 6) % maxi(1, h - 10)
-		for s in 9:
+		for s in 7 + level * 2:
 			x += [-1, 0, 1, 1, 0, -1][(s + i) % 6]
 			y += 1
-			c.px(Color("0e0406"), x, y)
-	var bone := tier >= 3 or boss
-	var frame := _colors(["2a1810", "6a5040", "b0a080", "e8dcc0"] if bone else ["24120a", "5a2a14", "8a4a24", "b0703a"])
+			c.px(Color("0a0204"), x, y)
+	# A big skull watermark behind the creature, clearer for stronger enemies.
+	_skull(c, w / 2 - 7, int(h * 0.42) - 8, 2, Color(0.55, 0.12, 0.14, 0.18 + 0.08 * level), Color(1.0, 0.2, 0.2, 0.3 + 0.12 * level))
+	var frame := _colors(["1a0a0a", "4a2a24", "8a6a5a", "c8b8a0"] if level >= 3 else ["140808", "3a1a14", "6a3424", "9a5a3a"])
 	_frame(c, w, h, [frame])
-	if tier >= 2 or boss:  # thorns pointing inwards
-		for y in range(7, h - 7, 6):
+	if level >= 2:  # thorns pointing inwards
+		for y in range(8, h - 8, 6):
 			c.px(frame[2], 4, y, 2, 1)
 			c.px(frame[2], w - 6, y, 2, 1)
-		for x in range(7, w - 7, 6):
-			c.px(frame[2], x, 4, 1, 2)
-	if bone:  # blood running down from the top
-		for x in range(5, w - 5, 7):
+	if level >= 3:  # blood running down from the top
+		for x in range(6, w - 6, 7):
 			var length := 3 + (x * 5) % 6
 			c.px(Color("8a1420"), x, 4, 1, length)
 			c.px(Color("d02838"), x, 4 + length - 1)
-	if boss:  # skulls with glowing eyes in the corners
-		for p in [Vector2i(0, 0), Vector2i(w - 7, 0), Vector2i(0, h - 7), Vector2i(w - 7, h - 7)]:
-			c.px(OUTLINE, p.x, p.y, 7, 7)
-			c.px(frame[3], p.x + 1, p.y + 1, 5, 4)
-			c.px(frame[2], p.x + 2, p.y + 5, 3, 1)
-			c.px(Color("ff3030"), p.x + 2, p.y + 2)
-			c.px(Color("ff3030"), p.x + 4, p.y + 2)
+	# Skulls with glowing eyes on the frame: 1 at the bottom, 2 more on the
+	# sides from tier 2, all four corners from tier 3, big ones for bosses.
+	var size := 2 if boss else 1
+	var spots: Array = [Vector2i(w / 2 - 3 * size, h - 7 * size)]
+	if level >= 2:
+		spots.append(Vector2i(0, h / 2 - 3 * size))
+		spots.append(Vector2i(w - 7 * size, h / 2 - 3 * size))
+	if level >= 3:
+		spots.append_array([Vector2i(0, 0), Vector2i(w - 7 * size, 0), Vector2i(0, h - 7 * size), Vector2i(w - 7 * size, h - 7 * size)])
+	for p in spots:
+		_skull(c, p.x, p.y, size, frame[3], Color("ff3030"))
 	_round(c, w, h)
-	var fx := {"gloss": 0.35} if boss else {}
-	return {"tex": c.texture(), "fx": fx, "accent": frame[2], "dark": true}
+	var fx := {"curse": true, "smoke": [0.0, 0.25, 0.5, 0.75, 1.0][level], "eyes": 0.5 + 0.125 * level}
+	return {"tex": c.texture(), "fx": fx, "accent": Color("c02030"), "dark": true}
+
+
+## A small pixel skull (7×7 per size step) with eyes in eye_color.
+static func _skull(c: PixelCanvas, x: int, y: int, size: int, bone: Color, eye_color: Color) -> void:
+	var rows := [".bbbbb.", "bbbbbbb", "beebeeb", "beebeeb", "bbb.bbb", ".bbbbb.", ".b.b.b."]
+	for j in 7:
+		for i in 7:
+			var ch: String = rows[j][i]
+			if ch == ".":
+				continue
+			c.px(eye_color if ch == "e" else bone, x + i * size, y + j * size, size, size)
 
 
 # --- Building blocks -------------------------------------------------------------------------
@@ -300,6 +319,7 @@ static func _round(c: PixelCanvas, w: int, h: int) -> void:
 
 
 static var _shader: Shader
+static var _curse_shader: Shader
 
 
 ## The face as a crisp TextureRect with the rarity effects as shader params.
@@ -311,6 +331,15 @@ static func face_rect(face: Dictionary) -> TextureRect:
 	rect.stretch_mode = TextureRect.STRETCH_SCALE
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var fx: Dictionary = face.get("fx", {})
+	if fx.get("curse", false):  # enemies: smoke and glowing skull eyes
+		if _curse_shader == null:
+			_curse_shader = load("res://scripts/ui/card_curse.gdshader")
+		var curse := ShaderMaterial.new()
+		curse.shader = _curse_shader
+		curse.set_shader_parameter("smoke", float(fx.get("smoke", 0.0)))
+		curse.set_shader_parameter("eyes", float(fx.get("eyes", 0.0)))
+		rect.material = curse
+		return rect
 	if not fx.is_empty():
 		if _shader == null:
 			_shader = load("res://scripts/ui/card_shine.gdshader")

@@ -115,6 +115,18 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	text.scroll_active = false
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text.add_theme_font_size_override("normal_font_size", 13 if card_size.y >= 240 else 12)
+	if kind in ["tarot", "relic", "pact"]:  # a dark plate keeps the text readable on the card art
+		var plate := StyleBoxFlat.new()
+		plate.bg_color = Color(0.03, 0.02, 0.06, 0.82)
+		plate.set_corner_radius_all(6)
+		plate.content_margin_left = 3
+		plate.content_margin_right = 3
+		plate.content_margin_top = 2
+		plate.content_margin_bottom = 2
+		text.add_theme_stylebox_override("normal", plate)
+		text.add_theme_color_override("default_color", Color("f6f0e2"))
+		text.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+		text.add_theme_constant_override("outline_size", 3)
 	text.add_theme_color_override("default_color", Palette.PARCHMENT)
 	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return _highlight_label(Keywords.colorize(l)))) + "[/center]"
 	column.add_child(text)
