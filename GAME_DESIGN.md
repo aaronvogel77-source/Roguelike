@@ -397,6 +397,17 @@ Die fünf Designrichtungen (docs/designrichtungen.html) haben nicht gepasst. Gew
 - **Sammelbuch („Grimoire“):** Enthält alle entdeckten Figuren, Relikte, Meisterfähigkeiten und geheimen Rezepte. Unentdecktes erscheint als „???“.
 - **Save-Scumming:** **Verhindert.** Autosave nach jeder Aktion, kein manuelles Laden.
 
+### M7 – Meta, Lager und Grimoire (beantwortet 2026-11-17, Plan wartet auf Freigabe)
+- **Meta-Währung „Seelenglut“:** entsteht aus den **am Run-Ende übrigen Seelen** (Sieg oder Niederlage) mit **abnehmender Staffel**: die ersten 5 Seelen zählen voll, die nächsten 5 zur Hälfte, jede weitere ein Viertel, **max. 12 Seelenglut pro Run** (gegen endlose Seelen in langen/Endlos-Runs). Dilemma: Seelen im Run ausgeben oder fürs Lager sparen
+- **Lager = Krypta-Gewölbe** mit Truhen (Packs), Altar (Upgrades), Bildnissen (Okkultisten) und Spiegel (Optik)
+- **Themen-Truhen** (je 3 Inhalte, Preis **8**): Figuren-Truhe (Asse, Figuren-Skins), Relikt-Truhe (gesperrte Relikte, Tarot, Pakte), Ereignis-Truhe (gesperrte Ereignisse). **Duplikate** geben einen Teil des Preises als Seelenglut zurück
+- **Startpool:** Kern frei (16 Hofkarten, Grundausrüstung, Grund-Relikte/-Tarot/-Pakte/-Ereignisse). **Gesperrt** bis zum Fund in einer Truhe: die 4 Asse, 4 der 8 Relikte, 2 der 6 Tarot, 4 der 8 Pakte, 3 der 9 Ereignisse. Freigeschaltete Asse erscheinen wie bisher selten in Arcana-Packs und im Shop
+- **Upgrades am Altar** (Preise „mittel“: Stufen 25 / 50 / 90, alle zusammen ca. 390 Seelenglut ≈ 60 Runs): +1 Startgold (3 Stufen), erstes Neuwürfeln je Shop −1 Gold (2), Start-Seele (2), bessere Arcana-Packs im Run (2)
+- **Okkultisten:** Start mit **„Der Novize“** (keine Sonderregel, zufälliger Bube, 8 Gold). **Beide Wege** zum Freischalten: Wucherer durch „Besiege den Akt-1-Boss“ **oder** für 40 Seelenglut, Fechtmeisterin durch „Gewinne einen Run“ **oder** für 80
+- **Herausforderungen und Lager getrennt:** Herausforderungen schalten Großes frei (Okkultisten, später Schwierigkeitsstufen, geheime Rezepte), das Lager Pool-Inhalte, Upgrades und Optik
+- **Optik im Spiegel** (direkt kaufbar): Kartenrücken, Bühnen-Hintergründe, Aura-Farben für Fusionen, besondere Figuren-Skins; Ausrüstungs-Skins vorgemerkt für später. M7 liefert das System plus eine kleine Startauswahl je Art
+- **Außerdem in M7:** Hauptmenü (Fortsetzen / Neuer Run mit Okkultisten-Wahl / Lager / Grimoire / Optionen), **Autosave** nach jeder Aktion (kein manuelles Laden), **Grimoire** mit allem Entdeckten („???“ für Unentdecktes). Export-Code und Bestwerte später
+
 ## Phase 11 – Benutzeroberfläche und Bedienung
 
 ### Runde 1 (beantwortet)
@@ -803,3 +814,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | Fusionsgestalten: Körper von der Hauptfigur + Waffe/Extras vom Partner, Größe + Aura je Stufe, Teile behalten Farben; reine Fusion mit Farbsymbol und eigener Meisterfähigkeit (Goldene Festung, Glutkern, Ewige Quelle, Hinrichtung), ersetzt die alten reinen Meister | Spieler-Wahl | Hälften, Chimäre; nur Aura, Insignien; Mischpalette, Meisterfarbe; Königsschatz, Münzregen, Feuersturm, Phönixflamme, Flut der Gnade, Seelenkelch, Klingenwirbel, Blutrausch |
 | 2026-11-17 | v0.10.0 umgesetzt: Fusionsgestalten (Körper der Hauptfigur, Waffe/Schild/Schmuck des Partners in dessen Metall und Edelstein, Umhang des 3. Teils in dessen Farbe, Schild/Schmuck des 4. Teils), pro Stufe größer, Aura aus aufsteigenden Funken in den zwei Hauptfarben plus Bodenschein, reines Farbsymbol über dem Kopf; 4 neue reine Meisterfähigkeiten; Arena (?arena=1) zeigt zufällige Fusionen; Vorschau-Werkzeug tools/render_fusions.gd | Plan freigegeben | – |
 | 2026-11-17 | Feedback v0.10.0: Fusionsgestalten fürs Erste gut, Feinschliff (z. B. mehr Partner-Teile wie Kopfbedeckung/Haut) kommt später | Spieler-Feedback | – |
+| 2026-11-17 | M7-Planung: Seelenglut aus übrigen Seelen (abnehmende Staffel, max. 12/Run), Krypta-Lager mit Themen-Truhen (8), Upgrades 25/50/90, Okkultisten per Herausforderung oder Kauf, Novize als Start, Kern frei/Seltenes gesperrt, Duplikate → Seelenglut, Optik inkl. Skins, Hauptmenü + Autosave + Grimoire | Spieler-Wahl | Währung aus Run-Fortschritt; Kurs pro Akt; Misch-Pack; keine Duplikate; alles frei/stark gesperrt; zäher/sehr zäher Grind; Wagen/Bibliothek |
