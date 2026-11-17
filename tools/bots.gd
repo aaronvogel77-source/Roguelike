@@ -19,7 +19,14 @@ const STRATEGIES := {
 		"suit": false, "fuse": true, "events": "fusion", "desc": "sucht Fusionen (Altar, Kerzen, Blutmond)"},
 	"Taktiker": {"save": 10, "rerolls": 3, "packs": 0.7, "enemy": "adaptive", "sell": true, "arrange": true,
 		"suit": false, "fuse": true, "events": "greedy", "desc": "ausgewogen, wählt Gegner nach eigener Stärke, stellt um"},
+	"Stratege": {"save": 8, "rerolls": 3, "packs": 0.7, "enemy": "hard", "sell": true, "arrange": true,
+		"suit": false, "fuse": true, "events": "greedy", "plan": true,
+		"desc": "nimmt meist die schwere Bande, plant Käufe und Aufstellung gezielt gegen das Gegnerteam"},
 }
+## The strategist takes the hard band this often (otherwise the hardest it can beat).
+const HARD_PICK_CHANCE := 0.8
+## Rows up to this size try every order; longer rows improve by swapping pairs.
+const FULL_PERMUTATION_SIZE := 4
 const RANK_VALUE := {"page": 1.0, "knight": 1.5, "queen": 2.0, "king": 2.6, "legend": 3.2}
 
 var name := ""
@@ -116,12 +123,18 @@ func _pick_enemy() -> int:
 			return 0
 		"medium":
 			return mini(1, count - 1)
-	# Adaptive: the hardest option the team can probably beat.
-	var mine := _team_power()
+		"hard":
+			if rng.randf() < HARD_PICK_CHANCE:
+				return count - 1
+	# Adaptive: the hardest option the team beats in a test battle with its
+	# best arrangement against exactly that band.
 	var pick := 0
+	var saved := run.row.duplicate()
 	for i in count:
-		var theirs := EnemyGenerator.power(run.db, run.enemy_options[i]["team"])
-		if mine >= theirs * 1.15:
+		var enemy := _enemy_team(run.enemy_options[i])
+		var score := _best_arrangement(enemy)
+		run.row = saved.duplicate()
+		if score >= WIN_SCORE:
 			pick = i
 	return pick
 
@@ -154,8 +167,17 @@ func _plan() -> void:
 		if not acted:
 			break
 		_use_tarots()
+	if knobs.get("plan", false):
+		_plan_purchases()
+	# Every bot looks at the enemy band and puts its figures in the order
+	# that beats it best (test battles); bots without "arrange" only do so
+	# when their simple order would lose.
+	var enemy := run.enemy_battle_team()
 	if knobs["arrange"]:
 		_arrange()
+		_best_arrangement(enemy)
+	elif _sim_score(enemy) < WIN_SCORE:
+		_best_arrangement(enemy)
 
 
 ## Gold to keep after a reroll so something can still be bought (a page costs 3).
@@ -298,6 +320,155 @@ func _arrange() -> void:
 			if run.row[slot] != null and run.row[slot]["def_id"] == run.row[best]["def_id"]:
 				continue  # moving onto an equal figure would merge them
 			run.move(best, slot)
+
+
+# --- Test battles against the enemy band ---------------------------------------------
+
+## Scores of a test battle: a win is worth WIN_SCORE plus the health left.
+const WIN_SCORE := 1000.0
+
+
+func _enemy_team(option: Dictionary) -> Array:
+	return option.get("team", []).map(func(u: Dictionary) -> Dictionary:
+		return {"def": run.db.enemies[u["def_id"]], "level": u["level"]})
+
+
+## Fights the band once in the simulator with the current row.
+func _sim_score(enemy: Array) -> float:
+	var team := run.player_battle_team()
+	if team.is_empty():
+		return -INF
+	var result := BattleSimulator.simulate(team, enemy, run.gold, run.battle_options())
+	var health := {}
+	var sides := {}
+	for e in result["events"]:
+		match e["type"]:
+			"start":
+				for u in e["player"] + e["enemy"]:
+					health[u["uid"]] = int(u["health"])
+					sides[u["uid"]] = int(u["side"])
+			"update":
+				health[e["unit"]["uid"]] = int(e["unit"]["health"])
+				sides[e["unit"]["uid"]] = int(e["unit"]["side"])
+			"removed":
+				health[e["uid"]] = 0
+	var mine := 0
+	var theirs := 0
+	for uid in health:
+		if sides[uid] == BattleSimulator.PLAYER:
+			mine += maxi(health[uid], 0)
+		else:
+			theirs += maxi(health[uid], 0)
+	return (WIN_SCORE + mine if result["victory"] else 0.0) - theirs
+
+
+## Puts the row into the order that does best against the band (all orders
+## for small rows, pair swaps for longer ones) and returns its score.
+func _best_arrangement(enemy: Array) -> float:
+	var figures: Array = run.row.filter(func(f: Variant) -> bool: return f != null)
+	var empty := run.row.size() - figures.size()
+	var best_order: Array = figures.duplicate()
+	run.row = _with_empty(best_order, empty)
+	var best := _sim_score(enemy)
+	if figures.size() <= 1:
+		return best
+	if figures.size() <= FULL_PERMUTATION_SIZE:
+		for order in _permutations(figures):
+			run.row = _with_empty(order, empty)
+			var score := _sim_score(enemy)
+			if score > best:
+				best = score
+				best_order = order
+	else:
+		var improved := true
+		var rounds := 0
+		while improved and rounds < 3:
+			improved = false
+			rounds += 1
+			for a in figures.size():
+				for b in range(a + 1, figures.size()):
+					var order: Array = best_order.duplicate()
+					var tmp: Variant = order[a]
+					order[a] = order[b]
+					order[b] = tmp
+					run.row = _with_empty(order, empty)
+					var score := _sim_score(enemy)
+					if score > best:
+						best = score
+						best_order = order
+						improved = true
+	run.row = _with_empty(best_order, empty)
+	return best
+
+
+func _with_empty(order: Array, empty: int) -> Array:
+	var row: Array = order.duplicate()
+	for i in empty:
+		row.append(null)
+	return row
+
+
+func _permutations(items: Array) -> Array:
+	if items.size() <= 1:
+		return [items.duplicate()]
+	var result: Array = []
+	for i in items.size():
+		var rest: Array = items.duplicate()
+		var head: Variant = rest.pop_at(i)
+		for tail in _permutations(rest):
+			result.append([head] + tail)
+	return result
+
+
+## The strategist tries each affordable shop figure on a copy of the run:
+## buys the one that beats the coming band best (with an eye on its value
+## for later fights), as long as it improves on not buying.
+func _plan_purchases() -> void:
+	var enemy := run.enemy_battle_team()
+	for pass_i in 4:
+		var current := _best_arrangement(enemy)
+		var best_index := -1
+		var best_total := current + 1.0
+		for i in run.shop.size():
+			var id: String = run.shop[i]
+			if id == "" or run.price_of(id) > _spendable():
+				continue
+			var trial := RunState.from_dict(run.db, run.to_dict())
+			var target := trial.reward_target(id)
+			if target < 0:
+				var weakest := _weakest_in(trial)
+				if weakest < 0 or not trial.sell(weakest):
+					continue
+				target = trial.reward_target(id)
+			if target < 0 or not trial.buy(i, target):
+				continue
+			var keep := run
+			run = trial
+			var total := _best_arrangement(enemy) + _figure_value(id) * 2.0
+			run = keep
+			if total > best_total:
+				best_total = total
+				best_index = i
+		if best_index < 0:
+			return
+		var id: String = run.shop[best_index]
+		var place := run.reward_target(id)
+		if place < 0:
+			var weakest := _weakest()
+			if weakest < 0 or not run.sell(weakest):
+				return
+			log["sold"] += 1
+			place = run.reward_target(id)
+		if place < 0 or not run.buy(best_index, place):
+			return
+
+
+func _weakest_in(other: RunState) -> int:
+	var keep := run
+	run = other
+	var index := _weakest()
+	run = keep
+	return index
 
 
 func _front_score(figure: Dictionary) -> float:

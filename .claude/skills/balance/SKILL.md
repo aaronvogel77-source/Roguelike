@@ -5,13 +5,19 @@ description: Measure Arcana's balance with the strategy bots (tools/bots.gd) and
 
 # Balancing with bots
 
-Six bots play whole runs like players (buy/sell figures, reroll, open packs, equip, use tarot,
-take fusions, play events, rearrange): Verschwender (spends everything), Sparer (keeps gold for
-interest), Leveler (merges duplicates), Farbspezialist (one suit), Fusionist (seeks fusions),
-Taktiker (adaptive enemy choice, tactical order). Strategies are knobs in `BalanceBot.STRATEGIES`.
+Seven bots play whole runs like players (buy/sell figures, reroll, open packs, equip, use tarot,
+take fusions, play events, rearrange, take boss treasures): Verschwender (spends everything), Sparer
+(keeps gold for interest), Leveler (merges duplicates), Farbspezialist (one suit), Fusionist (seeks
+fusions), Taktiker (adaptive enemy choice), Stratege (takes the hard band 80 % of the time, tries each
+shop purchase on a copy of the run against the coming band). Strategies are knobs in
+`BalanceBot.STRATEGIES`.
+
+Every bot counters the enemy band with test battles: it tries orders of its row in the simulator
+(all orders up to 4 figures, pair swaps above) and keeps the best; adaptive bots pick the hardest
+band they beat in such a test. A full report takes about 2-3 minutes - run it in the background.
 
 ```bash
-timeout 900 godot --headless -s tools/balance_report.gd -- 150 2>&1 | grep -v "^WARNING\|^ERROR\|leaked\|at:"
+timeout 1500 godot --headless -s tools/balance_report.gd -- 150 2>&1 | grep -v "^WARNING\|^ERROR\|leaked\|at:"
 ```
 
 Read in this order:
@@ -23,6 +29,6 @@ Read in this order:
    Low-rank figures always look weak late (they are sold or carried by early losers) - compare
    within a rank.
 
-Bots play weaker than humans (few rerolls, simple fusions), so treat their win rates as a floor.
+Bots play weaker than humans in the shop (few rerolls, simple fusions) but arrange perfectly against the visible band, so treat their win rates as a rough guide.
 Change one thing at a time, measure again with the same run count, record the numbers in the
 GAME_DESIGN.md decision log, then use the `deploy` skill.

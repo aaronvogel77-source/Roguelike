@@ -9,11 +9,11 @@ extends RefCounted
 
 ## Budget per fight in act 1: small, big, boss.
 ## The boss budget pays only for the retinue; the boss figure comes on top.
-const FIGHT_BUDGET := [2.6, 4.6, 2.0]
+const FIGHT_BUDGET := [2.6, 5.4, 2.0]
 ## Budget grows exponentially per act.
 const ACT_GROWTH := 3.4
 ## Retinue budget of the boss fight per act (act 1 kept small: the boss itself is strong).
-const BOSS_RETINUE := [1.5, 13.0]
+const BOSS_RETINUE := [2.0, 16.0]
 ## Easy / medium / hard options in the enemy choice.
 const DIFFICULTY_FACTOR := [0.75, 1.0, 1.35]
 ## Extra gold for winning against easy / medium / hard (and bosses).
@@ -69,6 +69,12 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		var min_units := HARD_MIN_UNITS if difficulty == 2 else 1
 		_strengthen(db, team, rng, teams[difficulty]["theme"], target, min_units)
 		teams[difficulty]["power"] = power(db, team)
+	# A full row cannot grow further (late acts): then the easier options step down.
+	for difficulty in [1, 0]:
+		var team: Array = teams[difficulty]["team"]
+		var limit: float = teams[difficulty + 1]["power"] / MIN_STEP
+		_weaken(db, team, limit)
+		teams[difficulty]["power"] = power(db, team)
 	var result: Array = []
 	for difficulty in 3:
 		result.append({"kind": "normal", "difficulty": difficulty, "theme": teams[difficulty]["theme"],
@@ -118,6 +124,28 @@ static func generate(db: ContentDb, team_budget: int, rng: RandomNumberGenerator
 		remaining -= int(db.enemies[unit["def_id"]]["cost"])
 	_order_by_role(db, team)
 	return team
+
+
+## Lowers levels (then drops the weakest enemy) until the team is at most
+## the given strength; at least one enemy stays.
+static func _weaken(db: ContentDb, team: Array, limit: float) -> void:
+	var guard := 0
+	while power(db, team) > limit and guard < 40:
+		guard += 1
+		var levelled := team.filter(func(u: Dictionary) -> bool: return u["level"] > 1)
+		if not levelled.is_empty():
+			levelled.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["level"] > b["level"])
+			levelled[0]["level"] -= 1
+			continue
+		if team.size() <= 1:
+			break
+		var weakest := 0
+		for i in team.size():
+			var d: Dictionary = db.enemies[team[i]["def_id"]]
+			var w: Dictionary = db.enemies[team[weakest]["def_id"]]
+			if int(d["attack"]) * int(d["health"]) < int(w["attack"]) * int(w["health"]):
+				weakest = i
+		team.remove_at(weakest)
 
 
 ## Adds enemies (cheap ones first) or levels until the team reaches the
