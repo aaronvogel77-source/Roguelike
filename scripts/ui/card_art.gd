@@ -73,6 +73,8 @@ static func for_unit(definition: Dictionary, enemy: bool, suit: String, size_px:
 static func for_object(kind: String, rarity: int, size_px: Vector2) -> Dictionary:
 	var w := int(size_px.x / 2.0)
 	var h := int(size_px.y / 2.0)
+	if kind == "tarot":
+		return _cached("t:%d:%d" % [w, h], func() -> Dictionary: return _tarot(w, h))
 	var look: Dictionary
 	if kind == "equipment":
 		var tier: String = ITEM_TIERS[clampi(rarity, 0, 4)]
@@ -111,6 +113,43 @@ static func _figure(w: int, h: int, look: Dictionary, suit: String, special: Str
 	_frame(c, w, h, [frame])
 	_round(c, w, h)
 	return {"tex": c.texture(), "fx": look.get("fx", {}), "accent": frame[2], "dark": look.get("dark", false)}
+
+
+## A real tarot card: midnight sky, a gold arch framing the picture, a name
+## plate at the bottom and a double gold frame.
+static func _tarot(w: int, h: int) -> Dictionary:
+	var c := PixelCanvas.new(w, h)
+	var gold := _colors(TIERS["king"]["frame"])
+	_gradient(c, w, h, Color("221a44"), Color("0e0a22"))
+	_stars(c, w, h, Color("e8dcff"))
+	var cx := w / 2
+	var top := 9
+	var r := (w - 16) / 2
+	var bottom := int(h * 0.62)
+	for y in range(top, bottom + 1):  # the arch window (lighter sky inside)
+		for x in range(8, w - 8):
+			var inside := y >= top + r or Vector2(x, y).distance_to(Vector2(cx, top + r)) <= r
+			if inside:
+				var base: Color = c.image.get_pixel(x, y)
+				c.image.set_pixel(x, y, base.lerp(Color("3a2c6a"), 0.55))
+	for i in 48:  # gold arch line
+		var a := PI + PI * i / 47.0
+		c.px(gold[2], cx + int(cos(a) * r), top + r + int(sin(a) * r))
+	c.px(gold[2], 8, top + r, 1, bottom - top - r)
+	c.px(gold[2], w - 9, top + r, 1, bottom - top - r)
+	c.px(gold[2], 8, bottom, w - 16, 1)
+	_rays(c, w, h, Color(gold[2], 0.18), 12)
+	c.px(gold[1], 6, bottom + 3, w - 12, 1)  # name plate lines
+	c.px(gold[1], 6, h - 8, w - 12, 1)
+	_frame(c, w, h, [gold])
+	for x in range(3, w - 3):  # second, thin inner gold line
+		c.px(gold[1], x, 5)
+		c.px(gold[1], x, h - 6)
+	for y in range(5, h - 5):
+		c.px(gold[1], 5, y)
+		c.px(gold[1], w - 6, y)
+	_round(c, w, h)
+	return {"tex": c.texture(), "fx": {"gloss": 0.7, "sparkle": 0.8}, "accent": gold[2], "dark": true}
 
 
 static func _fusion(w: int, h: int, ranks: Array, suit: String, stage: int) -> Dictionary:

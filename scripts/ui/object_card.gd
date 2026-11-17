@@ -5,7 +5,10 @@ extends PanelContainer
 
 signal tapped(card: ObjectCard)
 
-const SIZE := Vector2(150, 210)
+const SIZE := Vector2(150, 222)
+## Major arcana numbers (Rider-Waite) shown on tarot cards.
+const TAROT_NUMERALS := {"magician": "I", "strength": "VIII", "wheel_of_fortune": "X", "hanged_man": "XII",
+	"star": "XVII", "sun": "XIX"}
 
 ## {"kind": "equipment|tarot|relic", ...} as stored in the run.
 var entry: Dictionary = {}
@@ -92,14 +95,18 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	add_child(column)
 	var emblem_box := CenterContainer.new()
 	emblem_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	emblem_box.add_child(_symbol(emblem_kind, 56))
+	if kind == "tarot":  # major arcana number above the picture, like a real tarot card
+		var numeral := String(TAROT_NUMERALS.get(String(entry.get("id", "")), ""))
+		column.add_child(_label(numeral, 15, Color("ffe08a")))
+	var roomy := card_size.y >= 240
+	emblem_box.add_child(_symbol(emblem_kind, (72 if roomy else 54) if kind == "tarot" else (56 if roomy else 44)))
 	column.add_child(emblem_box)
 	# Category label in the category color above the name.
 	var category_keys := {"equipment": "UI_CAT_EQUIPMENT", "tarot": "UI_CAT_TAROT", "relic": "UI_CAT_RELIC", "pact": "UI_CAT_PACT"}
-	if category_keys.has(kind):
+	if category_keys.has(kind) and kind != "tarot":
 		var category_color: Color = DetailPanel.CATEGORY_COLORS[kind] if kind != "tarot" else Emblem.COLORS["tarot"]
 		column.add_child(_label(TranslationServer.translate(category_keys[kind]).to_upper(), 12, category_color))
-	column.add_child(_label(title, 18, Palette.PARCHMENT))
+	column.add_child(_label(title, 18 if card_size.y >= 240 else 16, Palette.PARCHMENT))
 	if subtitle != "":
 		column.add_child(_label(subtitle, 14, border))
 	var text := RichTextLabel.new()
@@ -107,7 +114,7 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 	text.fit_content = true
 	text.scroll_active = false
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	text.add_theme_font_size_override("normal_font_size", 13)
+	text.add_theme_font_size_override("normal_font_size", 13 if card_size.y >= 240 else 12)
 	text.add_theme_color_override("default_color", Palette.PARCHMENT)
 	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return _highlight_label(Keywords.colorize(l)))) + "[/center]"
 	column.add_child(text)

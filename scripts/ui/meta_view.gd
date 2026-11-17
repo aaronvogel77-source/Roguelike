@@ -250,9 +250,9 @@ func _find_face(found: Dictionary) -> Control:
 			Cosmetics.skins = worn
 		"relics", "tarot", "pacts":
 			var object_kind: String = {"relics": "relic", "tarot": "tarot", "pacts": "pact"}[kind]
-			face = ObjectCard.create(_db, {"kind": object_kind, "id": id}, Vector2(140, 196))
+			face = ObjectCard.create(_db, {"kind": object_kind, "id": id}, Vector2(150, 222))
 		_:
-			var panel := _panel(Vector2(140, 196), Palette.GOLD)
+			var panel := _panel(Vector2(150, 222), Palette.GOLD)
 			var box := _box(panel)
 			box.add_child(_centered(Emblem.create("skull", 46)))
 			box.add_child(_text_label(_content_name(kind, id), 20, Palette.GOLD))
@@ -431,13 +431,27 @@ func _grimoire_card(tab: String, id: String) -> Control:
 			return _scaled(card, 0.9)
 		"relics", "tarot", "pacts":
 			var kind: String = {"relics": "relic", "tarot": "tarot", "pacts": "pact"}[tab]
-			var object := ObjectCard.create(_db, {"kind": kind, "id": id}, Vector2(140, 196))
+			var object := ObjectCard.create(_db, {"kind": kind, "id": id}, Vector2(150, 222))
 			if detail_panel != null:
 				object.tapped.connect(detail_panel.show_object)
 			return object
 	# Master abilities: the two suits of the combination and the effect.
 	var master := Fusion.master_by_id(_db, id)
-	var panel := _panel(Vector2(200, 196), Palette.GOLD)
+	var panel := _panel(Vector2(200, 222), Palette.GOLD)
+	# Master abilities wear the polychrome legend face (they crown an F3 fusion).
+	var panel_style: StyleBoxFlat = panel.get_theme_stylebox("panel")
+	panel_style.bg_color = Color(0, 0, 0, 0)
+	panel_style.border_color = Color(0, 0, 0, 0)
+	var face_holder := Control.new()
+	face_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(face_holder)
+	var face := CardArt.face_rect(CardArt.for_unit({"rank": "legend", "suit": master["suits"][0]}, false, master["suits"][0], Vector2(200, 222)))
+	face_holder.add_child(face)
+	face.set_anchors_preset(Control.PRESET_FULL_RECT)
+	face.offset_left = -12
+	face.offset_top = -10
+	face.offset_right = 12
+	face.offset_bottom = 10
 	var box := _box(panel)
 	var suits := HBoxContainer.new()
 	suits.alignment = BoxContainer.ALIGNMENT_CENTER

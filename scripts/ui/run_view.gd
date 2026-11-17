@@ -1215,16 +1215,16 @@ func _play_pack_opening(open: Dictionary) -> void:
 				face = _scaled(UnitCard.for_definition(definition, 1, false), 1.15)
 				rarity = 4 if definition["rank"] == "legend" else RunState.RANKS.find(definition["rank"])
 			"equipment":
-				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = int(entry["item"]["rarity"])
 			"relic":
-				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 2
 			"pact":
-				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 3
 			_:
-				face = ObjectCard.create(_db, entry, Vector2(140, 196))
+				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 3 if entry.get("id", "") == "ritual_candle" else 1
 		cards.append({"face": face, "rarity": rarity})
 	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"])))
