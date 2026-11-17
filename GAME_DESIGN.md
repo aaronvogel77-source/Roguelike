@@ -209,6 +209,28 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - Stäbe + Schwerter – **Glühhieb:** ×1,5 Angriff gegen brennende Gegner
   - Kelche + Schwerter – **Aderlass:** Der Träger heilt sich um den Blutungs-Schaden, den Gegner erleiden
 
+### M6 – Fusion, Runde 6 (beantwortet 2026-11-17)
+- **Geheimes Rezept 1 – Waage des Midas:** König Midas + Goldene Waage → 6/9. Kampfbeginn: Angriff aller Verbündeten ×1,2, dazu ×0,1 pro 10 Gold
+- **Geheimes Rezept 2 – König aus Asche und Flut:** Aschekönig + Ertrunkener König → 8/11. Stirbt ein Verbündeter: alle Gegner Brennen 2, der Träger nimmt 50 % von dessen Werten auf
+- Rezept-Figuren sind **endgültig** (keine weitere Fusion), dafür etwas stärker (+1/+1 gegenüber dem Vorschlag)
+- **Hinweis:** Wählt man am Altar ein Rezept-Paar, leuchtet die Vorschau als „???“. Was entsteht, zeigt sich erst nach der Fusion
+
+### M6 – Umsetzungsplan (wartet auf Freigabe)
+- **Ablauf einer Fusion:** Hauptfigur + Partner aus der Reihe wählen. Die Fusion steht auf dem Platz der Hauptfigur, der Partnerplatz wird frei. Vorschau mit Werten, Fähigkeiten und Kosten, dann eine Bestätigung (unumkehrbar)
+- **Fusionsstufe** = Anzahl enthaltener Figuren − 1 (F1 = 2, F2 = 3, F3 = 4). Zwei F1 ergeben direkt F3. Mehr als 4 Figuren geht nicht. Legenden können fusioniert werden
+- **Fähigkeiten:** Sind es zusammen mehr als 3, wählt man 3 aus. Die Meisterfähigkeit auf F3 kommt zusätzlich dazu
+- **Werte:** höherer Angriff und höheres Leben der beiden (ohne Stufenbonus) + 1/1. Start auf Stufe 1, Leveln nur über Kampfsiege und Magier
+- **Name:** Vorsilbe nach Farbe des Partners + Name der Hauptfigur (Münzen „Gold-“, Stäbe „Glut-“, Kelche „Tränen-“, Schwerter „Klingen-“). Die Karte zeigt die F-Stufe als Ornament-Ringe, F3 leuchtet in den enthaltenen Farben
+- **Objekte:** Die Hauptfigur behält ihre Ausrüstung und Segen. Die Objekte des Partners gehen verloren (Warnhinweis in der Vorschau)
+- **Verkaufswert:** Summe der Verkaufswerte der enthaltenen Figuren
+- **Anlässe:**
+  - **Fusions-Altar** als neues Ereignis (Kosten nach Zielstufe 2/3/4 Seelen)
+  - **Nach jedem Akt-Boss** eine Gratis-Fusion (überspringbar)
+  - **Ritualkerze:** Tarot-artige Karte, ca. 5 % pro Arcana-Karte, manchmal im Schwarzmarkt-Mantel
+  - **Blutmond:** geheimes Ereignis, ca. 3 % statt eines normalen Ereignisses, gratis doppelte Fusion
+- **Meta-Freischaltung** („F3 erst nach dem ersten Sieg“) braucht das Meta-System aus M7 und wird dort angebunden
+- **Debug:** Knopf für Altar und Blutmond, damit sich alles schnell testen lässt
+
 ## Phase 6 – Kampfsystem
 
 ### Runde 1 (beantwortet)
@@ -712,3 +734,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | M6 Runde 3: 2 geheime Rezepte, Blutmond = doppelte Fusion, Meister Münzen+Münzen Goldene Mauer, Stäbe+Stäbe Feuerspringen | Entdeckerfreude, Spar-Build-Krönung, Feuer-Kettenreaktion | 1/4 Rezepte; Blutmond ohne Fähigkeitsgrenze/behält Stufe; Zinsmacht, Kriegskasse; Ewiges Feuer, Feuersturm |
 | 2026-11-17 | M6 Runde 4: Kelch+Kelch Tränenmeer, Schwert+Schwert Durchbohren, Münz+Stab Goldglut, Münz+Kelch Überfluss | Klare Identität je Kombination | Lebensquell, Seelenschlucker; Blutbad, Richtschwert; Brennende Münzen, Feuersold; Totengeld, Kirchenzehnt |
 | 2026-11-17 | M6 Runde 5: Münz+Schwert Bezahlte Klinge, Stab+Kelch Dampfwolke, Stab+Schwert Glühhieb, Kelch+Schwert Aderlass – alle 10 Meisterfähigkeiten stehen | – | Kopfgeld, Schuldschnitt; Heißer Quell, Siedepunkt; Schmiedefeuer, Brandwunde; Opferklinge, Blutrausch |
+| 2026-11-17 | M6 Runde 6: Rezepte Waage des Midas und König aus Asche und Flut, endgültig, Hinweis „???“ am Altar; Umsetzungsplan M6 erstellt | Entdeckerfreude mit sanftem Hinweis | Goldener Koloss, Schatzwächter; Wiedergänger, Vampirfürst; Rezept als F1; Wahrsagerin/kein Hinweis |
