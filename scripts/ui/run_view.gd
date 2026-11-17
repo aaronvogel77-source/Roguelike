@@ -113,6 +113,18 @@ func _show_stage() -> void:
 				_build_pack_overlay()
 		RunState.Stage.WON, RunState.Stage.LOST:
 			_build_run_end()
+	# A fusion offer (altar, boss, candle, blood moon) lies over every screen.
+	if not _run.fusion_offer.is_empty() and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
+		var fusion := FusionView.create(_run, _db, _detail_panel)
+		fusion.finished.connect(_on_fusion_finished)
+		_screen.add_child(fusion)
+
+
+func _on_fusion_finished(title: String, text: String) -> void:
+	_undo.clear()  # a fusion is permanent
+	_show_stage()
+	if title != "":
+		_detail_panel.show_message(title, text)
 
 
 # --- Shared building blocks ----------------------------------------------------------
@@ -137,7 +149,7 @@ func _top_bar(title: String) -> HBoxContainer:
 		# Debug tools in a compact row (small font).
 		var tools := HBoxContainer.new()
 		tools.add_theme_constant_override("separation", 4)
-		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique]]
+		var entries := [["+10 Gold", _debug_gold], ["Boss", _debug_to_boss], [tr("UI_DEBUG_EVENT"), _debug_event], ["+5 " + tr("UI_PACTS_SOULS"), _debug_souls], ["Unikat", _debug_unique], ["Fusion", _debug_fusion]]
 		if _run.stage == RunState.Stage.PLANNING:
 			entries.insert(2, ["Legende", _debug_legend])
 		for entry in entries:
@@ -166,6 +178,20 @@ func _debug_unique() -> void:
 	_run.gold += 10
 	_run.flags["force_unique"] = true
 	_run.start_event("cursed_well")
+	_event_option = ""
+	_undo.clear()
+	_show_stage()
+
+
+## Blood Moon: two free fusions right away (plus a fuller row to fuse).
+func _debug_fusion() -> void:
+	# Fill empty slots so there is something to fuse (incl. a recipe pair).
+	var picks := ["king_midas", "golden_scales", "executioner", "blood_drinker", "spark_bearer"]
+	for i in _run.row.size():
+		if _run.row[i] == null and not picks.is_empty():
+			_run.row[i] = _run._new_figure(picks.pop_front())
+	_run.souls += 9
+	_run.start_event("blood_moon")
 	_event_option = ""
 	_undo.clear()
 	_show_stage()
@@ -853,6 +879,10 @@ func _on_strip_tapped(kind: String, index: int, card: ObjectCard) -> void:
 			_event_option = ""
 			_show_stage()
 		return
+	# The ritual candle opens the fusion screen right away.
+	if kind == "tarot" and _run.tarots[index] == "ritual_candle" and _run.start_candle_fusion():
+		_show_stage()
+		return
 	_selected = {"kind": kind, "index": index}
 	card.set_selected(true)
 	_detail_panel.show_object(card)
@@ -1156,6 +1186,8 @@ const EVENT_OPTIONS := {
 	"mirror": [["duplicate", 1], ["train", 1], ["leave", 0]],
 	"duel": [["fight", 0], ["decline", 0]],
 	"soul_trader": [["soul_to_gold", 0], ["gold_to_soul", 0], ["return_pact", 0], ["leave", 0]],
+	"fusion_altar": [["fuse", 0], ["leave", 0]],
+	"blood_moon": [["blood_fuse", 0], ["leave", 0]],
 }
 
 var _event_option := ""  # option waiting for figure targets
@@ -1230,6 +1262,8 @@ const EVENT_SCENES := {
 	"mirror": {"bg": Color(0.06, 0.09, 0.13), "border": Color(0.65, 0.78, 0.95), "emblem": "star"},
 	"duel": {"bg": Color(0.1, 0.08, 0.08), "border": Color(0.8, 0.8, 0.85), "emblem": "sword"},
 	"soul_trader": {"bg": Color(0.05, 0.08, 0.12), "border": Color(0.5, 0.8, 1.0), "emblem": "soul"},
+	"fusion_altar": {"bg": Color(0.1, 0.05, 0.12), "border": Color(0.95, 0.75, 0.35), "emblem": "star"},
+	"blood_moon": {"bg": Color(0.16, 0.02, 0.04), "border": Color(0.95, 0.15, 0.2), "emblem": "bleed"},
 }
 ## Emblem shown on each offer.
 const OFFER_EMBLEMS := {
@@ -1237,6 +1271,7 @@ const OFFER_EMBLEMS := {
 	"throw_10": "pack", "drink": "curse", "tarot": "tarot", "no_boss_rule": "enemy",
 	"mega_arcana": "pack", "rob": "relic", "small": "coin", "duplicate": "star", "train": "level",
 	"fight": "sword", "soul_to_gold": "coin", "gold_to_soul": "soul", "return_pact": "pact",
+	"fuse": "star", "blood_fuse": "bleed",
 }
 
 
@@ -1319,6 +1354,8 @@ func _offer_cost(option: String) -> String:
 			return tr("COST_PACT")
 		"fight":
 			return tr("COST_RISK")
+		"fuse":
+			return tr("COST_ALTAR")
 	return tr("COST_FREE")
 
 
@@ -1357,6 +1394,11 @@ func _market_coat() -> Control:
 	pack_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	pack_box.add_child(pack_info)
 	compartments.add_child(_compartment(tr("UI_MARKET_PACKS"), pack_box, tr("UI_PRICE") % 6, "buy_pack"))
+	# Ritual candle (sometimes): one free fusion.
+	if event.get("candle", false):
+		var candle := ObjectCard.create(_db, {"kind": "tarot", "id": "ritual_candle"}, Vector2(170, 210))
+		candle.tapped.connect(_detail_panel.show_object)
+		compartments.add_child(_compartment(tr("UI_MARKET_CANDLE"), candle, tr("UI_PRICE") % int(_db.fusion["market_candle_price"]), "buy_candle"))
 	# Figure (half price): drag onto a free slot or buy + tap a slot.
 	var def_id: String = event["figure"]
 	var figure_card := UnitCard.for_definition(_db.figures[def_id], 1, false)

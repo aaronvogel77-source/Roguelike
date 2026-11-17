@@ -278,9 +278,10 @@ func _heal(unit: BattleUnit, amount: int) -> void:
 	var healed := mini(amount, unit.max_health - unit.health)
 	if not unit.is_alive():
 		return
-	# "Überfluss" (master): healing beyond full health becomes shield.
+	# "Überfluss" (master): healing beyond full health becomes shield
+	# for the bearer's whole team.
 	var excess := amount - maxi(healed, 0)
-	if excess > 0 and not unit.aura("overflow").is_empty():
+	if excess > 0 and living(unit.side).any(func(u: BattleUnit) -> bool: return not u.aura("overflow").is_empty()):
 		unit.add_status(BattleUnit.STATUS_SHIELD, excess)
 		events.append({"type": "trigger", "uid": unit.uid, "effect": "overflow", "targets": [unit.uid]})
 		_emit_update(unit)

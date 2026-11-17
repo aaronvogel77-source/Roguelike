@@ -69,6 +69,15 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	_style.set_corner_radius_all(10)
 	if unit_definition.get("boss", false):
 		_style.bg_color = Color(0.2, 0.06, 0.08)
+	# Fusions glow in their suits; every stage adds to the glow (F3 cycles).
+	var stage := int(unit_definition.get("fusion", {}).get("stage", 0))
+	if stage > 0:
+		var suits: Array = unit_definition["fusion"]["suits"]
+		_style.shadow_color = Color(Palette.SUIT_COLORS.get(suits[-1], Palette.GOLD), 0.75)
+		_style.shadow_size = 3 + 3 * stage
+		_style.set_border_width_all(3 + stage)
+		if stage >= 3:
+			_cycle_glow(suits)
 	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
 		_style.set_content_margin(side, 5)
 	body.add_theme_stylebox_override("panel", _style)
@@ -80,7 +89,7 @@ func setup(initial: Dictionary, unit_definition: Dictionary, enemy: bool) -> voi
 	body.add_child(column)
 
 	var name_label := Label.new()
-	name_label.text = tr(ContentDb.name_key(definition))
+	name_label.text = ContentDb.display_name(definition)
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.add_theme_font_size_override("font_size", _fitting_font_size(name_label))
@@ -136,6 +145,14 @@ func apply_snapshot(new_snapshot: Dictionary) -> void:
 		_health_label.add_theme_color_override("font_color", Palette.GOLD if health_up else Color.WHITE)
 	_rebuild_identity(snapshot.get("level", 1))
 	_rebuild_chips()
+
+
+## F3: the glow slowly cycles through the fused suits' colors.
+func _cycle_glow(suits: Array) -> void:
+	var colors: Array = suits.map(func(s: String) -> Color: return Color(Palette.SUIT_COLORS.get(s, Palette.GOLD), 0.8))
+	var tween := create_tween().set_loops()
+	for color in colors:
+		tween.tween_property(_style, "shadow_color", color, 0.8)
 
 
 ## Short gold flash on the frame when this unit's ability fires.
@@ -265,6 +282,12 @@ func _rebuild_identity(level: int) -> void:
 	var chevrons := Emblem.create("level", 16)
 	chevrons.count = level
 	_identity.add_child(chevrons)
+	var stage := int(definition.get("fusion", {}).get("stage", 0))
+	if stage > 0:
+		var badge := _small_label(Palette.GOLD)
+		badge.text = "F%d" % stage
+		badge.add_theme_font_size_override("font_size", 13)
+		_identity.add_child(badge)
 	# Equipment and blessing marks for row figures.
 	var figure: Dictionary = extras.get("figure", {})
 	if figure.has("equipment"):

@@ -3,7 +3,7 @@
 > Einzige Quelle der Wahrheit für alle Designentscheidungen.
 > Wird nach jeder beantworteten Fragerunde aktualisiert.
 
-**Status:** Umsetzung – M0–M5a abgeschlossen. M5b (Seelen, Pakte, Ereignisse, Überspringen) gebaut, wartet auf Feedback.
+**Status:** Umsetzung – M0–M5b abgeschlossen. M6 (Fusion) gebaut (v0.7.0), wartet auf Feedback.
 **Letzte Aktualisierung:** 2026-11-16
 
 ---
@@ -215,7 +215,7 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
 - Rezept-Figuren sind **endgültig** (keine weitere Fusion), dafür etwas stärker (+1/+1 gegenüber dem Vorschlag)
 - **Hinweis:** Wählt man am Altar ein Rezept-Paar, leuchtet die Vorschau als „???“. Was entsteht, zeigt sich erst nach der Fusion
 
-### M6 – Umsetzungsplan (wartet auf Freigabe)
+### M6 – Umsetzungsplan (freigegeben und umgesetzt in v0.7.0)
 - **Ablauf einer Fusion:** Hauptfigur + Partner aus der Reihe wählen. Die Fusion steht auf dem Platz der Hauptfigur, der Partnerplatz wird frei. Vorschau mit Werten, Fähigkeiten und Kosten, dann eine Bestätigung (unumkehrbar)
 - **Fusionsstufe** = Anzahl enthaltener Figuren − 1 (F1 = 2, F2 = 3, F3 = 4). Zwei F1 ergeben direkt F3. Mehr als 4 Figuren geht nicht. Legenden können fusioniert werden
 - **Fähigkeiten:** Sind es zusammen mehr als 3, wählt man 3 aus. Die Meisterfähigkeit auf F3 kommt zusätzlich dazu
@@ -229,7 +229,8 @@ Bei *n* Figuren gibt es bis zu n·(n−1)/2 Paare (20 Figuren → 190 Paare). Ha
   - **Ritualkerze:** Tarot-artige Karte, ca. 5 % pro Arcana-Karte, manchmal im Schwarzmarkt-Mantel
   - **Blutmond:** geheimes Ereignis, ca. 3 % statt eines normalen Ereignisses, gratis doppelte Fusion
 - **Meta-Freischaltung** („F3 erst nach dem ersten Sieg“) braucht das Meta-System aus M7 und wird dort angebunden
-- **Debug:** Knopf für Altar und Blutmond, damit sich alles schnell testen lässt
+- **Debug:** Knopf „Fusion“ (Blutmond mit aufgefüllter Reihe inkl. Rezept-Paar); der Altar ist im Ereignis-Durchlauf
+- **Bei der Umsetzung festgelegt:** Eine Farbe, die 3- oder 4-mal enthalten ist, zählt als „rein“ (sonst wäre z. B. Münzen + Münzen nur mit 4 gleichen Farben möglich). **Überfluss** wirkt für das ganze Team des Trägers. Fusionen können nicht per Spiegelkammer kopiert und nicht mit Duplikaten verschmolzen werden.
 
 ## Phase 6 – Kampfsystem
 
@@ -735,3 +736,4 @@ Rollen: vorne = Schuldeneintreiber, Gierschlund, Tresorwächter · hinten = Mün
 | 2026-11-17 | M6 Runde 4: Kelch+Kelch Tränenmeer, Schwert+Schwert Durchbohren, Münz+Stab Goldglut, Münz+Kelch Überfluss | Klare Identität je Kombination | Lebensquell, Seelenschlucker; Blutbad, Richtschwert; Brennende Münzen, Feuersold; Totengeld, Kirchenzehnt |
 | 2026-11-17 | M6 Runde 5: Münz+Schwert Bezahlte Klinge, Stab+Kelch Dampfwolke, Stab+Schwert Glühhieb, Kelch+Schwert Aderlass – alle 10 Meisterfähigkeiten stehen | – | Kopfgeld, Schuldschnitt; Heißer Quell, Siedepunkt; Schmiedefeuer, Brandwunde; Opferklinge, Blutrausch |
 | 2026-11-17 | M6 Runde 6: Rezepte Waage des Midas und König aus Asche und Flut, endgültig, Hinweis „???“ am Altar; Umsetzungsplan M6 erstellt | Entdeckerfreude mit sanftem Hinweis | Goldener Koloss, Schatzwächter; Wiedergänger, Vampirfürst; Rezept als F1; Wahrsagerin/kein Hinweis |
+| 2026-11-17 | M6 umgesetzt (v0.7.0): Fusion F1–F3 mit Fähigkeitswahl, 10 Meisterfähigkeiten, 2 geheime Rezepte, Fusions-Altar, Gratis-Fusion nach Akt-Boss, Ritualkerze (Arcana-Packs, Schwarzmarkt), Blutmond; reine Kombination ab 3 gleichen Farben; Überfluss teamweit | Plan freigegeben | – |

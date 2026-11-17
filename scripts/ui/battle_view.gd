@@ -329,6 +329,8 @@ func _take_url_seed() -> int:
 
 func _make_card(snapshot: Dictionary, is_enemy: bool) -> UnitCard:
 	var definition: Dictionary = _db.enemies[snapshot["def_id"]] if is_enemy else _db.figures[snapshot["def_id"]]
+	if not snapshot.get("display", {}).is_empty():
+		definition = snapshot["display"]  # fusions: their built definition
 	var card := UnitCard.new()
 	card.setup(snapshot, definition, is_enemy)
 	card.tapped.connect(_detail_panel.show_card)

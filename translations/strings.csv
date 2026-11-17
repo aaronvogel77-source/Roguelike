@@ -422,7 +422,7 @@ MASTER_PIERCING_DESC,Angriffe durchdringen Schild und verursachen Blutung 2.,Att
 MASTER_GOLD_EMBER,Goldglut,Gold Ember
 MASTER_GOLD_EMBER_DESC,Kampfbeginn: alle Gegner erhalten Brennen 1 pro 10 Gold (max. 3).,Battle start: all enemies gain 1 burn per 10 gold (max 3).
 MASTER_OVERFLOW,Überfluss,Overflow
-MASTER_OVERFLOW_DESC,Heilung über das volle Leben hinaus wird zu Schild.,Healing beyond full health becomes shield.
+MASTER_OVERFLOW_DESC,Heilung über das volle Leben hinaus wird bei allen Verbündeten zu Schild.,Healing beyond full health becomes shield for all allies.
 MASTER_PAID_BLADE,Bezahlte Klinge,Paid Blade
 MASTER_PAID_BLADE_DESC,Kampfbeginn: +1 Angriff pro 5 Gold (max. +5).,Battle start: +1 attack per 5 gold (max +5).
 MASTER_STEAM_CLOUD,Dampfwolke,Steam Cloud
@@ -473,3 +473,6 @@ UI_FUSION_DISCOVERED,Geheimes Rezept entdeckt: %s!,Secret recipe discovered: %s!
 UI_FUSION_PARTS,Enthält: %s,Contains: %s
 UI_FUSION_CONFIRM,Fusion ist endgültig. Wirklich fusionieren?,A fusion is permanent. Fuse now?
 UI_FUSION_ABILITIES,Fähigkeiten,Abilities
+UI_FUSION_MAIN,Hauptfigur,Main figure
+UI_FUSION_PARTNER,Partner,Partner
+UI_FUSION_SOURCE_BLOOD_MOON_ONE,Blutmond – noch 1 Fusion frei,Blood Moon – 1 fusion left

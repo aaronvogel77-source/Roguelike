@@ -6,6 +6,7 @@ extends PanelContainer
 var _title: Label
 var _subtitle: HBoxContainer
 var _body: RichTextLabel
+var _figures: Dictionary = {}  # figure definitions for fusion texts (loaded once)
 
 
 func _init() -> void:
@@ -59,7 +60,7 @@ func _init() -> void:
 func show_card(card: UnitCard) -> void:
 	var definition := card.definition
 	var snapshot := card.snapshot
-	_title.text = tr(ContentDb.name_key(definition))
+	_title.text = ContentDb.display_name(definition)
 	var level: int = snapshot.get("level", 1)
 	# Rank · suit · level, each with its emblem.
 	for child in _subtitle.get_children():
@@ -85,7 +86,9 @@ func show_card(card: UnitCard) -> void:
 	var multiplier: float = snapshot.get("multiplier", 1.0)
 	if absf(multiplier - 1.0) > 0.001:
 		lines.append(tr("UI_MULTIPLIER") % NumberFormat.decimal(multiplier))
-	if definition.has("ability"):
+	if definition.has("fusion"):
+		lines.append_array(_fusion_lines(definition["fusion"], level))
+	elif definition.has("ability"):
 		var ability: Dictionary = definition["ability"]
 		var values: Array = ability["values"]
 		var value: float = values[mini(level, values.size()) - 1]
@@ -124,6 +127,26 @@ func show_card(card: UnitCard) -> void:
 			lines.append(Keywords.colorize(tr("UI_BLESSING") % ItemText.tarot_name(figure["blessing"]) + " – " + ItemText.tarot_text(figure["blessing"])))
 	_body.text = "\n".join(lines)
 	show()
+
+
+## Fusion: stage, contained figures, kept abilities and the master ability.
+func _fusion_lines(fusion: Dictionary, level: int) -> Array[String]:
+	var lines: Array[String] = []
+	var names: Array = fusion["parts"].map(func(id: String) -> String: return tr("FIG_" + id.to_upper()))
+	lines.append("[color=#%s]%s · %s[/color]" % [Palette.GOLD.to_html(false), tr("UI_FUSION_STAGE") % int(fusion["stage"]),
+		tr("UI_FUSION_PARTS") % ", ".join(names)])
+	var figures: Dictionary = ContentDb.load_default().figures if _figures.is_empty() else _figures
+	_figures = figures
+	for id in fusion["abilities"]:
+		var ability: Dictionary = figures[id]["ability"]
+		var values: Array = ability["values"]
+		var value: float = values[mini(level, values.size()) - 1]
+		var text := tr("ABIL_" + String(id).to_upper()).replace("{v}", NumberFormat.ability_value(ability["effect"], value))
+		lines.append("[b]" + Keywords.colorize(text) + "[/b]")
+	if fusion.get("master", "") != "":
+		var key := "MASTER_" + String(fusion["master"]).to_upper()
+		lines.append(Keywords.colorize(tr("UI_FUSION_MASTER") % ("[b]%s[/b]" % tr(key)) + " – " + tr(key + "_DESC")))
+	return lines
 
 
 ## A plain message (title + text), e.g. instructions.
