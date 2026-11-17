@@ -1,0 +1,19 @@
+# Shared colours for all hand-made art (a file may override any of them).
+[palette]
+d = 3a2014
+s = 7a4630
+m = c2825a
+l = eab288
+k = 120c10
+t = f0ead8
+h = 3a2414
+H = 5c3a20
+a = 4a2a08
+c = 9a6212
+G = dca42c
+T = fff0a0
+n = 4a2e1c
+N = 704a2e
+i = 4c5462
+I = 8e98a8
+W = d8e0ea

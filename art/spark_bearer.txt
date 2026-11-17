@@ -1,0 +1,20 @@
+kind = figure
+[palette]
+q = 3a0c10
+r = 8a2228
+R = c0383a
+Y = ffd060
+o = ffa030
+[head pivot=6,11]
+.....RRR......
+...RRrrrRR....
+..RrrrrrrrR...
+.RrrrrrrrrrR..
+.RrrrrkkkkkrR.
+.RrrrkkYkkYkr.
+.RrrrkkkkkkkR.
+.qrrrrkkmmkkR.
+..qrrrrkkkkR..
+..qqrrrrrrR...
+....qqqqqq....
+.....qqqq.....

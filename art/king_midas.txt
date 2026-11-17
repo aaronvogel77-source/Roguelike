@@ -1,0 +1,79 @@
+kind = figure
+[palette]
+a = 4a2a08
+c = 9a6212
+G = dca42c
+T = fff0a0
+u = c0303a
+e = 28b060
+q = 5a3608
+r = 8a5a12
+R = c08a20
+S = f0c850
+f = c8beb0
+F = f6f0e6
+k = 202024
+h = 3a2414
+d = 3a2014
+s = 7a4630
+m = c2825a
+l = eab288
+y = 6a625a
+Y = a8a096
+Z = e2dcd2
+[head pivot=8,17]
+...T....T....T...
+..TGT..TGT..TGT..
+..cGGcGGGGGcGGc..
+..cGuGGGeGGGGuc..
+..accccccccccca..
+..yhhhhmmmmmll...
+.yhhhhmmmmmmlll..
+.yhhhmmmmmmkmll..
+.yhhhmmmmmmmmlm..
+.yhhhmmmmmmmmmml.
+.yhhsmmmmmmmmmm..
+.yhYYYZmmmZZZs...
+.yYYYZZZZZZZZY...
+..YYYZZZZZZZY....
+..YYYZZZZZZY.....
+...YYYZZZZY......
+....YYYYYY.......
+.....ssss........
+[torso pivot=9,19]
+....FkfFFfkFfFF....
+...FFfFkfFFfkFfF...
+.SSFkFFfFkfFFfkFqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTecRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTecRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.SSSRRRRTGcRRRrrqq.
+.ccccccceeeccccccc.
+.aaaaaaaaaaaaaaaaa.
+.SSSRRRRTGcRRRrrqq.
+.SSSRrRRTGcRRrrrqq.
+.SSSRrSRTGcRRrrrqq.
+.SSSRrRRTecRRrrrqq.
+.SSSRrSRTGcRRrrrqq.
+.SSSRrRRTGcRRrrrqq.
+SSSSRrSRTGcRRrRrrqq
+SSSSRrRRTGcRRrRrrqq
+SSSSRrSRTecRRrRrrqq
+SSSSRrRRTGcRRrrrrqq
+SSSSRrSRTGcRRrRrrqq
+SSSSRrRRTGcRRrRrrqq
+SSSSRrSRTGcRRrRrrqq
+SSSSRrRRTecRRrRrrqq
+SSSSRrSRTGcRRrRrrqq
+TTTTTTTTTTTTTTTTTTT
+ccccccccccccccccccc
