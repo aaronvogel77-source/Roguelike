@@ -6,6 +6,7 @@ const FIGURES_PATH := "res://data/figures.json"
 const ENEMIES_PATH := "res://data/enemies.json"
 const REGIONS_PATH := "res://data/regions.json"
 const ITEMS_PATH := "res://data/items.json"
+const FUSION_PATH := "res://data/fusion.json"
 const SUITS := ["coins", "wands", "cups", "swords"]
 const RANKS := ["page", "knight", "queen", "king"]
 ## Legendary figures (aces) only come from court packs.
@@ -17,6 +18,8 @@ var regions: Dictionary = {}  # id -> definition (themes, blessing)
 var bosses: Dictionary = {}  # id -> definition (region, act, rule)
 ## Equipment bases, affixes, relics, tarot cards, pack rules.
 var items: Dictionary = {}
+## Fusion rules, the 10 master abilities and the secret recipes.
+var fusion: Dictionary = {}
 
 
 static func load_default() -> ContentDb:
@@ -26,6 +29,7 @@ static func load_default() -> ContentDb:
 	for entry in _read_json(ENEMIES_PATH)["enemies"]:
 		db.enemies[entry["id"]] = entry
 	db.items = _read_json(ITEMS_PATH)
+	db.fusion = _read_json(FUSION_PATH)
 	var region_data := _read_json(REGIONS_PATH)
 	for entry in region_data["regions"]:
 		db.regions[entry["id"]] = entry
@@ -36,13 +40,15 @@ static func load_default() -> ContentDb:
 	return db
 
 
-## Figures that can appear in the shop (no legendary aces).
+## Figures that can appear in the shop (no legendary aces, no recipe figures).
 func regular_figures() -> Array:
 	return figures.values().filter(func(f: Dictionary) -> bool: return f["rank"] != LEGEND_RANK)
 
 
+## Legendary aces from arcana packs (secret recipe figures never appear there).
 func legendary_figures() -> Array:
-	var result := figures.values().filter(func(f: Dictionary) -> bool: return f["rank"] == LEGEND_RANK)
+	var result := figures.values().filter(func(f: Dictionary) -> bool:
+		return f["rank"] == LEGEND_RANK and not f.get("recipe", false))
 	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	return result
 
@@ -60,6 +66,13 @@ func bosses_for(region: String, act: int) -> Array:
 			result.append(boss)
 	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	return result
+
+
+## Shown name: fusions carry a built name ("Glut-Henker"), others are translated.
+static func display_name(definition: Dictionary) -> String:
+	if definition.has("fusion_name"):
+		return definition["fusion_name"]
+	return TranslationServer.translate(name_key(definition))
 
 
 ## Translation key for a figure or enemy name, e.g. FIG_KING_MIDAS.

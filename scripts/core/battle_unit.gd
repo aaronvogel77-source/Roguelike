@@ -13,6 +13,10 @@ const CURSE_DURATION := 3
 var uid: int
 var def_id: String
 var suit: String
+## All suits the unit counts as (fusions count for every contained suit).
+var suits: Array = []
+## The definition shown for this unit (fusions: their built definition).
+var display: Dictionary = {}
 var side: int  # BattleSimulator.PLAYER or BattleSimulator.ENEMY
 var level: int = 1
 var attack: int
@@ -43,7 +47,23 @@ static func from_definition(definition: Dictionary, unit_side: int, unit_uid: in
 	unit.max_health = unit.health
 	if definition.has("ability"):
 		unit.abilities.append(definition["ability"])
+	unit.abilities.append_array(definition.get("extra_abilities", []))
+	unit.suits = (definition.get("fusion", {}).get("suits", [unit.suit]) as Array).duplicate()
+	if definition.has("fusion"):
+		unit.display = definition
 	return unit
+
+
+func has_suit(name: String) -> bool:
+	return name == suit or name in suits
+
+
+## The first ability with this effect, or {} (auras are read this way).
+func aura(effect: String) -> Dictionary:
+	for ability in abilities:
+		if ability["effect"] == effect:
+			return ability
+	return {}
 
 
 func is_alive() -> bool:
@@ -86,5 +106,5 @@ func snapshot() -> Dictionary:
 		"attack": attack, "effective_attack": effective_attack(),
 		"health": health, "max_health": max_health,
 		"multiplier": total_multiplier(), "statuses": statuses.duplicate(),
-		"abilities": abilities.duplicate(true),
+		"abilities": abilities.duplicate(true), "display": display,
 	}

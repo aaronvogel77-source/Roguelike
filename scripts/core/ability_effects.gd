@@ -120,6 +120,54 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 			return _add_status(battle, owner, targets, BattleUnit.STATUS_SHIELD, shield)
 		"revive_half":
 			return _revive_half(battle, owner, int(value), targets)
+		# --- Fusion master abilities and secret recipes -------------------------
+		"fire_leap":
+			# Feuerspringen: a burning enemy's burn jumps doubled to the next one.
+			var dying: BattleUnit = context.get("dying_unit")
+			var burn := dying.status(BattleUnit.STATUS_BURN) if dying != null else 0
+			var next_units := battle.living(1 - owner.side)
+			if burn <= 0 or next_units.is_empty():
+				return false
+			var next_unit: BattleUnit = next_units[0]
+			next_unit.add_status(BattleUnit.STATUS_BURN, burn * int(value))
+			battle.emit_update(next_unit)
+			return true
+		"revive_full":
+			# Tränenmeer: the first fallen ally per battle returns at full health.
+			if owner.flags.get("full_revives", 0) >= int(value) or targets.is_empty():
+				return false
+			var unit: BattleUnit = targets[0]
+			if unit.is_alive():
+				return false
+			owner.flags["full_revives"] = owner.flags.get("full_revives", 0) + 1
+			unit.health = unit.max_health
+			unit.statuses.clear()
+			battle.events.append({"type": "revive", "uid": unit.uid, "health": unit.health})
+			battle.emit_update(unit)
+			return true
+		"burn_per_ten_gold":
+			# Goldglut: burn 1 per 10 gold on every target (max = value).
+			var stacks := mini(battle.gold / 10, int(value))
+			if stacks <= 0:
+				return false
+			return _add_status(battle, owner, targets, BattleUnit.STATUS_BURN, stacks)
+		"attack_per_five_gold":
+			# Bezahlte Klinge: +1 attack per 5 gold (max = value).
+			var bonus := mini(battle.gold / 5, int(value))
+			if bonus <= 0:
+				return false
+			owner.attack += bonus
+			battle.emit_update(owner)
+			return true
+		"midas_scales":
+			# Waage des Midas: all allies' attack × (value + 0.1 per 10 gold).
+			var factor := value + 0.1 * (battle.gold / 10)
+			for t: BattleUnit in targets:
+				t.multipliers.append(factor)
+				battle.emit_update(t)
+			return not targets.is_empty()
+		"overflow", "glow_strike", "bloodletting":
+			return false  # auras, read directly by the simulator
 		"harvest_soul":
 			# Only the owner's own kills count; the run rolls the chance.
 			var dying: BattleUnit = context.get("dying_unit")

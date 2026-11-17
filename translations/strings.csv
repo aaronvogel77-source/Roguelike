@@ -403,3 +403,73 @@ UNIQUE_PHOENIX_FEATHER,Phönixfeder – kehrt nach dem Tod 1× mit halbem Leben 
 UNIQUE_BLOODTHIRST,Blutdurst – heilt sich um 50 % seines Schadens,Bloodthirst – heals 50 % of its damage
 UNIQUE_WARLORD,"Kriegsherr – ×1,5 Angriff",Warlord – ×1.5 attack
 UNIQUE_SOUL_HARVEST,Seelenernte – tötet er mit seinem Angriff: 15 % Chance auf +1 Seele,Soul Harvest – kills with its attack: 15 % chance for +1 soul
+FIG_MIDAS_SCALES,Waage des Midas,Scales of Midas
+FIG_ASH_FLOOD_KING,König aus Asche und Flut,King of Ash and Flood
+ABIL_MIDAS_SCALES,"Kampfbeginn: Angriff aller Verbündeten ×{v}, dazu ×0,1 pro 10 Gold.","Battle start: all allies' attack ×{v}, plus ×0.1 per 10 gold."
+ABIL_ASH_FLOOD_KING,"Stirbt ein Verbündeter: alle Gegner erhalten Brennen {v}, und er nimmt 50 % von dessen Angriff und Leben auf.","When an ally dies: all enemies gain {v} burn, and he absorbs 50 % of its attack and health."
+FUSION_PREFIX_COINS,Gold-,Gold-
+FUSION_PREFIX_WANDS,Glut-,Ember-
+FUSION_PREFIX_CUPS,Tränen-,Tear-
+FUSION_PREFIX_SWORDS,Klingen-,Blade-
+MASTER_GOLDEN_WALL,Goldene Mauer,Golden Wall
+MASTER_GOLDEN_WALL_DESC,Kampfbeginn: alle Verbündeten erhalten Schild 1 pro 5 Gold (max. 5).,Battle start: all allies gain 1 shield per 5 gold (max 5).
+MASTER_FIRE_LEAP,Feuerspringen,Fire Leap
+MASTER_FIRE_LEAP_DESC,"Stirbt ein brennender Gegner, springt sein Brennen doppelt auf den nächsten Gegner über.","When a burning enemy dies, its burn leaps doubled to the next enemy."
+MASTER_SEA_OF_TEARS,Tränenmeer,Sea of Tears
+MASTER_SEA_OF_TEARS_DESC,Der erste gefallene Verbündete pro Kampf kehrt mit vollem Leben zurück.,The first fallen ally each battle returns at full health.
+MASTER_PIERCING,Durchbohren,Impale
+MASTER_PIERCING_DESC,Angriffe durchdringen Schild und verursachen Blutung 2.,Attacks pierce shields and cause 2 bleed.
+MASTER_GOLD_EMBER,Goldglut,Gold Ember
+MASTER_GOLD_EMBER_DESC,Kampfbeginn: alle Gegner erhalten Brennen 1 pro 10 Gold (max. 3).,Battle start: all enemies gain 1 burn per 10 gold (max 3).
+MASTER_OVERFLOW,Überfluss,Overflow
+MASTER_OVERFLOW_DESC,Heilung über das volle Leben hinaus wird zu Schild.,Healing beyond full health becomes shield.
+MASTER_PAID_BLADE,Bezahlte Klinge,Paid Blade
+MASTER_PAID_BLADE_DESC,Kampfbeginn: +1 Angriff pro 5 Gold (max. +5).,Battle start: +1 attack per 5 gold (max +5).
+MASTER_STEAM_CLOUD,Dampfwolke,Steam Cloud
+MASTER_STEAM_CLOUD_DESC,Kampfbeginn: alle Gegner erhalten Fluch 1 und Brennen 1.,Battle start: all enemies gain 1 curse and 1 burn.
+MASTER_GLOW_STRIKE,Glühhieb,Glowing Strike
+MASTER_GLOW_STRIKE_DESC,"×1,5 Angriff gegen brennende Gegner.",×1.5 attack against burning enemies.
+MASTER_BLOODLETTING,Aderlass,Bloodletting
+MASTER_BLOODLETTING_DESC,"Heilt sich um den Blutungs-Schaden, den Gegner erleiden.",Heals by the bleed damage enemies take.
+TAROT_RITUAL_CANDLE,Ritualkerze,Ritual Candle
+TAROT_RITUAL_CANDLE_DESC,Eine Fusion ohne Seelen. Antippen und „Fusionieren“ wählen.,One fusion without souls. Tap it and choose “Fuse”.
+EVENT_FUSION_ALTAR,Fusions-Altar,Fusion Altar
+EVENT_FUSION_ALTAR_DESC,"Zwei Seelen, ein Körper. Der Altar verlangt seinen Preis.","Two souls, one body. The altar demands its price."
+EVENT_BLOOD_MOON,Blutmond,Blood Moon
+EVENT_BLOOD_MOON_DESC,"Der Mond färbt sich rot. Heute Nacht verschmilzt, was nicht zusammengehört.","The moon turns red. Tonight, what does not belong together fuses."
+OPT_FUSE,Fusionieren,Fuse
+OPT_BLOOD_FUSE,Doppelte Fusion,Double fusion
+OPT_BUY_CANDLE,Ritualkerze kaufen,Buy ritual candle
+OFFER_FUSE,Fusionieren,Fuse
+OFFER_FUSE_DESC,"Zwei Figuren werden eins. Kosten nach Stufe: F1 2, F2 3, F3 4 Seelen.","Two figures become one. Cost by stage: F1 2, F2 3, F3 4 souls."
+OFFER_BLOOD_FUSE,Doppelte Fusion,Double fusion
+OFFER_BLOOD_FUSE_DESC,"Zwei Fusionen hintereinander, ohne Seelen.","Two fusions in a row, without souls."
+COST_ALTAR,2 bis 4 Seelen,2 to 4 souls
+RESULT_FUSED,Die Fusion ist vollbracht.,The fusion is complete.
+UI_MARKET_CANDLE,Kerze,Candle
+UI_FUSE,Fusionieren,Fuse
+UI_FUSION_TITLE,Fusion,Fusion
+UI_FUSION_SOURCE_ALTAR,Fusions-Altar,Fusion Altar
+UI_FUSION_SOURCE_BOSS,Der Boss ist besiegt – eine Fusion ist frei,The boss is defeated – one free fusion
+UI_FUSION_SOURCE_CANDLE,Die Ritualkerze brennt – eine Fusion ist frei,The ritual candle burns – one free fusion
+UI_FUSION_SOURCE_BLOOD_MOON,Blutmond – noch %d Fusionen frei,Blood Moon – %d fusions left
+UI_FUSION_PICK_MAIN,"Tippe die Hauptfigur an. Sie behält Platz, Ausrüstung und Namen.","Tap the main figure. It keeps its slot, equipment and name."
+UI_FUSION_PICK_PARTNER,Tippe den Partner an.,Tap the partner.
+UI_FUSION_CHOOSE,"Wähle %d Fähigkeiten, die bleiben (%d gewählt).",Choose %d abilities to keep (%d chosen).
+UI_FUSION_ALL_KEPT,Alle Fähigkeiten bleiben.,All abilities are kept.
+UI_FUSION_SKIP,Nicht fusionieren,Do not fuse
+UI_FUSION_COST,Kosten: %d Seelen,Cost: %d souls
+UI_FUSION_FREE,Kostenlos,Free
+UI_FUSION_SECRET,???,???
+UI_FUSION_SECRET_HINT,Etwas Uraltes regt sich …,Something ancient stirs …
+UI_FUSION_LOST_OBJECTS,Achtung: Die Objekte des Partners gehen verloren.,Warning: the partner's objects are lost.
+UI_FUSION_MASTER,Meisterfähigkeit: %s,Master ability: %s
+UI_FUSION_STAGE,F%d,F%d
+UI_FUSION_RESET,Startet auf Stufe 1,Starts at level 1
+UI_FUSION_REASON_FINAL,Diese Figur kann nicht weiter fusioniert werden.,This figure cannot be fused any further.
+UI_FUSION_REASON_TOO_MANY,Mehr als 4 Figuren in einer Fusion gehen nicht.,A fusion cannot hold more than 4 figures.
+UI_FUSION_REASON_SOULS,Nicht genug Seelen.,Not enough souls.
+UI_FUSION_DISCOVERED,Geheimes Rezept entdeckt: %s!,Secret recipe discovered: %s!
+UI_FUSION_PARTS,Enthält: %s,Contains: %s
+UI_FUSION_CONFIRM,Fusion ist endgültig. Wirklich fusionieren?,A fusion is permanent. Fuse now?
+UI_FUSION_ABILITIES,Fähigkeiten,Abilities

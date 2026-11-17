@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "max_parts": 4,
+  "max_abilities": 3,
+  "stat_bonus": 1,
+  "altar_costs": [
+    0,
+    2,
+    3,
+    4
+  ],
+  "candle_chance": 0.05,
+  "market_candle_chance": 0.35,
+  "market_candle_price": 5,
+  "blood_moon_chance": 0.03,
+  "masters": [
+    {
+      "id": "golden_wall",
+      "suits": [
+        "coins",
+        "coins"
+      ],
+      "abilities": [
+        {
+          "trigger": "battle_start",
+          "target": "all_allies",
+          "effect": "shield_from_interest",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fire_leap",
+      "suits": [
+        "wands",
+        "wands"
+      ],
+      "abilities": [
+        {
+          "trigger": "on_enemy_death",
+          "target": "self",
+          "effect": "fire_leap",
+          "values": [
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sea_of_tears",
+      "suits": [
+        "cups",
+        "cups"
+      ],
+      "abilities": [
+        {
+          "trigger": "on_ally_death",
+          "target": "dying_unit",
+          "effect": "revive_full",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "piercing",
+      "suits": [
+        "swords",
+        "swords"
+      ],
+      "pierce": true,
+      "abilities": [
+        {
+          "trigger": "on_attack",
+          "target": "attack_target",
+          "effect": "apply_bleed",
+          "values": [
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gold_ember",
+      "suits": [
+        "coins",
+        "wands"
+      ],
+      "abilities": [
+        {
+          "trigger": "battle_start",
+          "target": "all_enemies",
+          "effect": "burn_per_ten_gold",
+          "values": [
+            3,
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overflow",
+      "suits": [
+        "coins",
+        "cups"
+      ],
+      "abilities": [
+        {
+          "trigger": "aura",
+          "target": "self",
+          "effect": "overflow",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paid_blade",
+      "suits": [
+        "coins",
+        "swords"
+      ],
+      "abilities": [
+        {
+          "trigger": "battle_start",
+          "target": "self",
+          "effect": "attack_per_five_gold",
+          "values": [
+            5,
+            5,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "steam_cloud",
+      "suits": [
+        "wands",
+        "cups"
+      ],
+      "abilities": [
+        {
+          "trigger": "battle_start",
+          "target": "all_enemies",
+          "effect": "apply_curse",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "trigger": "battle_start",
+          "target": "all_enemies",
+          "effect": "apply_burn",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "glow_strike",
+      "suits": [
+        "wands",
+        "swords"
+      ],
+      "abilities": [
+        {
+          "trigger": "aura",
+          "target": "self",
+          "effect": "glow_strike",
+          "values": [
+            1.5,
+            1.5,
+            1.5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bloodletting",
+      "suits": [
+        "cups",
+        "swords"
+      ],
+      "abilities": [
+        {
+          "trigger": "aura",
+          "target": "self",
+          "effect": "bloodletting",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  ],
+  "recipes": [
+    {
+      "parts": [
+        "king_midas",
+        "golden_scales"
+      ],
+      "result": "midas_scales"
+    },
+    {
+      "parts": [
+        "ash_king",
+        "drowned_king"
+      ],
+      "result": "ash_flood_king"
+    }
+  ]
+}

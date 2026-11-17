@@ -139,7 +139,11 @@ func _make_unit(entry: Dictionary, side: int) -> BattleUnit:
 	unit.abilities.append_array(entry.get("abilities", []))
 	if entry.has("suit"):
 		unit.suit = entry["suit"]
-	unit.pierce = bool(definition.get("pierce", false))
+		if unit.suits.is_empty() or not unit.display.has("fusion"):
+			unit.suits = [unit.suit]
+		else:
+			unit.suits[0] = unit.suit
+	unit.pierce = bool(definition.get("pierce", false)) or bool(entry.get("pierce", false))
 	return unit
 
 
@@ -148,7 +152,7 @@ func _apply_blessing(blessing: Dictionary) -> void:
 	if blessing.is_empty():
 		return
 	for unit: BattleUnit in rows[PLAYER]:
-		if unit.suit == blessing["suit"]:
+		if unit.has_suit(blessing["suit"]):
 			unit.add_status(blessing["status"], int(blessing["amount"]))
 			events.append({"type": "blessing", "uid": unit.uid, "status": blessing["status"]})
 			_emit_update(unit)
@@ -160,8 +164,8 @@ func _clash() -> void:
 	var player_front: BattleUnit = rows[PLAYER][0]
 	var enemy_front: BattleUnit = rows[ENEMY][0]
 	# Both hits are computed before either is applied: simultaneous strike.
-	var damage_to_enemy := player_front.effective_attack()
-	var damage_to_player := enemy_front.effective_attack()
+	var damage_to_enemy := _attack_damage(player_front, enemy_front)
+	var damage_to_player := _attack_damage(enemy_front, player_front)
 	events.append({"type": "clash", "player_uid": player_front.uid, "enemy_uid": enemy_front.uid})
 	var dealt_to_enemy := _deal_damage(enemy_front, damage_to_enemy, "pierce" if player_front.pierce else "attack")
 	var dealt_to_player := _deal_damage(player_front, damage_to_player, "pierce" if enemy_front.pierce else "attack")
@@ -183,6 +187,15 @@ func _clash() -> void:
 			_fire_unit_abilities(attacker, "on_attack", {"attack_target": pair[1], "damage_dealt": pair[2]})
 
 
+## Normal attack damage; "Glühhieb" (master) hits burning targets harder.
+func _attack_damage(attacker: BattleUnit, target: BattleUnit) -> int:
+	var damage := attacker.effective_attack()
+	var glow := attacker.aura("glow_strike")
+	if not glow.is_empty() and target.status(BattleUnit.STATUS_BURN) > 0:
+		damage = int(floor(damage * attacker.level_value(glow)))
+	return damage
+
+
 ## Turn start, every unit wherever it stands in the row:
 ## burn deals its stacks (× burn auras) and loses one stack;
 ## bleed deals its stacks and keeps them.
@@ -198,7 +211,12 @@ func _tick_damage_over_time() -> void:
 				_emit_update(unit)
 			var bleed := unit.status(BattleUnit.STATUS_BLEED)
 			if bleed > 0 and unit.is_alive():
-				_deal_damage(unit, bleed, "bleed")
+				var dealt := _deal_damage(unit, bleed, "bleed")
+				# "Aderlass" (master): opponents heal by the bleed damage dealt.
+				for healer: BattleUnit in living(1 - unit.side):
+					if dealt > 0 and not healer.aura("bloodletting").is_empty():
+						events.append({"type": "trigger", "uid": healer.uid, "effect": "bloodletting", "targets": [healer.uid]})
+						_heal(healer, dealt)
 
 
 func _tick_curses() -> void:
@@ -258,7 +276,15 @@ func _heal(unit: BattleUnit, amount: int) -> void:
 	if unit.side == PLAYER and player_heal_factor < 1.0:
 		amount = int(floor(amount * player_heal_factor))
 	var healed := mini(amount, unit.max_health - unit.health)
-	if healed <= 0 or not unit.is_alive():
+	if not unit.is_alive():
+		return
+	# "Überfluss" (master): healing beyond full health becomes shield.
+	var excess := amount - maxi(healed, 0)
+	if excess > 0 and not unit.aura("overflow").is_empty():
+		unit.add_status(BattleUnit.STATUS_SHIELD, excess)
+		events.append({"type": "trigger", "uid": unit.uid, "effect": "overflow", "targets": [unit.uid]})
+		_emit_update(unit)
+	if healed <= 0:
 		return
 	unit.health += healed
 	events.append({"type": "heal", "uid": unit.uid, "amount": healed})
@@ -386,7 +412,10 @@ func bonus_stacks(owner: BattleUnit, status: String) -> int:
 	if owner.side != PLAYER or not status_bonus.has(status):
 		return 0
 	var rule: Dictionary = status_bonus[status]
-	return int(rule.get("all", 0)) + int(rule.get(owner.suit, 0))
+	var extra := 0
+	for suit in owner.suits if not owner.suits.is_empty() else [owner.suit]:
+		extra = maxi(extra, int(rule.get(suit, 0)))
+	return int(rule.get("all", 0)) + extra
 
 func deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 	return _deal_damage(unit, amount, source)

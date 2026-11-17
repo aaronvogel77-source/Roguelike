@@ -70,6 +70,9 @@ var souls := 0
 var next_shop: Array = []
 ## Run-wide flags, e.g. "no_boss_rule" (fortune teller).
 var flags: Dictionary = {}
+## A fusion the player may do now: {"source": "altar|boss|candle|blood_moon",
+## "left": fusions still allowed} or {} (see fuse()).
+var fusion_offer: Dictionary = {}
 ## Current event: {"id", "used": [options], "resolved", "result", ...offers} or {}.
 var event: Dictionary = {}
 var fights_since_event := 0
@@ -137,7 +140,24 @@ func can_add_object(figure: Dictionary, kind: String) -> bool:
 
 ## Tarot suit of a figure (the Wheel of Fortune can change it).
 func figure_suit(figure: Dictionary) -> String:
+	if figure.has("fusion") and not figure.has("suit"):
+		return figure["fusion"]["suits"][0]
 	return figure.get("suit", db.figures[figure["def_id"]]["suit"])
+
+
+## Every suit a figure counts as (a fusion: all contained suits).
+func figure_suits(figure: Dictionary) -> Array:
+	if not figure.has("fusion"):
+		return [figure_suit(figure)]
+	var suits: Array = figure["fusion"]["suits"].duplicate()
+	suits[0] = figure_suit(figure)
+	return suits
+
+
+## Duplicates can merge only into plain figures below the maximum level.
+func can_merge_into(target: Dictionary, def_id: String) -> bool:
+	return target["def_id"] == def_id and not target.has("fusion") and not target.has("recipe_parts") \
+		and figure_level(target) < 3
 
 
 func price_of(def_id: String) -> int:
@@ -145,8 +165,13 @@ func price_of(def_id: String) -> int:
 
 
 ## Half the rank price (rounded down) plus 1 per level above 1.
+## Fusions and recipe figures: the sum over all contained figures.
 func sell_value(figure: Dictionary) -> int:
-	return price_of(figure["def_id"]) / 2 + figure_level(figure) - 1
+	var parts: Array = figure["fusion"]["parts"] if figure.has("fusion") else figure.get("recipe_parts", [figure["def_id"]])
+	var total := 0
+	for part in parts:
+		total += price_of(part) / 2
+	return total + figure_level(figure) - 1
 
 
 func interest_cap() -> int:
@@ -171,7 +196,7 @@ func can_place(def_id: String, row_index: int) -> bool:
 		return false
 	var target: Variant = row[row_index]
 	# Merging is only possible below the maximum level.
-	return target == null or (target["def_id"] == def_id and figure_level(target) < 3)
+	return target == null or can_merge_into(target, def_id)
 
 
 ## Battle entries for the simulator, front first, with all run modifiers.
@@ -233,7 +258,8 @@ func move(from_index: int, to_index: int) -> bool:
 	if row[from_index] == null:
 		return false
 	var target: Variant = row[to_index]
-	if target != null and target["def_id"] == row[from_index]["def_id"] and figure_level(target) < 3:
+	var moving_plain: bool = not row[from_index].has("fusion") and not row[from_index].has("recipe_parts")
+	if target != null and moving_plain and can_merge_into(target, row[from_index]["def_id"]):
 		var combined := int(target["xp"]) + int(row[from_index]["xp"]) + XP_PER_DUPLICATE
 		target["xp"] = mini(combined, XP_FOR_LEVEL[2])
 		row[from_index] = null
@@ -387,6 +413,10 @@ func _roll_event() -> bool:
 	if stream.randf() >= float(rules["chance"]) and fights_since_event < int(rules["pity_after"]):
 		return false
 	fights_since_event = 0
+	# The secret Blood Moon replaces an event now and then.
+	if stream.randf() < float(db.fusion["blood_moon_chance"]):
+		start_event("blood_moon")
+		return true
 	var ids: Array = rules["ids"]
 	start_event(ids[stream.randi_range(0, ids.size() - 1)])
 	return true
@@ -405,6 +435,8 @@ func start_event(id: String) -> void:
 			event["pack_type"] = types[stream.randi_range(0, types.size() - 1)]
 			var royals := _figure_ids_of_rank("queen") + _figure_ids_of_rank("king")
 			event["figure"] = royals[stream.randi_range(0, royals.size() - 1)]
+			# Sometimes the trader also carries a ritual candle.
+			event["candle"] = stream.randf() < float(db.fusion["market_candle_chance"]) or flags.get("force_candle", false)
 		"duel":
 			var budget := int(round(EnemyGenerator.budget(act, 1, 2) * 1.2))
 			event["team"] = EnemyGenerator.generate(db, budget, rng.stream("enemy_gen"), "")
@@ -427,6 +459,17 @@ func event_option_block(option: String, targets: Array = []) -> String:
 			return "" if gold >= 4 and relics.size() < MAX_RELICS and event.get("relic", "") != "" else "cost"
 		"buy_pack":
 			return "" if gold >= 6 else "cost"
+		"buy_candle":
+			if not event.get("candle", false):
+				return "done"
+			return "" if gold >= int(db.fusion["market_candle_price"]) and tarots.size() < MAX_TAROTS else "cost"
+		"fuse", "blood_fuse":
+			var figures_in_row := row.filter(func(f: Variant) -> bool: return f != null).size()
+			if figures_in_row < 2:
+				return "cost"
+			if option == "fuse" and souls < int(db.fusion["altar_costs"][1]):
+				return "cost"
+			return ""
 		"buy_figure":
 			if gold < price_of(event["figure"]) / 2:
 				return "cost"
@@ -438,6 +481,8 @@ func event_option_block(option: String, targets: Array = []) -> String:
 		"duplicate":
 			if souls < 2 or not row.has(null):
 				return "cost"
+			if figures.size() == 1 and (row[figures[0]].has("fusion") or row[figures[0]].has("recipe_parts")):
+				return "target"  # fusions cannot be mirrored
 			return "" if figures.size() == 1 else "target"
 		"soul_to_gold":
 			return "" if souls >= 1 else "cost"
@@ -475,6 +520,17 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 			gold -= 6
 			_open({"type": event["pack_type"], "size": "mega"}, false)
 			final = false
+		"buy_candle":
+			gold -= int(db.fusion["market_candle_price"])
+			tarots.append("ritual_candle")
+			final = false
+		"fuse":
+			# The altar's fusion screen; the event ends once a fusion is done.
+			fusion_offer = {"source": "altar", "left": 1, "total": 1}
+			return true
+		"blood_fuse":
+			fusion_offer = {"source": "blood_moon", "left": 2, "total": 2}
+			return true
 		"buy_figure":
 			gold -= price_of(event["figure"]) / 2
 			_place(event["figure"], targets[0])
@@ -544,7 +600,7 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 			return false
 	if final:
 		event["resolved"] = true
-	elif option in ["buy_relic", "buy_pack", "buy_figure"]:
+	elif option in ["buy_relic", "buy_pack", "buy_figure", "buy_candle"]:
 		event["used"].append(option)  # each offer can be bought once
 	return true
 
@@ -711,6 +767,85 @@ func use_tarot(tarot_index: int, row_index: int) -> bool:
 	return true
 
 
+# --- Fusion ---------------------------------------------------------------------
+
+## Why a fusion is not possible right now ("" = possible).
+func fusion_block(main_index: int, partner_index: int) -> String:
+	if fusion_offer.is_empty():
+		return "no_offer"
+	var preview := Fusion.preview(self, main_index, partner_index)
+	if preview["reason"] != "":
+		return preview["reason"]
+	if fusion_offer["source"] == "altar" and souls < int(preview["cost"]):
+		return "souls"
+	return ""
+
+
+## Fuses the partner into the main figure. keep: def ids of the abilities to
+## keep (exactly preview["keep"] of the candidates; ignored for recipes).
+## The fusion takes the main figure's slot, objects and position; the
+## partner's objects are lost. Level restarts at 1.
+func fuse(main_index: int, partner_index: int, keep: Array = []) -> bool:
+	if fusion_block(main_index, partner_index) != "":
+		return false
+	var preview := Fusion.preview(self, main_index, partner_index)
+	var main: Dictionary = row[main_index]
+	var result: Dictionary
+	if preview["recipe"] != "":
+		result = _new_figure(preview["recipe"])
+		result["recipe_parts"] = [main["def_id"], row[partner_index]["def_id"]]
+	else:
+		var candidates: Array = preview["candidates"].duplicate()
+		var kept: Array = []
+		if candidates.size() <= int(preview["keep"]):
+			kept = candidates
+		else:
+			for id in keep:
+				if id in candidates:
+					candidates.erase(id)  # each candidate can be picked once
+					kept.append(id)
+			if kept.size() != int(preview["keep"]):
+				return false
+		result = _new_figure(main["def_id"])
+		result["fusion"] = {"parts": preview["parts"], "suits": preview["suits"], "abilities": kept,
+			"attack": preview["attack"], "health": preview["health"]}
+	for key in ["equipment", "blessing", "bonus_attack", "bonus_health", "strength", "cursed"]:
+		if main.has(key):
+			result[key] = main[key]
+	if fusion_offer["source"] == "altar":
+		souls -= int(preview["cost"])
+	row[main_index] = result
+	row[partner_index] = null
+	flags["fusions"] = int(flags.get("fusions", 0)) + 1
+	fusion_offer["left"] = int(fusion_offer["left"]) - 1
+	if int(fusion_offer["left"]) <= 0:
+		_finish_fusion(true)
+	return true
+
+
+## Ends the current fusion offer without (further) fusing.
+func decline_fusion() -> void:
+	_finish_fusion(int(fusion_offer.get("left", 0)) < int(fusion_offer.get("total", 0)))
+
+
+func _finish_fusion(used: bool) -> void:
+	var source: String = fusion_offer.get("source", "")
+	fusion_offer = {}
+	if source == "candle" and used:
+		tarots.erase("ritual_candle")
+	if source in ["altar", "blood_moon"] and used and not event.is_empty():
+		event["resolved"] = true
+		event["result"] = "fused"
+
+
+## The ritual candle: one free fusion, used up once a fusion is done.
+func start_candle_fusion() -> bool:
+	if stage != Stage.PLANNING or not "ritual_candle" in tarots or not fusion_offer.is_empty():
+		return false
+	fusion_offer = {"source": "candle", "left": 1, "total": 1}
+	return true
+
+
 ## Rule of the chosen boss ("" for normal fights).
 func boss_rule() -> String:
 	return chosen_enemy.get("rule", "")
@@ -762,6 +897,9 @@ func apply_battle_result(result: Dictionary) -> Stage:
 		if slot_count() < MAX_SLOTS:
 			row.append(null)
 			last_income["slot"] = true
+		# After every act boss: one free fusion (can be skipped).
+		if row.filter(func(f: Variant) -> bool: return f != null).size() >= 2:
+			fusion_offer = {"source": "boss", "left": 1, "total": 1}
 	fight += 1
 	if fight >= FIGHTS_PER_ACT:
 		fight = 0
@@ -797,7 +935,7 @@ func skip_reward() -> bool:
 ## Row slot a reward would go to, or -1 if there is no room.
 func reward_target(def_id: String) -> int:
 	for i in row.size():
-		if row[i] != null and row[i]["def_id"] == def_id and figure_level(row[i]) < 3:
+		if row[i] != null and can_merge_into(row[i], def_id):
 			return i
 	for i in row.size():
 		if row[i] == null:
@@ -899,6 +1037,7 @@ func to_dict() -> Dictionary:
 		"reroll_count": reroll_count, "enemy_options": enemy_options.duplicate(true),
 		"chosen_enemy": chosen_enemy.duplicate(true), "rewards": rewards.duplicate(),
 		"next_uid": next_uid, "battles_won": battles_won, "last_income": last_income.duplicate(),
+		"fusion_offer": fusion_offer.duplicate(true),
 	}
 
 
@@ -930,4 +1069,5 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.next_uid = int(data["next_uid"])
 	run.battles_won = int(data["battles_won"])
 	run.last_income = data["last_income"].duplicate()
+	run.fusion_offer = data.get("fusion_offer", {}).duplicate(true)
 	return run

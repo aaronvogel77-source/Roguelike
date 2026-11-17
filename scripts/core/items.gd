@@ -158,6 +158,10 @@ static func pack_contents(db: ContentDb, pack: Dictionary, act: int, rng: Random
 					var legends := db.legendary_figures()
 					result.append({"kind": "figure", "def_id": legends[rng.randi_range(0, legends.size() - 1)]["id"]})
 					continue
+				# Rarely a ritual candle (one free fusion) instead of a tarot card.
+				if rng.randf() < float(db.fusion.get("candle_chance", 0.0)):
+					result.append({"kind": "tarot", "id": "ritual_candle"})
+					continue
 				if cards.is_empty():
 					cards = db.items["tarot"].duplicate()
 				var index := rng.randi_range(0, cards.size() - 1)

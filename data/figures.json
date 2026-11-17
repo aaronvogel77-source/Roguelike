@@ -20,6 +20,8 @@
     {"id": "ace_of_coins", "suit": "coins", "rank": "legend", "attack": 4, "health": 10, "pack_only": true, "ability": {"trigger": "battle_start", "target": "all_allies", "effect": "shield_from_interest", "values": [2, 2, 2]}},
     {"id": "ace_of_wands", "suit": "wands", "rank": "legend", "attack": 7, "health": 7, "pack_only": true, "ability": {"trigger": "on_attack", "target": "all_enemies", "effect": "apply_burn", "values": [1, 1, 1]}},
     {"id": "ace_of_cups", "suit": "cups", "rank": "legend", "attack": 4, "health": 12, "pack_only": true, "ability": {"trigger": "on_ally_death", "target": "dying_unit", "effect": "revive_half", "values": [1, 1, 1]}},
-    {"id": "ace_of_swords", "suit": "swords", "rank": "legend", "attack": 7, "health": 7, "pack_only": true, "pierce": true, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "double_bleed", "values": [2, 2, 2]}}
+    {"id": "ace_of_swords", "suit": "swords", "rank": "legend", "attack": 7, "health": 7, "pack_only": true, "pierce": true, "ability": {"trigger": "on_attack", "target": "attack_target", "effect": "double_bleed", "values": [2, 2, 2]}},
+    {"id": "midas_scales", "suit": "coins", "rank": "legend", "recipe": true, "attack": 6, "health": 9, "ability": {"trigger": "battle_start", "target": "all_allies", "effect": "midas_scales", "values": [1.2, 1.2, 1.2], "late": true}},
+    {"id": "ash_flood_king", "suit": "wands", "rank": "legend", "recipe": true, "attack": 8, "health": 11, "ability": {"trigger": "on_ally_death", "target": "all_enemies", "effect": "apply_burn", "values": [2, 2, 2]}, "extra_abilities": [{"trigger": "on_ally_death", "target": "self", "effect": "absorb", "values": [0.5, 0.5, 0.5]}]}
   ]
 }

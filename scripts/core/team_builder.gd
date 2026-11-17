@@ -52,17 +52,22 @@ static func _apply_pacts(run: RunState, team: Array) -> void:
 
 
 static func _figure_entry(run: RunState, figure: Dictionary) -> Dictionary:
+	var fused := figure.has("fusion")
 	var entry := {
-		"def": run.db.figures[figure["def_id"]],
+		"def": Fusion.definition(run.db, figure) if fused else run.db.figures[figure["def_id"]],
 		"level": run.figure_level(figure),
 		"bonus_attack": int(figure.get("bonus_attack", 0)),
 		"bonus_health": int(figure.get("bonus_health", 0)),
 		"multipliers": [],
 		"abilities": [],
 		"suit": run.figure_suit(figure),
+		"suits": run.figure_suits(figure),
 		# What is modifying this figure (shown as marks on its card).
 		"sources": [],
 	}
+	if fused:
+		entry["abilities"].append_array(Fusion.abilities(run.db, figure))
+		entry["pierce"] = Fusion.pierces(run.db, figure)
 	if int(figure.get("bonus_attack", 0)) != 0 or int(figure.get("bonus_health", 0)) != 0:
 		entry["sources"].append("tarot_strength")
 	if figure.has("equipment"):
@@ -89,11 +94,11 @@ static func _apply_relics(run: RunState, team: Array) -> void:
 			var affected := true
 			match relic:
 				"war_chest":
-					affected = entry["suit"] == "coins"
+					affected = "coins" in entry["suits"]
 					if affected:
 						entry["bonus_attack"] += 1
 				"blood_chalice":
-					affected = entry["suit"] == "cups"
+					affected = "cups" in entry["suits"]
 					if affected:
 						entry["abilities"].append(_ability("turn_start", "self", "heal", 1))
 				"vanguard_banner":
@@ -108,7 +113,7 @@ static func _apply_relics(run: RunState, team: Array) -> void:
 				"eternal_ember":
 					affected = _applies(entry, "apply_burn")
 				"whetstone":
-					affected = entry["suit"] == "swords" and _applies(entry, "apply_bleed")
+					affected = "swords" in entry["suits"] and _applies(entry, "apply_bleed")
 				_:
 					affected = false
 			if affected:
