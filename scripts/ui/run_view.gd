@@ -387,14 +387,6 @@ func _resource_chip(kind: String, value: String, color: Color, explanation: Stri
 	return row
 
 
-## Region, blessing and (for bosses) the rule, for the region symbol.
-func _info_text() -> String:
-	var text := tr("REGION_" + _run.region.to_upper()) + ": " + tr("BLESSING_" + _run.region.to_upper())
-	if _rule_text() != "":
-		text += "\n" + _rule_text()
-	return text
-
-
 ## The shop counter: figure offers and packs as two framed shelves, the
 ## actions (fight, enemy, reroll, undo) as a column at the right end.
 func _shop_counter() -> Control:
@@ -681,14 +673,6 @@ func _url_flag(flag: String) -> bool:
 	return str(JavaScriptBridge.eval("window.location.search", true)).contains(flag + "=1")
 
 
-## Region blessing, plus the boss rule when the chosen enemy is a boss.
-func _info_line() -> Control:
-	var text := tr("REGION_" + _run.region.to_upper()) + " · " + tr("BLESSING_" + _run.region.to_upper())
-	if _rule_text() != "":
-		text += "   ·   " + _rule_text()
-	return _rich_line(text, 17)
-
-
 func _boss_name() -> String:
 	var boss_id: String = _run.chosen_enemy.get("boss_id", "")
 	return tr("BOSS_" + boss_id.to_upper()) if boss_id != "" else ""
@@ -827,10 +811,8 @@ func _url_seed() -> int:
 func _build_enemy_choice() -> void:
 	var column := _column()
 	column.add_child(_top_bar(_stage_title()))
-	column.add_child(_info_line())
-	var title := _label(tr("UI_CHOOSE_ENEMY"), 24, Palette.PARCHMENT)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	column.add_child(title)
+	if _rule_text() != "":  # a boss rule matters for the choice
+		column.add_child(_rich_line(_rule_text(), 17))
 
 	var options := HBoxContainer.new()
 	options.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -848,10 +830,13 @@ func _build_enemy_choice() -> void:
 	var own := HBoxContainer.new()
 	own.alignment = BoxContainer.ALIGNMENT_CENTER
 	own.add_theme_constant_override("separation", 16)
-	own.add_child(_label(tr("UI_YOUR_TEAM"), 20, Palette.MUTED))
-	own.add_child(_scaled(_own_team_row(), 0.62))
+	var own_stage := _elegant_panel(0.5)
+	own_stage.add_child(_scaled(_own_team_row(), 0.85))
+	own.add_child(own_stage)
 	column.add_child(own)
-	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0, 8)
+	column.add_child(gap)
 
 
 ## Skip the fight for the mark shown here (no gold, no experience).
@@ -1403,49 +1388,6 @@ func _confirm(title_text: String, text: String, ok_text: String, on_ok: Callable
 	overlay.add_child(center)
 
 
-## Win chance from a test battle (the simulator is deterministic): a win with
-## plenty of health left is "high", a close win "close", a loss "low".
-func _win_chance() -> String:
-	var team := _run.player_battle_team()
-	if team.is_empty() or _run.chosen_enemy.is_empty():
-		return ""
-	var result := BattleSimulator.simulate(team, _run.enemy_battle_team(), _run.gold, _run.battle_options())
-	var start := 0
-	var left := {}
-	for e in result["events"]:
-		if e["type"] == "start":
-			for u in e["player"]:
-				start += int(u["health"])
-				left[u["uid"]] = int(u["health"])
-		elif e["type"] == "update" and left.has(e["unit"]["uid"]):
-			left[e["unit"]["uid"]] = maxi(int(e["unit"]["health"]), 0)
-		elif e["type"] == "removed" and left.has(e["uid"]):
-			left[e["uid"]] = 0
-	var remaining := 0
-	for uid in left:
-		remaining += left[uid]
-	if not result["victory"]:
-		return "low"
-	return "high" if remaining * 2 >= start else "close"
-
-
-func _chance_badge() -> Control:
-	var chance := _win_chance()
-	if chance == "":
-		return Control.new()
-	var colors := {"high": Color(0.4, 0.9, 0.45), "close": Color(1.0, 0.8, 0.3), "low": Color(0.95, 0.35, 0.3)}
-	var box := VBoxContainer.new()
-	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_theme_constant_override("separation", 0)
-	var title := _label(tr("UI_CHANCE"), 13, Palette.MUTED)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(title)
-	var value := _label(tr("UI_CHANCE_" + chance.to_upper()), 20, colors[chance])
-	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(value)
-	return box
-
-
 func _start_fight() -> void:
 	_undo.clear()
 	Sound.music("boss" if _run.is_boss_fight() else "battle")
@@ -1473,26 +1415,6 @@ func _on_battle_finished(result: Dictionary) -> void:
 
 var _strip_cards: Array[ObjectCard] = []
 var _pack_pick := -1  # pack item waiting for a target figure/slot
-
-
-## Relic slots (3) and tarot slots (2) under the info line.
-func _object_strip() -> Control:
-	_strip_cards.clear()
-	var strip := HBoxContainer.new()
-	strip.alignment = BoxContainer.ALIGNMENT_CENTER
-	strip.add_theme_constant_override("separation", 10)
-	strip.add_child(_label(tr("UI_RELICS"), 18, Emblem.COLORS["relic"]))
-	for i in RunState.MAX_RELICS:
-		strip.add_child(_strip_slot("relic", i, _run.relics[i] if i < _run.relics.size() else ""))
-	strip.add_child(_spacer(30))
-	strip.add_child(_label(tr("UI_TAROTS"), 18, Emblem.COLORS["tarot"]))
-	for i in RunState.MAX_TAROTS:
-		strip.add_child(_strip_slot("tarot", i, _run.tarots[i] if i < _run.tarots.size() else ""))
-	strip.add_child(_spacer(30))
-	strip.add_child(_label(tr("UI_PACTS"), 18, Emblem.COLORS["pact"]))
-	for i in RunState.MAX_PACTS:
-		strip.add_child(_strip_slot("pact", i, _run.pacts[i] if i < _run.pacts.size() else ""))
-	return strip
 
 
 func _strip_slot(kind: String, index: int, id: String, side: float = 52.0) -> Control:
@@ -2023,8 +1945,7 @@ func _build_event() -> void:
 	_screen.add_child(backdrop)
 	var column := _column()
 	column.add_child(_top_bar(tr("EVENT_" + id.to_upper())))
-	column.add_child(_object_strip())
-	var desc := _label(tr("EVENT_" + id.to_upper() + "_DESC"), 24, Palette.PARCHMENT)
+	var desc := _label(tr("EVENT_" + id.to_upper() + "_DESC"), 20, Palette.MUTED)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 	column.add_child(desc)
@@ -2048,7 +1969,7 @@ func _build_event() -> void:
 	# Scene and own row share the height; both scale to fit (the row gets big
 	# enough to pick figures comfortably).
 	var scene_holder := _fitted(options, 1.0)
-	scene_holder.size_flags_stretch_ratio = 1.35
+	scene_holder.size_flags_stretch_ratio = 2.2
 	column.add_child(scene_holder)
 
 	if _event_option != "":
@@ -2061,19 +1982,32 @@ func _build_event() -> void:
 		var hint := _label(hint_text, 20, Palette.GOLD)
 		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(hint)
+	# Bottom: your team on a stage, the items as the small bar beside it.
 	var row_box := HBoxContainer.new()
 	row_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	row_box.add_theme_constant_override("separation", 16)
-	row_box.add_child(_own_row_slots())
-	_sell_zone = SellZone.new()
-	_sell_zone.tapped.connect(_on_sell_zone_tapped)
-	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
-	row_box.add_child(_sell_zone)
-	column.add_child(_fitted(row_box, 1.6))
+	row_box.add_theme_constant_override("separation", 24)
+	var stage := _elegant_panel(0.55)
+	stage.add_child(_own_row_slots())
+	row_box.add_child(stage)
+	var items := _item_shelf()
+	items.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row_box.add_child(items)
+	column.add_child(_fitted(row_box, 1.3))
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0, 8)
+	column.add_child(gap)
 	for slot in _row_slots:
 		if slot.index in _event_targets:
 			slot.set_selected(true)
-	column.add_child(_label(_footer_text(), 16, Palette.MUTED))
+	# The sell field only appears while one of your figures is dragged.
+	_sell_zone = SellZone.new()
+	_sell_zone.custom_minimum_size = Vector2(300, 110)
+	_sell_zone.set_auto_hide(true)
+	_sell_zone.tapped.connect(_on_sell_zone_tapped)
+	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
+	_screen.add_child(_sell_zone)
+	_sell_zone.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_KEEP_SIZE)
+	_sell_zone.position += Vector2(-24, 70)
 
 
 ## Look of each event scene: panel colors and the big emblem on the left.
@@ -2128,10 +2062,10 @@ func _event_scene(id: String) -> Control:
 		champion.add_child(_scaled(cards, 0.75))
 		row.add_child(champion)
 	else:
-		var emblem := Emblem.create(look["emblem"], 130)
+		var emblem := Emblem.create(look["emblem"], 90)
 		emblem.color = look["border"]
 		var holder := CenterContainer.new()
-		holder.custom_minimum_size = Vector2(170, 0)
+		holder.custom_minimum_size = Vector2(110, 0)
 		holder.add_child(emblem)
 		row.add_child(holder)
 	for entry in EVENT_OPTIONS[id]:
@@ -2253,7 +2187,8 @@ func _market_coat() -> Control:
 	var figure_visual := _scaled(_with_rarity(figure_card, def_id), 1.3)
 	if not "buy_figure" in event["used"]:
 		_make_draggable(figure_visual, {"kind": "market_figure"}, def_id)
-	compartments.add_child(_compartment(tr("UI_MARKET_FIGURES"), figure_visual, tr("UI_PRICE") % (_run.price_of(def_id) / 2), "buy_figure"))
+	# Room above the card for the rarity label ("Rare!").
+	compartments.add_child(_compartment(tr("UI_MARKET_FIGURES"), _with_margin(figure_visual, 0, 30), tr("UI_PRICE") % (_run.price_of(def_id) / 2), "buy_figure"))
 	return coat
 
 
@@ -2270,7 +2205,7 @@ func _compartment(title: String, visual: Control, cost_text: String, option: Str
 	panel.add_theme_stylebox_override("panel", style)
 	var market := option in ["buy_relic", "buy_pack", "buy_figure", "buy_candle"]
 	if not market:
-		panel.custom_minimum_size = Vector2(260, 0)
+		panel.custom_minimum_size = Vector2(320, 0)
 	var box := VBoxContainer.new()
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_theme_constant_override("separation", 8)
@@ -2286,7 +2221,7 @@ func _compartment(title: String, visual: Control, cost_text: String, option: Str
 		text.bbcode_enabled = true
 		text.fit_content = true
 		text.scroll_active = false
-		text.custom_minimum_size = Vector2(240, 0)
+		text.custom_minimum_size = Vector2(300, 0)
 		text.add_theme_font_size_override("normal_font_size", 19)
 		text.add_theme_color_override("default_color", Palette.PARCHMENT)
 		text.mouse_filter = Control.MOUSE_FILTER_IGNORE

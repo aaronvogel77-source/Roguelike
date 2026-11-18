@@ -792,3 +792,12 @@ UI_LEDGER_SLOT,Neuer Platz,New place
 UI_LEDGER_LOOT,Beutepack,Loot pack
 UI_LEDGER_TOTAL,Gesamt,Total
 UI_DRAG_INTO_TEAM,Ins Team ziehen,Drag into your team
+UI_PAUSE,Pause,Pause
+UI_RESUME,Weiter,Resume
+UI_STEP,Nächster Zug,Next turn
+UI_DEFEAT_SHORT,Niederlage,Defeat
+UI_DRAW_SHORT,Gleichstand,Draw
+UI_SUM_DEALT,Schaden,Damage
+UI_SUM_TAKEN,Eingesteckt,Taken
+UI_SUM_BLOCKED,Geblockt,Blocked
+UI_SUM_HEALED,Geheilt,Healed

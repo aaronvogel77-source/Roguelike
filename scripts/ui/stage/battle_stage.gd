@@ -158,6 +158,10 @@ func actor(uid: int) -> FigureActor:
 	return _actors.get(uid)
 
 
+func uids() -> Array:
+	return _actors.keys()
+
+
 ## Screen position (canvas coordinates) of a point in the stage.
 func to_screen(point: Vector2) -> Vector2:
 	var scale := minf(_display.size.x / VIEW.x, _display.size.y / VIEW.y)

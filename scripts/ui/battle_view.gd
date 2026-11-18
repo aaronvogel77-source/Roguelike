@@ -42,11 +42,27 @@ var _start_button: Button
 var _new_button: Button
 var _speed_buttons: Array[Button] = []
 var _fx_layer: Control
+## Large status icons (shield, burn, bleed, curse) above each figure.
+var _status_layer: Control
+var _status_boxes: Dictionary = {}  # uid -> HBoxContainer
+## Pause and step-by-step: a step plays until the next turn begins.
+var _paused := false
+var _step_requested := false
+var _stepping := false
+var _pause_button: Button
+var _step_button: Button
+## Battle statistics for the summary: uid -> {dealt, taken, healed, blocked}.
+var _stats: Dictionary = {}
+var _names: Dictionary = {}  # uid -> [name, is_enemy]
+var _clash_pair: Array = []  # [player_uid, enemy_uid] of the current exchange
+var _last_trigger := -1
+var _summary: Control
 
 
 func _ready() -> void:
 	TranslationServer.set_locale("de")
 	theme = UiTheme.build()
+	FigureActor.draw_status_icons = false  # this screen shows them big
 	_db = ContentDb.load_default()
 	_build_layout()
 	if sandbox:
@@ -134,6 +150,11 @@ func _build_layout() -> void:
 
 	root.add_child(_build_bottom_bar())
 
+	_status_layer = Control.new()
+	_status_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_status_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_status_layer)
+
 	_fx_layer = Control.new()
 	_fx_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_fx_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -147,43 +168,73 @@ func _build_layout() -> void:
 	add_child(_detail_panel)
 
 
+## Minimal top bar: the turn (and short notes) in the middle; pause, step,
+## speed and skip at the right.
 func _build_top_bar() -> Control:
+	var holder := Control.new()
+	holder.custom_minimum_size = Vector2(0, 72)
 	var bar := HBoxContainer.new()
-	bar.custom_minimum_size = Vector2(0, 72)
-	bar.add_theme_constant_override("separation", 12)
-
-	var margin := Control.new()
-	margin.custom_minimum_size = Vector2(16, 0)
-	bar.add_child(margin)
-
-	_turn_label = _make_label("", 28, Palette.GOLD)
-	_turn_label.custom_minimum_size = Vector2(140, 0)
-	bar.add_child(_turn_label)
-
-	_gold_label = _make_label("", 24, Palette.GOLD)
-	_gold_label.custom_minimum_size = Vector2(140, 0)
-	bar.add_child(_gold_label)
-
-	_banner = _make_label("", 30, Palette.PARCHMENT)
-	_banner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bar.add_child(_banner)
-
+	bar.add_theme_constant_override("separation", 10)
+	holder.add_child(bar)
+	bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var fill := Control.new()
+	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bar.add_child(fill)
+	_pause_button = _make_button(tr("UI_PAUSE"), Vector2(120, 56))
+	_pause_button.pressed.connect(_toggle_pause)
+	bar.add_child(_pause_button)
+	_step_button = _make_button(tr("UI_STEP"), Vector2(150, 56))
+	_step_button.pressed.connect(func() -> void: _step_requested = true)
+	_step_button.disabled = true
+	bar.add_child(_step_button)
 	for speed in SPEEDS:
-		var button := _make_button("%d×" % int(speed), Vector2(72, 56))
+		var button := _make_button("%d×" % int(speed), Vector2(64, 56))
 		button.toggle_mode = true
 		button.pressed.connect(_set_speed.bind(speed, true))
 		_speed_buttons.append(button)
 		bar.add_child(button)
 	var skip := _make_button(tr("UI_SKIP_BATTLE"), Vector2(150, 56))
-	skip.pressed.connect(func() -> void: _skipping = true)
+	skip.pressed.connect(func() -> void:
+		_skipping = true
+		_set_paused(false))
 	bar.add_child(skip)
 	_set_speed(_load_speed())
-
 	var margin_right := Control.new()
 	margin_right.custom_minimum_size = Vector2(16, 0)
 	bar.add_child(margin_right)
-	return bar
+
+	# Turn counter and notes (decay, result) exactly in the middle.
+	var center := VBoxContainer.new()
+	center.alignment = BoxContainer.ALIGNMENT_CENTER
+	center.add_theme_constant_override("separation", 0)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_turn_label = _make_label("", 30, Palette.GOLD)
+	_turn_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center.add_child(_turn_label)
+	_banner = _make_label("", 20, Palette.PARCHMENT)
+	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center.add_child(_banner)
+	holder.add_child(center)
+	center.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	center.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	center.position.y = 6
+	# Gold is not shown in the bar; its changes float in under the turn.
+	_gold_label = _make_label("", 1, Palette.GOLD)
+	_gold_label.visible = false
+	holder.add_child(_gold_label)
+	return holder
+
+
+func _toggle_pause() -> void:
+	_set_paused(not _paused)
+
+
+func _set_paused(paused: bool) -> void:
+	_paused = paused
+	_stepping = false
+	_step_requested = false
+	_pause_button.text = tr("UI_RESUME") if paused else tr("UI_PAUSE")
+	_step_button.disabled = not paused
 
 
 func _build_bottom_bar() -> Control:
@@ -207,6 +258,7 @@ func _build_bottom_bar() -> Control:
 	var balance := Control.new()
 	balance.custom_minimum_size = Vector2(200, 0)
 	bar.add_child(balance)
+	bar.visible = sandbox  # the run shows the summary with its own button
 	return bar
 
 
@@ -281,8 +333,24 @@ func _on_unit_tapped(unit: FigureActor) -> void:
 
 func _show_start_state(start_event: Dictionary) -> void:
 	_skipping = false
+	_set_paused(false)
+	_pause_button.disabled = false
 	_specials_shown.clear()
 	_stage.setup(start_event, _db)
+	if is_instance_valid(_summary):
+		_summary.queue_free()
+	_stats.clear()
+	_names.clear()
+	_clash_pair = []
+	_last_trigger = -1
+	for box in _status_boxes.values():
+		box.queue_free()
+	_status_boxes.clear()
+	for uid in _stage.uids():
+		var unit := _stage.actor(uid)
+		_names[uid] = [ContentDb.display_name(unit.definition), unit.is_enemy]
+		_stats[uid] = {"dealt": 0, "taken": 0, "healed": 0, "blocked": 0}
+		_refresh_status(uid)
 
 
 ## Web only: "?seed=123" in the address replays that battle (for bug reports).
@@ -340,6 +408,18 @@ func _play_events(token: int) -> void:
 		if token != _playback_token:
 			return
 		var event: Dictionary = events[i]
+		# Pause: wait here; a step plays on until the next turn begins.
+		if _stepping and event["type"] == "turn":
+			_stepping = false
+		while _paused and not _stepping and not _skipping:
+			if _step_requested:
+				_step_requested = false
+				_stepping = true
+				break
+			await get_tree().process_frame
+			if token != _playback_token:
+				return
+		_count(event)
 		var next_type: String = events[i + 1]["type"] if i + 1 < events.size() else ""
 		match event["type"]:
 			"turn":
@@ -358,23 +438,24 @@ func _play_events(token: int) -> void:
 				var unit := _stage.actor(event["unit"]["uid"])
 				if unit != null:
 					unit.apply_snapshot(event["unit"])
+					_refresh_status(event["unit"]["uid"])
 			"clash":
 				Sound.play("hit" if randf() < 0.6 else "punch", -3.0)
 				await _animate_clash(event)
 			"shielded":
 				Sound.play("shield", -6.0)
-				_float_on(event["uid"], "-%d %s" % [event["amount"], tr("STATUS_SHIELD")], Emblem.COLORS["shield"])
+				_float_on(event["uid"], "-%d %s" % [event["amount"], tr("STATUS_SHIELD")], Emblem.COLORS["shield"], 32)
 			"damage":
 				_show_damage(event)
 				if next_type not in ["damage", "update", "shielded"]:
 					await _wait(0.25)
 			"heal":
 				Sound.play("heal", -8.0)
-				_float_on(event["uid"], "+%d" % event["amount"], Palette.SUIT_COLORS["coins"])
+				_float_on(event["uid"], "+%d" % event["amount"], Palette.SUIT_COLORS["coins"], 40)
 			"gold":
 				Sound.play("coins", -6.0)
 				_set_gold(event["gold"])
-				_float_number("%+d Gold" % event["delta"], _gold_label.global_position + Vector2(40, 30), Palette.GOLD)
+				_float_number("%+d Gold" % event["delta"], _turn_label.global_position + Vector2(_turn_label.size.x / 2 - 30, 70), Palette.GOLD, 30)
 			"decay":
 				_banner.text = tr("UI_DECAY") % event["amount"]
 			"dying":
@@ -389,8 +470,7 @@ func _play_events(token: int) -> void:
 			"end":
 				_skipping = false
 				_show_result(event)
-				if not sandbox:
-					_new_button.show()
+				_show_summary(event)
 		i += 1
 
 
@@ -519,7 +599,7 @@ func _show_damage(event: Dictionary) -> void:
 	var color: Color = Palette.DAMAGE_FLASH
 	if event["source"] in ["burn", "bleed"]:
 		color = Emblem.COLORS[event["source"]]
-	_float_number("-%d" % event["amount"], _stage.screen_center(event["uid"]), color)
+	_float_number("-%d" % event["amount"], _stage.screen_center(event["uid"]), color, 50)
 
 
 func _animate_dying(event: Dictionary) -> void:
@@ -543,20 +623,27 @@ func _animate_removed(event: Dictionary) -> void:
 	await _stage.remove(event["uid"], _stage_speed())
 
 
-func _float_on(uid: int, text: String, color: Color) -> void:
+func _float_on(uid: int, text: String, color: Color, font_size := 28) -> void:
 	if _stage.actor(uid) != null and not _skipping:
-		_float_number(text, _stage.screen_top(uid), color)
+		_float_number(text, _stage.screen_top(uid), color, font_size)
 
 
-func _float_number(text: String, at: Vector2, color: Color) -> void:
-	var label := _make_label(text, 26, color)
-	label.position = at - Vector2(20, 40)
+## A number that pops up (grows, settles), rises and fades.
+func _float_number(text: String, at: Vector2, color: Color, font_size := 28) -> void:
+	var label := _make_label(text, font_size, color)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 6)
+	label.add_theme_constant_override("outline_size", maxi(6, font_size / 5))
 	_fx_layer.add_child(label)
+	label.reset_size()
+	label.pivot_offset = label.size / 2
+	label.position = at - Vector2(label.size.x / 2, label.size.y)
+	label.scale = Vector2(0.4, 0.4)
+	var pop := create_tween()
+	pop.tween_property(label, "scale", Vector2(1.2, 1.2), 0.12 / _speed)
+	pop.tween_property(label, "scale", Vector2.ONE, 0.1 / _speed)
 	var tween := create_tween().set_parallel(true)
-	tween.tween_property(label, "position:y", label.position.y - 50, 0.7 / _speed)
-	tween.tween_property(label, "modulate:a", 0.0, 0.7 / _speed).set_delay(0.2 / _speed)
+	tween.tween_property(label, "position:y", label.position.y - 56, 0.9 / _speed)
+	tween.tween_property(label, "modulate:a", 0.0, 0.5 / _speed).set_delay(0.45 / _speed)
 	tween.chain().tween_callback(label.queue_free)
 
 
@@ -583,3 +670,157 @@ func _wait(seconds: float) -> void:
 		await get_tree().process_frame
 		return
 	await get_tree().create_timer(seconds / _speed).timeout
+
+
+
+# --- Status icons -----------------------------------------------------------------
+
+const STATUS_KINDS := ["shield", "burn", "bleed", "curse"]
+
+
+## Rebuilds the status row of a figure from its latest snapshot.
+func _refresh_status(uid: int) -> void:
+	var unit := _stage.actor(uid)
+	if unit == null:
+		return
+	var box: HBoxContainer = _status_boxes.get(uid)
+	if box == null:
+		box = HBoxContainer.new()
+		box.add_theme_constant_override("separation", 6)
+		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_status_layer.add_child(box)
+		_status_boxes[uid] = box
+	for child in box.get_children():
+		child.queue_free()
+	var statuses: Dictionary = unit.snapshot.get("statuses", {})
+	for kind in STATUS_KINDS:
+		var amount := int(statuses.get(kind, 0))
+		if amount <= 0:
+			continue
+		var chip := HBoxContainer.new()
+		chip.add_theme_constant_override("separation", 1)
+		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var emblem := Emblem.create(kind, 34)
+		emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_child(emblem)
+		var number := _make_label(str(amount), 28, Color.WHITE)
+		number.add_theme_color_override("font_outline_color", Color.BLACK)
+		number.add_theme_constant_override("outline_size", 6)
+		chip.add_child(number)
+		box.add_child(chip)
+	box.reset_size()
+
+
+func _process(_delta: float) -> void:
+	# The status rows follow their figures (which run, jump and die).
+	for uid in _status_boxes:
+		var box: HBoxContainer = _status_boxes[uid]
+		var unit := _stage.actor(uid)
+		var shown := unit != null and not unit.dead and box.get_child_count() > 0
+		box.visible = shown
+		if shown:
+			box.reset_size()
+			box.position = _stage.screen_top(uid) - Vector2(box.size.x / 2, box.size.y + 10)
+
+
+# --- Summary ----------------------------------------------------------------------
+
+## Collects who dealt, took, blocked and healed how much.
+func _count(event: Dictionary) -> void:
+	match String(event["type"]):
+		"turn":
+			_clash_pair = []
+			_last_trigger = -1
+		"clash":
+			_clash_pair = [event["player_uid"], event["enemy_uid"]]
+		"trigger":
+			_last_trigger = int(event["uid"])
+		"damage":
+			var uid := int(event["uid"])
+			_add_stat(uid, "taken", int(event["amount"]))
+			var dealer := -1
+			if event["source"] in ["attack", "pierce"] and _clash_pair.size() == 2:
+				dealer = _clash_pair[1] if uid == _clash_pair[0] else _clash_pair[0]
+			elif not event["source"] in ["burn", "bleed", "decay"]:
+				dealer = _last_trigger
+			if dealer >= 0 and dealer != uid:
+				_add_stat(dealer, "dealt", int(event["amount"]))
+		"shielded":
+			_add_stat(int(event["uid"]), "blocked", int(event["amount"]))
+		"heal":
+			_add_stat(int(event["uid"]), "healed", int(event["amount"]))
+
+
+func _add_stat(uid: int, key: String, amount: int) -> void:
+	if _stats.has(uid):
+		_stats[uid][key] += amount
+
+
+## End of the battle: the result and a small table for your figures.
+func _show_summary(event: Dictionary) -> void:
+	if is_instance_valid(_summary):
+		_summary.queue_free()
+	_banner.text = ""  # the summary names the result
+	_pause_button.disabled = true
+	_step_button.disabled = true
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.55)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+	_summary = overlay
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.03, 0.06, 0.95)
+	style.border_color = Color(Palette.GOLD, 0.6)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(14)
+	style.set_content_margin_all(18)
+	panel.add_theme_stylebox_override("panel", style)
+	center.add_child(panel)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 12)
+	panel.add_child(column)
+	var outcome: int = event["outcome"]
+	var title_text := tr("UI_VICTORY") if outcome == BattleSimulator.Outcome.WIN else (tr("UI_DEFEAT_SHORT") if outcome == BattleSimulator.Outcome.LOSS else tr("UI_DRAW_SHORT"))
+	var title := _make_label(title_text, 40, Palette.GOLD if outcome != BattleSimulator.Outcome.LOSS else Palette.HEALTH)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+	var grid := GridContainer.new()
+	grid.columns = 5
+	grid.add_theme_constant_override("h_separation", 22)
+	grid.add_theme_constant_override("v_separation", 6)
+	column.add_child(grid)
+	grid.add_child(_make_label("", 18, Palette.MUTED))
+	for header in [["sword", "UI_SUM_DEALT"], ["heart", "UI_SUM_TAKEN"], ["shield", "UI_SUM_BLOCKED"], ["heart", "UI_SUM_HEALED"]]:
+		var head := _make_label(tr(header[1]), 18, Palette.MUTED)
+		head.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		grid.add_child(head)
+	var best_uid := -1
+	var uids := _stats.keys()
+	uids.sort()
+	for uid in uids:
+		if _names[uid][1]:
+			continue  # only your own figures
+		if best_uid < 0 or _stats[uid]["dealt"] > _stats[best_uid]["dealt"]:
+			best_uid = uid
+	for uid in uids:
+		if _names[uid][1]:
+			continue
+		var stats: Dictionary = _stats[uid]
+		var name_label := _make_label(_names[uid][0], 20,
+			Palette.GOLD if uid == best_uid else Palette.PARCHMENT)
+		grid.add_child(name_label)
+		for entry in [["dealt", Palette.DAMAGE_FLASH], ["taken", Palette.PARCHMENT], ["blocked", Emblem.COLORS["shield"]], ["healed", Palette.SUIT_COLORS["coins"]]]:
+			var value := int(stats[entry[0]])
+			var cell := _make_label(str(value) if value > 0 else "–", 22, entry[1] if value > 0 else Palette.MUTED)
+			cell.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			grid.add_child(cell)
+	var button := _make_button(tr("UI_CONTINUE") if not sandbox else tr("UI_NEW_BATTLE"), Vector2(260, 64))
+	button.pressed.connect(_on_new_button)
+	var button_center := CenterContainer.new()
+	button_center.add_child(button)
+	column.add_child(button_center)

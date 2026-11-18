@@ -535,8 +535,14 @@ func _draw_stats(attack: int, health: int, attack_up := false, health_up := fals
 	_draw_number(health, Vector2(x + 4, 7), Color("ffe84a") if health_up else Color("8ef09a"))
 
 
+## The battle screen draws statuses as large icons itself; then the pixel ones are off.
+static var draw_status_icons := true
+
+
 ## Status icons with their stack count above the head.
 func _draw_statuses(statuses: Dictionary, h: float) -> void:
+	if not draw_status_icons:
+		return
 	var entries: Array = []
 	for kind in ["shield", "burn", "bleed", "curse"]:
 		if int(statuses.get(kind, 0)) > 0:

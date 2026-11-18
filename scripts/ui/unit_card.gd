@@ -382,60 +382,6 @@ static func identity_kinds(unit_definition: Dictionary, enemy: bool, suit: Strin
 	return ["rank_" + rank, "suit_" + suit]
 
 
-## Ability badge top right: effect symbol + value at the current level
-## (fusions: their first kept ability). Auras and abilities without a number
-## show just the symbol.
-func _add_ability_badge(unit_definition: Dictionary, level: int) -> void:
-	var ability: Dictionary = unit_definition.get("ability", {})
-	var fusion: Dictionary = unit_definition.get("fusion", {})
-	if ability.is_empty() and not fusion.get("abilities", []).is_empty():
-		var first: String = fusion["abilities"][0]
-		var source: Dictionary = ContentDb.load_default().figures.get(first, {})
-		ability = source.get("ability", {})
-		level = maxi(level, int(fusion.get("ability_levels", {}).get(first, 1)))
-	if ability.is_empty():
-		return
-	var values: Array = ability.get("values", [])
-	var value := float(values[mini(level, values.size()) - 1]) if not values.is_empty() else 0.0
-	var effect := String(ability["effect"])
-	var pill := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.03, 0.06, 0.85)
-	style.border_color = Color(1, 1, 1, 0.35)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(9)
-	style.content_margin_left = 3
-	style.content_margin_right = 4
-	pill.add_theme_stylebox_override("panel", style)
-	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 1)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pill.add_child(row)
-	var kind := Emblem.kind_for_effect(effect)
-	var emblem := Emblem.create(kind, 18)
-	emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(emblem)
-	var shown := NumberFormat.ability_value(effect, value)
-	if shown not in ["0", "1"] or kind in ["burn", "bleed", "shield", "heart", "curse"]:
-		var number := Label.new()
-		number.text = ("×" if effect.begins_with("mult") or effect in ["midas_scales", "burn_mult"] else "") + shown \
-			+ ("%" if effect in ["lifesteal", "absorb"] else "")
-		number.add_theme_font_size_override("font_size", 13)
-		number.add_theme_color_override("font_color", Emblem.COLORS.get(kind, Color.WHITE).lightened(0.3))
-		number.add_theme_color_override("font_outline_color", Color.BLACK)
-		number.add_theme_constant_override("outline_size", 3)
-		number.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		row.add_child(number)
-	# body is a container (it would stretch the pill over the whole card): a free layer.
-	var layer := Control.new()
-	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body.add_child(layer)
-	layer.add_child(pill)
-	pill.reset_size()
-	pill.position = Vector2(card_size.x - pill.get_combined_minimum_size().x - 5, 6)
-
-
 func _seal_label(at: Vector2) -> Label:
 	var label := Label.new()
 	label.position = at
