@@ -385,6 +385,9 @@ func _fire_unit_abilities(unit: BattleUnit, trigger: String, context: Dictionary
 			continue
 		if trigger == "battle_start" and bool(ability.get("late", false)) != late_only:
 			continue
+		# "every": N fires on turn 1, 1+N, 1+2N ... only.
+		if trigger == "turn_start" and int(ability.get("every", 1)) > 1 and (turn - 1) % int(ability["every"]) != 0:
+			continue
 		_execute(unit, ability, context)
 
 

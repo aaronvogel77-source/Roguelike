@@ -957,6 +957,19 @@ func use_tarot(tarot_index: int, row_index: int) -> bool:
 
 # --- Fusion ---------------------------------------------------------------------
 
+## Every further fusion step at one occasion (after the free ones) costs souls.
+const CHAIN_SOULS := 2
+
+
+## Souls the next fusion step costs at the current occasion: the altar asks
+## its stage price every time; elsewhere the offered steps are free, each
+## further chained step costs CHAIN_SOULS.
+func fusion_cost(preview: Dictionary) -> int:
+	if fusion_offer.get("source", "") == "altar":
+		return int(preview.get("cost", 0))
+	return 0 if int(fusion_offer.get("left", 0)) > 0 else CHAIN_SOULS
+
+
 ## Why a fusion is not possible right now ("" = possible).
 func fusion_block(main_index: int, partner_index: int) -> String:
 	if fusion_offer.is_empty():
@@ -964,9 +977,18 @@ func fusion_block(main_index: int, partner_index: int) -> String:
 	var preview := Fusion.preview(self, main_index, partner_index)
 	if preview["reason"] != "":
 		return preview["reason"]
-	if fusion_offer["source"] == "altar" and souls < int(preview["cost"]):
+	if souls < fusion_cost(preview):
 		return "souls"
 	return ""
+
+
+## Whether any pair in the row could still be fused (ignoring the price).
+func any_fusion_possible() -> bool:
+	for a in row.size():
+		for b in row.size():
+			if a != b and row[a] != null and row[b] != null and Fusion.preview(self, a, b)["reason"] == "":
+				return true
+	return false
 
 
 ## Fuses the partner into the main figure. keep: def ids of the abilities to
@@ -1005,20 +1027,22 @@ func fuse(main_index: int, partner_index: int, keep: Array = []) -> bool:
 	for key in ["equipment", "blessing", "bonus_attack", "bonus_health", "strength", "cursed"]:
 		if main.has(key):
 			result[key] = main[key]
-	if fusion_offer["source"] == "altar":
-		souls -= int(preview["cost"])
+	souls -= fusion_cost(preview)
 	row[main_index] = result
 	row[partner_index] = null
 	flags["fusions"] = int(flags.get("fusions", 0)) + 1
-	fusion_offer["left"] = int(fusion_offer["left"]) - 1
-	if int(fusion_offer["left"]) <= 0:
+	# Fusions chain: the occasion stays open (the player ends it), unless
+	# nothing more can be fused.
+	fusion_offer["left"] = maxi(int(fusion_offer["left"]) - 1, 0)
+	fusion_offer["done"] = int(fusion_offer.get("done", 0)) + 1
+	if not any_fusion_possible():
 		_finish_fusion(true)
 	return true
 
 
 ## Ends the current fusion offer without (further) fusing.
 func decline_fusion() -> void:
-	_finish_fusion(int(fusion_offer.get("left", 0)) < int(fusion_offer.get("total", 0)))
+	_finish_fusion(int(fusion_offer.get("done", 0)) > 0)
 
 
 func _finish_fusion(used: bool) -> void:
@@ -1033,7 +1057,9 @@ func _finish_fusion(used: bool) -> void:
 
 ## The ritual candle: one free fusion, used up once a fusion is done.
 func start_candle_fusion() -> bool:
-	if stage != Stage.PLANNING or not "ritual_candle" in tarots or not fusion_offer.is_empty():
+	# Also on the event screen (bought at the black market, it can be used right away).
+	if stage not in [Stage.PLANNING, Stage.EVENT] or not "ritual_candle" in tarots \
+			or not fusion_offer.is_empty() or not open_pack.is_empty():
 		return false
 	fusion_offer = {"source": "candle", "left": 1, "total": 1}
 	return true

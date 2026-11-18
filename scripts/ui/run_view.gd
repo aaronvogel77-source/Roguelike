@@ -126,6 +126,15 @@ const HINT_ORDER := ["choice", "boss", "shop", "fight", "pack", "suit", "souls",
 
 
 func _show_hints() -> void:
+	# First the phase card, then the note (both at once would be too much).
+	var wait := _title_card_until - Time.get_ticks_msec()
+	if wait > 0 or (is_instance_valid(_region_intro) and _region_intro.is_inside_tree()):
+		if not _hint_retry_pending:
+			_hint_retry_pending = true
+			get_tree().create_timer(maxf(wait, 300) / 1000.0).timeout.connect(func() -> void:
+				_hint_retry_pending = false
+				_show_hints())
+		return
 	if _run == null or _battle_view != null or not _run.fusion_offer.is_empty() or not _run.treasure.is_empty() \
 			or not _run.open_pack.is_empty():
 		return
@@ -165,6 +174,10 @@ func _show_region_intro() -> void:
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(overlay)
+	_region_intro = overlay
+	# The phase card of the first fight comes after entering the region.
+	_last_title_key = ""
+	overlay.tree_exited.connect(_show_title_card, CONNECT_ONE_SHOT | CONNECT_DEFERRED)
 	var column := VBoxContainer.new()
 	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -226,6 +239,7 @@ func _show_stage() -> void:
 				_build_pack_overlay()
 		RunState.Stage.WON, RunState.Stage.LOST:
 			_build_run_end()
+	_show_title_card()
 	_show_hints.call_deferred()
 	# A fusion offer (altar, boss, candle, blood moon) lies over every screen.
 	if not _run.fusion_offer.is_empty() and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
@@ -240,6 +254,91 @@ func _show_stage() -> void:
 			_undo.clear()
 			_show_stage())
 		_screen.add_child(treasury)
+
+
+## The phase last announced with a title card (each phase gets one, once).
+var _last_title_key := ""
+## The region intro while it is open (the title card waits for it).
+var _region_intro: Control
+## Until when (ticks msec) the phase card is on screen; notes wait for it.
+var _title_card_until := 0
+var _hint_retry_pending := false
+
+
+## A short card (about a second) when a new fight or an event begins:
+## "Akt 1 · Kampf 2 von 3", "Boss", the event's name. Taps go through.
+func _show_title_card() -> void:
+	var key := ""
+	var title := ""
+	var subtitle := ""
+	var color := Palette.GOLD
+	var emblem := "star"
+	match _run.stage:
+		RunState.Stage.ENEMY_CHOICE:
+			key = "fight:%d:%d" % [_run.act, _run.fight]
+			title = tr("UI_TITLE_ACT_FIGHT") % [_run.act, _run.fight + 1, RunState.FIGHTS_PER_ACT]
+			subtitle = tr(STAGE_NAMES[_run.fight])
+			emblem = "sword"
+			if _run.is_boss_fight():
+				title = tr("UI_TITLE_BOSS")
+				subtitle = tr("UI_TITLE_ACT") % _run.act
+				color = Palette.DANGER
+				emblem = "skull"
+		RunState.Stage.EVENT:
+			key = "event:%d:%d:%s" % [_run.act, _run.fight, _run.event.get("id", "")]
+			title = tr("EVENT_" + String(_run.event.get("id", "")).to_upper())
+			subtitle = tr("UI_TITLE_DANGER") if _run.is_negative_event() else tr("UI_TITLE_EVENT")
+			color = Palette.DANGER if _run.is_negative_event() else Palette.MYSTIC
+			emblem = "curse" if _run.is_negative_event() else "tarot"
+	if key == "" or key == _last_title_key:
+		return
+	if is_instance_valid(_region_intro) and _region_intro.is_inside_tree():
+		return  # shown once the player has entered the region
+	_last_title_key = key
+	_title_card_until = Time.get_ticks_msec() + 1450
+	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.top_level = true
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.03, 0.06, 0.95)
+	style.border_color = color
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(16)
+	style.set_content_margin_all(26)
+	style.shadow_color = Color(color, 0.35)
+	style.shadow_size = 24
+	panel.add_theme_stylebox_override("panel", style)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 22)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(row)
+	var symbol := Emblem.create(emblem, 72)
+	symbol.color = color
+	symbol.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	symbol.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(symbol)
+	var texts := VBoxContainer.new()
+	texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.set_meta("text_fixed", true)
+	var big := _label(title, 48, color)
+	big.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.add_child(big)
+	var small := _label(subtitle, 24, Palette.PARCHMENT)
+	small.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.add_child(small)
+	row.add_child(texts)
+	add_child(panel)
+	panel.reset_size()
+	panel.position = (get_viewport_rect().size - panel.size) / 2
+	panel.pivot_offset = panel.size / 2
+	panel.scale = Vector2(0.9, 0.9)
+	panel.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(panel, "modulate:a", 1.0, 0.18)
+	tween.parallel().tween_property(panel, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.9)
+	tween.tween_property(panel, "modulate:a", 0.0, 0.3)
+	tween.tween_callback(panel.queue_free)
 
 
 func _on_fusion_finished(title: String, text: String) -> void:
@@ -1512,12 +1611,13 @@ func _on_strip_tapped(kind: String, index: int, card: ObjectCard) -> void:
 		return
 	# The ritual candle opens the fusion screen right away.
 	if kind == "tarot" and _run.tarots[index] == "ritual_candle" and _run.start_candle_fusion():
+		_event_targets.clear()  # row indices change with the fusion
 		_show_stage()
 		return
 	_selected = {"kind": kind, "index": index}
 	card.set_selected(true)
 	_detail_panel.show_object(card)
-	if kind == "tarot":
+	if kind == "tarot" and _run.stage == RunState.Stage.PLANNING:  # tarot cards work in the shop only
 		_detail_panel.show_hint(tr("UI_USE_TAROT") % card.title)
 	elif kind == "relic" and _sell_zone != null:
 		_sell_zone.show_text(tr("UI_SELL_FOR") % (Items.relic_price(_db, _run.relics[index]) / 2), true)

@@ -16,6 +16,16 @@ const TRIGGER := Color(0.95, 0.78, 0.35)
 const ENEMY_BORDER := Color(0.55, 0.2, 0.22)
 const DAMAGE_FLASH := Color(1.0, 0.35, 0.35)
 
+## Fixed color meanings: one color per meaning on every screen.
+## Gold = money, prices, buying · red = danger, fight, loss, selling ·
+## blue = souls and shields · green = healing, level-up, merging ·
+## violet = tarot, curse, events, fusion.
+const MONEY := GOLD
+const DANGER := Color(0.9, 0.25, 0.28)
+const SPIRIT := Color(0.6, 0.85, 1.0)
+const GROWTH := Color(0.35, 0.85, 0.45)
+const MYSTIC := Color(0.78, 0.6, 0.98)
+
 const SUIT_COLORS := {
 	"coins": Color(0.45, 0.78, 0.4),
 	"wands": Color(0.95, 0.45, 0.2),

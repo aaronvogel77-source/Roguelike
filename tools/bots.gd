@@ -651,5 +651,5 @@ func _handle_fusion() -> void:
 	var keep: Array = preview.get("candidates", []).slice(0, int(preview.get("keep", 2)))
 	if run.fuse(best_pair[0], best_pair[1], keep):
 		log["fusions"] += 1
-	else:
-		run.decline_fusion()
+	if not run.fusion_offer.is_empty():
+		run.decline_fusion()  # bots take one step per occasion

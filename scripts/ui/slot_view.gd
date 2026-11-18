@@ -26,8 +26,10 @@ var _hover_zone := ""  # "", "left", "right", "center" while a drag hovers
 ## Set by the run screen: (drag data, slot index) -> "merge", "free", "swap", "no" or "".
 var drop_check: Callable
 var _drop_state := ""
-const DROP_COLORS := {"merge": Color(1.0, 0.84, 0.3), "free": Color(0.45, 0.9, 1.0),
-	"swap": Color(0.85, 0.85, 0.95), "no": Color(0.95, 0.25, 0.25)}
+## Fixed color meanings (Palette): green = merge/level-up, white = place or
+## swap, red = not possible.
+const DROP_COLORS := {"merge": Palette.GROWTH, "free": Color(0.92, 0.9, 0.86),
+	"swap": Color(0.85, 0.85, 0.95), "no": Palette.DANGER}
 
 
 func _init(slot_kind: String, slot_index: int) -> void:
@@ -157,11 +159,11 @@ func _draw() -> void:
 			# Below the card while merging (the dragged card covers the middle).
 			var at := Vector2((size.x - width) / 2, size.y + 34.0 if merging else size.y / 2 + font_size / 2.0)
 			if merging:
-				draw_rect(Rect2(at + Vector2(-10, -font_size - 4), Vector2(width + 20, font_size + 14)), Color(0.25, 0.15, 0.02, 0.85))
+				draw_rect(Rect2(at + Vector2(-10, -font_size - 4), Vector2(width + 20, font_size + 14)), Color(0.04, 0.18, 0.08, 0.9))
 			draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(color, 0.95))
 		queue_redraw()  # keeps the pulse going while dragging
 	# Edges: a glowing line where the figure will be placed beside this one.
-	var line := Color(0.55, 0.95, 1.0)
+	var line := Color(0.95, 0.93, 0.88)  # placing: neutral white
 	match _hover_zone:
 		"left":
 			draw_rect(Rect2(-14, -10, 14, size.y + 20), Color(line, 0.25))

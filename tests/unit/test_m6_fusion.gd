@@ -52,7 +52,7 @@ func test_more_than_two_abilities_need_a_choice() -> void:
 	run.fusion_offer = {"source": "blood_moon", "left": 2, "total": 2}
 	assert_true(run.fuse(0, 1))
 	assert_true(run.fuse(2, 3))
-	assert_true(run.fusion_offer.is_empty())
+	assert_eq(int(run.fusion_offer["left"]), 0, "both free steps used; the occasion stays open for chaining")
 	var preview := Fusion.preview(run, 0, 2)
 	assert_eq(preview["candidates"].size(), 4)
 	assert_eq(preview["keep"], 2)
@@ -281,3 +281,65 @@ func test_kept_abilities_keep_their_figures_level() -> void:
 	var unit := BattleSimulator.preview_unit(entry, BattleSimulator.PLAYER)
 	var burn: Dictionary = unit.abilities.filter(func(a: Dictionary) -> bool: return a["effect"] == "apply_burn" and a.get("level", 0) == 3)[0]
 	assert_eq(unit.level_value(burn), 3.0, "burn at level 3")
+
+
+func test_fusions_chain_at_one_occasion() -> void:
+	var run := _run_with([_fig("spark_bearer"), _fig("executioner"), _fig("coin_squire"), _fig("altar_server")])
+	run.souls = 3
+	assert_true(run.fuse(0, 1), "first step is free")
+	assert_false(run.fusion_offer.is_empty(), "the occasion stays open")
+	assert_eq(run.souls, 3)
+	assert_true(run.fuse(0, 2, ["spark_bearer", "coin_squire"]), "second step costs souls")
+	assert_eq(run.souls, 3 - RunState.CHAIN_SOULS)
+	assert_eq(Fusion.stage_of(run.row[0]), 2)
+	assert_eq(run.fusion_block(0, 3), "souls", "not enough souls for a third step")
+	run.souls = 2
+	assert_true(run.fuse(0, 3, ["spark_bearer", "altar_server"]))
+	assert_eq(Fusion.stage_of(run.row[0]), 3, "F3 reached at one occasion")
+	assert_true(run.fusion_offer.is_empty(), "nothing left to fuse: the occasion ends")
+
+
+func test_altar_charges_every_chained_step() -> void:
+	var run := _run_with([_fig("spark_bearer"), _fig("executioner"), _fig("coin_squire")], "altar")
+	run.souls = 10
+	assert_true(run.fuse(0, 1))
+	var costs: Array = _db.fusion["altar_costs"]
+	assert_eq(run.souls, 10 - int(costs[1]))
+	assert_true(run.fuse(0, 2, ["spark_bearer", "coin_squire"]))
+	assert_eq(run.souls, 10 - int(costs[1]) - int(costs[2]))
+
+
+func test_coin_thrower_throws_every_second_turn() -> void:
+	var thrower: Dictionary = _db.enemies["coin_thrower"]
+	assert_eq(int(thrower["ability"].get("every", 1)), 2)
+	var big: Dictionary = _db.figures["coin_squire"].duplicate(true)
+	big["health"] = 60
+	var player := [{"def": big, "level": 1}, {"def": big, "level": 1}]
+	var result := BattleSimulator.simulate(player, [{"def": {"id": "dummy_front", "attack": 0, "health": 60}, "level": 1}, {"def": thrower, "level": 1}], 0)
+	var turns := []
+	var turn := 0
+	for event in result["events"]:
+		if event["type"] == "turn":
+			turn = event["turn"]
+		elif event["type"] == "trigger" and event["effect"] == "damage":
+			turns.append(turn)
+	assert_true(turns.size() >= 2, "it throws more than once in a long battle")
+	for t in turns:
+		assert_eq((t - 1) % 2, 0, "only on turns 1, 3, 5 ...")
+
+
+func test_candle_works_right_after_buying_it_at_the_black_market() -> void:
+	var run := RunState.new_run(_db, 7)
+	run.row = [_fig("spark_bearer"), _fig("executioner"), null]
+	run.gold = 30
+	run.flags["force_candle"] = true
+	run.start_event("black_market")
+	assert_true(run.resolve_event("buy_candle"))
+	assert_eq(run.tarots, ["ritual_candle"])
+	assert_true(run.start_candle_fusion(), "usable on the event screen")
+	assert_true(run.fuse(0, 1))
+	assert_true(run.tarots.is_empty(), "the candle is used up")
+	assert_false(run.event.get("resolved", false), "the market stays open")
+	run.tarots = ["ritual_candle"]
+	run.open_pack = {"items": [{"kind": "tarot", "id": "fool"}]}
+	assert_false(run.start_candle_fusion(), "not while a pack is open")

@@ -7,16 +7,47 @@ static var _regex: RegEx
 static var _colors: Dictionary = {}
 
 
-static func colorize(text: String) -> String:
+## Words shown as a small symbol instead of text (the info window explains
+## each symbol on tap). Triggers stay words.
+const ICON_WORDS := {
+	"Schildpunkt": "shield", "Schilde": "shield", "Schild": "shield", "shields": "shield", "shield": "shield",
+	"Brennen": "burn", "burn": "burn", "Blutung": "bleed", "bleed": "bleed", "Fluch": "curse", "curse": "curse",
+	"Angriffs": "attack", "Angriff": "attack", "attack": "attack", "Leben": "health", "health": "health",
+	"Gold": "gold", "gold": "gold",
+}
+const ICON_PATH := "res://assets/icons/keywords/%s.png"
+
+
+static func colorize(text: String, icons := true, size := -1) -> String:
 	_ensure_built()
 	var result := ""
 	var last := 0
 	for match in _regex.search_all(text):
 		result += text.substr(last, match.get_start() - last)
 		var word := match.get_string()
-		result += "[color=#%s]%s[/color]" % [_color_for(word).to_html(false), word]
+		if icons and ICON_WORDS.has(word):
+			result += icon(ICON_WORDS[word], size)
+		else:
+			result += "[color=#%s]%s[/color]" % [_color_for(word).to_html(false), word]
 		last = match.get_end()
 	return result + text.substr(last)
+
+
+## BBCode of one inline symbol.
+static func icon(kind: String, size := -1) -> String:
+	var side := int(round(20 * UiText.scale)) if size < 0 else size
+	return "[img=%dx%d]%s[/img]" % [side, side, ICON_PATH % kind]
+
+
+## The symbol kinds a text would show, in order of first appearance.
+static func icon_kinds(text: String) -> Array:
+	_ensure_built()
+	var kinds: Array = []
+	for match in _regex.search_all(text):
+		var kind: String = ICON_WORDS.get(match.get_string(), "")
+		if kind != "" and not kind in kinds:
+			kinds.append(kind)
+	return kinds
 
 
 static func _color_for(word: String) -> Color:

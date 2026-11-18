@@ -142,7 +142,7 @@ func _build(db: ContentDb, card_size: Vector2, compact: bool) -> void:
 		text.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 		text.add_theme_constant_override("outline_size", 3)
 	text.add_theme_color_override("default_color", Palette.PARCHMENT)
-	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return _highlight_label(Keywords.colorize(l)))) + "[/center]"
+	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return _highlight_label(Keywords.colorize(l, true, 15)))) + "[/center]"
 	column.add_child(text)
 	if unique:
 		_add_unique_shine(card_size)
@@ -256,6 +256,6 @@ func _build_tarot(card_size: Vector2, margin: int) -> void:
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text.add_theme_font_size_override("normal_font_size", 12 if h < 240 else 13)
 	text.add_theme_color_override("default_color", Color("f6f0e2"))
-	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return Keywords.colorize(l))) + "[/center]"
+	text.text = "[center]" + "\n".join(lines.map(func(l: String) -> String: return Keywords.colorize(l, true, 15))) + "[/center]"
 	place.call(text, CardArt.TAROT_TEXT[0] + 0.01, CardArt.TAROT_TEXT[1] - 0.005, 18.0)
 

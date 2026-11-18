@@ -62,12 +62,16 @@ func _rebuild() -> void:
 	if _confirm:
 		fuse.add_theme_color_override("font_color", Palette.GOLD)
 	buttons.add_child(fuse)
-	buttons.add_child(_button(tr("UI_FUSION_SKIP"), Vector2(260, 60), _on_skip))
+	# After a fusion the occasion stays open for further steps; this ends it.
+	var done := int(_run.fusion_offer.get("done", 0)) > 0
+	buttons.add_child(_button(tr("UI_FUSION_DONE") if done else tr("UI_FUSION_SKIP"), Vector2(260, 60), _on_skip))
 	column.add_child(buttons)
 
 
 func _source_text() -> String:
 	var source: String = _run.fusion_offer.get("source", "")
+	if int(_run.fusion_offer.get("done", 0)) > 0:  # chaining: next step
+		return tr("UI_FUSION_CHAIN")
 	if source == "blood_moon":
 		var left := int(_run.fusion_offer.get("left", 1))
 		return tr("UI_FUSION_SOURCE_BLOOD_MOON_ONE") if left == 1 else tr("UI_FUSION_SOURCE_BLOOD_MOON") % left
@@ -163,8 +167,8 @@ func _preview_box(preview: Dictionary) -> Control:
 		if preview["master"] != "":
 			var master_key := "MASTER_" + String(preview["master"]).to_upper()
 			info.add_child(_rich(tr("UI_FUSION_MASTER") % ("[b]%s[/b]" % tr(master_key)) + "\n" + tr(master_key + "_DESC"), 17, 300))
-	var source: String = _run.fusion_offer.get("source", "")
-	info.add_child(_label(tr("UI_FUSION_COST") % int(preview["cost"]) if source == "altar" else tr("UI_FUSION_FREE"), 19, Palette.GOLD))
+	var cost := _run.fusion_cost(preview)
+	info.add_child(_label(tr("UI_FUSION_COST") % cost if cost > 0 else tr("UI_FUSION_FREE"), 19, Palette.GOLD))
 	var partner: Dictionary = _run.row[_partner]
 	if partner.has("equipment") or partner.has("blessing") or int(partner.get("strength", 0)) > 0:
 		info.add_child(_rich("[color=#%s]%s[/color]" % [Palette.HEALTH.to_html(false), tr("UI_FUSION_LOST_OBJECTS")], 16, 300))

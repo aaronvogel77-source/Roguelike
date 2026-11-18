@@ -54,7 +54,7 @@ ABIL_DEBT_COLLECTOR,"Kampfbeginn: +{v} Angriff je 10 Gold, die du besitzt.",Batt
 ABIL_THE_CHANGER,Kampfbeginn: tauscht Angriff und Leben deiner vordersten Figur.,Battle start: swaps attack and health of your front figure.
 ABIL_GREEDMAW,Treffer: frisst den Schild des Ziels und heilt sich darum.,Hit: eats the target's shield and heals by it.
 ABIL_VAULT_WARDEN,Kampfbeginn: Schild {v}. Wenn getroffen: Schild +1.,Battle start: {v} shield. When hit: +1 shield.
-ABIL_COIN_THROWER,Zugbeginn: {v} Schaden an deine hinterste Figur.,Turn start: {v} damage to your rearmost figure.
+ABIL_COIN_THROWER,Jeden 2. Zug: {v} Schaden an deine hinterste Figur.,Every 2nd turn: {v} damage to your rearmost figure.
 ABIL_GREEDY_DRAGON,Wenn eine deiner Figuren stirbt: +{v}/+{v}.,When one of your figures dies: +{v}/+{v}.
 ABIL_MIRROR_COIN,Kampfbeginn: Kopiert die Fähigkeit deiner vordersten Figur.,Battle start: copies the ability of your front figure.
 STATUS_SHIELD,Schild,Shield
@@ -267,7 +267,7 @@ PACT_GOLDEN_OATH,Goldener Schwur,Golden Oath
 PACT_GOLDEN_OATH_DESC,Zinsen bis +10. Gold-Effekte zählen doppeltes Gold.,Interest up to +10. Gold effects count double gold.
 PACT_GOLDEN_OATH_COST,Neuwürfeln kostet +1.,Rerolls cost +1.
 PACT_ASH_PACT,Aschepakt,Ash Pact
-PACT_ASH_PACT_DESC,Brennen-Schaden an Gegnern ×1,75. Brennende Gegner geben ihr Brennen beim Tod weiter.,Burn damage to enemies ×1.75. Burning enemies pass their burn on when they die.
+PACT_ASH_PACT_DESC,"Brennen-Schaden an Gegnern ×1,75. Brennende Gegner geben ihr Brennen beim Tod weiter.",Burn damage to enemies ×1.75. Burning enemies pass their burn on when they die.
 PACT_ASH_PACT_COST,Kampfbeginn: Deine vorderste Figur erhält Brennen 1.,Battle start: your front figure gains 1 burn.
 PACT_BLADE_OATH,Klingenschwur,Blade Oath
 PACT_BLADE_OATH_DESC,Blutung deiner Figuren: doppelt so viele Stapel.,Bleed from your figures: twice the stacks.
@@ -279,7 +279,7 @@ PACT_RETURN_PACT,Wiederkehr-Pakt,Return Pact
 PACT_RETURN_PACT_DESC,Erste gefallene Figur pro Kampf kehrt mit halbem Leben zurück.,First fallen figure per battle returns with half health.
 PACT_RETURN_PACT_COST,Zinsen max. +3.,Interest max. +3.
 PACT_VANGUARD_PACT,Pakt der Vorhut,Vanguard Pact
-PACT_VANGUARD_PACT_DESC,Vorderste Figur ×1,5 Angriff und erhält alle Schilde des Teams.,Front figure ×1.5 attack and takes all shields of the team.
+PACT_VANGUARD_PACT_DESC,"Vorderste Figur ×1,5 Angriff und erhält alle Schilde des Teams.",Front figure ×1.5 attack and takes all shields of the team.
 PACT_VANGUARD_PACT_COST,Hinterste Figur -1 Angriff.,Rearmost figure -1 attack.
 PACT_SOUL_HUNGER,Seelenhunger,Soul Hunger
 PACT_SOUL_HUNGER_DESC,"Gegner getötet: alle Figuren +1/+1, 25 % Chance auf 1 Seele.","Enemy killed: all figures +1/+1, 25 % chance of 1 soul."
@@ -752,7 +752,7 @@ HINT_DANGER,"Einer Gefahr entkommst du nicht umsonst: zahlen, kämpfen oder den 
 HINT_FUSION_TITLE,Fusion,Fusion
 HINT_FUSION,"Wähle zwei Figuren: Sie verschmelzen zu einer stärkeren, die Fähigkeiten beider behält. Ab der dritten Fusion erwacht eine Meisterfähigkeit.",Choose two figures: they fuse into a stronger one that keeps both abilities. From the third fusion a master ability awakens.
 HINT_TREASURY_TITLE,Die Schatzkammer,The treasury
-HINT_TREASURY,Für jeden besiegten Boss darfst du einen Schatz wählen: ein Relikt, ein Ass-Pack oder Gold.,For every defeated boss you choose one treasure: a relic, an ace pack or gold.
+HINT_TREASURY,"Für jeden besiegten Boss darfst du einen Schatz wählen: ein Relikt, ein Ass-Pack oder Gold.","For every defeated boss you choose one treasure: a relic, an ace pack or gold."
 UI_SET_TEXT,Schriftgröße,Text size
 UI_MERGE_MAX,Diese Figur hat schon Stufe 3 (Maximum) – die beiden haben nur den Platz getauscht.,This figure is already at level 3 (maximum) – the two only swapped places.
 UI_MERGE_FUSED,Fusionen und Rezeptfiguren verschmelzen nicht mit Duplikaten – die beiden haben nur den Platz getauscht.,Fusions and recipe figures do not merge with duplicates – the two only swapped places.
@@ -801,3 +801,16 @@ UI_SUM_DEALT,Schaden,Damage
 UI_SUM_TAKEN,Eingesteckt,Taken
 UI_SUM_BLOCKED,Geblockt,Blocked
 UI_SUM_HEALED,Geheilt,Healed
+UI_FUSION_DONE,Fertig,Done
+UI_FUSION_CHAIN,Weiter fusionieren?,Fuse further?
+KW_ATTACK,Angriff,Attack
+KW_ATTACK_DESC,So viel Schaden macht die Figur vorne im Kampf.,The damage the figure deals when it fights at the front.
+KW_HEALTH,Leben,Health
+KW_HEALTH_DESC,"Fällt es auf 0, scheidet die Figur aus. Nach dem Kampf ist alles wieder voll.",At 0 the figure falls. After the battle everything is full again.
+KW_GOLD,Gold,Gold
+KW_GOLD_DESC,Zum Kaufen. Manche Fähigkeiten werden mit mehr Gold stärker.,For buying. Some abilities grow stronger with more gold.
+UI_TITLE_ACT_FIGHT,Akt %d · Kampf %d von %d,Act %d · Fight %d of %d
+UI_TITLE_BOSS,Bosskampf,Boss fight
+UI_TITLE_ACT,Ende von Akt %d,End of act %d
+UI_TITLE_EVENT,Ereignis,Event
+UI_TITLE_DANGER,Gefahr,Danger

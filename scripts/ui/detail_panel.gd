@@ -7,6 +7,12 @@ var _title: Label
 var _subtitle: HBoxContainer
 var _body: RichTextLabel
 var _figures: Dictionary = {}  # figure definitions for fusion texts (loaded once)
+## Left: a big picture of the card; below the text: the symbols it uses,
+## each tappable for a one-line explanation.
+var _visual: CenterContainer
+var _legend: HBoxContainer
+var _explain: RichTextLabel
+static var _db: ContentDb
 
 ## Colors of the object categories, used everywhere the category is named.
 const CATEGORY_COLORS := {
@@ -21,7 +27,7 @@ func _tag(key: String, color: Color) -> String:
 
 
 func _init() -> void:
-	custom_minimum_size = Vector2(720, 0)
+	custom_minimum_size = Vector2(860, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.08, 0.07, 0.1, 0.97)
 	style.border_color = Palette.GOLD
@@ -31,9 +37,17 @@ func _init() -> void:
 		style.set_content_margin(side, 16)
 	add_theme_stylebox_override("panel", style)
 
+	var outer := HBoxContainer.new()
+	outer.add_theme_constant_override("separation", 18)
+	outer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(outer)
+	_visual = CenterContainer.new()
+	_visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	outer.add_child(_visual)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 6)
-	add_child(column)
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	outer.add_child(column)
 
 	var header := HBoxContainer.new()
 	column.add_child(header)
@@ -61,6 +75,17 @@ func _init() -> void:
 	_body.add_theme_font_size_override("bold_font_size", 24)
 	_body.add_theme_color_override("default_color", Palette.PARCHMENT)
 	column.add_child(_body)
+	_legend = HBoxContainer.new()
+	_legend.add_theme_constant_override("separation", 8)
+	column.add_child(_legend)
+	_explain = RichTextLabel.new()
+	_explain.bbcode_enabled = true
+	_explain.fit_content = true
+	_explain.scroll_active = false
+	_explain.add_theme_font_size_override("normal_font_size", 20)
+	_explain.add_theme_color_override("default_color", Palette.MUTED)
+	_explain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_explain)
 	# Taps go through the panel (to the cards underneath); only "close" reacts.
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for node: Control in [column, header, _title, _subtitle, _body]:
@@ -166,7 +191,9 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 			lines.append("%s [color=#%s]%s[/color]" % [_tag("UI_CAT_PACTS", CATEGORY_COLORS["pact"]),
 				CATEGORY_COLORS["pact"].to_html(false), ", ".join(pact_names)])
 	_body.text = "\n".join(lines)
-	show()
+	var level_card := UnitCard.for_definition(definition, level, is_enemy)
+	_set_visual(level_card, 1.15)
+	_open()
 
 
 ## Fusion: stage, contained figures, kept abilities and the master ability.
@@ -196,7 +223,8 @@ func show_message(title_text: String, text: String) -> void:
 	for child in _subtitle.get_children():
 		child.queue_free()
 	_body.text = text
-	show()
+	_set_visual(null, 1.0)
+	_open()
 
 
 ## Adds a hint line under the current content (e.g. how to use a tarot card).
@@ -210,7 +238,58 @@ func show_object(object_card: ObjectCard) -> void:
 	for child in _subtitle.get_children():
 		child.queue_free()
 	_body.text = "\n".join(object_card.lines.map(func(l: String) -> String: return Keywords.colorize(l)))
+	if _db == null:
+		_db = ContentDb.load_default()
+	_set_visual(ObjectCard.create(_db, object_card.entry, Vector2(120, 178)), 1.0)
+	_open()
+
+
+## The picture on the left (null = none), scaled.
+func _set_visual(control: Control, factor: float) -> void:
+	for child in _visual.get_children():
+		child.queue_free()
+	_visual.visible = control != null
+	if control == null:
+		return
+	control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for node in control.find_children("*", "Control", true, false):
+		(node as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var holder := Control.new()
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.add_child(control)
+	control.scale = Vector2(factor, factor)
+	var base := control.custom_minimum_size if control.custom_minimum_size != Vector2.ZERO else control.get_combined_minimum_size()
+	holder.custom_minimum_size = base * factor
+	_visual.add_child(holder)
+
+
+## Shows the panel with a symbol legend for the current text.
+func _open() -> void:
+	for child in _legend.get_children():
+		child.queue_free()
+	_explain.text = ""
+	var found := RegEx.create_from_string("keywords/(\\w+)\\.png").search_all(_body.text)
+	var kinds: Array = []
+	for match in found:
+		if not match.get_string(1) in kinds:
+			kinds.append(match.get_string(1))
+	for kind: String in kinds:
+		var chip := Button.new()
+		chip.icon = load(Keywords.ICON_PATH % kind)
+		chip.text = tr(LEGEND_NAMES[kind])
+		chip.add_theme_font_size_override("font_size", 18)
+		chip.custom_minimum_size = Vector2(0, 40)
+		chip.pressed.connect(func() -> void:
+			_explain.text = "%s [b]%s:[/b] %s" % [Keywords.icon(kind, 22), tr(LEGEND_NAMES[kind]), tr(LEGEND_DESCS[kind])])
+		_legend.add_child(chip)
+	_legend.visible = not kinds.is_empty()
 	show()
+
+
+const LEGEND_NAMES := {"shield": "STATUS_SHIELD", "burn": "STATUS_BURN", "bleed": "STATUS_BLEED", "curse": "STATUS_CURSE",
+	"attack": "KW_ATTACK", "health": "KW_HEALTH", "gold": "KW_GOLD"}
+const LEGEND_DESCS := {"shield": "STATUS_SHIELD_DESC", "burn": "STATUS_BURN_DESC", "bleed": "STATUS_BLEED_DESC",
+	"curse": "STATUS_CURSE_DESC", "attack": "KW_ATTACK_DESC", "health": "KW_HEALTH_DESC", "gold": "KW_GOLD_DESC"}
 
 
 func _subtitle_text(text: String) -> Label:
