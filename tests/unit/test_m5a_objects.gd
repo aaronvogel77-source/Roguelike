@@ -163,14 +163,33 @@ func test_taking_items_from_a_pack() -> void:
 	assert_true(run.open_pack.is_empty(), "single pick closes the pack")
 
 
-func test_equipment_from_pack_needs_a_figure() -> void:
+func test_equipment_from_pack_goes_to_the_stash_then_onto_a_figure() -> void:
 	var run := _planning_run()
 	var blade := {"base": "blade", "rarity": 0, "affixes": [], "drawback": {}}
 	run.open_pack = {"pack": {"type": "equipment", "size": "normal"}, "picks_left": 1,
 		"items": [{"kind": "equipment", "item": blade}]}
-	assert_false(run.take_pack_item(0, 2), "slot 2 is empty")
-	assert_true(run.take_pack_item(0, 0))
+	assert_true(run.take_pack_item(0))
+	assert_eq(run.stash.size(), 1, "into the stash first")
+	assert_false(run.equip_from_stash(0, 2), "slot 2 is empty")
+	assert_true(run.equip_from_stash(0, 0))
 	assert_eq(run.row[0]["equipment"]["base"], "blade")
+	assert_true(run.stash.is_empty())
+	var dagger := {"base": "dagger", "rarity": 0, "affixes": [], "drawback": {}}
+	run.stash = [dagger]
+	assert_true(run.equip_from_stash(0, 0), "swapping")
+	assert_eq(run.row[0]["equipment"]["base"], "dagger")
+	assert_eq(run.stash[0]["base"], "blade", "the old equipment waits in the stash")
+	var gold := run.gold
+	assert_true(run.sell_stash(0))
+	assert_eq(run.gold, gold + Items.equipment_price(_db, blade) / 2)
+
+
+func test_stash_has_three_places() -> void:
+	var run := _planning_run()
+	var blade := {"base": "blade", "rarity": 0, "affixes": [], "drawback": {}}
+	run.stash = [blade, blade, blade]
+	run.open_pack = {"pack": {"type": "equipment", "size": "normal"}, "picks_left": 1, "items": [{"kind": "equipment", "item": blade}]}
+	assert_false(run.can_take_pack_item(0), "the stash is full")
 
 
 func test_relic_slots_are_limited() -> void:
@@ -277,11 +296,11 @@ func test_object_slots_grow_with_level_and_fusion() -> void:
 	assert_true(run.use_tarot(0, 0))
 	assert_false(run.use_tarot(0, 0), "a new figure has one slot")
 	var blade := {"base": "blade", "rarity": 0, "affixes": [], "drawback": {}}
-	run.open_pack = {"pack": {"type": "equipment", "size": "normal"}, "picks_left": 1, "items": [{"kind": "equipment", "item": blade}]}
-	assert_false(run.can_take_pack_item(0, 0))
+	run.stash = [blade]
+	assert_false(run.equip_from_stash(0, 0))
 	run.row[0]["xp"] = RunState.XP_FOR_LEVEL[2]
 	assert_eq(run.object_limit(run.row[0]), 2, "level 3: two slots")
-	assert_true(run.can_take_pack_item(0, 0))
+	assert_true(run.equip_from_stash(0, 0))
 	var fused := {"uid": 7, "def_id": "coin_squire", "xp": 0, "fusion": {"parts": ["coin_squire", "spark_bearer"],
 		"suits": ["coins", "wands"], "abilities": [], "attack": 3, "health": 3}}
 	assert_eq(run.object_limit(fused), 2, "F1 at level 1: 1 + 1")

@@ -91,7 +91,7 @@ func _process(delta: float) -> void:
 	position = Vector2.ZERO
 	size = get_viewport_rect().size
 	_label.reset_size()
-	var above := rect.position.y > _label.size.y + 24
+	var above := rect.position.y > _label.size.y + 90  # clear of the top bar
 	_label.position = Vector2(clampf(rect.get_center().x - _label.size.x / 2, 8, size.x - _label.size.x - 8),
 		rect.position.y - _label.size.y - 14 if above else rect.end.y + 14)
 	_end.reset_size()

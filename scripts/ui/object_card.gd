@@ -200,9 +200,24 @@ func _label(text: String, font_size: int, color: Color) -> Label:
 	return label
 
 
+## Where the finger went down; a release far from it was a drag, not a tap.
+var _press_at := Vector2.INF
+
+
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-		tapped.emit(self)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_press_at = event.global_position
+		else:
+			var was_tap: bool = _press_at != Vector2.INF and event.global_position.distance_to(_press_at) < 12.0
+			_press_at = Vector2.INF
+			if was_tap:
+				tapped.emit(self)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_BEGIN:
+		_press_at = Vector2.INF  # a drag started: the release is no tap
 
 
 ## The object's own hand-drawn icon (each relic and tarot card has one), else

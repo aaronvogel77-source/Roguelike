@@ -314,11 +314,29 @@ func _small_label(color: Color) -> Label:
 	return label
 
 
+## Where the finger went down; a release far from it was a drag, not a tap.
+var _press_at := Vector2.INF
+
+
 func _on_body_input(event: InputEvent) -> void:
+	var pressed: bool = (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed) \
+		or (event is InputEventScreenTouch and event.pressed)
+	if pressed:
+		_press_at = event.global_position if event is InputEventMouseButton else event.position
+		return
 	var released: bool = (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed) \
 		or (event is InputEventScreenTouch and not event.pressed)
 	if released:
-		tapped.emit(self)
+		var at: Vector2 = event.global_position if event is InputEventMouseButton else event.position
+		var was_tap := _press_at != Vector2.INF and at.distance_to(_press_at) < 12.0
+		_press_at = Vector2.INF
+		if was_tap:
+			tapped.emit(self)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_BEGIN:
+		_press_at = Vector2.INF  # a drag started: the release is no tap
 
 
 ## Largest font size (14 down to 9) at which the name wraps into at most two

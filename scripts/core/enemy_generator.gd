@@ -33,6 +33,10 @@ static var ACT1_HARD_FACTOR := 1.15
 const ACT1_MIN_STEP := 1.2
 ## The hard option always has at least this many enemies (one dragon alone was too easy).
 const HARD_MIN_UNITS := 2
+## Act 1 bands are small: at most this many enemies (normal fights).
+const ACT1_MAX_TEAM := 3
+## Act 1 budgets a little lower, so the smaller bands do not become all levels.
+static var ACT1_FACTOR := 0.85
 
 
 static func budget(act: int, fight: int, difficulty: int) -> int:
@@ -43,6 +47,8 @@ static func budget(act: int, fight: int, difficulty: int) -> int:
 		value = BOSS_RETINUE[act - 1] if act <= BOSS_RETINUE.size() else BOSS_RETINUE[-1] * pow(ACT_GROWTH, act - BOSS_RETINUE.size())
 	if fight < 2:
 		value *= ACT1_HARD_FACTOR if act == 1 and difficulty == 2 else DIFFICULTY_FACTOR[difficulty]
+		if act == 1:
+			value *= ACT1_FACTOR
 	return maxi(int(round(value)), 1)
 
 
@@ -64,7 +70,8 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 	for difficulty in 3:
 		var theme := _pick_theme(db, region, rng)
 		# Hard teams prefer the stronger (more expensive) enemies.
-		var team := generate(db, budget(act, fight, difficulty), rng, theme, MAX_TEAM, used, difficulty == 2, act)
+		var size_cap := ACT1_MAX_TEAM if act == 1 else MAX_TEAM
+		var team := generate(db, budget(act, fight, difficulty), rng, theme, size_cap, used, difficulty == 2, act)
 		for unit in team:
 			used.append(unit["def_id"])
 		teams.append({"theme": theme, "team": team, "power": power(db, team)})
@@ -76,7 +83,7 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		var step := ACT1_MIN_STEP if act == 1 else MIN_STEP
 		var target: float = teams[difficulty - 1]["power"] * step
 		var min_units := HARD_MIN_UNITS if difficulty == 2 else 1
-		_strengthen(db, team, rng, teams[difficulty]["theme"], target, min_units)
+		_strengthen(db, team, rng, teams[difficulty]["theme"], target, min_units, ACT1_MAX_TEAM if act == 1 else MAX_TEAM)
 		teams[difficulty]["power"] = power(db, team)
 	# A full row cannot grow further (late acts): then the easier options step down.
 	for difficulty in [1, 0]:
@@ -110,7 +117,9 @@ static func generate(db: ContentDb, team_budget: int, rng: RandomNumberGenerator
 	var team: Array = []
 	var remaining := team_budget
 	while team.size() < max_team:
-		var affordable := pool.filter(func(e: Dictionary) -> bool: return int(e["cost"]) <= remaining)
+		# Elites (from act 2) appear at most once per kind in a band.
+		var affordable := pool.filter(func(e: Dictionary) -> bool:
+			return int(e["cost"]) <= remaining and not (_is_elite(e) and team.any(func(u: Dictionary) -> bool: return u["def_id"] == e["id"])))
 		if affordable.is_empty():
 			break
 		# Prefer enemies the other options do not use, so the choices differ.
@@ -159,21 +168,25 @@ static func _weaken(db: ContentDb, team: Array, limit: float) -> void:
 
 ## Adds enemies (cheap ones first) or levels until the team reaches the
 ## target strength and size.
+static func _is_elite(definition: Dictionary) -> bool:
+	return int(definition.get("min_act", 1)) >= 2
+
+
 static func _strengthen(db: ContentDb, team: Array, rng: RandomNumberGenerator, theme: String,
-		target: float, min_units: int) -> void:
+		target: float, min_units: int, max_team: int = MAX_TEAM) -> void:
 	var pool: Array = db.regular_enemies()
 	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
-	var cheap := pool.filter(func(e: Dictionary) -> bool: return int(e["cost"]) <= 2)
+	var cheap := pool.filter(func(e: Dictionary) -> bool: return int(e["cost"]) <= 2 and not _is_elite(e))
 	var guard := 0
 	while (power(db, team) < target or team.size() < min_units) and guard < 30:
 		guard += 1
-		if team.size() < MAX_TEAM and (team.size() < min_units or rng.randf() < 0.5):
+		if team.size() < max_team and (team.size() < min_units or rng.randf() < 0.5):
 			var pick := _weighted_pick(cheap, theme, rng)
 			team.append({"def_id": pick["id"], "level": 1})
 			continue
 		var upgradable := team.filter(func(u: Dictionary) -> bool: return u["level"] < 3)
 		if upgradable.is_empty():
-			if team.size() >= MAX_TEAM:
+			if team.size() >= max_team:
 				break
 			team.append({"def_id": _weighted_pick(cheap, theme, rng)["id"], "level": 1})
 			continue

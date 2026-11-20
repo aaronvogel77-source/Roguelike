@@ -175,9 +175,8 @@ func _show_region_intro() -> void:
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(overlay)
 	_region_intro = overlay
-	# The phase card of the first fight comes after entering the region.
-	_last_title_key = ""
-	overlay.tree_exited.connect(_show_title_card, CONNECT_ONE_SHOT | CONNECT_DEFERRED)
+	# The intro names the act and fight itself: no extra phase card for it.
+	_last_title_key = "fight:%d:%d" % [_run.act, _run.fight]
 	var column := VBoxContainer.new()
 	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -187,6 +186,9 @@ func _show_region_intro() -> void:
 	var emblem_box := CenterContainer.new()
 	emblem_box.add_child(emblem)
 	column.add_child(emblem_box)
+	var act_line := _label(tr("UI_TITLE_ACT_FIGHT") % [_run.act, _run.fight + 1, RunState.FIGHTS_PER_ACT], 26, Palette.PARCHMENT)
+	act_line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(act_line)
 	for line in [[tr(key), 56, Palette.GOLD], [tr(key + "_DESC"), 22, Palette.PARCHMENT]]:
 		var label := _label(line[0], line[1], line[2])
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -214,6 +216,7 @@ func _show_region_intro() -> void:
 
 func _show_stage() -> void:
 	_autosave()
+	DetailPanel.suit_counts = TeamBuilder.suit_counts(_run.player_battle_team()) if _run != null else {}
 	_stage_sounds()
 	_hint_targets.clear()
 	FigureArt.gold_hint = _run.gold  # gold-dependent looks (Gold-Armored)
@@ -267,10 +270,20 @@ func _update_guide() -> void:
 		_guide.queue_free()
 	if _run == null or _url_flag("arena") or not Guide.active():
 		return
+	if not _run.open_pack.is_empty() or not _run.fusion_offer.is_empty() or not _run.treasure.is_empty():
+		if not _run.open_pack.is_empty():
+			Guide.passed("pack")
+		return  # an overlay is open: no frame on the screen beneath
+	if is_instance_valid(_region_intro) and _region_intro.is_inside_tree():
+		if not _region_intro.tree_exited.is_connected(_update_guide):
+			_region_intro.tree_exited.connect(_update_guide, CONNECT_ONE_SHOT | CONNECT_DEFERRED)
+		return  # the guide starts once the region is entered
 	if _meta.runs > 0:
 		Guide.finish()  # finished runs before: no guide
 		return
 	var stage := _run.stage
+	if Guide.current() == "pack" and not _run.open_pack.is_empty():
+		Guide.passed("pack")
 	if stage in [RunState.Stage.WON, RunState.Stage.LOST]:
 		Guide.finish()
 		return
@@ -677,7 +690,7 @@ func _item_shelf() -> Control:
 	panel.add_child(column)
 	var first := true
 	for group in [["relic", RunState.MAX_RELICS, _run.relics], ["tarot", RunState.MAX_TAROTS, _run.tarots],
-			["pact", RunState.MAX_PACTS, _run.pacts]]:
+			["pact", RunState.MAX_PACTS, _run.pacts], ["equipment", RunState.MAX_STASH, _run.stash]]:
 		if not first:
 			var line := ColorRect.new()
 			line.color = Color(Palette.GOLD, 0.3)
@@ -686,14 +699,50 @@ func _item_shelf() -> Control:
 		first = false
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 8)
-		var symbol := Emblem.create(group[0], 20)
+		var symbol := Emblem.create(STASH_EMBLEM if group[0] == "equipment" else group[0], 20)
+		if group[0] == "equipment":
+			symbol.color = STASH_COLOR
 		symbol.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		row.add_child(symbol)
 		for i in int(group[1]):
 			var list: Array = group[2]
-			row.add_child(_strip_slot(group[0], i, list[i] if i < list.size() else "", 60))
+			if group[0] == "equipment":
+				row.add_child(_stash_slot(i, list[i] if i < list.size() else {}, 60))
+			else:
+				row.add_child(_strip_slot(group[0], i, list[i] if i < list.size() else "", 60))
 		column.add_child(row)
 	return panel
+
+
+const STASH_EMBLEM := "sword"
+const STASH_COLOR := Color("b8c8dc")
+
+
+## A place of the equipment stash: empty, or the waiting item (drag it onto
+## a figure, or onto the sell field).
+func _stash_slot(index: int, item: Dictionary, side: float) -> Control:
+	if item.is_empty():
+		var empty := Panel.new()
+		empty.custom_minimum_size = Vector2(side, side)
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(STASH_COLOR, 0.07)
+		style.border_color = Color(STASH_COLOR, 0.45)
+		style.set_border_width_all(2)
+		style.set_corner_radius_all(9)
+		empty.add_theme_stylebox_override("panel", style)
+		var hint := Emblem.create(STASH_EMBLEM, side * 0.5)
+		hint.color = STASH_COLOR
+		hint.modulate.a = 0.3
+		hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hint.position = Vector2(side * 0.25, side * 0.25)
+		empty.add_child(hint)
+		return empty
+	var card := ObjectCard.create(_db, {"kind": "equipment", "item": item}, Vector2(side, side), true)
+	card.tapped.connect(func(c: ObjectCard) -> void:
+		_detail_panel.show_object(c)
+		_detail_panel.show_hint(tr("UI_DRAG_STASH") % (Items.equipment_price(_db, item) / 2)))
+	_make_object_draggable(card, {"kind": "stash", "index": index})
+	return card
 
 
 ## The chosen enemy band as a window (the planning screen shows only your team).
@@ -986,20 +1035,19 @@ func _build_enemy_choice() -> void:
 	if _rule_text() != "":  # a boss rule matters for the choice
 		column.add_child(_rich_line(_rule_text(), 17))
 
+	# One band at a time: take it, or risk the next (stronger, richer) one -
+	# without seeing it first. No way back, no skipping.
 	var options := HBoxContainer.new()
 	options.alignment = BoxContainer.ALIGNMENT_CENTER
-	options.add_theme_constant_override("separation", 20)
-	# Scales down when the options (3 enemies + skip) do not fit the width.
-	column.add_child(_fitted(options, 1.0))
-	for i in _run.enemy_options.size():
-		var option_panel := _enemy_option_panel(_run.enemy_options[i], i)
-		options.add_child(option_panel)
-		if i == _run.enemy_options.size() - 1:
-			_hint_targets["choice"] = option_panel
-		if i == 0:
-			_hint_targets["choice_easy"] = option_panel
-	if not _run.is_boss_fight():
-		options.add_child(_skip_panel())
+	options.add_theme_constant_override("separation", 28)
+	column.add_child(_fitted(options, 1.3))
+	var step := clampi(_run.choice_step, 0, _run.enemy_options.size() - 1)
+	var option_panel := _enemy_option_panel(_run.enemy_options[step], step)
+	options.add_child(option_panel)
+	_hint_targets["choice"] = option_panel
+	_hint_targets["choice_easy"] = option_panel
+	if step < _run.enemy_options.size() - 1:
+		options.add_child(_risk_panel(step + 1))
 
 	var own := HBoxContainer.new()
 	own.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -1011,6 +1059,35 @@ func _build_enemy_choice() -> void:
 	var gap := Control.new()
 	gap.custom_minimum_size = Vector2(0, 8)
 	column.add_child(gap)
+
+
+## The face-down next band: stronger, more gold - what exactly stays hidden.
+func _risk_panel(next_step: int) -> Control:
+	var panel := _elegant_panel(0.7)
+	panel.custom_minimum_size = Vector2(300, 0)
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 14)
+	panel.add_child(box)
+	var title := _label(tr("UI_RISK_TITLE"), 26, Palette.DANGER)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(title)
+	var back := Emblem.create("enemy", 90)
+	back.color = Palette.DANGER
+	box.add_child(_centered(back))
+	var next: Dictionary = _run.enemy_options[next_step]
+	var text := _label(tr("UI_RISK_TEXT") % [tr(DIFFICULTY_NAMES[next["difficulty"]]), next["bonus"]], 19, Palette.PARCHMENT)
+	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD
+	text.custom_minimum_size = Vector2(260, 0)
+	box.add_child(text)
+	var risk := _button(tr("UI_RISK_BUTTON"), Vector2(220, 60), func() -> void:
+		if _run.risk_next_band():
+			_show_stage())
+	risk.add_theme_color_override("font_color", Palette.DANGER)
+	risk.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(risk)
+	return panel
 
 
 ## Skip the fight for the mark shown here (no gold, no experience).
@@ -1089,13 +1166,13 @@ func _enemy_option_panel(option: Dictionary, index: int) -> Control:
 	for unit in option["team"]:
 		widths += int(_db.enemies[unit["def_id"]].get("width", 1))
 	var team_width: float = widths * (UnitCard.CARD_SIZE.x + CARD_SPACING)
-	var max_width := 340.0 if _run.enemy_options.size() > 1 else 900.0
+	var max_width := 600.0
 	var factor := clampf(max_width / maxf(team_width, 1.0), 0.5, 1.0)
 	var cards := CenterContainer.new()
-	cards.custom_minimum_size = Vector2(max_width if _run.enemy_options.size() > 1 else 0.0, 0)
+	cards.custom_minimum_size = Vector2(0, 0)
 	cards.add_child(_scaled(_card_row(option["team"], true, false), factor))
 	box.add_child(cards)
-	var choose := _button(tr("UI_CHOOSE"), Vector2(200, 60), _on_choose_enemy.bind(index))
+	var choose := _button(tr("UI_TAKE_BAND"), Vector2(220, 60), _on_choose_enemy.bind(index))
 	choose.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(choose)
 	return panel
@@ -1121,18 +1198,8 @@ const SIDE_COLUMN := 248
 var _gold_box: Control
 
 
-func _build_planning() -> void:
-	_screen.add_child(_velvet())
-	var column := _column()
-	_strip_cards.clear()
-	_suit_label = null
-
-	# Upper half: menu and items on the left, the team in the middle, the
-	# resources on the right (both side columns equally wide: the team stays centred).
-	var upper := HBoxContainer.new()
-	upper.add_theme_constant_override("separation", 16)
-	upper.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	upper.size_flags_stretch_ratio = 1.1
+## Left column of shop and events: menu, then relics/tarot/pacts/stash.
+func _side_column_left() -> Control:
 	var left := VBoxContainer.new()
 	left.custom_minimum_size = Vector2(SIDE_COLUMN, 0)
 	left.add_theme_constant_override("separation", 10)
@@ -1140,20 +1207,11 @@ func _build_planning() -> void:
 	menu.add_theme_font_size_override("font_size", 18)
 	left.add_child(menu)
 	left.add_child(_item_shelf())
-	upper.add_child(_with_margin(left, 12, 8))
-	var team := VBoxContainer.new()
-	team.alignment = BoxContainer.ALIGNMENT_CENTER
-	team.add_theme_constant_override("separation", 6)
-	var stage := _elegant_panel(0.55)
-	var stage_box := VBoxContainer.new()
-	stage_box.add_theme_constant_override("separation", 2)
-	stage_box.add_child(_own_row_slots())
-	stage_box.add_child(_xp_hint_row())
-	stage.add_child(stage_box)
-	team.add_child(stage)
-	if _rule_text() != "":  # a boss rule matters for planning: it stays in sight
-		team.add_child(_rich_line(_rule_text(), 16))
-	upper.add_child(_fitted(team, 1.6))
+	return left
+
+
+## Right column of shop and events: gold, souls, places (and debug).
+func _side_column_right() -> Control:
 	var right := VBoxContainer.new()
 	right.custom_minimum_size = Vector2(SIDE_COLUMN, 0)
 	right.add_theme_constant_override("separation", 10)
@@ -1169,7 +1227,36 @@ func _build_planning() -> void:
 		toggle.size_flags_horizontal = Control.SIZE_SHRINK_END
 		right.add_child(toggle)
 		_show_debug_tools.call_deferred()
-	upper.add_child(_with_margin(right, 12, 8))
+	return right
+
+
+func _build_planning() -> void:
+	_screen.add_child(_velvet())
+	var column := _column()
+	_strip_cards.clear()
+	_suit_label = null
+
+	# Upper half: menu and items on the left, the team in the middle, the
+	# resources on the right (both side columns equally wide: the team stays centred).
+	var upper := HBoxContainer.new()
+	upper.add_theme_constant_override("separation", 16)
+	upper.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	upper.size_flags_stretch_ratio = 1.1
+	upper.add_child(_with_margin(_side_column_left(), 12, 8))
+	var team := VBoxContainer.new()
+	team.alignment = BoxContainer.ALIGNMENT_CENTER
+	team.add_theme_constant_override("separation", 6)
+	var stage := _elegant_panel(0.55)
+	var stage_box := VBoxContainer.new()
+	stage_box.add_theme_constant_override("separation", 2)
+	stage_box.add_child(_own_row_slots())
+	stage_box.add_child(_xp_hint_row())
+	stage.add_child(stage_box)
+	team.add_child(stage)
+	if _rule_text() != "":  # a boss rule matters for planning: it stays in sight
+		team.add_child(_rich_line(_rule_text(), 16))
+	upper.add_child(_fitted(team, 1.6))
+	upper.add_child(_with_margin(_side_column_right(), 12, 8))
 	column.add_child(upper)
 
 	# Lower half: the shop counter with the actions at its right end.
@@ -1349,6 +1436,14 @@ func _use_tarot_on(tarot_index: int, row_index: int) -> void:
 func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
 	if data["kind"] == "tarot":
 		_use_tarot_on(data["index"], slot.index)
+	elif data["kind"] == "stash":
+		var snapshot := _run.to_dict()
+		if _run.equip_from_stash(data["index"], slot.index):
+			_undo.append(snapshot)
+			Sound.play("card_place")
+			_show_stage()
+		elif _run.row[slot.index] != null:
+			_detail_panel.show_message(tr("UI_CAT_EQUIPMENT"), tr("UI_OBJECT_LIMIT"))
 	elif data["kind"] == "shop":
 		_buy(data["index"], slot.index)
 	elif data["kind"] == "row":
@@ -1400,6 +1495,10 @@ func _drop_state(data: Dictionary, index: int) -> String:
 		"market_figure":
 			def_id = String(_run.event.get("figure", ""))
 			cost = _run.price_of(def_id) / 2 if def_id != "" else 0
+		"stash":
+			if target == null:
+				return ""
+			return "free" if _run.can_add_object(target, "equipment") else "no"
 		"tarot":
 			if target == null:
 				return ""
@@ -1510,7 +1609,11 @@ func _apply_action(action: Callable) -> void:
 
 
 func _on_sell_dropped(data: Dictionary) -> void:
-	if data.get("kind") == "relic":
+	if data.get("kind") == "stash":
+		if _run.sell_stash(data["index"]):
+			_undo.clear()
+			_show_stage()
+	elif data.get("kind") == "relic":
 		if _run.sell_relic(data["index"]):
 			_undo.clear()
 			_show_stage()
@@ -1968,19 +2071,30 @@ func _build_pack_overlay() -> void:
 	overlay.add_child(column)
 	var open: Dictionary = _run.open_pack
 	var title := _label("%s  ·  %s" % [ItemText.pack_name(open["pack"]),
-		tr("UI_OPEN_PACK") % [open["picks_left"], open["items"].size()]], 30, Palette.GOLD)
+		tr("UI_OPEN_PACK") % [open["picks_left"], open["items"].size()]], 26, Palette.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(title)
 
+	# The cards fill the screen; equipment goes into the stash, so the own row
+	# only shows up when a figure (ace, legend) waits for its place.
 	var items := HBoxContainer.new()
 	items.alignment = BoxContainer.ALIGNMENT_CENTER
-	items.add_theme_constant_override("separation", 24)
+	items.add_theme_constant_override("separation", 28)
 	for i in open["items"].size():
 		items.add_child(_pack_item_box(i))
-	var items_center := CenterContainer.new()
-	items_center.add_child(items)
-	column.add_child(items_center)
+	var items_fit := _fitted(items, 2.2)
+	items_fit.size_flags_stretch_ratio = 2.0
+	column.add_child(items_fit)
 
+	var skip := _button(tr("UI_PACK_SKIP"), Vector2(260, 60), _on_close_pack)
+	skip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	if _pack_pick < 0:
+		column.add_child(skip)
+		var bottom_gap := Control.new()
+		bottom_gap.custom_minimum_size = Vector2(0, 16)
+		column.add_child(bottom_gap)
+		_play_pack_opening(open)
+		return
 	# Own row: choose a target, or drag to merge / swap and sell to make room.
 	var hint_text := tr("UI_PACK_ROW_HINT")
 	if _pack_pick >= 0:
@@ -2005,9 +2119,6 @@ func _build_pack_overlay() -> void:
 	var target_center := CenterContainer.new()
 	target_center.add_child(targets)
 	column.add_child(target_center)
-
-	var skip := _button(tr("UI_PACK_SKIP"), Vector2(260, 60), _on_close_pack)
-	skip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	column.add_child(skip)
 	_play_pack_opening(open)
 
@@ -2041,6 +2152,9 @@ func _pack_item_box(i: int) -> Control:
 		enabled = false
 	elif entry["kind"] == "relic" and _run.relics.size() >= RunState.MAX_RELICS:
 		text = tr("UI_RELIC_SLOTS_FULL")
+		enabled = false
+	elif entry["kind"] == "equipment" and _run.stash.size() >= RunState.MAX_STASH:
+		text = tr("UI_STASH_FULL")
 		enabled = false
 	var take := _button(text, Vector2(150, 54), _on_pack_take.bind(i))
 	take.disabled = not enabled
@@ -2210,12 +2324,27 @@ func _build_event() -> void:
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	backdrop.modulate = Color(0.6, 0.6, 0.7)
 	_screen.add_child(backdrop)
+	# Same frame as the shop: menu and items left, resources right, the event
+	# in the middle, your team below.
 	var column := _column()
-	column.add_child(_top_bar(tr("EVENT_" + id.to_upper())))
-	var desc := _label(tr("EVENT_" + id.to_upper() + "_DESC"), 20, Palette.MUTED)
+	var upper := HBoxContainer.new()
+	upper.add_theme_constant_override("separation", 16)
+	upper.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	upper.size_flags_stretch_ratio = 2.2
+	upper.add_child(_with_margin(_side_column_left(), 12, 8))
+	var center := VBoxContainer.new()
+	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	center.add_theme_constant_override("separation", 6)
+	var name_label := _label(tr("EVENT_" + id.to_upper()), 30, Palette.DANGER if _run.is_negative_event() else Palette.MYSTIC)
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center.add_child(name_label)
+	var desc := _label(tr("EVENT_" + id.to_upper() + "_DESC"), 18, Palette.MUTED)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
-	column.add_child(desc)
+	center.add_child(desc)
+	upper.add_child(center)
+	upper.add_child(_with_margin(_side_column_right(), 12, 8))
+	column.add_child(upper)
 
 	var options := VBoxContainer.new()
 	options.add_theme_constant_override("separation", 10)
@@ -2233,11 +2362,8 @@ func _build_event() -> void:
 		var exit_option := "decline" if id == "duel" else ("small" if id == "grave_robber" else "leave")
 		if id != "grave_robber" and not _run.is_negative_event():
 			options.add_child(_centered(_button(tr("OPT_" + exit_option.to_upper()), Vector2(400, 56), _on_event_option.bind(exit_option, 0))))
-	# Scene and own row share the height; both scale to fit (the row gets big
-	# enough to pick figures comfortably).
 	var scene_holder := _fitted(options, 1.0)
-	scene_holder.size_flags_stretch_ratio = 2.2
-	column.add_child(scene_holder)
+	center.add_child(scene_holder)
 
 	if _event_option != "":
 		var needed: int = _needed_targets(_event_option)
@@ -2249,17 +2375,11 @@ func _build_event() -> void:
 		var hint := _label(hint_text, 20, Palette.GOLD)
 		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(hint)
-	# Bottom: your team on a stage, the items as the small bar beside it.
-	var row_box := HBoxContainer.new()
-	row_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	row_box.add_theme_constant_override("separation", 24)
+	# Bottom: your team on a stage.
 	var stage := _elegant_panel(0.55)
 	stage.add_child(_own_row_slots())
-	row_box.add_child(stage)
-	var items := _item_shelf()
-	items.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	row_box.add_child(items)
-	column.add_child(_fitted(row_box, 1.3))
+	var team_fit := _fitted(_centered(stage), 1.3)
+	column.add_child(team_fit)
 	var gap := Control.new()
 	gap.custom_minimum_size = Vector2(0, 8)
 	column.add_child(gap)
@@ -2540,10 +2660,23 @@ func _on_event_option(option: String, needed: int) -> void:
 		_event_targets.clear()
 		_show_stage()
 		return
+	var relics_before := _run.relics.size()
 	if _run.resolve_event(option):
 		_event_option = ""
 		_undo.clear()
 		_show_stage()
+		if option in ["rob", "buy_relic"] and _run.relics.size() > relics_before:
+			_reveal_relic.call_deferred(_run.relics[-1])
+
+
+## A new relic from an event: the chest animation, ending in the relic row.
+func _reveal_relic(relic_id: String) -> void:
+	await get_tree().process_frame  # the rebuilt screen needs its layout
+	var target := get_viewport_rect().size / 2
+	for card in _strip_cards:
+		if is_instance_valid(card) and card.entry.get("kind", "") == "relic" and card.entry.get("id", "") == relic_id:
+			target = card.get_global_rect().get_center()
+	RelicReveal.play(self, _db, relic_id, target)
 
 
 ## Row taps during an event pick targets for the waiting option.

@@ -172,11 +172,15 @@ func test_salt_golem_ignores_burn() -> void:
 	assert_eq(burns.size(), 0)
 
 
-func test_ban_prior_blocks_player_healing() -> void:
+func test_ban_prior_halves_player_healing() -> void:
 	var front := {"def": _db.figures["coin_squire"], "level": 1, "bonus_health": 20}
 	var server := {"def": _db.figures["altar_server"], "level": 3}
-	var blocked := BattleSimulator.simulate([front, server], [_enemy("vault_warden"), _enemy("ban_prior")])
-	assert_eq(_events_of(blocked, "heal").filter(func(e: Dictionary) -> bool: return e["uid"] <= 2).size(), 0)
+	var halved := BattleSimulator.simulate([front, server], [_enemy("vault_warden"), _enemy("ban_prior")])
+	var heal_value := int(_db.figures["altar_server"]["ability"]["values"][2])
+	var heals := _events_of(halved, "heal").filter(func(e: Dictionary) -> bool: return e["uid"] <= 2 and e["amount"] > 0)
+	assert_false(heals.is_empty(), "healing still happens")
+	for heal in heals:
+		assert_true(int(heal["amount"]) <= maxi(heal_value / 2, 1), "the prior halves healing (at least 1)")
 
 
 func test_shield_breaker_shatters_shields() -> void:
@@ -285,3 +289,21 @@ func test_candle_bearer_never_heals_itself() -> void:
 	var heals := _events_of(guarded, "heal")
 	for e in heals:
 		assert_ne(e["uid"], 3, "the candle bearer (uid 3) is never healed by itself")
+
+
+func test_act_one_bands_are_small_and_elites_unique() -> void:
+	var rng := RandomNumberGenerator.new()
+	for seed_value in 40:
+		rng.seed = seed_value
+		for fight in 2:
+			for option in EnemyGenerator.options(_db, "coins", 1, fight, rng):
+				assert_true(option["team"].size() <= EnemyGenerator.ACT1_MAX_TEAM, "act 1: at most 3 enemies")
+		for act in [2, 3]:
+			for fight in 3:
+				for option in EnemyGenerator.options(_db, "coins", act, fight, rng):
+					var elites: Array = []
+					for unit in option["team"]:
+						var definition: Dictionary = _db.enemies.get(unit["def_id"], {})
+						if int(definition.get("min_act", 1)) >= 2:
+							assert_false(unit["def_id"] in elites, "one %s per band" % unit["def_id"])
+							elites.append(unit["def_id"])

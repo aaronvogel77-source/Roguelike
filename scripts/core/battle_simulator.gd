@@ -298,9 +298,9 @@ func _deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 
 
 func _heal(unit: BattleUnit, amount: int, same_exchange := false) -> void:
-	# Bannprior: while it lives, the other side cannot heal.
+	# Bannprior: while it lives, healing on the other side is halved (at least 1).
 	if living(1 - unit.side).any(func(u: BattleUnit) -> bool: return not u.aura("heal_block").is_empty()):
-		return
+		amount = maxi(amount / 2, 1) if amount > 0 else 0
 	if unit.side == PLAYER and player_heal_factor < 1.0:
 		amount = int(floor(amount * player_heal_factor))
 	var healed := mini(amount, unit.max_health - unit.health)

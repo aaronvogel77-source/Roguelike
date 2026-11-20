@@ -175,8 +175,8 @@ EQUIP_PURSE,Geldkatze,Purse
 EQUIP_BLADE_DESC,+{v} Angriff,+{v} attack
 EQUIP_BUCKLER_DESC,Kampfbeginn: Schild {v},Battle start: {v} shield
 EQUIP_AMULET_DESC,+{v} Leben,+{v} health
-EQUIP_TORCH_DESC,Nach Angriff: Brennen {v},After attack: {v} burn
-EQUIP_DAGGER_DESC,Nach Angriff: Blutung {v},After attack: {v} bleed
+EQUIP_TORCH_DESC,Brennen {v},{v} burn
+EQUIP_DAGGER_DESC,Blutung {v},{v} bleed
 EQUIP_PURSE_DESC,+{v} Angriff je 10 Gold,Battle start: +{v} attack per 10 gold
 AFFIX_PLUS_ATTACK,+{v} Angriff,+{v} attack
 AFFIX_PLUS_HEALTH,+{v} Leben,+{v} health
@@ -185,8 +185,8 @@ AFFIX_REGEN,Zugbeginn: heilt {v},Turn start: heals {v}
 AFFIX_RAGE,Wenn getroffen: +{v} Angriff,When hit: +{v} attack
 AFFIX_DEATH_GOLD,Bei Tod: +{v} Gold,On death: +{v} gold
 AFFIX_MULTIPLIER,×{v} Angriff,×{v} attack
-AFFIX_BURNING_HITS,Nach Angriff: Brennen {v},After attack: {v} burn
-AFFIX_BLEEDING_HITS,Nach Angriff: Blutung {v},After attack: {v} bleed
+AFFIX_BURNING_HITS,Brennen {v},{v} burn
+AFFIX_BLEEDING_HITS,Blutung {v},{v} bleed
 AFFIX_FRAIL,{v} Leben,{v} health
 AFFIX_SELF_CURSE,Kampfbeginn: selbst Fluch {v},Battle start: {v} curse on itself
 AFFIX_SELF_BURN,Kampfbeginn: selbst Brennen {v},Battle start: {v} burn on itself
@@ -375,7 +375,7 @@ OFFER_ROB_DESC,+8 Gold und ein Relikt. Deine hinterste Figur bleibt im Grab.,+8 
 OFFER_SMALL,Wenig nehmen,Take a little
 OFFER_SMALL_DESC,"+3 Gold, ohne Risiko.","+3 gold, no risk."
 OFFER_DUPLICATE,Spiegelbild,Reflection
-OFFER_DUPLICATE_DESC,Eine Figur wird kopiert (Stufe 1). Braucht einen freien Platz.,Copies a figure (level 1). Needs a free slot.
+OFFER_DUPLICATE_DESC,Eine Figur wird kopiert – mit gleicher Stufe. Braucht einen freien Platz.,Copies a figure – same level. Needs a free slot.
 OFFER_TRAIN,Selbstbetrachtung,Reflection drill
 OFFER_TRAIN_DESC,Eine Figur erhält +1 Erfahrung.,A figure gains +1 experience.
 OFFER_FIGHT,Kämpfen,Fight
@@ -671,7 +671,7 @@ ENEMY_CLOCKWORK_WARDEN,Uhrwerk-Wächter,Clockwork Warden
 ABIL_CURSE_WEAVER,Kampfbeginn: Deine vorderste Figur erhält Fluch {v}.,Battle start: your front figure gains {v} curse.
 ABIL_CANDLE_BEARER,Zugbeginn: heilt den vordersten Gegner um {v} (nie sich selbst).,Turn start: heals its front ally by {v} (never itself).
 ABIL_SALT_GOLEM,Immun gegen Brennen.,Immune to burn.
-ABIL_BAN_PRIOR,"Solange er lebt, können deine Figuren nicht geheilt werden.","While it lives, your figures cannot be healed."
+ABIL_BAN_PRIOR,"Solange er lebt, heilen deine Figuren nur halb so viel.","While it lives, your figures heal only half as much."
 ABIL_SHIELD_BREAKER,Kampfbeginn (zuletzt): Zerstört alle Schilde deiner Figuren.,Battle start (last): destroys every shield of your figures.
 ABIL_WOUND_SEALER,Zugbeginn: entfernt bis zu {v} Blutung je Verbündetem.,Turn start: removes up to {v} bleed from each ally.
 ABIL_VAULT_CARDINAL,Kampfbeginn: Alle Gegner erhalten Schild {v}.,Battle start: all of its allies gain {v} shield.
@@ -730,7 +730,7 @@ UI_SET_HINTS,Hinweise,Hints
 UI_SET_HINTS_RESET,Alle Hinweise erneut zeigen,Show all hints again
 HINT_OK,Verstanden,Got it
 HINT_CHOICE_TITLE,Wähle deinen Gegner,Choose your enemy
-HINT_CHOICE,"Drei Banden stehen zur Wahl: leicht, mittel und schwer. Schwerere bringen mehr Gold, die schwerste dazu ein Gratis-Beutepack.","Three bands to choose from: easy, medium and hard. Harder ones pay more gold, the hardest also a free loot pack."
+HINT_CHOICE,"Du siehst eine Bande nach der anderen: leicht, dann mittel, dann schwer. Nimm sie – oder geh das Risiko ein und lass dir die nächste, stärkere zeigen. Zurück geht es nicht.","You see one band after another: easy, then medium, then hard. Take it – or risk it and see the next, stronger one. There is no way back."
 HINT_BOSS_TITLE,Ein Boss!,A boss!
 HINT_BOSS,Bosse haben eine Sonderregel – lies sie oben nach. Ein Sieg öffnet die Schatzkammer und gibt einen neuen Platz.,Bosses have a special rule – read it above. A win opens the treasury and gives a new slot.
 HINT_SHOP_TITLE,Der Shop,The shop
@@ -738,7 +738,7 @@ HINT_SHOP,Kaufe Figuren und zieh sie in deine Reihe. Lege eine gleiche Figur auf
 HINT_FIGHT_TITLE,Bereit zum Kampf,Ready to fight
 HINT_FIGHT,"Nur die vorderste Figur kämpft, die anderen rücken nach. Stelle deine Reihe um, dann drück auf Kampf.","Only the front figure fights, the others move up. Rearrange your row, then press Fight."
 HINT_PACK_TITLE,Packs,Packs
-HINT_PACK,"Packs enthalten Ausrüstung oder Tarot-Karten (und ganz selten ein Ass). Tippe ein Pack an: Das Info-Fenster zeigt den Inhalt und den Knopf zum Kaufen.",Packs hold equipment or tarot cards (and very rarely an ace). Tap a pack: the info window shows its content and the buy button.
+HINT_PACK,Packs enthalten Ausrüstung oder Tarot-Karten (und ganz selten ein Ass). Tippe ein Pack an: Das Info-Fenster zeigt den Inhalt und den Knopf zum Kaufen.,Packs hold equipment or tarot cards (and very rarely an ace). Tap a pack: the info window shows its content and the buy button.
 HINT_SUIT_TITLE,Farbboni,Suit bonuses
 HINT_SUIT,"Mehrere Figuren einer Farbe stärken sich gegenseitig. Hier siehst du, was deine Reihe gerade bekommt.",Several figures of one suit strengthen each other. Here you see what your row gets right now.
 HINT_SOULS_TITLE,Seelen und Pakte,Souls and pacts
@@ -827,3 +827,15 @@ GUIDE_FIGHT,Starte den Kampf.,Start the fight.
 GUIDE_REWARD,Zieh eine Belohnung ins Team.,Drag a reward into your team.
 GUIDE_PACK,Tippe ein Pack an und öffne es.,Tap a pack and open it.
 GUIDE_END,Führung beenden,End the guide
+UI_RISK_TITLE,Risiko?,Risk it?
+UI_RISK_TEXT,"Nächste Bande: %s · +%d Gold. Wer dort wartet, siehst du erst danach – zurück geht es nicht.",Next band: %s · +%d gold. Who waits there you only see afterwards – there is no way back.
+UI_RISK_BUTTON,Risiko eingehen,Take the risk
+UI_TAKE_BAND,Diese Bande nehmen,Fight this band
+UI_STASH_FULL,Ausrüstungsfach voll,Stash full
+UI_DRAG_STASH,"Auf eine Figur ziehen zum Ausrüsten, aufs Verkaufsfeld zum Verkaufen (+%d Gold).","Drag onto a figure to equip, onto the sell field to sell (+%d gold)."
+UI_SUIT_BONUS_CHIP,%s-Bonus,%s bonus
+UI_SUIT_BONUS_NOW,(Du hast gerade %d.),(You have %d right now.)
+SUIT_BONUS_COINS,Pro Münzen-Figur im Team +1 maximaler Zins.,+1 maximum interest per coins figure in your team.
+SUIT_BONUS_CUPS,Jede Kelch-Figur erhält +2 Leben pro Kelch-Figur im Team.,Every cups figure gains +2 health per cups figure in your team.
+SUIT_BONUS_SWORDS,"Je 2 Schwerter-Figuren: Kampfbeginn, alle Gegner Blutung 1.","Per 2 swords figures: battle start, all enemies 1 bleed."
+SUIT_BONUS_WANDS,"Pro Stäbe-Figur: Kampfbeginn, vorderster Gegner Brennen 1.","Per wands figure: battle start, front enemy 1 burn."

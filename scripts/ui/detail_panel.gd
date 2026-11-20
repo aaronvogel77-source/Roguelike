@@ -16,6 +16,10 @@ var _explain: RichTextLabel
 var _action: Button
 var _action_call: Callable
 static var _db: ContentDb
+## Suit counts of the player's row (set by the run screen) for the suit
+## bonus explanations; the suits of the unit shown right now.
+static var suit_counts: Dictionary = {}
+var _pending_suits: Array = []
 
 ## Colors of the object categories, used everywhere the category is named.
 const CATEGORY_COLORS := {
@@ -207,6 +211,7 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 	_body.text = "\n".join(lines)
 	var level_card := UnitCard.for_definition(definition, level, is_enemy)
 	_set_visual(level_card, 1.15)
+	_pending_suits = [] if is_enemy else snapshot.get("suits", [snapshot.get("suit", definition.get("suit", ""))])
 	_open()
 
 
@@ -297,8 +302,26 @@ func _open() -> void:
 		chip.pressed.connect(func() -> void:
 			_explain.text = "%s [b]%s:[/b] %s" % [Keywords.icon(kind, 22), tr(LEGEND_NAMES[kind]), tr(LEGEND_DESCS[kind])])
 		_legend.add_child(chip)
-	_legend.visible = not kinds.is_empty()
+	# Suit bonus of the figure's family (all suits for a fusion).
+	for suit in _pending_suits:
+		if not SUIT_KEYS.has(suit):
+			continue
+		var chip := Button.new()
+		chip.text = tr("UI_SUIT_BONUS_CHIP") % tr("SUIT_" + String(suit).to_upper())
+		chip.add_theme_font_size_override("font_size", 18)
+		chip.add_theme_color_override("font_color", Palette.SUIT_COLORS.get(suit, Palette.PARCHMENT))
+		chip.custom_minimum_size = Vector2(0, 48)
+		chip.pressed.connect(func() -> void:
+			_explain.text = "[b]%s:[/b] %s %s" % [tr("SUIT_" + String(suit).to_upper()), tr(SUIT_KEYS[suit]),
+				tr("UI_SUIT_BONUS_NOW") % int(suit_counts.get(suit, 0))])
+		_legend.add_child(chip)
+	_pending_suits = []
+	_legend.visible = _legend.get_child_count() > 0
 	show()
+
+
+const SUIT_KEYS := {"coins": "SUIT_BONUS_COINS", "cups": "SUIT_BONUS_CUPS", "swords": "SUIT_BONUS_SWORDS",
+	"wands": "SUIT_BONUS_WANDS"}
 
 
 const LEGEND_NAMES := {"shield": "STATUS_SHIELD", "burn": "STATUS_BURN", "bleed": "STATUS_BLEED", "curse": "STATUS_CURSE",
@@ -322,3 +345,9 @@ func show_action(text: String, call: Callable, enabled := true) -> void:
 	_action_call = call
 	_action.disabled = not enabled
 	_action.show()
+
+
+func _notification(what: int) -> void:
+	# While a card is dragged the info steps aside (it would cover the targets).
+	if what == NOTIFICATION_DRAG_BEGIN and visible:
+		hide()

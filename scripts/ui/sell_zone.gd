@@ -71,7 +71,7 @@ func _gui_input(event: InputEvent) -> void:
 
 
 ## What can be dropped here to sell it: own figures and relics.
-const SELLABLE := ["row", "relic"]
+const SELLABLE := ["row", "relic", "stash"]
 
 
 func _can_drop(_at: Vector2, data: Variant) -> bool:

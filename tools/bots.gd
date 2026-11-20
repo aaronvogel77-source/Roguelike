@@ -505,7 +505,6 @@ func _handle_pack() -> void:
 			var target := -1
 			match entry["kind"]:
 				"equipment":
-					target = _strongest_with_room()
 					score = 3.0 + int(entry["item"]["rarity"])
 				"figure":
 					target = run.reward_target(entry["def_id"])
@@ -524,6 +523,17 @@ func _handle_pack() -> void:
 			run.close_pack()
 			return
 		run.take_pack_item(best, best_target)
+		# Equipment lands in the stash: put it straight on the strongest figure.
+		while not run.stash.is_empty():
+			var wearer := -1
+			var value := -1.0
+			for i in run.row.size():
+				var figure = run.row[i]
+				if figure != null and not figure.has("equipment") and run.can_add_object(figure, "equipment") and _row_value(figure) > value:
+					value = _row_value(figure)
+					wearer = i
+			if wearer < 0 or not run.equip_from_stash(run.stash.size() - 1, wearer):
+				run.sell_stash(run.stash.size() - 1)
 
 
 ## Boss treasury: savers take gold, a free slot or a weak figure calls for an

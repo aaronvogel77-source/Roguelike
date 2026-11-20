@@ -22,6 +22,8 @@ const GOLD_PER_INTEREST := 5
 const MAX_INTEREST := 5
 const SHOP_PACK_SLOTS := 2
 const MAX_RELICS := 3
+## Equipment from packs waits in the stash until it is dragged onto a figure.
+const MAX_STASH := 3
 const MAX_TAROTS := 2
 const MAX_PACTS := 3
 const BOSS_SOULS := 2
@@ -80,6 +82,7 @@ var packs: Array = []
 ## The pack being opened: {"pack", "items", "picks_left"} or {}.
 var open_pack: Dictionary = {}
 var relics: Array = []  # relic ids, max 3
+var stash: Array = []  # equipment items waiting for a figure, max MAX_STASH
 var tarots: Array = []  # tarot ids, max 2
 var pacts: Array = []  # pact ids, max 3
 var souls := 0
@@ -99,6 +102,9 @@ var reroll_count := 0
 ## Free rerolls left in this shop (skip mark "free_rerolls").
 var free_rerolls := 0
 var enemy_options: Array = []
+## Bands are offered one after another (easy, then medium, then hard): the
+## player takes the shown one or risks the next, never back.
+var choice_step := 0
 var chosen_enemy: Dictionary = {}
 var rewards: Array = []
 var next_uid := 1
@@ -285,6 +291,14 @@ func enemy_battle_team() -> Array:
 
 
 # --- Actions (each returns true on success) ---------------------------------------
+
+## Turns down the shown band for the next, stronger one (there is no way back).
+func risk_next_band() -> bool:
+	if stage != Stage.ENEMY_CHOICE or choice_step >= enemy_options.size() - 1:
+		return false
+	choice_step += 1
+	return true
+
 
 func choose_enemy(index: int) -> bool:
 	if stage != Stage.ENEMY_CHOICE or index < 0 or index >= enemy_options.size():
@@ -720,7 +734,10 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 			gold += 3
 		"duplicate":
 			souls -= 2
-			_place(row[targets[0]]["def_id"], row.find(null))
+			# The reflection has the original's level and experience.
+			var copy_at := row.find(null)
+			_place(row[targets[0]]["def_id"], copy_at)
+			row[copy_at]["xp"] = int(row[targets[0]]["xp"])
 		"train":
 			row[targets[0]]["xp"] = mini(int(row[targets[0]]["xp"]) + XP_PER_DUPLICATE, XP_FOR_LEVEL[2])
 		"soul_to_gold":
@@ -863,8 +880,7 @@ func can_take_pack_item(item_index: int, target_index: int = -1) -> bool:
 		return false
 	match entry["kind"]:
 		"equipment":
-			return target_index >= 0 and target_index < row.size() and row[target_index] != null \
-				and can_add_object(row[target_index], "equipment")
+			return stash.size() < MAX_STASH  # goes into the stash first
 		"tarot":
 			return tarots.size() < MAX_TAROTS
 		"relic":
@@ -879,8 +895,6 @@ func can_take_pack_item(item_index: int, target_index: int = -1) -> bool:
 ## Kind of target a pack item needs: "figure" (row figure), "slot" (row slot) or "".
 func pack_item_target(item_index: int) -> String:
 	var kind: String = open_pack["items"][item_index]["kind"]
-	if kind == "equipment":
-		return "figure"
 	if kind == "figure":
 		return "slot"
 	return ""
@@ -892,7 +906,7 @@ func take_pack_item(item_index: int, target_index: int = -1) -> bool:
 	var entry: Dictionary = open_pack["items"][item_index]
 	match entry["kind"]:
 		"equipment":
-			row[target_index]["equipment"] = entry["item"].duplicate(true)
+			stash.append(entry["item"].duplicate(true))
 		"tarot":
 			tarots.append(entry["id"])
 		"relic":
@@ -905,6 +919,32 @@ func take_pack_item(item_index: int, target_index: int = -1) -> bool:
 	open_pack["picks_left"] = int(open_pack["picks_left"]) - 1
 	if open_pack["picks_left"] <= 0:
 		open_pack = {}
+	return true
+
+
+## Puts stashed equipment on a row figure. Equipment it already wears goes
+## back into the stash in its place.
+func equip_from_stash(stash_index: int, row_index: int) -> bool:
+	if stash_index < 0 or stash_index >= stash.size() or row_index < 0 or row_index >= row.size():
+		return false
+	var figure: Variant = row[row_index]
+	if figure == null or not can_add_object(figure, "equipment"):
+		return false
+	var item: Dictionary = stash[stash_index]
+	if figure.has("equipment"):
+		stash[stash_index] = figure["equipment"]
+	else:
+		stash.remove_at(stash_index)
+	figure["equipment"] = item
+	return true
+
+
+## Sells stashed equipment for half its price.
+func sell_stash(stash_index: int) -> bool:
+	if stash_index < 0 or stash_index >= stash.size():
+		return false
+	gold += Items.equipment_price(db, stash[stash_index]) / 2
+	stash.remove_at(stash_index)
 	return true
 
 
@@ -1244,6 +1284,7 @@ func _new_figure(def_id: String) -> Dictionary:
 
 func _roll_enemy_options() -> void:
 	enemy_options = EnemyGenerator.options(db, region, act, fight, rng.stream("enemy_gen"))
+	choice_step = 0
 	if not is_boss_fight():
 		var marks: Array = db.items["marks"]
 		var mark: String = marks[rng.stream("marks").randi_range(0, marks.size() - 1)]
@@ -1311,10 +1352,10 @@ func to_dict() -> Dictionary:
 	return {
 		"rng": rng.to_dict(), "stage": stage, "region": region, "act": act, "fight": fight, "gold": gold,
 		"row": row.duplicate(true), "shop": shop.duplicate(), "packs": packs.duplicate(true),
-		"open_pack": open_pack.duplicate(true), "relics": relics.duplicate(), "tarots": tarots.duplicate(),
+		"open_pack": open_pack.duplicate(true), "relics": relics.duplicate(), "stash": stash.duplicate(true), "tarots": tarots.duplicate(),
 		"pacts": pacts.duplicate(), "souls": souls, "next_shop": next_shop.duplicate(), "flags": flags.duplicate(),
 		"event": event.duplicate(true), "fights_since_event": fights_since_event,
-		"reroll_count": reroll_count, "free_rerolls": free_rerolls, "enemy_options": enemy_options.duplicate(true),
+		"reroll_count": reroll_count, "free_rerolls": free_rerolls, "enemy_options": enemy_options.duplicate(true), "choice_step": choice_step,
 		"chosen_enemy": chosen_enemy.duplicate(true), "rewards": rewards.duplicate(),
 		"next_uid": next_uid, "battles_won": battles_won, "last_income": last_income.duplicate(),
 		"fusion_offer": fusion_offer.duplicate(true), "treasure": treasure.duplicate(true), "meta_options": meta_options.duplicate(true),
@@ -1334,6 +1375,7 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.open_pack = data.get("open_pack", {}).duplicate(true)
 	run.treasure = data.get("treasure", []).duplicate(true)
 	run.relics = data.get("relics", []).duplicate()
+	run.stash = data.get("stash", []).duplicate(true)
 	run.tarots = data.get("tarots", []).duplicate()
 	run.pacts = data.get("pacts", []).duplicate()
 	run.souls = int(data.get("souls", 0))
@@ -1346,6 +1388,7 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.reroll_count = int(data["reroll_count"])
 	run.free_rerolls = int(data.get("free_rerolls", 0))
 	run.enemy_options = data["enemy_options"].duplicate(true)
+	run.choice_step = int(data.get("choice_step", 0))
 	run.chosen_enemy = data["chosen_enemy"].duplicate(true)
 	run.rewards = data["rewards"].duplicate()
 	run.next_uid = int(data["next_uid"])

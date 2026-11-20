@@ -112,7 +112,7 @@ func test_mirror_duplicates_for_two_souls() -> void:
 	run.souls = 2
 	assert_true(run.resolve_event("duplicate", [0]))
 	assert_eq(run.row[2]["def_id"], "the_judge")
-	assert_eq(run.row[2]["xp"], 0)
+	assert_eq(run.row[2]["xp"], run.row[0]["xp"], "the reflection has the same level")
 
 
 func test_duel_win_and_loss() -> void:

@@ -25,11 +25,15 @@ const SUIT_SWORDS_PER_BLEED := 2
 ## Suit bonuses of the whole row (coins raise the interest cap in RunState):
 ## cups +2 health per cup figure on each cup figure; swords 1 bleed on every
 ## enemy per 2 sword figures; wands 1 burn on the front enemy per wand figure.
+## A fusion counts once for each suit it contains (like RunState.suit_count),
+## not once per fused part: Klingenlehrling + Henker is one sword figure.
 static func suit_counts(team: Array) -> Dictionary:
 	var counts := {"coins": 0, "cups": 0, "swords": 0, "wands": 0}
 	for entry in team:
+		var seen: Array = []
 		for suit in entry.get("suits", [entry.get("suit", "")]):
-			if counts.has(suit):
+			if counts.has(suit) and not suit in seen:
+				seen.append(suit)
 				counts[suit] += 1
 	return counts
 
