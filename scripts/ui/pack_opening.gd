@@ -189,8 +189,23 @@ func _deal() -> void:
 		tween.tween_property(root, "scale", Vector2.ONE, 0.35).set_delay(i * 0.08)
 	get_tree().create_timer(0.45 + _cards.size() * 0.08).timeout.connect(func() -> void:
 		_ready_to_flip = true
-		_button.text = tr("UI_REVEAL_ALL")
-		_button.visible = true)
+		_auto_reveal())
+
+
+## The cards turn by themselves one after another (a legendary skin still
+## gets its big reveal), then the opening hands over to the big choice view -
+## no buttons in between.
+func _auto_reveal() -> void:
+	for slot in _slots:
+		if not slot["open"]:
+			_flip(slot)
+		while _busy:
+			await get_tree().process_frame
+		await get_tree().create_timer(0.16).timeout
+	await get_tree().create_timer(0.7).timeout
+	if is_inside_tree() and not is_queued_for_deletion():
+		finished.emit()
+		queue_free()
 
 
 func _flip(slot: Dictionary) -> void:

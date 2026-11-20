@@ -207,9 +207,9 @@ var _press_at := Vector2.INF
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			_press_at = event.global_position
+			_press_at = event.position
 		else:
-			var was_tap: bool = _press_at != Vector2.INF and event.global_position.distance_to(_press_at) < 12.0
+			var was_tap: bool = _press_at != Vector2.INF and event.position.distance_to(_press_at) < 16.0
 			_press_at = Vector2.INF
 			if was_tap:
 				tapped.emit(self)

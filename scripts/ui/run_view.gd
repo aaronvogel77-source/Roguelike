@@ -373,16 +373,18 @@ func _show_title_card() -> void:
 	style.bg_color = Color(0.06, 0.03, 0.06, 0.95)
 	style.border_color = color
 	style.set_border_width_all(3)
-	style.set_corner_radius_all(16)
-	style.set_content_margin_all(26)
-	style.shadow_color = Color(color, 0.35)
-	style.shadow_size = 24
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(10)
+	style.content_margin_left = 22
+	style.content_margin_right = 22
+	style.shadow_color = Color(color, 0.3)
+	style.shadow_size = 10
 	panel.add_theme_stylebox_override("panel", style)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 22)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(row)
-	var symbol := Emblem.create(emblem, 72)
+	var symbol := Emblem.create(emblem, 40)
 	symbol.color = color
 	symbol.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	symbol.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -390,16 +392,18 @@ func _show_title_card() -> void:
 	var texts := VBoxContainer.new()
 	texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texts.set_meta("text_fixed", true)
-	var big := _label(title, 48, color)
+	texts.add_theme_constant_override("separation", -2)
+	var big := _label(title, 30, color)
 	big.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texts.add_child(big)
-	var small := _label(subtitle, 24, Palette.PARCHMENT)
+	var small := _label(subtitle, 18, Palette.PARCHMENT)
 	small.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texts.add_child(small)
 	row.add_child(texts)
 	add_child(panel)
 	panel.reset_size()
-	panel.position = (get_viewport_rect().size - panel.size) / 2
+	# A slim band at the top edge: it never covers the cards.
+	panel.position = Vector2((get_viewport_rect().size.x - panel.size.x) / 2, 6)
 	panel.pivot_offset = panel.size / 2
 	panel.scale = Vector2(0.9, 0.9)
 	panel.modulate.a = 0.0
@@ -2107,7 +2111,7 @@ func _build_pack_overlay() -> void:
 	items.add_theme_constant_override("separation", 28)
 	for i in open["items"].size():
 		items.add_child(_pack_item_box(i))
-	var items_fit := _fitted(items, 2.2)
+	var items_fit := _fitted(_with_margin(items, 40, 0), 2.0)  # room at the edges (rarity labels, glow)
 	items_fit.size_flags_stretch_ratio = 2.0
 	column.add_child(items_fit)
 
@@ -2687,10 +2691,12 @@ func _on_event_option(option: String, needed: int) -> void:
 		_show_stage()
 		return
 	var relics_before := _run.relics.size()
+	var xp_before := _row_xp()
 	if _run.resolve_event(option):
 		_event_option = ""
 		_undo.clear()
 		_show_stage()
+		_show_xp_gain(xp_before)
 		if option in ["rob", "buy_relic"] and _run.relics.size() > relics_before:
 			_reveal_relic.call_deferred(_run.relics[-1])
 
@@ -2719,13 +2725,38 @@ func _on_event_row_tapped(slot: SlotView) -> void:
 		var targets := _event_targets.duplicate()
 		var option := _event_option
 		_event_targets.clear()
+		var xp_before := _row_xp()
 		if _run.resolve_event(option, targets):
 			_event_option = ""
+			_show_stage()
+			_show_xp_gain(xp_before)
+			return
 		elif option == "buy_figure":
 			_show_stage()
 			_detail_panel.show_message(tr("UI_MARKET_FIGURES"), tr("UI_NEEDS_FREE_SLOT"))
 			return
 	_show_stage()
+
+
+## Experience of every row figure by its uid (to show what an event added).
+func _row_xp() -> Dictionary:
+	var result := {}
+	for figure in _run.row:
+		if figure != null:
+			result[figure["uid"]] = int(figure["xp"])
+	return result
+
+
+## Shows the experience screen for the first figure that gained experience
+## (or a new copy that starts with experience, e.g. the mirror).
+func _show_xp_gain(before: Dictionary) -> void:
+	for figure in _run.row:
+		if figure == null or figure.has("fusion"):
+			continue
+		var old_xp := int(before.get(figure["uid"], 0))
+		if int(figure["xp"]) > old_xp:
+			_show_merge(figure["def_id"], old_xp, int(figure["xp"]))
+			return
 
 
 func _play_duel() -> void:
@@ -2853,7 +2884,11 @@ func _build_reward() -> void:
 	arrow.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	bottom.add_child(arrow)
 	var stage := _elegant_panel(0.55)
-	stage.add_child(_own_row_slots())
+	var stage_box := VBoxContainer.new()
+	stage_box.add_theme_constant_override("separation", 2)
+	stage_box.add_child(_own_row_slots())
+	stage_box.add_child(_xp_hint_row())  # the battle's experience shows right here
+	stage.add_child(stage_box)
 	bottom.add_child(stage)
 	var skip := _button(tr("UI_SKIP_REWARD") % RunState.REWARD_SKIP_GOLD, Vector2(220, 64), _on_skip_reward)
 	skip.add_theme_font_size_override("font_size", 18)

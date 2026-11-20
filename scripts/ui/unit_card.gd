@@ -322,13 +322,13 @@ func _on_body_input(event: InputEvent) -> void:
 	var pressed: bool = (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed) \
 		or (event is InputEventScreenTouch and event.pressed)
 	if pressed:
-		_press_at = event.global_position if event is InputEventMouseButton else event.position
+		_press_at = event.position  # local in gui input, for mouse and touch alike
 		return
 	var released: bool = (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed) \
 		or (event is InputEventScreenTouch and not event.pressed)
 	if released:
-		var at: Vector2 = event.global_position if event is InputEventMouseButton else event.position
-		var was_tap := _press_at != Vector2.INF and at.distance_to(_press_at) < 12.0
+		var at: Vector2 = event.position
+		var was_tap := _press_at != Vector2.INF and at.distance_to(_press_at) < 16.0
 		_press_at = Vector2.INF
 		if was_tap:
 			tapped.emit(self)
