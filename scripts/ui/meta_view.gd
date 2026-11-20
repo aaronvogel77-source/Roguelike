@@ -99,7 +99,7 @@ func _build_menu(column: VBoxContainer) -> void:
 	buttons.add_child(_button(tr("UI_MENU_GRIMOIRE"), Vector2(360, 66), _show.bind("grimoire")))
 	buttons.add_child(_button(tr("UI_MENU_SETTINGS"), Vector2(360, 52), _show.bind("settings")))
 	if _debug:
-		buttons.add_child(_button("+50 Seelenglut", Vector2(360, 44), func() -> void:
+		buttons.add_child(_button("+50 Seelenglut", Vector2(360, 48), func() -> void:
 			_meta.glut += 50
 			_meta.save()
 			_show("menu")))
@@ -174,7 +174,7 @@ func _slider(value: float) -> HSlider:
 	slider.max_value = 1.0
 	slider.step = 0.05
 	slider.value = value
-	slider.custom_minimum_size = Vector2(320, 40)
+	slider.custom_minimum_size = Vector2(320, 48)
 	return slider
 
 
@@ -413,7 +413,7 @@ func _cosmetic_card(entry: Dictionary) -> Control:
 		swatch.color = Color(Cosmetics.BACKS[id]["bg"])
 		box.add_child(_centered(swatch))
 	if owned:
-		box.add_child(_button(tr("UI_WORN") if worn else tr("UI_WEAR"), Vector2(170, 46), func() -> void:
+		box.add_child(_button(tr("UI_WORN") if worn else tr("UI_WEAR"), Vector2(170, 48), func() -> void:
 			_meta.equip(_db, id)
 			_meta.save()
 			Cosmetics.apply(_meta)
@@ -427,7 +427,7 @@ func _cosmetic_card(entry: Dictionary) -> Control:
 
 
 func _buy_cosmetic_button(id: String, price: int) -> Button:
-	var buy := _button(tr("UI_BUY_FOR") % price, Vector2(170, 46), func() -> void:
+	var buy := _button(tr("UI_BUY_FOR") % price, Vector2(170, 48), func() -> void:
 		if _meta.buy_cosmetic(_db, id):
 			_meta.save()
 			if MetaState.cosmetic(_db, id).get("rarity", "") == "legendary":
@@ -460,7 +460,7 @@ func _build_grimoire(column: VBoxContainer) -> void:
 	for tab in GRIMOIRE_TABS:
 		var all := _grimoire_entries(tab)
 		var known := all.filter(func(id: String) -> bool: return _known(tab, id)).size()
-		var button := _button("%s %d/%d" % [tr("GRIMOIRE_" + tab.to_upper()), known, all.size()], Vector2(0, 46), func() -> void:
+		var button := _button("%s %d/%d" % [tr("GRIMOIRE_" + tab.to_upper()), known, all.size()], Vector2(0, 48), func() -> void:
 			_tab = tab
 			_show("grimoire"))
 		button.add_theme_font_size_override("font_size", 17)

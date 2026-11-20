@@ -738,13 +738,13 @@ HINT_SHOP,Kaufe Figuren und zieh sie in deine Reihe. Lege eine gleiche Figur auf
 HINT_FIGHT_TITLE,Bereit zum Kampf,Ready to fight
 HINT_FIGHT,"Nur die vorderste Figur kämpft, die anderen rücken nach. Stelle deine Reihe um, dann drück auf Kampf.","Only the front figure fights, the others move up. Rearrange your row, then press Fight."
 HINT_PACK_TITLE,Packs,Packs
-HINT_PACK,"Packs enthalten Ausrüstung oder Tarot-Karten (und ganz selten ein Ass). Tippe ein Pack an, um es zu kaufen und zu öffnen.",Packs hold equipment or tarot cards (and very rarely an ace). Tap a pack to buy and open it.
+HINT_PACK,"Packs enthalten Ausrüstung oder Tarot-Karten (und ganz selten ein Ass). Tippe ein Pack an: Das Info-Fenster zeigt den Inhalt und den Knopf zum Kaufen.",Packs hold equipment or tarot cards (and very rarely an ace). Tap a pack: the info window shows its content and the buy button.
 HINT_SUIT_TITLE,Farbboni,Suit bonuses
 HINT_SUIT,"Mehrere Figuren einer Farbe stärken sich gegenseitig. Hier siehst du, was deine Reihe gerade bekommt.",Several figures of one suit strengthen each other. Here you see what your row gets right now.
 HINT_SOULS_TITLE,Seelen und Pakte,Souls and pacts
 HINT_SOULS,"Mit Seelen kaufst du Pakte: mächtige Vorteile, die aber immer einen Preis haben.",Souls buy pacts: powerful boons that always come at a price.
 HINT_REWARD_TITLE,Belohnung,Reward
-HINT_REWARD,Nach jedem Sieg darfst du eine Figur gratis nehmen – oder verzichten und 2 Gold bekommen.,After every win you may take one figure for free – or skip it for 2 gold.
+HINT_REWARD,Nach jedem Sieg darfst du eine Figur gratis ins Team ziehen – oder weitergehen und 2 Gold bekommen.,After every win you may drag one figure into your team for free – or move on for 2 gold.
 HINT_EVENT_TITLE,Ein Ereignis,An event
 HINT_EVENT,"Ereignisse bieten seltene Gelegenheiten. Manche kosten etwas, du kannst aber auch einfach weitergehen.","Events offer rare chances. Some cost something, but you can always move on."
 HINT_DANGER_TITLE,Gefahr!,Danger!
@@ -814,3 +814,16 @@ UI_TITLE_BOSS,Bosskampf,Boss fight
 UI_TITLE_ACT,Ende von Akt %d,End of act %d
 UI_TITLE_EVENT,Ereignis,Event
 UI_TITLE_DANGER,Gefahr,Danger
+UI_DRAG_TO_BUY,Zum Kaufen ins Team ziehen.,Drag into your team to buy.
+UI_DRAG_TO_MOVE,Ziehen zum Umstellen – aufs Verkaufsfeld zum Verkaufen.,Drag to rearrange – onto the sell field to sell.
+UI_DRAG_TAROT,Zum Benutzen auf eine Figur ziehen.,Drag onto a figure to use it.
+UI_DRAG_RELIC,Zum Verkaufen (+%d Gold) aufs Verkaufsfeld ziehen.,Drag onto the sell field to sell (+%d gold).
+UI_BUY_OPEN,Kaufen & öffnen (%d Gold),Buy & open (%d gold)
+UI_BUY_OPEN_SOULS,Kaufen & öffnen (%d Seelen),Buy & open (%d souls)
+UI_SOUL_PACK_INFO,"Wähle einen von mehreren Pakten: ein starker Vorteil für den Run, mit einem Preis.","Pick one of several pacts: a strong advantage for the run, at a price."
+GUIDE_CHOOSE,Wähle für den Anfang die leichte Bande.,Start with the easy band.
+GUIDE_BUY,Zieh eine Figur ins Team.,Drag a figure into your team.
+GUIDE_FIGHT,Starte den Kampf.,Start the fight.
+GUIDE_REWARD,Zieh eine Belohnung ins Team.,Drag a reward into your team.
+GUIDE_PACK,Tippe ein Pack an und öffne es.,Tap a pack and open it.
+GUIDE_END,Führung beenden,End the guide

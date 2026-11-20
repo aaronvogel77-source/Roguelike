@@ -20,10 +20,12 @@ func test_run_scene_runs_through_its_screens() -> void:
 	await wait_frames(2)
 	assert_eq(view._run.stage, RunState.Stage.PLANNING)
 	view._run.gold = 20
-	view._select("shop", 0)
-	view._on_slot_tapped(view._slot_for("row", 1))
+	view._on_slot_tapped(view._slot_for("shop", 0))
+	await wait_frames(1)
+	assert_null(view._run.row[1], "tapping only shows the info")
+	view._on_slot_dropped({"kind": "shop", "index": 0}, view._slot_for("row", 1))
 	await wait_frames(2)
-	assert_not_null(view._run.row[1], "bought into slot 1")
+	assert_not_null(view._run.row[1], "dragged into slot 1: bought")
 	view._on_undo()
 	await wait_frames(2)
 	assert_null(view._run.row[1], "undo restored the empty slot")
@@ -73,8 +75,7 @@ func test_pack_overlay_tarot_and_insert() -> void:
 	view._run.tarots = ["strength"]
 	view._show_stage()
 	await wait_frames(2)
-	view._selected = {"kind": "tarot", "index": 0}
-	view._on_slot_tapped(view._slot_for("row", 1))
+	view._on_slot_dropped({"kind": "tarot", "index": 0}, view._slot_for("row", 1))
 	await wait_frames(2)
 	assert_eq(view._run.row[1]["bonus_attack"], 2)
 	view._on_slot_inserted({"kind": "row", "index": 1}, view._slot_for("row", 0), "right")

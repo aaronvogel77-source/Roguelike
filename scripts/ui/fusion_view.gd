@@ -216,7 +216,7 @@ func _ability_list(preview: Dictionary) -> Control:
 		var text := tr("ABIL_" + id.to_upper()).replace("{v}", NumberFormat.ability_value(ability["effect"], float(ability["values"][at - 1])))
 		text += " " + tr("UI_ABILITY_LEVEL") % ["", "I", "II", "III"][clampi(at, 1, 3)]
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(420, 0)
+		button.custom_minimum_size = Vector2(420, 48)
 		button.toggle_mode = true
 		button.button_pressed = (not choosing) or i in _keep
 		button.disabled = not choosing

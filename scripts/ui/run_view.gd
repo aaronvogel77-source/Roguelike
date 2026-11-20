@@ -241,6 +241,7 @@ func _show_stage() -> void:
 			_build_run_end()
 	_show_title_card()
 	_show_hints.call_deferred()
+	_update_guide.call_deferred()
 	# A fusion offer (altar, boss, candle, blood moon) lies over every screen.
 	if not _run.fusion_offer.is_empty() and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
 		var fusion := FusionView.create(_run, _db, _detail_panel)
@@ -254,6 +255,62 @@ func _show_stage() -> void:
 			_undo.clear()
 			_show_stage())
 		_screen.add_child(treasury)
+
+
+var _guide: Guide
+
+
+## Guided first run: moves the guide on by what happened, then frames the
+## next thing to do (see Guide).
+func _update_guide() -> void:
+	if is_instance_valid(_guide):
+		_guide.queue_free()
+	if _run == null or _url_flag("arena") or not Guide.active():
+		return
+	if _meta.runs > 0:
+		Guide.finish()  # finished runs before: no guide
+		return
+	var stage := _run.stage
+	if stage in [RunState.Stage.WON, RunState.Stage.LOST]:
+		Guide.finish()
+		return
+	if Guide.current() == "choose" and stage != RunState.Stage.ENEMY_CHOICE:
+		Guide.passed("choose")
+	if Guide.current() == "buy" and (stage != RunState.Stage.PLANNING or _filled_slots() >= 2):
+		Guide.passed("buy")
+	if Guide.current() == "fight" and stage != RunState.Stage.PLANNING:
+		Guide.passed("fight")
+	if Guide.current() == "reward" and stage != RunState.Stage.REWARD:
+		Guide.passed("reward")
+	if Guide.current() == "pack" and not _run.open_pack.is_empty():
+		Guide.passed("pack")
+	if not Guide.active():
+		return
+	var target: Control = null
+	match Guide.current():
+		"choose":
+			target = _hint_targets.get("choice_easy") if stage == RunState.Stage.ENEMY_CHOICE else null
+		"buy":
+			if stage == RunState.Stage.PLANNING:
+				for slot in _shop_slots:
+					if slot.card != null and _run.price_of(_run.shop[slot.index]) <= _run.gold:
+						target = slot
+						break
+		"fight":
+			target = _hint_targets.get("fight") if stage == RunState.Stage.PLANNING else null
+		"reward":
+			target = _hint_targets.get("reward") if stage == RunState.Stage.REWARD else null
+		"pack":
+			if stage == RunState.Stage.PLANNING and _run.open_pack.is_empty():
+				for i in _run.packs.size():
+					if not _run.packs[i].is_empty() and _run.pack_cost(_run.packs[i]) <= _run.gold:
+						target = _hint_targets.get("pack")
+						break
+	if target == null or not is_instance_valid(target):
+		return
+	_guide = Guide.new()
+	add_child(_guide)
+	_guide.show_step(Guide.TEXTS[Guide.current()], target)
 
 
 ## The phase last announced with a title card (each phase gets one, once).
@@ -357,7 +414,7 @@ func _top_bar(title: String) -> Control:
 	bar.add_theme_constant_override("separation", 18)
 	bar.add_child(_spacer(8))
 	# Back to the main menu; the run is autosaved and can be continued.
-	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(0, 44), _show_menu)
+	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(0, 48), _show_menu)
 	menu.add_theme_font_size_override("font_size", 18)
 	bar.add_child(menu)
 
@@ -369,7 +426,7 @@ func _top_bar(title: String) -> Control:
 
 	if _url_flag("debug"):
 		# One "Debug" button opens the tools as a column (the bar is full).
-		var toggle := _button("Debug", Vector2(0, 44), func() -> void:
+		var toggle := _button("Debug", Vector2(0, 48), func() -> void:
 			_debug_open = not _debug_open
 			_show_debug_tools())
 		toggle.add_theme_font_size_override("font_size", 16)
@@ -470,7 +527,7 @@ func _resource_chip(kind: String, value: String, color: Color, explanation: Stri
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.custom_minimum_size = Vector2(0, 44)
+	row.custom_minimum_size = Vector2(0, 48)
 	row.mouse_filter = Control.MOUSE_FILTER_STOP
 	var emblem := Emblem.create(kind, 28)
 	emblem.color = color
@@ -544,7 +601,7 @@ func _shop_counter() -> Control:
 	fight.add_theme_font_size_override("font_size", 28)
 	fight.disabled = _filled_slots() == 0
 	actions.add_child(_centered(fight))
-	var peek := _button(tr("UI_SHOW_ENEMY"), Vector2(190, 44), _show_enemy_popup)
+	var peek := _button(tr("UI_SHOW_ENEMY"), Vector2(190, 48), _show_enemy_popup)
 	peek.add_theme_font_size_override("font_size", 16)
 	actions.add_child(peek)
 	var reroll_text := tr("UI_REROLL_FREE") % _run.free_rerolls if _run.free_rerolls > 0 else tr("UI_REROLL_BUTTON") % _run.reroll_price()
@@ -555,13 +612,13 @@ func _shop_counter() -> Control:
 	actions.add_child(reroll)
 	var small := HBoxContainer.new()
 	small.add_theme_constant_override("separation", 8)
-	_undo_button = _button(tr("UI_UNDO"), Vector2(0, 38), _on_undo)
+	_undo_button = _button(tr("UI_UNDO"), Vector2(0, 48), _on_undo)
 	_undo_button.add_theme_font_size_override("font_size", 14)
 	_undo_button.disabled = _undo.is_empty()
 	_undo_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	small.add_child(_undo_button)
 	if _run.can_skip_boss():
-		var skip_boss := _button(tr("UI_SKIP_BOSS"), Vector2(0, 38), _on_skip_boss)
+		var skip_boss := _button(tr("UI_SKIP_BOSS"), Vector2(0, 48), _on_skip_boss)
 		skip_boss.add_theme_font_size_override("font_size", 14)
 		small.add_child(skip_boss)
 	actions.add_child(small)
@@ -682,7 +739,7 @@ func _show_debug_tools() -> void:
 	if _run.stage == RunState.Stage.PLANNING:
 		entries.insert(2, ["Legende", _debug_legend])
 	for entry in entries:
-		var button := _button(entry[0], Vector2(170, 40), entry[1])
+		var button := _button(entry[0], Vector2(170, 48), entry[1])
 		button.add_theme_font_size_override("font_size", 16)
 		column.add_child(button)
 	add_child(panel)
@@ -939,6 +996,8 @@ func _build_enemy_choice() -> void:
 		options.add_child(option_panel)
 		if i == _run.enemy_options.size() - 1:
 			_hint_targets["choice"] = option_panel
+		if i == 0:
+			_hint_targets["choice_easy"] = option_panel
 	if not _run.is_boss_fight():
 		options.add_child(_skip_panel())
 
@@ -1077,7 +1136,7 @@ func _build_planning() -> void:
 	var left := VBoxContainer.new()
 	left.custom_minimum_size = Vector2(SIDE_COLUMN, 0)
 	left.add_theme_constant_override("separation", 10)
-	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(SIDE_COLUMN, 44), _show_menu)
+	var menu := _button(tr("UI_MENU_BUTTON"), Vector2(SIDE_COLUMN, 48), _show_menu)
 	menu.add_theme_font_size_override("font_size", 18)
 	left.add_child(menu)
 	left.add_child(_item_shelf())
@@ -1103,7 +1162,7 @@ func _build_planning() -> void:
 	boxes.size_flags_horizontal = Control.SIZE_SHRINK_END
 	right.add_child(boxes)
 	if _url_flag("debug"):
-		var toggle := _button("Debug", Vector2(120, 40), func() -> void:
+		var toggle := _button("Debug", Vector2(120, 48), func() -> void:
 			_debug_open = not _debug_open
 			_show_debug_tools())
 		toggle.add_theme_font_size_override("font_size", 16)
@@ -1126,7 +1185,7 @@ func _build_planning() -> void:
 	_sell_zone.custom_minimum_size = Vector2(340, 120)
 	_sell_zone.set_auto_hide(true)
 	_sell_zone.tapped.connect(_on_sell_zone_tapped)
-	_sell_zone.dropped.connect(func(data: Dictionary) -> void: _request_sell(data["index"]))
+	_sell_zone.dropped.connect(_on_sell_dropped)
 	_screen.add_child(_sell_zone)
 	_sell_zone.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_KEEP_SIZE)
 	_sell_zone.position += Vector2(-24, -40)
@@ -1258,40 +1317,39 @@ func _on_slot_tapped(slot: SlotView) -> void:
 		else:
 			_clear_selection()
 		return
-	if slot.kind == "shop":
-		if slot.card == null or (_selected.get("kind") == "shop" and _selected["index"] == slot.index):
-			_clear_selection()
-		else:
-			_select("shop", slot.index)
+	# One principle everywhere: dragging acts, tapping only shows the info.
+	_clear_selection()
+	if slot.card != null:
+		_detail_panel.show_card(slot.card)
+		_detail_panel.show_hint(tr("UI_DRAG_TO_BUY") if slot.kind == "shop" else tr("UI_DRAG_TO_MOVE"))
+
+
+## A tarot card dragged onto a row figure: use it there (the candle starts
+## its fusion instead).
+func _use_tarot_on(tarot_index: int, row_index: int) -> void:
+	if tarot_index < 0 or tarot_index >= _run.tarots.size():
 		return
-	# Row slot: use a selected tarot card, complete a pending buy or move, otherwise select.
-	if _selected.get("kind") == "tarot":
-		var tarot_index: int = _selected["index"]
-		var card_id: String = _run.tarots[tarot_index]
-		var before_xp := int(_run.row[slot.index]["xp"]) if _run.row[slot.index] != null else 0
-		var snapshot := _run.to_dict()
-		if _run.use_tarot(tarot_index, slot.index):
-			_undo.append(snapshot)  # tarot use can be undone (the RNG state is restored too)
+	var card_id: String = _run.tarots[tarot_index]
+	if card_id == "ritual_candle":
+		if _run.start_candle_fusion():
+			_event_targets.clear()
 			_show_stage()
-			if card_id == "magician" and _run.row[slot.index] != null:
-				_show_merge(_run.row[slot.index]["def_id"], before_xp, int(_run.row[slot.index]["xp"]))
-		else:
-			_clear_selection()
-			if slot.card != null:
-				_detail_panel.show_message(ItemText.tarot_name(card_id), tr("UI_OBJECT_LIMIT"))
 		return
-	if _selected.get("kind") == "shop":
-		_buy(_selected["index"], slot.index)
-	elif _selected.get("kind") == "row" and _selected["index"] != slot.index:
-		_move(_selected["index"], slot.index)
-	elif _selected.get("kind") == "row":
-		_clear_selection()
-	elif slot.card != null:
-		_select("row", slot.index)
+	var before_xp := int(_run.row[row_index]["xp"]) if _run.row[row_index] != null else 0
+	var snapshot := _run.to_dict()
+	if _run.use_tarot(tarot_index, row_index):
+		_undo.append(snapshot)  # tarot use can be undone (the RNG state is restored too)
+		_show_stage()
+		if card_id == "magician" and _run.row[row_index] != null:
+			_show_merge(_run.row[row_index]["def_id"], before_xp, int(_run.row[row_index]["xp"]))
+	elif _run.row[row_index] != null:
+		_detail_panel.show_message(ItemText.tarot_name(card_id), tr("UI_OBJECT_LIMIT"))
 
 
 func _on_slot_dropped(data: Dictionary, slot: SlotView) -> void:
-	if data["kind"] == "shop":
+	if data["kind"] == "tarot":
+		_use_tarot_on(data["index"], slot.index)
+	elif data["kind"] == "shop":
 		_buy(data["index"], slot.index)
 	elif data["kind"] == "row":
 		_move(data["index"], slot.index)
@@ -1342,6 +1400,17 @@ func _drop_state(data: Dictionary, index: int) -> String:
 		"market_figure":
 			def_id = String(_run.event.get("figure", ""))
 			cost = _run.price_of(def_id) / 2 if def_id != "" else 0
+		"tarot":
+			if target == null:
+				return ""
+			var tarot: String = _run.tarots[data["index"]] if int(data["index"]) < _run.tarots.size() else ""
+			if tarot == "ritual_candle":
+				return "free"
+			if tarot == "strength" and not _run.can_add_object(target, "strength"):
+				return "no"
+			if tarot in ["star", "sun"] and not _run.can_add_object(target, "blessing"):
+				return "no"
+			return "free"
 		"pack":
 			var entry: Dictionary = _run.open_pack.get("items", [])[data["index"]] if not _run.open_pack.is_empty() else {}
 			if entry.get("kind", "") == "equipment":
@@ -1438,6 +1507,15 @@ func _apply_action(action: Callable) -> void:
 		_show_stage()
 	else:
 		_clear_selection()
+
+
+func _on_sell_dropped(data: Dictionary) -> void:
+	if data.get("kind") == "relic":
+		if _run.sell_relic(data["index"]):
+			_undo.clear()
+			_show_stage()
+	else:
+		_request_sell(data["index"])
 
 
 func _on_sell_zone_tapped() -> void:
@@ -1549,6 +1627,8 @@ func _confirm(title_text: String, text: String, ok_text: String, on_ok: Callable
 
 func _start_fight() -> void:
 	_undo.clear()
+	if is_instance_valid(_guide):
+		_guide.queue_free()
 	Sound.music("boss" if _run.is_boss_fight() else "battle")
 	if _run.is_boss_fight():
 		Sound.play("roar")
@@ -1595,6 +1675,8 @@ func _strip_slot(kind: String, index: int, id: String, side: float = 52.0) -> Co
 		return empty
 	var card := ObjectCard.create(_db, {"kind": kind, "id": id}, Vector2(side, side), true)
 	card.tapped.connect(func(c: ObjectCard) -> void: _on_strip_tapped(kind, index, c))
+	if kind in ["tarot", "relic"]:
+		_make_object_draggable(card, {"kind": kind, "index": index})
 	_strip_cards.append(card)
 	return card
 
@@ -1609,18 +1691,13 @@ func _on_strip_tapped(kind: String, index: int, card: ObjectCard) -> void:
 			_event_option = ""
 			_show_stage()
 		return
-	# The ritual candle opens the fusion screen right away.
-	if kind == "tarot" and _run.tarots[index] == "ritual_candle" and _run.start_candle_fusion():
-		_event_targets.clear()  # row indices change with the fusion
-		_show_stage()
-		return
-	_selected = {"kind": kind, "index": index}
-	card.set_selected(true)
+	# Tapping shows the info; acting is dragging (tarot onto a figure, relic
+	# onto the sell field). The candle also works on the event screen.
 	_detail_panel.show_object(card)
-	if kind == "tarot" and _run.stage == RunState.Stage.PLANNING:  # tarot cards work in the shop only
-		_detail_panel.show_hint(tr("UI_USE_TAROT") % card.title)
-	elif kind == "relic" and _sell_zone != null:
-		_sell_zone.show_text(tr("UI_SELL_FOR") % (Items.relic_price(_db, _run.relics[index]) / 2), true)
+	if kind == "tarot" and (_run.stage == RunState.Stage.PLANNING or _run.tarots[index] == "ritual_candle"):
+		_detail_panel.show_hint(tr("UI_DRAG_TAROT"))
+	elif kind == "relic" and _run.stage == RunState.Stage.PLANNING:
+		_detail_panel.show_hint(tr("UI_DRAG_RELIC") % (Items.relic_price(_db, _run.relics[index]) / 2))
 
 
 ## Dark velvet behind the tarot spread.
@@ -1767,10 +1844,13 @@ func _soul_pack_view() -> Control:
 	panel.add_child(inner)
 	panel.gui_input.connect(func(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-			if _run.buy_soul_pack():
-				_undo.clear()
-				_pack_pick = -1
-				_show_stage())
+			var price := _run.soul_pack_price()
+			_detail_panel.show_message(tr("UI_SOUL_PACK"), tr("UI_SOUL_PACK_INFO"))
+			_detail_panel.show_action(tr("UI_BUY_OPEN_SOULS") % price, func() -> void:
+				if _run.buy_soul_pack():
+					_undo.clear()
+					_pack_pick = -1
+					_show_stage(), _run.souls >= price and _run.pacts.size() < RunState.MAX_PACTS))
 	box.add_child(_with_price(panel, _run.soul_pack_price(), true))
 	if _run.pacts.size() >= RunState.MAX_PACTS:
 		panel.modulate.a = 0.4
@@ -1824,7 +1904,11 @@ func _pack_view(index: int) -> Control:
 		panel.add_child(inner)
 		panel.gui_input.connect(func(event: InputEvent) -> void:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-				_on_buy_pack(index))
+				# Tap = info; buying is the button in the info window.
+				var cost := _run.pack_cost(pack)
+				_detail_panel.show_message(ItemText.pack_name(pack),
+					tr("UI_PACK_CONTENT") % [Items.pack_choice_count(_db, pack), Items.pack_picks(_db, pack)])
+				_detail_panel.show_action(tr("UI_BUY_OPEN") % cost, _on_buy_pack.bind(index), _run.gold >= cost))
 	return box
 
 
@@ -2069,6 +2153,19 @@ func _make_draggable(control: Control, data: Dictionary, def_id: String = "") ->
 			emblem.position = -Vector2(30, 30)
 			holder.add_child(emblem)
 		control.set_drag_preview(holder)
+		return data, Callable(), Callable())
+
+
+## Tarot cards and relics are dragged (onto a figure / the sell field); the
+## card itself follows the finger as preview.
+func _make_object_draggable(card: ObjectCard, data: Dictionary) -> void:
+	card.set_drag_forwarding(func(_at: Vector2) -> Variant:
+		var holder := Control.new()
+		var preview := ObjectCard.create(_db, card.entry, Vector2(60, 60), true)
+		preview.modulate = Color(1, 1, 1, 0.85)
+		preview.position = -Vector2(30, 30)
+		holder.add_child(preview)
+		card.set_drag_preview(holder)
 		return data, Callable(), Callable())
 
 

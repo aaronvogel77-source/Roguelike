@@ -54,6 +54,7 @@ func _ready() -> void:
 	var ok := Button.new()
 	ok.text = tr("HINT_OK")
 	ok.add_theme_font_size_override("font_size", 18)
+	ok.custom_minimum_size = Vector2(140, 48)
 	ok.size_flags_horizontal = Control.SIZE_SHRINK_END
 	ok.pressed.connect(_dismiss)
 	column.add_child(ok)

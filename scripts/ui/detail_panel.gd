@@ -12,6 +12,9 @@ var _figures: Dictionary = {}  # figure definitions for fusion texts (loaded onc
 var _visual: CenterContainer
 var _legend: HBoxContainer
 var _explain: RichTextLabel
+## Optional action under the info (e.g. "Buy & open" for a pack).
+var _action: Button
+var _action_call: Callable
 static var _db: ContentDb
 
 ## Colors of the object categories, used everywhere the category is named.
@@ -86,6 +89,17 @@ func _init() -> void:
 	_explain.add_theme_color_override("default_color", Palette.MUTED)
 	_explain.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_explain)
+	_action = Button.new()
+	_action.custom_minimum_size = Vector2(300, 56)
+	_action.add_theme_font_size_override("font_size", 22)
+	_action.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_action.pressed.connect(func() -> void:
+		var call := _action_call
+		hide()
+		if call.is_valid():
+			call.call())
+	_action.hide()
+	column.add_child(_action)
 	# Taps go through the panel (to the cards underneath); only "close" reacts.
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for node: Control in [column, header, _title, _subtitle, _body]:
@@ -265,6 +279,7 @@ func _set_visual(control: Control, factor: float) -> void:
 
 ## Shows the panel with a symbol legend for the current text.
 func _open() -> void:
+	_action.hide()
 	for child in _legend.get_children():
 		child.queue_free()
 	_explain.text = ""
@@ -278,7 +293,7 @@ func _open() -> void:
 		chip.icon = load(Keywords.ICON_PATH % kind)
 		chip.text = tr(LEGEND_NAMES[kind])
 		chip.add_theme_font_size_override("font_size", 18)
-		chip.custom_minimum_size = Vector2(0, 40)
+		chip.custom_minimum_size = Vector2(0, 48)
 		chip.pressed.connect(func() -> void:
 			_explain.text = "%s [b]%s:[/b] %s" % [Keywords.icon(kind, 22), tr(LEGEND_NAMES[kind]), tr(LEGEND_DESCS[kind])])
 		_legend.add_child(chip)
@@ -299,3 +314,11 @@ func _subtitle_text(text: String) -> Label:
 	label.add_theme_color_override("font_color", Palette.MUTED)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label
+
+
+## Adds an action button to the info shown right now.
+func show_action(text: String, call: Callable, enabled := true) -> void:
+	_action.text = text
+	_action_call = call
+	_action.disabled = not enabled
+	_action.show()

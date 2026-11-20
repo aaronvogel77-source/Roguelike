@@ -59,7 +59,7 @@ func _notification(what: int) -> void:
 		return
 	if what == NOTIFICATION_DRAG_BEGIN:
 		var data: Variant = get_viewport().gui_get_drag_data()
-		if data is Dictionary and data.get("kind") == "row":
+		if data is Dictionary and data.get("kind") in SELLABLE:
 			_reveal(true)
 	elif what == NOTIFICATION_DRAG_END:
 		_reveal(_active)
@@ -70,8 +70,12 @@ func _gui_input(event: InputEvent) -> void:
 		tapped.emit()
 
 
+## What can be dropped here to sell it: own figures and relics.
+const SELLABLE := ["row", "relic"]
+
+
 func _can_drop(_at: Vector2, data: Variant) -> bool:
-	return data is Dictionary and data.get("kind") == "row"
+	return data is Dictionary and data.get("kind") in SELLABLE
 
 
 func _drop(_at: Vector2, data: Variant) -> void:
