@@ -194,6 +194,8 @@ func show_unit(definition: Dictionary, snapshot: Dictionary, is_enemy: bool, ext
 				continue
 			elif source in ["plague", "curse_fog"]:
 				lines.append("%s %s" % [_tag("UI_CAT_DANGER", Color(0.7, 0.45, 0.85)), Keywords.colorize(tr("SOURCE_" + String(source).to_upper()))])
+			elif String(source).begins_with("region_"):
+				lines.append("%s %s" % [_tag("UI_CAT_BLESSING", CATEGORY_COLORS["blessing"]), tr("SOURCE_" + String(source).to_upper())])
 			elif String(source).begins_with("suit_"):
 				suit_names.append(tr("SUIT_" + String(source).substr(5).to_upper()))
 			elif source in extras["db"].items["pacts"]:

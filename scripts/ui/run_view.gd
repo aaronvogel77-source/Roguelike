@@ -72,7 +72,9 @@ func _new_run(occultist: String = "novice") -> void:
 	var seed_value := _url_seed()
 	if seed_value < 0:
 		seed_value = randi() % 1000000
-	_run = RunState.new_run(_db, seed_value, _meta.run_options(_db, occultist))
+	var options := _meta.run_options(_db, occultist)
+	options["coins_first"] = Guide.active()  # the guided first run starts in the coins
+	_run = RunState.new_run(_db, seed_value, options)
 	_run_summary = {}
 	_undo.clear()
 	_show_stage()
@@ -1753,8 +1755,11 @@ func _start_fight() -> void:
 func _on_battle_finished(result: Dictionary) -> void:
 	_battle_view.queue_free()
 	_battle_view = null
+	var region_before := _run.region
 	_run.apply_battle_result(result)
 	_show_stage()
+	if _run.region != region_before and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
+		_show_region_intro()  # a new act in another region
 
 
 # --- Relics, tarot, packs ---------------------------------------------------------------

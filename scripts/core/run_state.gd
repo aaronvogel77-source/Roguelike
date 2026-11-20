@@ -67,8 +67,10 @@ const RANK_ODDS := [
 var db: ContentDb
 var rng: RngStreams
 var stage: Stage = Stage.ENEMY_CHOICE
-## Region (tarot suit) of the current act. The slice only has the coin region.
+## Region (tarot suit) of the current act; region_order holds one per act
+## (shuffled per run; the guided first run always starts in the coins).
 var region := "coins"
+var region_order: Array = ["coins"]
 var act := 1
 var fight := 0  # 0 = small, 1 = big, 2 = boss
 var gold := START_GOLD
@@ -129,8 +131,39 @@ static func new_run(content: ContentDb, seed_value: int, options: Dictionary = {
 	var pages := run._figure_ids_of_rank("page")
 	var random_id: String = pages[run.rng.stream("start").randi_range(0, pages.size() - 1)]
 	run.row[0] = run._new_figure(random_id if start_id == "" else start_id)
+	run.region_order = run._roll_region_order(options.get("coins_first", false))
+	run.region = run.region_order[0]
 	run._roll_enemy_options()
 	return run
+
+
+## One region per act, shuffled (regions repeat only when there are fewer
+## regions than acts).
+func _roll_region_order(coins_first: bool) -> Array:
+	var ids: Array = db.regions.keys()
+	ids.sort()
+	var stream := rng.stream("regions")
+	var order: Array = []
+	while order.size() < ACTS:
+		var bag := ids.duplicate()
+		for i in range(bag.size() - 1, 0, -1):
+			var j := stream.randi_range(0, i)
+			var t = bag[i]
+			bag[i] = bag[j]
+			bag[j] = t
+		order.append_array(bag)
+	order.resize(ACTS)
+	if coins_first and "coins" in order:
+		order.erase("coins")
+		order.push_front("coins")
+		order.resize(ACTS)
+	return order
+
+
+## Region of the current act (after an act change).
+func _enter_act_region() -> void:
+	if act - 1 < region_order.size():
+		region = region_order[act - 1]
 
 
 ## Occultist rules, locked content and upgrades from the vault.
@@ -495,6 +528,7 @@ func _advance_fight() -> void:
 	if fight >= FIGHTS_PER_ACT:
 		fight = 0
 		act += 1
+		_enter_act_region()
 
 
 func _next_enemy_choice() -> void:
@@ -1114,10 +1148,12 @@ func boss_rule() -> String:
 func battle_options() -> Dictionary:
 	var options := {}
 	var blessing: Dictionary = db.regions.get(region, {}).get("blessing", {})
-	if not blessing.is_empty():
+	if blessing.has("status"):  # ability blessings are added by the TeamBuilder
 		options["blessing"] = blessing
 	if boss_rule() == "gold_zero":
 		options["gold_zero"] = true
+	if boss_rule() in ["burning_floor", "melting_shields"]:
+		options[boss_rule()] = true
 	var status_bonus := TeamBuilder.status_bonus(self)
 	if not status_bonus.is_empty():
 		options["status_bonus"] = status_bonus
@@ -1168,6 +1204,7 @@ func apply_battle_result(result: Dictionary) -> Stage:
 	if fight >= FIGHTS_PER_ACT:
 		fight = 0
 		act += 1
+		_enter_act_region()
 	if act > ACTS:
 		stage = Stage.WON
 		return stage
@@ -1350,7 +1387,7 @@ func _figure_ids_of_rank(rank: String) -> Array:
 
 func to_dict() -> Dictionary:
 	return {
-		"rng": rng.to_dict(), "stage": stage, "region": region, "act": act, "fight": fight, "gold": gold,
+		"rng": rng.to_dict(), "stage": stage, "region": region, "region_order": region_order.duplicate(), "act": act, "fight": fight, "gold": gold,
 		"row": row.duplicate(true), "shop": shop.duplicate(), "packs": packs.duplicate(true),
 		"open_pack": open_pack.duplicate(true), "relics": relics.duplicate(), "stash": stash.duplicate(true), "tarots": tarots.duplicate(),
 		"pacts": pacts.duplicate(), "souls": souls, "next_shop": next_shop.duplicate(), "flags": flags.duplicate(),
@@ -1368,6 +1405,7 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.rng = RngStreams.from_dict(data["rng"])
 	run.stage = int(data["stage"]) as Stage
 	run.region = data.get("region", "coins")
+	run.region_order = data.get("region_order", [run.region]).duplicate()
 	run.act = int(data["act"])
 	run.fight = int(data["fight"])
 	run.gold = int(data["gold"])

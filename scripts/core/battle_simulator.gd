@@ -67,7 +67,12 @@ static func decay_damage(turn_number: int) -> int:
 	return 1 << mini(turn_number - DECAY_START_TURN, 30)
 
 
+## The battle options (boss rules read per turn).
+var _options: Dictionary = {}
+
+
 func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dictionary = {}) -> Dictionary:
+	_options = options
 	real_gold = player_gold
 	_gold_hidden = options.get("gold_zero", false)
 	status_bonus = options.get("status_bonus", {})
@@ -99,6 +104,10 @@ func _run(player_team: Array, enemy_team: Array, player_gold: int, options: Dict
 		turn += 1
 		events.append({"type": "turn", "turn": turn})
 		_tick_damage_over_time()
+		_process_deaths()
+		if _battle_over():
+			break
+		_apply_turn_rules()
 		_process_deaths()
 		if _battle_over():
 			break
@@ -159,6 +168,26 @@ func _make_unit(entry: Dictionary, side: int) -> BattleUnit:
 			unit.suits[0] = unit.suit
 	unit.pierce = bool(definition.get("pierce", false)) or bool(entry.get("pierce", false))
 	return unit
+
+
+## Boss rules that act every turn: "burning_floor" (Scheiterhaufen-Abt) sets
+## burn 1 on the front unit of both sides, "melting_shields" (Ewige Esse)
+## halves the player's shields (rounded down).
+func _apply_turn_rules() -> void:
+	if _options.get("burning_floor", false):
+		for side in [PLAYER, ENEMY]:
+			var front: Array = living(side)
+			if not front.is_empty():
+				var unit: BattleUnit = front[0]
+				unit.add_status(BattleUnit.STATUS_BURN, 1)
+				events.append({"type": "trigger", "uid": unit.uid, "effect": "apply_burn", "targets": [unit.uid]})
+				_emit_update(unit)
+	if _options.get("melting_shields", false):
+		for unit: BattleUnit in living(PLAYER):
+			var shield := unit.status(BattleUnit.STATUS_SHIELD)
+			if shield > 0:
+				unit.add_status(BattleUnit.STATUS_SHIELD, -(shield - shield / 2))
+				_emit_update(unit)
 
 
 ## Region blessing: player figures of the region's suit get a status first.

@@ -862,3 +862,18 @@ ABIL_FIRE_EATER,Dauerhaft: immun gegen Brennen.,Always: immune to burn.
 THEME_PYRE,Scheiterhaufen-Chor,Pyre Choir
 THEME_ASH,Aschegeweihte,Ash Consecrated
 THEME_FORGE,Schmiedebrut,Forge Brood
+REGION_WANDS,Die Glutmark,The Ember March
+REGION_WANDS_DESC,Brennende Prozessionen ziehen durch Asche und eingestürzte Kapellen.,Burning processions wander through ash and fallen chapels.
+BLESSING_WANDS,Gebiets-Segen: Stab-Figuren setzen zu Kampfbeginn Brennen 1 auf den vordersten Gegner.,Region blessing: wand figures set 1 burn on the front enemy at battle start.
+SOURCE_REGION_WANDS,Segen der Glutmark,Blessing of the Ember March
+SOURCE_REGION_COINS,Segen des Münzen-Gebiets,Blessing of the coin region
+BOSS_PYRE_ABBOT,Der Scheiterhaufen-Abt,The Pyre Abbot
+BOSS_PYRE_ABBOT_RULE,Brennender Boden: Zu Zugbeginn erhält die vorderste Figur beider Seiten Brennen 1.,Burning floor: at turn start the front figure of both sides gains 1 burn.
+BOSS_ETERNAL_FORGE,Die Ewige Esse,The Eternal Forge
+BOSS_ETERNAL_FORGE_RULE,Schmelzende Schilde: Zu Zugbeginn halbieren sich die Schilde deiner Figuren.,Melting shields: at turn start your figures' shields are halved.
+ENEMY_BOSS_PYRE_ABBOT,Der Scheiterhaufen-Abt,The Pyre Abbot
+ENEMY_BOSS_ETERNAL_FORGE,Die Ewige Esse,The Eternal Forge
+ABIL_BOSS_PYRE_ABBOT,Treffer: Ziel Brennen {v}.,Hit: target {v} burn.
+ABIL_BOSS_ETERNAL_FORGE,Zugbeginn: +{v} Angriff (höchstens +8).,Turn start: +{v} attack (at most +8).
+SPECIAL_BOSS_PYRE_ABBOT,Scheiterhaufen,Pyre
+SPECIAL_BOSS_ETERNAL_FORGE,Glutschlag,Ember Strike

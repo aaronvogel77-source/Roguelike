@@ -13,6 +13,27 @@
         "status": "shield",
         "amount": 1
       }
+    },
+    {
+      "id": "wands",
+      "themes": [
+        "pyre",
+        "ash",
+        "forge"
+      ],
+      "blessing": {
+        "suit": "wands",
+        "ability": {
+          "trigger": "battle_start",
+          "target": "front_enemy",
+          "effect": "apply_burn",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
     }
   ],
   "bosses": [
@@ -66,6 +87,65 @@
             1,
             1,
             1
+          ]
+        }
+      }
+    },
+    {
+      "id": "pyre_abbot",
+      "region": "wands",
+      "act": 1,
+      "rule": "burning_floor",
+      "unit": {
+        "id": "boss_pyre_abbot",
+        "boss": true,
+        "region": "wands",
+        "cost": 0,
+        "attack": 4,
+        "health": 13,
+        "width": 2,
+        "role": "front",
+        "themes": [],
+        "ability": {
+          "trigger": "on_attack",
+          "target": "attack_target",
+          "effect": "apply_burn",
+          "values": [
+            2,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "id": "eternal_forge",
+      "region": "wands",
+      "act": 2,
+      "rule": "melting_shields",
+      "unit": {
+        "id": "boss_eternal_forge",
+        "boss": true,
+        "region": "wands",
+        "cost": 0,
+        "attack": 6,
+        "health": 28,
+        "width": 3,
+        "role": "front",
+        "themes": [],
+        "ability": {
+          "trigger": "turn_start",
+          "target": "self",
+          "effect": "wind_up",
+          "values": [
+            1,
+            1,
+            1
+          ],
+          "caps": [
+            8,
+            8,
+            8
           ]
         }
       }

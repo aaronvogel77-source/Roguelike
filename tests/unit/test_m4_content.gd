@@ -9,8 +9,10 @@ func before_all() -> void:
 
 
 ## Plays (auto-winning) until the boss shop of the given act.
+## Coins tests: the run starts in the coins (the guided order).
 func _run_to_boss(seed_value: int, act: int) -> RunState:
-	var run := RunState.new_run(_db, seed_value)
+	var run := RunState.new_run(_db, seed_value, {"coins_first": true})
+	run.region_order = ["coins", "coins"]  # these tests check the coin bosses
 	while not (run.act == act and run.fight == 2):
 		if run.stage == RunState.Stage.ENEMY_CHOICE:
 			run.choose_enemy(0)

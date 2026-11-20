@@ -12,6 +12,7 @@ static func player_team(run: RunState) -> Array:
 		if figure != null:
 			team.append(_figure_entry(run, figure))
 	_apply_suit_bonus(team)
+	_apply_region_blessing(run, team)
 	_apply_relics(run, team)
 	_apply_pacts(run, team)
 	return team
@@ -215,6 +216,20 @@ static func gold_after_win(run: RunState) -> int:
 			if not win_gold.is_empty():
 				extra += int(win_gold[run.figure_level(figure) - 1])
 	return extra
+
+
+## Region blessings in ability form (e.g. Glutmark: wand figures set burn on
+## the front enemy at battle start); status blessings run in the simulator.
+static func _apply_region_blessing(run: RunState, team: Array) -> void:
+	var blessing: Dictionary = run.db.regions.get(run.region, {}).get("blessing", {})
+	if not blessing.has("ability"):
+		return
+	for entry in team:
+		if blessing["suit"] in entry.get("suits", [entry.get("suit", "")]):
+			var ability: Dictionary = blessing["ability"].duplicate(true)
+			ability["blessing"] = true
+			entry["abilities"].append(ability)
+			entry["sources"].append("region_" + run.region)
 
 
 static func _ability(trigger: String, target: String, effect: String, value: Variant) -> Dictionary:
