@@ -63,7 +63,7 @@ func test_themed_teams_prefer_their_theme() -> void:
 	var themed := 0
 	var total := 0
 	for i in 200:
-		for unit in EnemyGenerator.generate(_db, 6, rng, "vault"):
+		for unit in EnemyGenerator.generate(_db, 6, rng, "vault", EnemyGenerator.MAX_TEAM, [], false, 1, "coins"):
 			total += 1
 			if "vault" in _db.enemies[unit["def_id"]]["themes"]:
 				themed += 1

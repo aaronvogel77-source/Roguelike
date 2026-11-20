@@ -62,7 +62,7 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		if boss.has("unit"):
 			capacity -= int(boss["unit"].get("width", 1))
 			team.append({"def_id": boss["unit"]["id"], "level": 1})
-		team.append_array(generate(db, budget(act, fight, 2), rng, theme, capacity, [], false, act))
+		team.append_array(generate(db, budget(act, fight, 2), rng, theme, capacity, [], false, act, region))
 		return [{"kind": "boss", "difficulty": 2, "bonus": BOSS_BONUS, "theme": theme,
 			"boss_id": boss.get("id", ""), "rule": boss.get("rule", ""), "team": team}]
 	var teams: Array = []
@@ -71,7 +71,7 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		var theme := _pick_theme(db, region, rng)
 		# Hard teams prefer the stronger (more expensive) enemies.
 		var size_cap := ACT1_MAX_TEAM if act == 1 else MAX_TEAM
-		var team := generate(db, budget(act, fight, difficulty), rng, theme, size_cap, used, difficulty == 2, act)
+		var team := generate(db, budget(act, fight, difficulty), rng, theme, size_cap, used, difficulty == 2, act, region)
 		for unit in team:
 			used.append(unit["def_id"])
 		teams.append({"theme": theme, "team": team, "power": power(db, team)})
@@ -83,7 +83,7 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		var step := ACT1_MIN_STEP if act == 1 else MIN_STEP
 		var target: float = teams[difficulty - 1]["power"] * step
 		var min_units := HARD_MIN_UNITS if difficulty == 2 else 1
-		_strengthen(db, team, rng, teams[difficulty]["theme"], target, min_units, ACT1_MAX_TEAM if act == 1 else MAX_TEAM)
+		_strengthen(db, team, rng, teams[difficulty]["theme"], target, min_units, ACT1_MAX_TEAM if act == 1 else MAX_TEAM, region)
 		teams[difficulty]["power"] = power(db, team)
 	# A full row cannot grow further (late acts): then the easier options step down.
 	for difficulty in [1, 0]:
@@ -111,8 +111,9 @@ static func power(db: ContentDb, team: Array) -> float:
 ## Spends the budget on enemies (cost = their "cost"), then on level-ups.
 ## Returns entries {"def_id": String, "level": int}, front first.
 static func generate(db: ContentDb, team_budget: int, rng: RandomNumberGenerator,
-		theme: String = "", max_team: int = MAX_TEAM, avoid: Array = [], prefer_strong := false, act: int = 1) -> Array:
-	var pool: Array = db.regular_enemies(act)
+		theme: String = "", max_team: int = MAX_TEAM, avoid: Array = [], prefer_strong := false, act: int = 1,
+		region: String = "") -> Array:
+	var pool: Array = db.regular_enemies(act, region)
 	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	var team: Array = []
 	var remaining := team_budget
@@ -168,13 +169,14 @@ static func _weaken(db: ContentDb, team: Array, limit: float) -> void:
 
 ## Adds enemies (cheap ones first) or levels until the team reaches the
 ## target strength and size.
+## Elites (from act 2) and enemies marked "unique" appear once per band.
 static func _is_elite(definition: Dictionary) -> bool:
-	return int(definition.get("min_act", 1)) >= 2
+	return int(definition.get("min_act", 1)) >= 2 or definition.get("unique", false)
 
 
 static func _strengthen(db: ContentDb, team: Array, rng: RandomNumberGenerator, theme: String,
-		target: float, min_units: int, max_team: int = MAX_TEAM) -> void:
-	var pool: Array = db.regular_enemies()
+		target: float, min_units: int, max_team: int = MAX_TEAM, region: String = "") -> void:
+	var pool: Array = db.regular_enemies(99, region)
 	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["id"] < b["id"])
 	var cheap := pool.filter(func(e: Dictionary) -> bool: return int(e["cost"]) <= 2 and not _is_elite(e))
 	var guard := 0

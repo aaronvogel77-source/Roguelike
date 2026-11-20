@@ -6,8 +6,8 @@ func test_slice_content_counts() -> void:
 	var db := ContentDb.load_default()
 	assert_eq(db.regular_figures().size(), 16, "16 player figures in the slice")
 	assert_eq(db.legendary_figures().size(), 4, "4 legendary aces")
-	assert_eq(db.regular_enemies().size(), 16, "16 coin-region enemies (6 of them act-2 elites)")
-	assert_eq(db.regular_enemies(1).size(), 10, "10 of them in act 1")
+	assert_eq(db.regular_enemies(99, "coins").size(), 16, "16 coin-region enemies (6 of them act-2 elites)")
+	assert_eq(db.regular_enemies(1, "coins").size(), 10, "10 of them in act 1")
 
 
 func test_four_figures_per_suit_one_per_rank() -> void:

@@ -839,3 +839,26 @@ SUIT_BONUS_COINS,Pro Münzen-Figur im Team +1 maximaler Zins.,+1 maximum interes
 SUIT_BONUS_CUPS,Jede Kelch-Figur erhält +2 Leben pro Kelch-Figur im Team.,Every cups figure gains +2 health per cups figure in your team.
 SUIT_BONUS_SWORDS,"Je 2 Schwerter-Figuren: Kampfbeginn, alle Gegner Blutung 1.","Per 2 swords figures: battle start, all enemies 1 bleed."
 SUIT_BONUS_WANDS,"Pro Stäbe-Figur: Kampfbeginn, vorderster Gegner Brennen 1.","Per wands figure: battle start, front enemy 1 burn."
+ENEMY_EMBER_ACOLYTE,Glutnovize,Ember Acolyte
+ENEMY_ASH_HUSK,Aschehülle,Ash Husk
+ENEMY_CINDER_HOUND,Aschehund,Cinder Hound
+ENEMY_PYRE_PREACHER,Scheiterhaufenprediger,Pyre Preacher
+ENEMY_BELLOWS_IMP,Blasebalg-Kobold,Bellows Imp
+ENEMY_ASH_PRIESTESS,Aschepriesterin,Ash Priestess
+ENEMY_SLAG_GIANT,Schlackeriese,Slag Giant
+ENEMY_SOOT_CARDINAL,Rußkardinal,Soot Cardinal
+ENEMY_ASH_HERALD,Aschenherold,Ash Herald
+ENEMY_FIRE_EATER,Feuerschlucker,Fire Eater
+ABIL_EMBER_ACOLYTE,Treffer: Ziel Brennen {v}.,Hit: target {v} burn.
+ABIL_ASH_HUSK,Stirbt sie: deine vorderste Figur Brennen {v}.,When it dies: your front figure {v} burn.
+ABIL_CINDER_HOUND,Wenn getroffen: Angreifer Brennen {v}.,When hit: attacker {v} burn.
+ABIL_PYRE_PREACHER,Dauerhaft: Brennen auf deinen Figuren ×{v}.,Always: burn on your figures ×{v}.
+ABIL_BELLOWS_IMP,Zugbeginn: vorderster Verbündeter +{v} Angriff.,Turn start: front ally +{v} attack.
+ABIL_ASH_PRIESTESS,Stirbt ein Verbündeter: Er kehrt einmal pro Kampf mit {v} Leben zurück.,When an ally dies: once per battle it returns with {v} health.
+ABIL_SLAG_GIANT,Stirbt ein Verbündeter: erhält {v} von dessen Angriff und Leben.,When an ally dies: gains {v} of its attack and health.
+ABIL_SOOT_CARDINAL,"Dauerhaft: Heilt sich um {v}, wenn Brennen auf deinen Figuren tickt.",Always: heals {v} whenever burn ticks on your figures.
+ABIL_ASH_HERALD,"Stirbt eine deiner Figuren: Ihr Brennen springt weiter, Angriff ×{v}.","When one of your figures dies: its burn spreads, attack ×{v}."
+ABIL_FIRE_EATER,Dauerhaft: immun gegen Brennen.,Always: immune to burn.
+THEME_PYRE,Scheiterhaufen-Chor,Pyre Choir
+THEME_ASH,Aschegeweihte,Ash Consecrated
+THEME_FORGE,Schmiedebrut,Forge Brood
