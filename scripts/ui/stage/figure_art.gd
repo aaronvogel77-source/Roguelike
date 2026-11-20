@@ -982,92 +982,14 @@ static func background(style: String, w: int, h: int, floor_y: int) -> ImageText
 	return vault(w, h, floor_y)
 
 
-## A ruined cathedral: stone walls, tall stained-glass windows, pews of shadow.
+## The ruined cathedral, painted with light (CryptArt).
 static func cathedral(w: int, h: int, floor_y: int) -> ImageTexture:
-	var c := PixelCanvas.new(w, h)
-	c.px(Color("0c0b10"), 0, 0, w, h)
-	var stones := [Color("1a1922"), Color("1e1c26"), Color("16151d"), Color("211f2a")]
-	for y in range(0, floor_y, 8):
-		var off := -8 if (y / 8) % 2 else 0
-		for bx in range(off, w, 16):
-			c.px(stones[absi(bx * 5 + y * 11) % 4], bx + 1, y + 1, 15, 7)
-	var glass := [Color("8a1a2a"), Color("1a4a8a"), Color("c89a30"), Color("2a6a3a"), Color("5a2a8a")]
-	for wx in [int(w * 0.18), int(w * 0.5), int(w * 0.82)]:
-		var top := 14
-		var bottom := floor_y - 30
-		for y in range(top, bottom):
-			var half := 9
-			if y < top + 9:
-				half = int(sqrt(81.0 - (top + 9 - y) * (top + 9 - y)))
-			c.px(Color("08070a"), wx - half - 2, y, half * 2 + 4, 1)
-			for x in range(-half, half):
-				var cell := absi((x + 20) / 4 * 3 + (y / 5) * 7) % glass.size()
-				var col: Color = glass[cell]
-				if x % 4 == 0 or y % 5 == 0:
-					col = Color("141218")
-				c.px(col.darkened(0.15 if (x + y) % 3 else 0.0), wx + x, y)
-		c.px(Color("2a2834"), wx - 12, bottom, 24, 3)
-	for y in range(floor_y, h):
-		var t := float(y - floor_y) / maxf(1.0, h - floor_y)
-		c.px(Color(0.09 - t * 0.04, 0.085 - t * 0.04, 0.11 - t * 0.04), 0, y, w, 1)
-	for fx in range(0, w, 20):
-		for y in range(floor_y + 2, h, 10):
-			c.px(Color("101016"), fx, y, 20, 1)
-			c.px(Color("101016"), fx + (10 if (y / 10) % 2 else 0), y, 1, 10)
-	for pxx in [int(w * 0.34), int(w * 0.66)]:
-		for y in floor_y:
-			c.px(Color("2a2834"), pxx - 6, y, 12, 1)
-			c.px(Color("3a3846"), pxx - 6, y, 2, 1)
-			c.px(Color("15141a"), pxx + 5, y)
-	return c.texture()
+	return CryptArt.cathedral(w, h, floor_y)
 
 
-## A graveyard under a pale moon: sky, crooked tombstones, crosses, dead earth.
+## The moonlit graveyard, painted with light (CryptArt).
 static func graveyard(w: int, h: int, floor_y: int) -> ImageTexture:
-	var c := PixelCanvas.new(w, h)
-	for y in floor_y:
-		var t := float(y) / floor_y
-		c.px(Color(0.04 + t * 0.05, 0.05 + t * 0.06, 0.09 + t * 0.06), 0, y, w, 1)
-	for i in 40:
-		c.px(Color("8a96b0") if i % 3 else Color("d0d8f0"), (i * 89) % w, (i * 37) % (floor_y - 40))
-	var mx := int(w * 0.78)
-	for yy in range(-11, 12):
-		for xx in range(-11, 12):
-			if xx * xx + yy * yy <= 121:
-				c.px(Color("e8e4d0") if xx * xx + yy * yy < 90 else Color("b8b4a0"), mx + xx, 26 + yy)
-	c.px(Color("c8c4b0"), mx - 4, 22, 3, 2)
-	c.px(Color("c8c4b0"), mx + 3, 29, 2, 2)
-	# Distant hills and a dead tree
-	for x in w:
-		var hill := int(10 + 6 * sin(x * 0.04) + 4 * sin(x * 0.11))
-		c.px(Color("0e1210"), x, floor_y - hill, 1, hill)
-	var tx := int(w * 0.12)
-	c.px(Color("0a0a0a"), tx, floor_y - 52, 3, 52)
-	for b in [[-10, -46, 10], [3, -40, 9], [-7, -32, 7], [2, -26, 6]]:
-		for i in int(b[2]):
-			c.px(Color("0a0a0a"), tx + b[0] + (i if b[0] > 0 else -i + int(b[2])), floor_y + b[1] - i / 2)
-	# Tombstones and crosses
-	var stone := [Color("3a3c40"), Color("55585e"), Color("6e7178")]
-	for i in 7:
-		var gx := int(w * (0.08 + i * 0.14)) + (i * 7) % 9
-		var gh := 10 + (i * 5) % 8
-		var gy := floor_y - gh + 2
-		if i % 3 == 1:
-			c.px(stone[1], gx, gy - 4, 2, gh + 4)
-			c.px(stone[1], gx - 3, gy, 8, 2)
-		else:
-			c.px(stone[0], gx - 4, gy, 9, gh)
-			c.px(stone[1], gx - 3, gy - 1, 7, gh)
-			c.px(stone[2], gx - 2, gy - 2, 5, 2)
-			c.px(stone[0], gx - 1, gy + 3, 3, 1)
-	for y in range(floor_y, h):
-		var t := float(y - floor_y) / maxf(1.0, h - floor_y)
-		c.px(Color(0.08 - t * 0.04, 0.07 - t * 0.03, 0.06 - t * 0.03), 0, y, w, 1)
-	for i in 50:
-		c.px(Color("1c1a14"), (i * 53) % w, floor_y + 3 + (i * 17) % maxi(1, h - floor_y - 4), 2, 1)
-	for i in 14:
-		c.px(Color("2a3a20"), (i * 71) % w, floor_y, 1, 2)
-	return c.texture()
+	return CryptArt.graveyard(w, h, floor_y)
 
 
 ## The treasure vault, painted with light (CryptArt): moonlit window, torches,

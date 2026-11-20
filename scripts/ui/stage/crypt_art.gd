@@ -17,7 +17,9 @@ var fy := 0
 var _base: Image
 var _emit: Image
 var _lights: Array = []  # [x, y, radius, Color, strength, vertical squash]
-var _shaft: Array = []  # [x, y, slope, width, Color, strength]
+var _shafts: Array = []  # each [x, y, slope, width, Color, strength]
+## Mist bands: [centre y, half height, strength]; the default lies along the wall foot.
+var _mists: Array = []
 
 
 func _init(width: int, height: int, floor_y: int) -> void:
@@ -27,6 +29,7 @@ func _init(width: int, height: int, floor_y: int) -> void:
 	_base = Image.create(w, h, false, Image.FORMAT_RGBA8)
 	_base.fill(Color("0d0a0c"))
 	_emit = Image.create(w, h, false, Image.FORMAT_RGBA8)
+	_mists = [[fy - 3, 10.0, 0.10]]
 
 
 # --- Public -----------------------------------------------------------------------------
@@ -88,6 +91,8 @@ func put(color: Color, x: int, y: int, rw := 1, rh := 1, emit := false) -> void:
 	if rect.size.x <= 0 or rect.size.y <= 0:
 		return
 	(_emit if emit else _base).fill_rect(rect, color)
+	if not emit:  # a solid thing in front of glass or moon hides it
+		_emit.fill_rect(rect, Color(0, 0, 0, 0))
 
 
 func light(x: float, y: float, radius: float, color: Color, strength: float, squash := 1.0) -> void:
@@ -130,11 +135,15 @@ func _render(vignette: float) -> Image:
 			var l: Vector3 = lit[y * w + x]
 			var acc := base * amb + base * l * 1.6 + l * 0.07
 			acc.z += 3.0 / 255.0  # shadows lean violet
-			if not _shaft.is_empty():
-				acc += _shaft_light(x, y)
-			if y > fy - 10 and y < fy + 4:  # mist along the wall foot
-				var m := 0.10 * (1.0 - absf(y - (fy - 3)) / 10.0)
-				acc = acc * (1.0 - m) + mist * m * 0.5
+			for shaft in _shafts:
+				acc += _shaft_light(shaft, x, y)
+			for band in _mists:
+				var reach: float = band[1]
+				var off := absf(y - float(band[0]))
+				if off < reach:
+					var m: float = float(band[2]) * (1.0 - off / reach)
+					m = floorf(m * 40.0) / 40.0  # mist in steps, too
+					acc = acc * (1.0 - m) + mist * m * 0.5
 			# Vignette in eighth steps.
 			var vx := (x - w * 0.45) / (w * 0.62)
 			var vy := (y - h * 0.42) / (h * 0.75)
@@ -146,8 +155,8 @@ func _render(vignette: float) -> Image:
 	return out
 
 
-## The shaft of moonlight from the window: two solid bands, fading towards the floor.
-func _shaft_light(x: int, y: int) -> Vector3:
+## A shaft of light from a window: two solid bands, fading towards the floor.
+func _shaft_light(_shaft: Array, x: int, y: int) -> Vector3:
 	var sx: float = _shaft[0]
 	var sy: float = _shaft[1]
 	var t := y - sy
@@ -401,7 +410,7 @@ func _paint_stage() -> void:
 	_pile(int(w * 0.3), fy + 2, 6, 3)
 	_pile(int(w * 0.71), fy + 2, 7, 4)
 	light(26, 22, 70, Color("8ab0e0"), 0.45, 0.9)  # moonlight, top left
-	_shaft = [30.0, 32.0, 0.9, 5.0, Color("a8c8f0"), 0.45]
+	_shafts.append([30.0, 32.0, 0.9, 5.0, Color("a8c8f0"), 0.45])
 
 
 func _paint_room() -> void:
@@ -525,4 +534,361 @@ func _paint_room() -> void:
 	for sx in [ax - 64, ax + 50, ax + 66]:
 		_skull(sx, fy - 5)
 	light(36, 28, 90, Color("8ab0e0"), 0.5, 0.9)  # moonlight, top left
-	_shaft = [40.0, 42.0, 0.85, 7.0, Color("a8c8f0"), 0.5]
+	_shafts.append([40.0, 42.0, 0.85, 7.0, Color("a8c8f0"), 0.5])
+
+
+# --- Cathedral ----------------------------------------------------------------------------
+
+## The ruined cathedral: stone blocks, a rose window whose coloured light falls
+## across the nave, two lancet windows, columns with candle brackets, pointed
+## vaults, an altar with candles, pews of shadow and a marble floor.
+static func cathedral(width: int, height: int, floor_y: int) -> ImageTexture:
+	var key := "cathedral/%d/%d/%d" % [width, height, floor_y]
+	if not _cache.has(key):
+		var r := CryptArt.new(width, height, floor_y)
+		r._paint_cathedral()
+		_cache[key] = ImageTexture.create_from_image(r._render(0.5))
+	return _cache[key]
+
+
+func _blocks(y0: int, y1: int) -> void:
+	var tones := [Color("23212c"), Color("282634"), Color("1f1d27"), Color("2c2a37")]
+	for y in range(y0, y1):
+		var row := (y - y0) / 8
+		var off := 8 if row % 2 else 0
+		var in_row := (y - y0) % 8
+		for x in w:
+			if in_row == 0 or (x + off) % 16 == 0:
+				put(Color("121118"), x, y)
+				continue
+			var t: Color = tones[absi(((x + off) / 16) * 5 + row * 11) % 4]
+			if in_row == 1:
+				t = t.lerp(Color("4a4656"), 0.3)
+			elif in_row == 7 or (x + off) % 16 == 15:
+				t = t.lerp(Color("0e0d14"), 0.4)
+			put(t, x, y)
+
+
+## Glass colours: ruby, sapphire, gold, emerald, amethyst.
+const GLASS := [Color("b02a3a"), Color("2a5ab0"), Color("d8a838"), Color("2a8a4a"), Color("7a3ab0")]
+
+
+func _rose(cx: int, cy: int, r: int) -> void:
+	for y in range(-r - 3, r + 4):
+		for x in range(-r - 3, r + 4):
+			var d := sqrt(float(x * x + y * y))
+			if d > r + 2.5:
+				continue
+			if d > r:  # stone ring, lit top left
+				put(Color("5a5664") if x + y < 0 else Color("2e2c38"), cx + x, cy + y)
+				continue
+			var a := fposmod(atan2(y, x), TAU)
+			var spoke := fposmod(a, TAU / 12.0)
+			if d < 3.0:
+				put(Color("ffe8a0"), cx + x, cy + y, 1, 1, true)
+			elif spoke < 0.12 or absf(d - r * 0.55) < 0.6:
+				put(Color("1a1822"), cx + x, cy + y, 1, 1, true)  # lead and tracery
+			else:
+				var cell := int(a / (TAU / 12.0)) + (1 if d > r * 0.55 else 0)
+				var c: Color = GLASS[cell % GLASS.size()]
+				if d > r * 0.55 and spoke < 0.26:
+					c = c.lightened(0.25)  # light catches the leading edge
+				put(c.darkened(0.3 if y > 0 else 0.2), cx + x, cy + y, 1, 1, true)
+
+
+func _lancet(x: int, y: int, ww: int, wh: int, tint: int) -> void:
+	for yy in range(y - 1, y + wh + 1):
+		var dy := yy - y
+		var hw := ww / 2 if dy >= ww / 2 else int(sqrt(maxf(0.0, pow(ww / 2.0, 2) - pow(ww / 2.0 - dy, 2))))
+		put(Color("4a4656"), x + ww / 2 - hw - 1, yy, 1, 1)
+		put(Color("1e1c26"), x + ww / 2 + hw, yy, 1, 1)
+		for xx in range(x + ww / 2 - hw, x + ww / 2 + hw):
+			var c: Color = GLASS[(tint + (yy - y) / 6) % GLASS.size()]
+			if xx == x + ww / 2 or (yy - y) % 6 == 0:
+				c = Color("1a1822")
+			put(c.darkened(0.35), xx, yy, 1, 1, true)
+
+
+func _column(x: int, y0: int, y1: int, cw: int) -> void:
+	for y in range(y0, y1):
+		put(Color("34323e"), x, y, cw, 1)
+		put(Color("5a5664"), x, y, 2, 1)
+		put(Color("44424e"), x + 2, y, 1, 1)
+		put(Color("4a4656"), x + cw / 2, y, 1, 1)  # fluting
+		put(Color("1a1822"), x + cw - 2, y, 2, 1)
+	for step in [[y0, 2], [y0 + 1, 1], [y1 - 3, 1], [y1 - 2, 2], [y1 - 1, 2]]:
+		put(Color("44424e"), x - step[1], step[0], cw + step[1] * 2, 1)
+		put(Color("6a6676"), x - step[1], step[0], 2, 1)
+
+
+func _pointed_vault(x0: int, x1: int, top: int, spring: int) -> void:
+	# Two arcs meeting in a point: the rib of a gothic vault.
+	var mid := (x0 + x1) / 2.0
+	var half := (x1 - x0) / 2.0
+	for i in 40:
+		var t := i / 39.0
+		var y := spring - (spring - top) * sin(t * PI / 2)
+		put(Color("4a4656"), roundi(x0 + t * half), roundi(y), 2, 1)
+		put(Color("2a2834"), roundi(x1 - t * half) - 1, roundi(y), 2, 1)
+
+
+func _marble_floor() -> void:
+	var rows := [fy]
+	var row_h := 3
+	while rows[-1] < h:
+		rows.append(rows[-1] + row_h)
+		row_h += 2
+	var vx := w * 0.5
+	for r in rows.size() - 1:
+		var step := 14 + r * 6
+		var off := step / 2 if r % 2 else 0
+		for y in range(rows[r], mini(rows[r + 1], h)):
+			var k := float(y - fy + 6) / (h - fy + 6)
+			var spread := 0.7 + k * 0.6
+			for x in w:
+				var u := vx + (x - vx) / spread - off
+				var cell := int(floorf(u / step)) + r
+				var dark := posmod(cell, 2) == 0
+				var c := Color("2a2832") if dark else Color("3a3844")
+				c = c.lerp(Color("16141c"), float(y - fy) / (h - fy) * 0.5)
+				if y == rows[r]:
+					c = Color("121018")
+				elif y == rows[r] + 1:
+					c = c.lightened(0.12)
+				put(c, x, y)
+	put(Color("54505e"), 0, fy, w, 1)
+	put(Color("0e0d14"), 0, fy + 1, w, 1)
+
+
+func _paint_cathedral() -> void:
+	_marble_floor()
+	_blocks(0, fy)
+	for y in 6:
+		put(Color("0e0d14").lerp(Color("1e1c26"), y / 6.0), 0, y, w, 1)
+	var cx := w / 2
+	var left := int(w * 0.31) - 6
+	var right := int(w * 0.69) - 6
+	# Vault ribs between the columns, the rose window high in the middle.
+	_pointed_vault(-20, left + 6, 4, 34)
+	_pointed_vault(left + 6, right + 6, 2, 30)
+	_pointed_vault(right + 6, w + 20, 4, 34)
+	_rose(cx, 34, 18)
+	_lancet(int(w * 0.13) - 4, 20, 9, 48, 1)
+	_lancet(int(w * 0.87) - 4, 20, 9, 48, 3)
+	# Coloured light from the rose window falls to the right across the nave,
+	# moonlight from the left lancet (light from the top left).
+	_shafts.append([cx - 9.0, 50.0, 0.45, 4.0, GLASS[0], 0.6])
+	_shafts.append([cx - 1.0, 52.0, 0.5, 4.0, GLASS[2], 0.6])
+	_shafts.append([cx + 7.0, 50.0, 0.55, 4.0, GLASS[1], 0.6])
+	_shafts.append([int(w * 0.13) + 1.0, 68.0, 0.8, 4.0, Color("a8c8f0"), 0.4])
+	light(cx, 34, 70, Color("c8a0e0"), 0.35, 0.9)
+	light(int(w * 0.13), 40, 50, Color("8ab0e0"), 0.4, 0.8)
+	light(int(w * 0.87), 40, 40, Color("8ab0e0"), 0.25, 0.8)
+	_column(left, 26, fy, 12)
+	_column(right, 26, fy, 12)
+	# Brackets under the candles the stage draws (battle_stage._draw_ambient).
+	var candle_y := fy + 4 - 66
+	_sconce(int(w * 0.31), candle_y + 6, false)
+	_sconce(int(w * 0.69), candle_y + 6, false)
+	for side in [12, w - 12]:  # iron candle stands
+		put(Color("2a2832"), side, fy - 15, 1, 15)
+		put(Color("4a4656"), side - 3, fy - 15, 7, 1)
+		put(Color("2a2832"), side - 2, fy - 1, 5, 1)
+		light(side, fy - 25, 26, Color("ffa850"), 0.7)
+	# Altar under the rose: steps, cloth, two tall candles.
+	put(Color("3a3844"), cx - 26, fy - 3, 52, 3)
+	put(Color("54505e"), cx - 26, fy - 3, 52, 1)
+	put(Color("3a3844"), cx - 20, fy - 6, 40, 3)
+	put(Color("54505e"), cx - 20, fy - 6, 40, 1)
+	put(Color("44424e"), cx - 14, fy - 18, 28, 12)
+	put(Color("5a5664"), cx - 14, fy - 18, 2, 12)
+	put(Color("22202a"), cx + 12, fy - 18, 2, 12)
+	put(Color("e8e0d0"), cx - 15, fy - 19, 30, 2)
+	put(Color("7a1a2a"), cx - 5, fy - 17, 10, 9)
+	put(Color("d9a530"), cx - 1, fy - 15, 2, 5)
+	put(Color("d9a530"), cx - 3, fy - 13, 6, 1)
+	for dx in [-11, 10]:
+		put(Color("d8c8a8"), cx + dx, fy - 28, 2, 9)
+		put(Color("f0e4c8"), cx + dx, fy - 28, 1, 9)
+		put(Color("ffe08a"), cx + dx, fy - 30, 1, 2, true)
+		put(Color("ff9030"), cx + dx + 1, fy - 29, 1, 1, true)
+		light(cx + dx, fy - 30, 30, Color("ffb050"), 0.6)
+	# Pews: dark wooden backs between the columns, in two rows.
+	for row in 2:
+		var py := fy - 10 + row * 4
+		for seg in [[18, left - 4], [left + 16, cx - 30], [cx + 30, right - 4], [right + 16, w - 18]]:
+			var x0: int = seg[0]
+			var x1: int = seg[1]
+			if x1 <= x0:
+				continue
+			put(Color("2a1a14") if row == 0 else Color("22140e"), x0, py, x1 - x0, 3)
+			put(Color("4a3020"), x0, py, x1 - x0, 1)
+			for px in range(x0, x1, 9):
+				put(Color("1a0e08"), px, py, 1, 6)
+	_cobweb(0, 0, 8, 1)
+	_cobweb(w - 1, 0, 8, -1)
+	# Fallen stones of the ruin.
+	for rubble in [[34, 3], [41, 2], [258, 3], [251, 2], [118, 2]]:
+		put(Color("3a3844"), rubble[0], fy - rubble[1], rubble[1] + 2, rubble[1])
+		put(Color("54505e"), rubble[0], fy - rubble[1], rubble[1] + 2, 1)
+
+
+# --- Graveyard ----------------------------------------------------------------------------
+
+## The moonlit graveyard: night sky with the moon top left, hills and a far
+## chapel in the mist, crooked tombstones and crosses in three depth layers,
+## a dead tree, an iron fence, lanterns on posts and soft ground.
+static func graveyard(width: int, height: int, floor_y: int) -> ImageTexture:
+	var key := "graveyard/%d/%d/%d" % [width, height, floor_y]
+	if not _cache.has(key):
+		var r := CryptArt.new(width, height, floor_y)
+		r._paint_graveyard()
+		_cache[key] = ImageTexture.create_from_image(r._render(0.45))
+	return _cache[key]
+
+
+func _stone(x: int, base: int, sw: int, sh: int, fade: float, kind: int) -> void:
+	var ramp := [Color("2e3036"), Color("4a4d55"), Color("6a6e78"), Color("8a8e98")]
+	var fog := Color("2a3040")
+	for i in 4:
+		ramp[i] = ramp[i].lerp(fog, fade)
+	var top := base - sh
+	match kind:
+		0:  # rounded headstone
+			for y in range(top, base):
+				var dy := y - top
+				var r := sw / 2.0
+				var half := r if dy >= r else sqrt(maxf(0.0, r * r - (r - dy) * (r - dy)))
+				var x0 := roundi(x - half)
+				var x1 := roundi(x + half)
+				put(ramp[1], x0, y, x1 - x0, 1)
+				put(ramp[2], x0, y, 1, 1)
+				put(ramp[0], x1 - 1, y, 1, 1)
+			put(ramp[3], x - 1, top, 2, 1)
+			if sh > 8:
+				put(ramp[0], x - 2, top + 4, 4, 1)  # inscription
+				put(ramp[0], x - 1, top + 6, 3, 1)
+		1:  # cross
+			put(ramp[1], x - 1, top, 2, sh)
+			put(ramp[2], x - 1, top, 1, sh)
+			put(ramp[1], x - 4, top + 3, 8, 2)
+			put(ramp[2], x - 4, top + 3, 8, 1)
+			put(ramp[0], x + 1, top + 1, 1, sh - 1)
+		_:  # slab, leaning
+			for y in range(top, base):
+				var lean := (base - y) / 5
+				put(ramp[1], x - sw / 2 + lean, y, sw, 1)
+				put(ramp[2], x - sw / 2 + lean, y, 1, 1)
+				put(ramp[0], x + sw / 2 + lean - 1, y, 1, 1)
+			put(ramp[3], x - sw / 2 + (sh / 5), top, sw - 1, 1)
+
+
+func _paint_graveyard() -> void:
+	# Sky: deep blue, lighter towards the horizon, in bands.
+	var horizon := fy - 24
+	for y in horizon:
+		var t := float(y) / horizon
+		var band := floorf(t * 8.0) / 8.0
+		put(Color("0c1224").lerp(Color("2a3450"), band), 0, y, w, 1)
+	for i in 46:
+		var sx := (i * 89 + 13) % w
+		var sy := (i * 37) % (horizon - 20)
+		if sx < 80 and sy < 46:
+			continue  # no stars in the moon's glow
+		put(Color("d0d8f0") if i % 5 == 0 else Color("7a86a8"), sx, sy, 1, 1, true)
+		if i % 11 == 0:
+			for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+				put(Color("5a6688"), sx + d.x, sy + d.y, 1, 1, true)
+	# The moon, top left, lit from its upper left.
+	var mx := 48
+	var my := 24
+	for y in range(-11, 12):
+		for x in range(-11, 12):
+			var d := x * x + y * y
+			if d > 121:
+				continue
+			var c := Color("f0ecd8") if x + y < -6 else (Color("d8d4c0") if d < 90 else Color("b0ac98"))
+			put(c, mx + x, my + y, 1, 1, true)
+	for crater in [[-4, -2, 2], [3, 4, 3], [5, -5, 1], [-2, 6, 1]]:
+		put(Color("b8b4a0"), mx + crater[0], my + crater[1], crater[2], crater[2], true)
+	light(mx, my, 70, Color("9ab0e0"), 0.45, 0.8)
+	for streak in [[20, 30, 46], [60, 34, 30], [150, 18, 60], [230, 26, 40]]:  # thin clouds
+		put(Color("1e2638"), streak[0], streak[1], streak[2], 2)
+		put(Color("2a344c"), streak[0] + 3, streak[1] - 1, streak[2] - 8, 1)
+	# Far hills with a chapel, pale in the mist.
+	for x in w:
+		var hill := int(14 + 6 * sin(x * 0.03) + 3 * sin(x * 0.09 + 1.0))
+		put(Color("1a2230"), x, horizon - hill + 12, 1, hill + 12)
+	var ch := int(w * 0.62)
+	put(Color("161c28"), ch, horizon - 18, 14, 22)
+	put(Color("161c28"), ch + 4, horizon - 30, 6, 12)
+	put(Color("161c28"), ch + 6, horizon - 35, 2, 5)
+	put(Color("161c28"), ch + 5, horizon - 33, 4, 1)
+	put(Color("ffc060"), ch + 6, horizon - 10, 2, 3, true)  # a lit window far away
+	light(ch + 7, horizon - 9, 10, Color("ffb050"), 0.4)
+	_mists.append([horizon + 2, 9.0, 0.22])
+	# Ground: dark earth with grass at the top.
+	for y in range(horizon + 8, h):
+		var t := float(y - horizon) / (h - horizon)
+		put(Color("1e2420").lerp(Color("100e0c"), floorf(t * 6.0) / 6.0), 0, y, w, 1)
+	for x in range(0, w, 3):
+		put(Color("2a3a24"), x, horizon + 8 - (x * 7) % 3, 1, 2)
+	# Back row of stones, small and misty; middle row; then the dead tree.
+	for i in 9:
+		_stone(14 + i * 34 + (i * 7) % 11, horizon + 12, 6, 7 + (i * 3) % 4, 0.55, i % 3)
+	_mists.append([horizon + 13, 6.0, 0.14])
+	for i in 7:
+		var gx := 26 + i * 44 + (i * 13) % 15
+		if absi(gx - int(w * 0.31)) < 8 or absi(gx - int(w * 0.69)) < 8:
+			gx += 14
+		_stone(gx, fy - 4, 9, 12 + (i * 5) % 6, 0.25, (i + 1) % 3)
+	var tx := int(w * 0.16)
+	for y in range(16, fy - 2):
+		var tw := 6 if y > 80 else (5 if y > 56 else (4 if y > 36 else 3))
+		var bend := roundi(sin(y * 0.08) * 1.5)  # a crooked trunk
+		put(Color("141210"), tx - tw / 2 + bend, y, tw, 1)
+		put(Color("3e3e4a"), tx - tw / 2 + bend, y, 1, 1)  # moonlit edge on the left
+	for b in [[-1, 34, 16], [1, 40, 14], [-1, 52, 11], [1, 60, 9], [-1, 24, 8], [1, 22, 7]]:
+		var dir: int = b[0]
+		for i in int(b[2]):
+			var bx := tx + dir * (2 + i)
+			var by := int(b[1]) - i / 2 - (i * i) / 30
+			put(Color("141210"), bx, by, 1, 2 if i < b[2] / 2 else 1)
+			if i == b[2] / 2:  # a twig
+				put(Color("141210"), bx + dir, by - 2, 1, 2)
+	put(Color("141210"), tx - 6, fy - 3, 14, 2)  # roots
+	put(Color("141210"), tx - 8, fy - 1, 4, 1)
+	put(Color("141210"), tx + 5, fy - 1, 5, 1)
+	# Iron fence along the back, broken in the middle.
+	for x in range(0, w, 4):
+		if x > w * 0.42 and x < w * 0.58:
+			continue
+		put(Color("16161c"), x, fy - 17, 1, 13)
+		put(Color("2e2e38"), x, fy - 18, 1, 1)
+	put(Color("16161c"), 0, fy - 14, int(w * 0.42), 1)
+	put(Color("16161c"), int(w * 0.58), fy - 14, w - int(w * 0.58), 1)
+	# Lantern posts: the stage draws the candle flames inside them.
+	var candle_y := fy + 4 - 66
+	for lx in [int(w * 0.31), int(w * 0.69)]:
+		put(Color("1a1a20"), lx - 1, candle_y + 10, 2, fy - candle_y - 10)
+		put(Color("3a3a44"), lx - 1, candle_y + 10, 1, fy - candle_y - 10)
+		put(Color("2a2a32"), lx - 5, candle_y - 8, 11, 2)  # roof
+		put(Color("4a4a56"), lx - 4, candle_y - 9, 9, 1)
+		put(Color("2a2a32"), lx - 4, candle_y + 8, 9, 2)  # base
+		put(Color("2a2a32"), lx - 4, candle_y - 6, 1, 14)
+		put(Color("2a2a32"), lx + 4, candle_y - 6, 1, 14)
+		put(Color("2a2a32"), lx - 1, candle_y - 11, 2, 2)  # ring
+		light(lx, candle_y - 2, 30, Color("ffa850"), 0.7, 1.1)
+	# Small grave stones under the low candles.
+	for side in [12, w - 12]:
+		put(Color("4a4d55"), side - 4, fy - 14, 9, 14)
+		put(Color("6a6e78"), side - 4, fy - 14, 9, 1)
+		put(Color("6a6e78"), side - 4, fy - 14, 1, 14)
+		put(Color("2e3036"), side + 4, fy - 14, 1, 14)
+		light(side, fy - 25, 24, Color("ffa850"), 0.6)
+	# Front: mounds and soft ground mist.
+	for m in [[60, 6], [150, 7], [236, 6]]:
+		for xx in range(-m[1] * 2, m[1] * 2):
+			var hh := int(m[1] * 0.5 * (1.0 - pow(xx / (m[1] * 2.0), 2)))
+			put(Color("1e1a14"), m[0] + xx, fy + 3 - hh, 1, hh)
+	_mists[0] = [fy - 2, 9.0, 0.16]

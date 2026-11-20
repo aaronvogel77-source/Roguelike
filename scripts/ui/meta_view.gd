@@ -479,6 +479,8 @@ func _cosmetic_card(entry: Dictionary) -> Control:
 	var box := _box(card)
 	box.add_child(_text_label(tr("COSMETIC_KIND_" + String(entry["kind"]).to_upper()), 14, Palette.MUTED))
 	box.add_child(_text_label(tr("COSMETIC_" + id.to_upper()), 20, Palette.GOLD if owned else Palette.PARCHMENT))
+	if entry["kind"] == "aura":  # a small stage with one own figure wearing it
+		box.add_child(_centered(_aura_preview(id)))
 	if entry["kind"] == "back":  # the back with the ornament of each suit family
 		var backs := HBoxContainer.new()
 		backs.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -498,6 +500,45 @@ func _cosmetic_card(entry: Dictionary) -> Control:
 	else:
 		box.add_child(_buy_cosmetic_button(id, int(entry["price"])))
 	return card
+
+
+## A tile of the worn battle background with one own figure wearing the aura.
+## The free "suit colours" only shine on fusions, so it shows a small fusion.
+func _aura_preview(id: String) -> Control:
+	var tile := Control.new()
+	tile.custom_minimum_size = Vector2(200, 120)
+	tile.clip_contents = true
+	tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var floor_y := 110.0  # where the stage puts the feet (BattleStage.FLOOR)
+	var region := Rect2(58, floor_y - 58, 100, 60)  # brick wall, not the dark arch
+	var atlas := AtlasTexture.new()
+	atlas.atlas = FigureArt.background(Cosmetics.stage, 300, 130, 106)
+	atlas.region = region
+	var backdrop := TextureRect.new()
+	backdrop.texture = atlas
+	backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	backdrop.stretch_mode = TextureRect.STRETCH_SCALE
+	backdrop.size = tile.custom_minimum_size
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tile.add_child(backdrop)
+	var definition: Dictionary = _db.figures["executioner"]
+	if id == "aura_suits":
+		var parts := ["executioner", "blood_drinker"]
+		definition = Fusion.definition(_db, {"uid": 0, "def_id": parts[0], "xp": 0, "fusion": {"parts": parts,
+			"suits": parts.map(func(part: String) -> String: return String(_db.figures[part]["suit"])),
+			"abilities": [], "attack": 1, "health": 1, "partner": parts[1]}})
+	var worn := Cosmetics.aura
+	Cosmetics.aura = id  # the actor reads the aura while it is built
+	var actor := FigureActor.new()
+	actor.portrait = true
+	actor.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	actor.setup(definition, {"uid": 0}, false)
+	Cosmetics.aura = worn
+	actor.scale = Vector2(2, 2)
+	actor.position = Vector2(100, (floor_y - region.position.y) * 2.0)
+	tile.add_child(actor)
+	return tile
 
 
 func _buy_cosmetic_button(id: String, price: int) -> Button:
