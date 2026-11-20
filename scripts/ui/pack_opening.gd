@@ -5,7 +5,8 @@ extends Control
 ## over when tapped ("Alle aufdecken" turns the rest). Legendary skins get
 ## their own big reveal (LegendaryReveal).
 ##
-## A card is {"face": Control, "rarity": 0..5 (5 = legendary), "skin": skin id or ""}.
+## A card is {"face": Control, "rarity": 0..5 (5 = legendary), "skin": skin id or "",
+## "suit": optional suit family of its card back (else the pack's suit).
 
 signal finished
 
@@ -28,10 +29,14 @@ var _busy := false
 ## Loot of a hard band: golden pack, "Beute!" banner, coin rain, bells.
 var _loot := false
 var _coins: Array = []  # {"p", "v"}
+## Suit family of the card back ornament (the region's suit for shop packs).
+var _suit := "coins"
 
 
-static func create(cards: Array, title: String, loot := false) -> PackOpening:
+static func create(cards: Array, title: String, loot := false, suit := "") -> PackOpening:
 	var view := PackOpening.new()
+	if suit in CardBackArt.SUITS:
+		view._suit = suit
 	view._cards = cards
 	view._title = title
 	view._loot = loot
@@ -54,13 +59,15 @@ func _ready() -> void:
 	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	title.offset_top = 24
 	add_child(title)
-	_pack = _card_back(Vector2(170, 240), 2, true)
+	_pack = _card_back(Vector2(170, 240), 2, true, _suit)
 	_pack.pivot_offset = Vector2(85, 120)
 	add_child(_pack)
 	if _loot:
 		title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.35))
 		var style: StyleBoxFlat = _pack.get_meta("style")
 		style.border_color = Palette.GOLD
+		style.set_border_width_all(3)
+		style.set_expand_margin_all(3)  # a gold edge around the pixel back
 		style.shadow_color = Color(1.0, 0.8, 0.3, 0.9)
 		style.shadow_size = 18
 	_flash = ColorRect.new()
@@ -165,7 +172,7 @@ func _deal() -> void:
 		face_holder.add_child(face)
 		face_holder.visible = false
 		root.add_child(face_holder)
-		var back := _card_back(CARD, int(card["rarity"]), false)
+		var back := _card_back(CARD, int(card["rarity"]), false, String(card.get("suit", _suit)))
 		back.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		root.add_child(back)
 		var slot := {"root": root, "back": back, "face": face_holder, "rarity": int(card["rarity"]),
@@ -248,23 +255,22 @@ func _on_button() -> void:
 			await get_tree().create_timer(0.18).timeout
 
 
-## A face-down card in the worn card back, glowing in its rarity colour.
-func _card_back(card_size: Vector2, rarity: int, is_pack: bool) -> Panel:
+## A face-down card in the worn card back (pixel art with the ornament of its
+## suit family), glowing in its rarity colour around the edge.
+func _card_back(card_size: Vector2, rarity: int, is_pack: bool, suit: String) -> Panel:
 	var panel := Panel.new()
 	panel.size = card_size
 	var colors := Cosmetics.back_colors()
 	var style := StyleBoxFlat.new()
 	style.bg_color = colors["bg"]
 	style.border_color = colors["border"]
-	style.set_border_width_all(4)
-	style.set_corner_radius_all(12)
+	style.set_border_width_all(0)
+	style.set_corner_radius_all(4)
 	if not is_pack and rarity >= 1:
 		style.shadow_color = Color(GLOW[rarity], 0.85)
 		style.shadow_size = 6 + rarity * 4
 	panel.add_theme_stylebox_override("panel", style)
-	var emblem := Emblem.create("pack" if is_pack else "star", 56 if is_pack else 44)
-	emblem.position = card_size / 2 - emblem.size / 2
-	panel.add_child(emblem)
+	panel.add_child(CardBackArt.rect(Cosmetics.back, suit, card_size))
 	panel.set_meta("style", style)
 	panel.set_meta("rarity", rarity)
 	return panel

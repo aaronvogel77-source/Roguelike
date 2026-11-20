@@ -61,11 +61,16 @@ var _creature_hand := Vector2(8, -20)
 var _floating := false
 var _wispy := false
 var _revive_time := -1.0
-## Fusions: aura in the two main suit colours, stronger per stage; pure
-## fusions (3+ of one suit on F3) carry their suit symbol above the head.
+## Aura ("light column"): a soft glow rising from the ground, a ring at the
+## feet and a few sparkles that twinkle in place. Fusions wear it in their two
+## main suit colours, stronger per stage; a bought aura (vault mirror) is worn
+## by every own figure. Pure fusions (3+ of one suit on F3) also carry their
+## suit symbol above the head.
 var _aura: Node2D
 var _fusion_stage := 0
-var _aura_colors: Array = []
+var _aura_ramps: Array = []  # two four-tone ramps: [ring, column]
+var _aura_column: Texture2D
+var _aura_ring: Texture2D
 var _pure_suit := ""
 ## Legendary skin effect theme ("hellfire", "frost", "void", "sun") or "".
 var fx_theme := ""
@@ -96,6 +101,7 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 	_sparkle = 2 if look.get("shimmer", false) else (1 if stage >= 3 else 0)
 	_fusion_stage = stage
 	fx_theme = String(look.get("fx", "")) if not enemy else ""
+	var worn_aura := Cosmetics.aura_ramps()
 	if stage > 0:
 		var counts := {}
 		var order: Array = []
@@ -105,12 +111,19 @@ func setup(unit_definition: Dictionary, unit_snapshot: Dictionary, enemy: bool) 
 			counts[s] = counts.get(s, 0) + 1
 		order.sort_custom(func(x: String, y: String) -> bool: return counts[x] > counts[y])
 		for s in order.slice(0, 2):
-			_aura_colors.append(Color(FigureArt.GEMS.get(s, "ffffff")).lightened(0.25))
-		if not Cosmetics.aura_colors().is_empty():
-			_aura_colors = Cosmetics.aura_colors()
+			_aura_ramps.append(Cosmetics.ramp_from(Color(FigureArt.GEMS.get(s, "ffffff"))))
+		if _aura_ramps.size() == 1:
+			_aura_ramps.append(_aura_ramps[0])
 		if stage >= 3 and counts[order[0]] >= 3:
 			_pure_suit = order[0]
-	if stage > 0 or fx_theme != "":
+	if not worn_aura.is_empty():
+		_aura_ramps = worn_aura  # a bought aura: every own figure wears it
+	if enemy:
+		_aura_ramps = []  # enemies never wear the player's aura
+		_pure_suit = ""
+	if not _aura_ramps.is_empty():
+		_build_aura_textures()
+	if not _aura_ramps.is_empty() or fx_theme != "":
 		_aura = Node2D.new()
 		_aura.draw.connect(_draw_aura)
 		add_child(_aura)  # added before the rig, so it is drawn behind the figure
@@ -571,28 +584,69 @@ func _draw_aura() -> void:
 		return
 	if fx_theme != "":
 		_draw_skin_back()
-	if _aura_colors.is_empty():
+	if _aura_ramps.is_empty():
 		return
 	var h := _height
-	var n := 6 + _fusion_stage * 6
-	# Rising motes around the body, alternating the two main colours.
-	for i in n:
-		var ph := fmod(_time * (0.35 + 0.08 * _fusion_stage) + i * 0.618, 1.0)
-		var col: Color = _aura_colors[i % _aura_colors.size()]
-		var x := -9.0 - _fusion_stage + float((i * 37) % (19 + _fusion_stage * 2))
-		var p := Vector2(x + sin(_time * 2.0 + i) * 1.5, -2.0 - ph * (h + 6))
-		col.a = (1.0 - ph * 0.8) * (0.6 + 0.13 * _fusion_stage)
-		var mote := Vector2(2, 2) if i % 3 == 0 else Vector2(1, 2)
-		_aura.draw_rect(Rect2(p.round(), mote), col)
-	# A soft glow on the ground, wider per stage.
-	var glow: Color = _aura_colors[0]
-	glow.a = 0.3 + 0.1 * _fusion_stage
-	var w := 14.0 + _fusion_stage * 4.0
-	_aura.draw_rect(Rect2(-w / 2, -1, w, 2), glow)
-	glow.a *= 0.5
-	_aura.draw_rect(Rect2(-w / 2 - 3, -2, w + 6, 4), glow)
+	# The column breathes slowly (3 s); the ring at the feet stays still.
+	var breath := 0.85 + 0.15 * sin(_time * TAU / 3.0)
+	_aura.draw_texture(_aura_column, Vector2(-_aura_column.get_width() / 2, -_aura_column.get_height()), Color(1, 1, 1, breath))
+	_aura.draw_texture(_aura_ring, Vector2(-_aura_ring.get_width() / 2, -4))
+	# A few sparkles that twinkle in place (no streams of particles).
+	var spots := [Vector2(-9, 0.75), Vector2(8, 0.45), Vector2(-6, 0.95), Vector2(10, 0.2)]
+	for i in 2 + mini(_fusion_stage, 2):
+		var ph := fmod(_time * 0.4 + i * 0.53, 1.0)
+		var a := sin(ph * PI)
+		if a < 0.2:
+			continue
+		var ramp: Array = _aura_ramps[i % 2]
+		var p := Vector2(spots[i].x, -round(h * spots[i].y))
+		var core: Color = ramp[3]
+		core.a = a
+		_aura.draw_rect(Rect2(p, Vector2.ONE), core)
+		if a > 0.6:
+			var arm: Color = ramp[2]
+			arm.a = a * 0.6
+			for d in [Vector2(1, 0), Vector2(-1, 0), Vector2(0, 1), Vector2(0, -1)]:
+				_aura.draw_rect(Rect2(p + d, Vector2.ONE), arm)
 	if _pure_suit != "":
 		_draw_suit_symbol(Vector2(0, -h - 10 + round(sin(_time * 2.2))))
+
+
+## The light column and the ground ring are baked once per figure (cheap to
+## draw every frame). Alpha comes in hard steps: pixel art, no dither.
+func _build_aura_textures() -> void:
+	var stage := _fusion_stage
+	var column_ramp: Array = _aura_ramps[1]
+	var w := 22 + stage * 4
+	var hh := int(_height * 0.8)
+	var strength := 0.58 + 0.07 * stage
+	var column := Image.create(w + 1, hh, false, Image.FORMAT_RGBA8)
+	for y in hh:
+		var k := pow(1.0 - float(y) / hh, 0.7)
+		for x in w + 1:
+			var edge := absf(x - w / 2.0) / (w / 2.0)
+			if edge > 1.0:
+				continue
+			var a := strength * k * (1.0 - edge * edge * edge)
+			a = floorf(a * 8.0 + 0.3) / 8.0
+			if a <= 0.0:
+				continue
+			var c: Color = column_ramp[1] if edge > 0.6 else column_ramp[2]
+			c.a = a
+			column.set_pixel(x, hh - 1 - y, c)
+	_aura_column = ImageTexture.create_from_image(column)
+	var ring_ramp: Array = _aura_ramps[0]
+	var rx := 11 + stage * 2
+	var ring := Image.create(rx * 2 + 1, 7, false, Image.FORMAT_RGBA8)
+	for i in 96:
+		var ang := i / 96.0 * TAU
+		var x := rx + roundi(cos(ang) * rx)
+		var y := 3 + roundi(sin(ang) * 3.0)
+		var back := sin(ang) < 0.0
+		var c: Color = ring_ramp[2] if back or cos(ang) < 0.0 else ring_ramp[1]  # lit from the left
+		c.a = 0.55 if back else 0.8
+		ring.set_pixel(x, y, c)
+	_aura_ring = ImageTexture.create_from_image(ring)
 
 
 ## Pure fusions: a small glowing coin, flame, cup or blade above the head.

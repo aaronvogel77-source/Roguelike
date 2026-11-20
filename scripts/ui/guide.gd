@@ -95,7 +95,8 @@ func _process(delta: float) -> void:
 	_label.position = Vector2(clampf(rect.get_center().x - _label.size.x / 2, 8, size.x - _label.size.x - 8),
 		rect.position.y - _label.size.y - 14 if above else rect.end.y + 14)
 	_end.reset_size()
-	_end.position = Vector2(size.x - _end.size.x - 16, size.y - _end.size.y - 16)
+	# Right edge, below the resource boxes (free on every screen, phone or tablet).
+	_end.position = Vector2(size.x - _end.size.x - 16, size.y * 0.4)
 	queue_redraw()
 
 

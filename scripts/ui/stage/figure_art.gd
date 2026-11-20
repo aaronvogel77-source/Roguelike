@@ -972,7 +972,6 @@ static func _build_ghost(look: Dictionary) -> Dictionary:
 
 # --- Background ---------------------------------------------------------------------
 
-## The coin vault: brick wall, arches with gold piles, pillars, stone floor.
 ## The battle background picked in the vault mirror.
 static func background(style: String, w: int, h: int, floor_y: int) -> ImageTexture:
 	match style:
@@ -1071,52 +1070,7 @@ static func graveyard(w: int, h: int, floor_y: int) -> ImageTexture:
 	return c.texture()
 
 
+## The treasure vault, painted with light (CryptArt): moonlit window, torches,
+## deep arches with gold, niches and a flagstone floor.
 static func vault(w: int, h: int, floor_y: int) -> ImageTexture:
-	var c := PixelCanvas.new(w, h)
-	c.px(Color("0d0a0c"), 0, 0, w, h)
-	var bricks := [Color("1c1518"), Color("211a1c"), Color("181214"), Color("241c1e"), Color("1a1416")]
-	for y in range(0, floor_y, 6):
-		var off := -6 if (y / 6) % 2 else 0
-		for bx in range(off, w, 12):
-			c.px(bricks[absi(bx * 7 + y * 13) % 5], bx + 1, y + 1, 11, 5)
-	var gold := ramp("gold")
-	for ax in [w * 0.12, w * 0.5, w * 0.88]:
-		var axi := int(ax)
-		for yy in 70:
-			var half := 18 if yy >= 18 else int(sqrt(18.0 * 18.0 - (18 - yy) * (18 - yy)))
-			c.px(Color("08060a"), axi - half, floor_y - 70 + yy, half * 2, 1)
-		for i in 40:
-			var a := PI + i / 40.0 * PI
-			c.px(Color("3a2c22"), int(axi + cos(a) * 19), int(floor_y - 52 + sin(a) * 19), 2, 2)
-		_pile(c, axi, floor_y, 15, 9, gold)
-	_pile(c, int(w * 0.3), floor_y + 2, 7, 4, gold)
-	_pile(c, int(w * 0.68), floor_y + 2, 8, 5, gold)
-	for y in range(floor_y, h):
-		var t := float(y - floor_y) / maxf(1.0, h - floor_y)
-		c.px(Color(0.094 - t * 0.04, 0.075 - t * 0.03, 0.08 - t * 0.03), 0, y, w, 1)
-	for y in range(floor_y + 4, h, 7):
-		c.px(Color("0e0b0d"), 0, y, w, 1)
-	for fx in range(0, w, 23):
-		c.px(Color("0e0b0d"), fx, floor_y + 4, 1, h - floor_y - 4)
-	for i in 30:
-		var cx := (i * 97) % w
-		var cy := floor_y + 8 + (i * 31) % maxi(1, h - floor_y - 10)
-		c.px(gold[2], cx, cy, 2, 1)
-		c.px(gold[3], cx, cy)
-	for pxx in [int(w * 0.31), int(w * 0.69)]:
-		for y in floor_y:
-			c.px(Color("2a2024"), pxx - 5, y, 10, 1)
-			c.px(Color("3a2e30"), pxx - 5, y, 2, 1)
-			c.px(Color("161012"), pxx + 4, y)
-	return c.texture()
-
-
-static func _pile(c: PixelCanvas, cx: int, cy: int, rx: int, ry: int, gold: Array) -> void:
-	for yy in range(-ry, 1):
-		for xx in range(-rx, rx + 1):
-			if float(xx * xx) / (rx * rx) + float(yy * yy) / (ry * ry) > 1.0:
-				continue
-			var v := -float(xx) / rx - float(yy) / ry
-			c.px(gold[3 if v > 0.9 else (2 if v > 0.1 else (1 if v > -0.6 else 0))], cx + xx, cy + yy)
-			if ((xx * 31 + yy * 17) & 15) == 0:
-				c.px(Color("fff4b8"), cx + xx, cy + yy)
+	return CryptArt.stage(w, h, floor_y)

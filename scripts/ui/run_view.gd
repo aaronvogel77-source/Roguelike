@@ -40,12 +40,12 @@ func _ready() -> void:
 	_detail_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_detail_panel.position.y += 64
 	add_child(_detail_panel)
+	_meta = MetaState.load_saved()
+	Cosmetics.apply(_meta)  # also in the arena, so worn cosmetics show there
 	# "?arena=1": random test battles with full teams (sandbox battle view).
 	if _url_flag("arena"):
 		add_child(BattleScene.instantiate())
 		return
-	_meta = MetaState.load_saved()
-	Cosmetics.apply(_meta)
 	# "?seed=N" starts a run directly (testing); otherwise the main menu.
 	if _url_seed() >= 0:
 		_new_run("novice")
@@ -1973,15 +1973,21 @@ func _pack_view(index: int) -> Control:
 	var back := Cosmetics.back_colors()  # the card back worn from the vault mirror
 	style.bg_color = back["bg"] if not pack.is_empty() else Color(1, 1, 1, 0.03)
 	style.border_color = back["border"] if not pack.is_empty() else Color(1, 1, 1, 0.15)
-	style.set_border_width_all(4 if pack.get("size", "") == "mega" else 2)
-	style.set_corner_radius_all(10)
-	style.set_content_margin_all(4)
+	style.set_border_width_all(0 if not pack.is_empty() else 2)
+	style.set_corner_radius_all(10 if pack.is_empty() else 2)
+	style.set_content_margin_all(0)
+	if pack.get("size", "") == "mega":  # big packs: a thick edge around the back
+		style.set_border_width_all(3)
+		style.set_expand_margin_all(3)
 	if pack.get("loot", false):  # reward for a hard band: golden glow
 		style.border_color = Palette.GOLD
-		style.set_border_width_all(4)
+		style.set_border_width_all(3)
+		style.set_expand_margin_all(3)
 		style.shadow_color = Color(Palette.GOLD, 0.6)
 		style.shadow_size = 8
 	panel.add_theme_stylebox_override("panel", style)
+	if not pack.is_empty():  # the pixel card back with the region's ornament
+		panel.add_child(CardBackArt.rect(Cosmetics.back, _run.region, UnitCard.CARD_SIZE))
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	if not pack.is_empty() and _run.pack_cost(pack) > _run.gold:
 		panel.modulate = Color(0.78, 0.78, 0.78)  # too expensive right now
@@ -1989,21 +1995,32 @@ func _pack_view(index: int) -> Control:
 	var price_text := ""
 	if not pack.is_empty():
 		var inner := VBoxContainer.new()
-		inner.alignment = BoxContainer.ALIGNMENT_CENTER
+		inner.alignment = BoxContainer.ALIGNMENT_END
 		inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var emblem_box := CenterContainer.new()
-		emblem_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		emblem_box.add_child(Emblem.create("pack", 46))
-		inner.add_child(emblem_box)
+		inner.add_theme_constant_override("separation", 0)
+		var plate := PanelContainer.new()  # dark glass under the text, over the back
+		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var plate_style := StyleBoxFlat.new()
+		plate_style.bg_color = Color(0.04, 0.03, 0.06, 0.82)
+		plate_style.border_color = Color(Palette.GOLD, 0.7)
+		plate_style.border_width_top = 1
+		plate_style.set_content_margin_all(3)
+		plate_style.content_margin_bottom = 5
+		plate.add_theme_stylebox_override("panel", plate_style)
+		var texts := VBoxContainer.new()
+		texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		texts.add_theme_constant_override("separation", 0)
+		plate.add_child(texts)
+		inner.add_child(plate)
 		var name := _label(ItemText.pack_name(pack), 13, Palette.PARCHMENT)
 		name.autowrap_mode = TextServer.AUTOWRAP_WORD
 		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		inner.add_child(name)
+		texts.add_child(name)
 		var content := _label(tr("UI_PACK_CONTENT") % [Items.pack_choice_count(_db, pack), Items.pack_picks(_db, pack)], 11, Palette.MUTED)
 		content.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		inner.add_child(content)
+		texts.add_child(content)
 		panel.add_child(inner)
 		panel.gui_input.connect(func(event: InputEvent) -> void:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
@@ -2036,11 +2053,13 @@ func _play_pack_opening(open: Dictionary) -> void:
 	for entry in open["items"]:
 		var face: Control
 		var rarity := 1
+		var suit := _run.region  # the card back's ornament: the figure's suit, else the region's
 		match entry["kind"]:
 			"figure":
 				var definition: Dictionary = _db.figures[entry["def_id"]]
 				face = _scaled(UnitCard.for_definition(definition, 1, false), 1.15)
 				rarity = 4 if definition["rank"] == "legend" else RunState.RANKS.find(definition["rank"])
+				suit = String(definition.get("suit", _run.region))
 			"equipment":
 				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = int(entry["item"]["rarity"])
@@ -2053,8 +2072,8 @@ func _play_pack_opening(open: Dictionary) -> void:
 			_:
 				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 3 if entry.get("id", "") == "ritual_candle" else 1
-		cards.append({"face": face, "rarity": rarity})
-	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"]), open["pack"].get("loot", false)))
+		cards.append({"face": face, "rarity": rarity, "suit": suit})
+	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"]), open["pack"].get("loot", false), _run.region))
 
 
 ## Overlay while a pack is open: pick items, choose targets, discard the rest.

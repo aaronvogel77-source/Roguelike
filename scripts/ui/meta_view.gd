@@ -47,17 +47,29 @@ func _show(page: String) -> void:
 	Sound.music("menu" if page in ["menu", "occultists"] else "vault")
 	for child in get_children():
 		child.queue_free()
-	# The crypt: the pixel vault of the battle stage, dimmed behind the pages.
-	var backdrop := TextureRect.new()
-	backdrop.texture = FigureArt.background(Cosmetics.stage, 300, 130, 106)
-	backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	backdrop.modulate = Color(0.55, 0.5, 0.55) if page == "menu" else Color(0.32, 0.3, 0.34)
-	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(backdrop)
+	# The crypt: the vault and its stations stand in the Krypta-Lager room;
+	# the other pages lie over the battle background of the worn stage.
+	var in_crypt := page == "vault" or page in PAGES_IN_VAULT
+	if in_crypt:
+		var room := CryptRoomView.create(page == "vault")
+		if page != "vault":
+			room.modulate = Color(0.55, 0.52, 0.56)
+		room.station_pressed.connect(_show)
+		add_child(room)
+	else:
+		var backdrop := TextureRect.new()
+		backdrop.texture = FigureArt.background(Cosmetics.stage, 300, 130, 106)
+		backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		backdrop.modulate = Color(0.55, 0.5, 0.55) if page == "menu" else Color(0.5, 0.47, 0.52)
+		backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		add_child(backdrop)
+	if page != "vault":
+		add_child(_vignette())
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE  # the crypt room's stations lie below
 	for side in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 24)
 	add_child(margin)
@@ -213,24 +225,72 @@ func _build_occultists(column: VBoxContainer) -> void:
 
 # --- Vault (crypt) ---------------------------------------------------------------------
 
+## The Krypta-Lager is a room (CryptRoomView, added in _show): its chests,
+## altar, portraits and mirror are tapped directly. Here only the title,
+## the soul glow and the way back lie over it.
 func _build_vault(column: VBoxContainer) -> void:
-	column.add_child(_header(tr("UI_VAULT_TITLE")))
-	column.add_child(_centered(_glut_badge()))
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var top := HBoxContainer.new()
+	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_theme_constant_override("separation", 20)
+	var title := _label(tr("UI_VAULT_TITLE"), 40, Palette.GOLD)
+	title.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	title.add_theme_constant_override("shadow_offset_y", 3)
+	top.add_child(title)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_child(spacer)
+	top.add_child(_glass(_glut_badge()))
+	column.add_child(top)
+	var room := Control.new()
+	room.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	room.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(room)
+	var back := _button(tr("UI_BACK"), Vector2(200, 52), _show.bind("menu"))
 	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 16)
-	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(back)
 	column.add_child(row)
-	var icons := {"chests": "pack", "altar": "star", "portraits": "skull", "mirror": "soul"}
-	for station in PAGES_IN_VAULT:
-		var card := _panel(Vector2(250, 300), Palette.GOLD)
-		var box := _box(card)
-		box.add_child(_centered(Emblem.create(icons[station], 72)))
-		box.add_child(_text_label(tr("UI_STATION_" + station.to_upper()), 28, Palette.GOLD))
-		box.add_child(_rich(tr("UI_STATION_" + station.to_upper() + "_DESC"), 16))
-		box.add_child(_button(tr("UI_OPEN"), Vector2(170, 52), _show.bind(station)))
-		row.add_child(card)
-	column.add_child(_back_button("menu"))
+
+
+## Dark glass with a fine gold edge around a small control.
+func _glass(content: Control) -> PanelContainer:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.045, 0.08, 0.86)
+	style.border_color = Color(Palette.GOLD, 0.8)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.content_margin_left = 14
+	style.content_margin_right = 14
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	panel.add_theme_stylebox_override("panel", style)
+	panel.add_child(content)
+	return panel
+
+
+## A soft dark edge around the screen (cheap radial gradient).
+func _vignette() -> TextureRect:
+	var gradient := Gradient.new()
+	gradient.set_color(0, Color(0, 0, 0, 0))
+	gradient.set_color(1, Color(0.01, 0.0, 0.02, 0.7))
+	gradient.add_point(0.55, Color(0, 0, 0, 0.08))
+	var texture := GradientTexture2D.new()
+	texture.gradient = gradient
+	texture.fill = GradientTexture2D.FILL_RADIAL
+	texture.fill_from = Vector2(0.5, 0.45)
+	texture.fill_to = Vector2(1.08, 1.0)
+	texture.width = 128
+	texture.height = 72
+	var view := TextureRect.new()
+	view.texture = texture
+	view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	view.stretch_mode = TextureRect.STRETCH_SCALE
+	view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	return view
 
 
 func _build_station(column: VBoxContainer) -> void:
@@ -300,11 +360,23 @@ func _play_chest(id: String) -> void:
 		return
 	var cards: Array = []
 	for found in _last_chest:
-		cards.append({"face": _find_face(found), "rarity": FIND_RARITY.get(found["kind"], 1),
+		cards.append({"face": _find_face(found), "rarity": FIND_RARITY.get(found["kind"], 1), "suit": _find_suit(found),
 			# Every legendary skin find gets its big reveal, also a duplicate.
 			"skin": found["id"] if found["kind"] == "skins" else ""})
 	var opening := PackOpening.create(cards, tr("CHEST_" + id.to_upper()))
 	add_child(opening)
+
+
+## The suit family on a chest find's card back: a figure's (or skin's) own
+## suit, else one per kind of find.
+func _find_suit(found: Dictionary) -> String:
+	var id := String(found["id"])
+	match found["kind"]:
+		"figures":
+			return String(_db.figures[id].get("suit", "coins"))
+		"skins":
+			return String(_db.figures[String(MetaState.cosmetic(_db, id)["figure"])].get("suit", "coins"))
+	return {"tarot": "cups", "relics": "coins", "pacts": "swords", "events": "wands"}.get(found["kind"], "coins")
 
 
 ## The face of a chest find: its card, plus "neu!" or the duplicate refund.
@@ -407,11 +479,13 @@ func _cosmetic_card(entry: Dictionary) -> Control:
 	var box := _box(card)
 	box.add_child(_text_label(tr("COSMETIC_KIND_" + String(entry["kind"]).to_upper()), 14, Palette.MUTED))
 	box.add_child(_text_label(tr("COSMETIC_" + id.to_upper()), 20, Palette.GOLD if owned else Palette.PARCHMENT))
-	if entry["kind"] == "back":
-		var swatch := ColorRect.new()
-		swatch.custom_minimum_size = Vector2(46, 30)
-		swatch.color = Color(Cosmetics.BACKS[id]["bg"])
-		box.add_child(_centered(swatch))
+	if entry["kind"] == "back":  # the back with the ornament of each suit family
+		var backs := HBoxContainer.new()
+		backs.alignment = BoxContainer.ALIGNMENT_CENTER
+		backs.add_theme_constant_override("separation", 4)
+		for suit in CardBackArt.SUITS:
+			backs.add_child(CardBackArt.rect(id, suit, Vector2(48, 70)))
+		box.add_child(backs)
 	if owned:
 		box.add_child(_button(tr("UI_WORN") if worn else tr("UI_WEAR"), Vector2(170, 48), func() -> void:
 			_meta.equip(_db, id)
