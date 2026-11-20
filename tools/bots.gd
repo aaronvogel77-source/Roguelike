@@ -75,7 +75,7 @@ func play(db: ContentDb, seed_value: int, options: Dictionary = {}) -> RunState:
 				var theirs := EnemyGenerator.power(run.db, run.chosen_enemy.get("team", []))
 				var result := BattleSimulator.simulate(run.player_battle_team(), run.enemy_battle_team(), run.gold, run.battle_options())
 				log["battles"].append({"station": station, "mine": mine, "theirs": theirs, "won": bool(result["victory"]),
-					"difficulty": int(run.chosen_enemy.get("difficulty", 0)), "filled": _filled()})
+					"difficulty": int(run.chosen_enemy.get("difficulty", 0)), "filled": _filled(), "region": run.region})
 				run.apply_battle_result(result)
 			RunState.Stage.REWARD:
 				_reward()

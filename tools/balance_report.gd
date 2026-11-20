@@ -50,6 +50,14 @@ func _init() -> void:
 				e["diff"][clampi(b["difficulty"], 0, 2)] += 1
 				e["diff_won"][clampi(b["difficulty"], 0, 2)] += 1 if b["won"] else 0
 				report["stations"] = st
+				# The same station split by region (e.g. "A1 K3 wands").
+				var rk := "%s %s" % [b["station"], b.get("region", "coins")]
+				var rs: Dictionary = report.get("region_stations", {})
+				var r: Dictionary = rs.get(rk, {"n": 0, "won": 0})
+				r["n"] += 1
+				r["won"] += 1 if b["won"] else 0
+				rs[rk] = r
+				report["region_stations"] = rs
 			if not won:
 				report["deaths"][where] = report["deaths"].get(where, 0) + 1
 				var boss := String(run.chosen_enemy.get("boss_id", ""))
@@ -126,6 +134,16 @@ func _print(report: Dictionary, runs: int) -> void:
 				parts.append("%s %s" % [["leicht", "mittel", "schwer"][d], BalanceLab.rate(int(e["diff_won"][d]), n)])
 		if not parts.is_empty():
 			print("            ", "  ·  ".join(parts))
+	print("=== Stationen je Gebiet ===")
+	var rs: Dictionary = report.get("region_stations", {})
+	var rnames: Array = rs.keys()
+	rnames.sort()
+	for k in rnames:
+		var change := ""
+		if _old.get("region_stations", {}).has(k):
+			var o: Dictionary = _old["region_stations"][k]
+			change = "  " + BalanceLab.delta(int(o["won"]), int(o["n"]), int(rs[k]["won"]), int(rs[k]["n"]))
+		print("  %-14s %5d  %s%s" % [k, rs[k]["n"], BalanceLab.rate(int(rs[k]["won"]), int(rs[k]["n"])), change])
 	print("=== Niederlagen nach Ort ===")
 	for k in report["deaths"]:
 		print("  %-16s %d" % [k, report["deaths"][k]])

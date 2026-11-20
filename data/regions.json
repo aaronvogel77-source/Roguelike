@@ -74,8 +74,8 @@
         "boss": true,
         "region": "coins",
         "cost": 0,
-        "attack": 6,
-        "health": 30,
+        "attack": 7,
+        "health": 32,
         "width": 3,
         "role": "front",
         "themes": [],
@@ -101,8 +101,8 @@
         "boss": true,
         "region": "wands",
         "cost": 0,
-        "attack": 4,
-        "health": 13,
+        "attack": 5,
+        "health": 19,
         "width": 2,
         "role": "front",
         "themes": [],
@@ -111,9 +111,9 @@
           "target": "attack_target",
           "effect": "apply_burn",
           "values": [
-            2,
-            2,
-            2
+            3,
+            3,
+            3
           ]
         }
       }
@@ -129,7 +129,7 @@
         "region": "wands",
         "cost": 0,
         "attack": 6,
-        "health": 28,
+        "health": 24,
         "width": 3,
         "role": "front",
         "themes": [],
