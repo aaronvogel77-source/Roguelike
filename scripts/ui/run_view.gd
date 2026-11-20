@@ -1920,31 +1920,24 @@ func _seal(text: String, diameter: float, color_kind: String, callback: Callable
 	return button
 
 
-## The soul pack (paid in souls): two pacts, pick one.
+## The soul pack (paid in souls): pick one of several pacts. Its own pixel
+## back (violet-black velvet, bone-silver frame, soul flame in a pact sigil)
+## with the name strip at the bottom, like the arcana packs.
 func _soul_pack_view() -> Control:
 	var box := VBoxContainer.new()
 	box.set_meta("text_fixed", true)  # card-sized panel
+	var full := _run.pacts.size() >= RunState.MAX_PACTS
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("12283a")
-	style.border_color = Color("8fd8ff")
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(10)
-	style.set_content_margin_all(4)
+	style.bg_color = Color("150b24")
+	style.set_corner_radius_all(2)
+	style.set_content_margin_all(0)
 	panel.add_theme_stylebox_override("panel", style)
-	var inner := VBoxContainer.new()
-	inner.alignment = BoxContainer.ALIGNMENT_CENTER
-	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var emblem_box := CenterContainer.new()
-	emblem_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	emblem_box.add_child(Emblem.create("pact", 46))
-	inner.add_child(emblem_box)
-	var name := _label(tr("UI_SOUL_PACK"), 14, Palette.PARCHMENT)
-	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	inner.add_child(name)
-	panel.add_child(inner)
+	panel.add_child(CardBackArt.rect(Cosmetics.back, "soul", UnitCard.CARD_SIZE))
+	var choices := int(_db.items["packs"]["soul_pack"]["choices"])
+	var info := tr("UI_PACT_SLOTS_FULL") if full else tr("UI_PACK_CONTENT") % [choices, 1]
+	panel.add_child(_pack_plate(tr("UI_SOUL_PACK"), info, Palette.DANGER if full else Color("99d9ff"), Color("99d9ff")))
 	panel.gui_input.connect(func(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 			var price := _run.soul_pack_price()
@@ -1955,11 +1948,45 @@ func _soul_pack_view() -> Control:
 					_pack_pick = -1
 					_show_stage(), _run.souls >= price and _run.pacts.size() < RunState.MAX_PACTS))
 	box.add_child(_with_price(panel, _run.soul_pack_price(), true))
-	if _run.pacts.size() >= RunState.MAX_PACTS:
-		panel.modulate.a = 0.4
+	if full:  # darker, but the strip still says why
+		panel.modulate = Color(0.55, 0.55, 0.6)
 	elif _run.soul_pack_price() > _run.souls:
 		panel.modulate = Color(0.78, 0.78, 0.78)
 	return box
+
+
+## The strip at the bottom of a pack back: dark glass with a fine edge,
+## the pack's name and one line below it.
+func _pack_plate(title: String, line: String, line_color: Color, edge: Color) -> Control:
+	var inner := VBoxContainer.new()
+	inner.alignment = BoxContainer.ALIGNMENT_END
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_theme_constant_override("separation", 0)
+	var plate := PanelContainer.new()
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var plate_style := StyleBoxFlat.new()
+	plate_style.bg_color = Color(0.04, 0.03, 0.06, 0.82)
+	plate_style.border_color = Color(edge, 0.7)
+	plate_style.border_width_top = 1
+	plate_style.set_content_margin_all(3)
+	plate_style.content_margin_bottom = 5
+	plate.add_theme_stylebox_override("panel", plate_style)
+	var texts := VBoxContainer.new()
+	texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.add_theme_constant_override("separation", 0)
+	plate.add_child(texts)
+	inner.add_child(plate)
+	var name := _label(title, 13, Palette.PARCHMENT)
+	name.autowrap_mode = TextServer.AUTOWRAP_WORD
+	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.add_child(name)
+	var content := _label(line, 11, line_color)
+	content.autowrap_mode = TextServer.AUTOWRAP_WORD
+	content.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.add_child(content)
+	return inner
 
 
 ## A pack in the shop: tap to buy and open it.
@@ -1986,42 +2013,18 @@ func _pack_view(index: int) -> Control:
 		style.shadow_color = Color(Palette.GOLD, 0.6)
 		style.shadow_size = 8
 	panel.add_theme_stylebox_override("panel", style)
-	if not pack.is_empty():  # the pixel card back with the region's ornament
-		panel.add_child(CardBackArt.rect(Cosmetics.back, _run.region, UnitCard.CARD_SIZE))
+	var forge: bool = pack.get("type", "") == "equipment"
+	if not pack.is_empty():  # the pixel card back: forge for equipment, else the region's ornament
+		panel.add_child(CardBackArt.rect(Cosmetics.back, "forge" if forge else _run.region, UnitCard.CARD_SIZE))
 	panel.custom_minimum_size = UnitCard.CARD_SIZE
 	if not pack.is_empty() and _run.pack_cost(pack) > _run.gold:
 		panel.modulate = Color(0.78, 0.78, 0.78)  # too expensive right now
 	box.add_child(_with_price(panel, _run.pack_cost(pack) if not pack.is_empty() else -1, false))
 	var price_text := ""
 	if not pack.is_empty():
-		var inner := VBoxContainer.new()
-		inner.alignment = BoxContainer.ALIGNMENT_END
-		inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		inner.add_theme_constant_override("separation", 0)
-		var plate := PanelContainer.new()  # dark glass under the text, over the back
-		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var plate_style := StyleBoxFlat.new()
-		plate_style.bg_color = Color(0.04, 0.03, 0.06, 0.82)
-		plate_style.border_color = Color(Palette.GOLD, 0.7)
-		plate_style.border_width_top = 1
-		plate_style.set_content_margin_all(3)
-		plate_style.content_margin_bottom = 5
-		plate.add_theme_stylebox_override("panel", plate_style)
-		var texts := VBoxContainer.new()
-		texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		texts.add_theme_constant_override("separation", 0)
-		plate.add_child(texts)
-		inner.add_child(plate)
-		var name := _label(ItemText.pack_name(pack), 13, Palette.PARCHMENT)
-		name.autowrap_mode = TextServer.AUTOWRAP_WORD
-		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		texts.add_child(name)
-		var content := _label(tr("UI_PACK_CONTENT") % [Items.pack_choice_count(_db, pack), Items.pack_picks(_db, pack)], 11, Palette.MUTED)
-		content.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		texts.add_child(content)
-		panel.add_child(inner)
+		panel.add_child(_pack_plate(ItemText.pack_name(pack),
+			tr("UI_PACK_CONTENT") % [Items.pack_choice_count(_db, pack), Items.pack_picks(_db, pack)], Palette.MUTED,
+			Color("f08a30") if forge else Palette.GOLD))
 		panel.gui_input.connect(func(event: InputEvent) -> void:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 				# Tap = info; buying is the button in the info window.
@@ -2063,17 +2066,20 @@ func _play_pack_opening(open: Dictionary) -> void:
 			"equipment":
 				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = int(entry["item"]["rarity"])
+				suit = "forge"
 			"relic":
 				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 2
 			"pact":
 				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 3
+				suit = "soul"
 			_:
 				face = ObjectCard.create(_db, entry, Vector2(150, 222))
 				rarity = 3 if entry.get("id", "") == "ritual_candle" else 1
 		cards.append({"face": face, "rarity": rarity, "suit": suit})
-	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"]), open["pack"].get("loot", false), _run.region))
+	var pack_suit: String = {"soul": "soul", "equipment": "forge"}.get(open["pack"].get("type", ""), _run.region)
+	add_child(PackOpening.create(cards, ItemText.pack_name(open["pack"]), open["pack"].get("loot", false), pack_suit))
 
 
 ## Overlay while a pack is open: pick items, choose targets, discard the rest.
@@ -2571,7 +2577,8 @@ func _market_coat() -> Control:
 	pack_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	pack_box.custom_minimum_size = Vector2(170, 210)
 	var emblem_center := CenterContainer.new()
-	emblem_center.add_child(Emblem.create("pack", 80))
+	var pack_suit: String = {"soul": "soul", "equipment": "forge"}.get(pack["type"], _run.region)
+	emblem_center.add_child(CardBackArt.rect(Cosmetics.back, pack_suit, UnitCard.CARD_SIZE))
 	pack_box.add_child(emblem_center)
 	var pack_name := _label(ItemText.pack_name(pack), 17, Palette.PARCHMENT)
 	pack_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

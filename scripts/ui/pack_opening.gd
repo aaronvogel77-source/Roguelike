@@ -35,7 +35,7 @@ var _suit := "coins"
 
 static func create(cards: Array, title: String, loot := false, suit := "") -> PackOpening:
 	var view := PackOpening.new()
-	if suit in CardBackArt.SUITS:
+	if CardBackArt.GEMS.has(suit):
 		view._suit = suit
 	view._cards = cards
 	view._title = title
