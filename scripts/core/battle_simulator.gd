@@ -179,8 +179,12 @@ func _apply_turn_rules() -> void:
 			var front: Array = living(side)
 			if not front.is_empty():
 				var unit: BattleUnit = front[0]
+				var before := unit.status(BattleUnit.STATUS_BURN)
 				unit.add_status(BattleUnit.STATUS_BURN, 1)
-				events.append({"type": "trigger", "uid": unit.uid, "effect": "apply_burn", "targets": [unit.uid]})
+				if unit.status(BattleUnit.STATUS_BURN) == before:
+					continue  # burn-immune
+				# "passive": the floor burns, not the unit (the view shows no special attack).
+				events.append({"type": "trigger", "uid": unit.uid, "effect": "apply_burn", "targets": [unit.uid], "passive": true})
 				_emit_update(unit)
 	if _options.get("melting_shields", false):
 		for unit: BattleUnit in living(PLAYER):
@@ -256,18 +260,20 @@ func _tick_damage_over_time() -> void:
 				for healer: BattleUnit in living(1 - unit.side):
 					var ember := healer.aura("ember_heal")
 					if amount > 0 and not ember.is_empty():
-						_heal(healer, int(healer.level_value(ember)))
-				unit.add_status(BattleUnit.STATUS_BURN, -1)
-				events.append({"type": "burn_tick", "uid": unit.uid, "from": burn, "to": burn - 1})
-				_emit_update(unit)
+						_aura_heal(healer, "ember_heal", int(healer.level_value(ember)))
+				# A unit the fire kills dies burning: it keeps the whole stack, which
+				# the burn spreaders (Ash King, Ash Herald, ash pact) pass on.
+				if unit.is_alive():
+					unit.add_status(BattleUnit.STATUS_BURN, -1)
+					events.append({"type": "burn_tick", "uid": unit.uid, "from": burn, "to": burn - 1})
+					_emit_update(unit)
 			var bleed := unit.status(BattleUnit.STATUS_BLEED)
 			if bleed > 0 and unit.is_alive():
 				var dealt := _deal_damage(unit, bleed, "bleed")
 				# "Aderlass" (master): opponents heal by the bleed damage dealt.
 				for healer: BattleUnit in living(1 - unit.side):
 					if dealt > 0 and not healer.aura("bloodletting").is_empty():
-						events.append({"type": "trigger", "uid": healer.uid, "effect": "bloodletting", "targets": [healer.uid]})
-						_heal(healer, dealt)
+						_aura_heal(healer, "bloodletting", dealt)
 
 
 func _tick_curses() -> void:
@@ -326,7 +332,8 @@ func _deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 	return taken
 
 
-func _heal(unit: BattleUnit, amount: int, same_exchange := false) -> void:
+## Returns true when the unit gained health or overflow shield.
+func _heal(unit: BattleUnit, amount: int, same_exchange := false) -> bool:
 	# Bannprior: while it lives, healing on the other side is halved (at least 1).
 	if living(1 - unit.side).any(func(u: BattleUnit) -> bool: return not u.aura("heal_block").is_empty()):
 		amount = maxi(amount / 2, 1) if amount > 0 else 0
@@ -334,19 +341,30 @@ func _heal(unit: BattleUnit, amount: int, same_exchange := false) -> void:
 		amount = int(floor(amount * player_heal_factor))
 	var healed := mini(amount, unit.max_health - unit.health)
 	if not unit.is_alive() and not (same_exchange and not unit.flags.get("death_resolved", false)):
-		return
+		return false
 	# "Überfluss" (master): healing beyond full health becomes shield
 	# for the bearer's whole team.
 	var excess := amount - maxi(healed, 0)
+	var overflowed := false
 	if excess > 0 and living(unit.side).any(func(u: BattleUnit) -> bool: return not u.aura("overflow").is_empty()):
 		unit.add_status(BattleUnit.STATUS_SHIELD, excess)
 		events.append({"type": "trigger", "uid": unit.uid, "effect": "overflow", "targets": [unit.uid]})
 		_emit_update(unit)
+		overflowed = true
 	if healed <= 0:
-		return
+		return overflowed
 	unit.health += healed
 	events.append({"type": "heal", "uid": unit.uid, "amount": healed})
 	_emit_update(unit)
+	return true
+
+
+## Healing from an aura (Ember Core, Bloodletting): its trigger is only shown
+## when the heal did something, and before the heal itself.
+func _aura_heal(healer: BattleUnit, effect: String, amount: int) -> void:
+	var insert_at := events.size()
+	if _heal(healer, amount):
+		events.insert(insert_at, {"type": "trigger", "uid": healer.uid, "effect": effect, "targets": [healer.uid]})
 
 
 ## Resolves deaths until stable: death abilities may revive or change units.
@@ -366,6 +384,7 @@ func _process_deaths() -> void:
 			_pact_death_hooks(unit)
 			if unit.is_alive():  # revived by an ability
 				unit.flags["death_resolved"] = false
+				unit.flags.erase("killed_by")  # its next death has its own killer
 			else:
 				rows[unit.side].erase(unit)
 				events.append({"type": "removed", "uid": unit.uid, "side": unit.side})
@@ -373,12 +392,8 @@ func _process_deaths() -> void:
 
 ## Pacts: burning enemies pass their burn on; team revives for the player.
 func _pact_death_hooks(unit: BattleUnit) -> void:
-	if burn_spread and unit.side == ENEMY and unit.status(BattleUnit.STATUS_BURN) > 0:
-		var next_units := living(ENEMY)
-		if not next_units.is_empty():
-			var next_unit: BattleUnit = next_units[0]
-			next_unit.add_status(BattleUnit.STATUS_BURN, unit.status(BattleUnit.STATUS_BURN))
-			_emit_update(next_unit)
+	if burn_spread and unit.side == ENEMY and not unit.is_alive():
+		spread_burn(unit)
 	if unit.side == PLAYER and not unit.is_alive() and team_revives_left > 0:
 		team_revives_left -= 1
 		unit.health = maxi(unit.max_health / 2, 1)
@@ -491,18 +506,39 @@ func deal_damage(unit: BattleUnit, amount: int, source: String) -> int:
 ## same_exchange: healing that belongs to the attack that just happened (lifesteal).
 ## The strikes are simultaneous, so it still counts for a unit the counter-strike
 ## brought to 0 - deaths are only resolved after the exchange.
-func heal(unit: BattleUnit, amount: int, same_exchange := false) -> void:
-	_heal(unit, amount, same_exchange)
+func heal(unit: BattleUnit, amount: int, same_exchange := false) -> bool:
+	return _heal(unit, amount, same_exchange)
 
 
 ## Changes the player's real gold; returns the actual change.
 func change_gold(delta: int) -> int:
 	var before := real_gold
 	real_gold = maxi(real_gold + delta, 0)
-	gold = 0 if _gold_hidden else real_gold * gold_factor * gold_factor
+	gold = 0 if _gold_hidden else real_gold * gold_factor
 	if real_gold != before:
 		events.append({"type": "gold", "gold": real_gold, "delta": real_gold - before})
 	return real_gold - before
+
+
+## A dying unit's burn (× factor) jumps to the front living unit of its side.
+## The burn moves on, it is not copied: once passed on it is gone, so two
+## spreaders (Ash King + ash pact) never double it. The jump is shown as a
+## burn trigger from the dying unit to the receiver.
+func spread_burn(dying: BattleUnit, factor := 1) -> bool:
+	var burn := dying.status(BattleUnit.STATUS_BURN)
+	var next_units := living(dying.side)
+	if burn <= 0 or next_units.is_empty():
+		return false
+	var next_unit: BattleUnit = next_units[0]
+	var before := next_unit.status(BattleUnit.STATUS_BURN)
+	next_unit.add_status(BattleUnit.STATUS_BURN, burn * factor)
+	if next_unit.status(BattleUnit.STATUS_BURN) == before:
+		return false  # burn-immune receiver
+	dying.statuses.erase(BattleUnit.STATUS_BURN)
+	events.append({"type": "trigger", "uid": dying.uid, "effect": "apply_burn", "targets": [next_unit.uid], "passive": true})
+	_emit_update(dying)
+	_emit_update(next_unit)
+	return true
 
 
 func emit_update(unit: BattleUnit) -> void:

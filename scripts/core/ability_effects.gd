@@ -40,9 +40,11 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 				battle.emit_update(t)
 			return not targets.is_empty()
 		"heal":
+			var healed := false
 			for t: BattleUnit in targets:
-				battle.heal(t, int(value))
-			return not targets.is_empty()
+				if battle.heal(t, int(value)):
+					healed = true
+			return healed
 		"damage":
 			for t: BattleUnit in targets:
 				battle.deal_damage(t, int(value), "ability")
@@ -124,14 +126,7 @@ static func apply(battle: BattleSimulator, owner: BattleUnit, effect: String, va
 		"fire_leap":
 			# Feuerspringen: a burning enemy's burn jumps doubled to the next one.
 			var dying: BattleUnit = context.get("dying_unit")
-			var burn := dying.status(BattleUnit.STATUS_BURN) if dying != null else 0
-			var next_units := battle.living(1 - owner.side)
-			if burn <= 0 or next_units.is_empty():
-				return false
-			var next_unit: BattleUnit = next_units[0]
-			next_unit.add_status(BattleUnit.STATUS_BURN, burn * int(value))
-			battle.emit_update(next_unit)
-			return true
+			return dying != null and battle.spread_burn(dying, int(value))
 		"shield_per_five_gold":
 			# Goldene Festung: shield 1 per 5 gold (max = value) on every target.
 			var amount := mini(battle.gold / 5, int(value))
@@ -321,14 +316,7 @@ static func _midas(battle: BattleSimulator, owner: BattleUnit, divisor: float) -
 
 ## Ash King: a dying enemy's burn jumps to the next enemy; the king gains a multiplier.
 static func _spread_burn_and_mult(battle: BattleSimulator, owner: BattleUnit, factor: float, context: Dictionary) -> bool:
-	var dying: BattleUnit = context["dying_unit"]
-	var burn := dying.status(BattleUnit.STATUS_BURN)
-	if burn > 0:
-		var next_enemies := battle.living(dying.side)
-		if not next_enemies.is_empty():
-			var next_enemy: BattleUnit = next_enemies[0]
-			next_enemy.add_status(BattleUnit.STATUS_BURN, burn)
-			battle.emit_update(next_enemy)
+	battle.spread_burn(context["dying_unit"])
 	owner.multipliers.append(factor)
 	battle.emit_update(owner)
 	return true
@@ -338,8 +326,7 @@ static func _lifesteal(battle: BattleSimulator, owner: BattleUnit, share: float,
 	var amount := int(floor(int(context.get("damage_dealt", 0)) * share))
 	if amount <= 0 or owner.health >= owner.max_health:
 		return false
-	battle.heal(owner, amount, true)  # right after its own hit, before deaths are resolved
-	return true
+	return battle.heal(owner, amount, true)  # right after its own hit, before deaths are resolved
 
 
 ## Chalice of Return: once per battle, a fallen ally comes back.

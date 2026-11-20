@@ -56,6 +56,7 @@ const EFFECT_KINDS := {
 	"absorb": "heart", "copy_ability": "star", "double_bleed": "bleed", "gain_stats": "star",
 	"midas_scales": "coin", "shield_from_interest": "shield", "spread_burn_and_mult": "burn", "swap_stats": "star",
 	"mult_attack": "star", "scales_gold": "coin",
+	"ember_heal": "heart", "bloodletting": "heart",
 }
 
 var kind := "star"

@@ -431,7 +431,7 @@ func _play_events(token: int) -> void:
 				Sound.play("burn", -8.0)
 				_float_on(event["uid"], tr("UI_BURN_TICK") % [event["from"], event["to"]], Emblem.COLORS["burn"])
 			"blessing":
-				await _show_trigger({"uid": event["uid"], "effect": "gain_shield", "targets": [event["uid"]]})
+				await _show_trigger({"uid": event["uid"], "effect": "gain_shield", "targets": [event["uid"]], "passive": true})
 			"trigger":
 				await _show_trigger(event)
 			"update":
@@ -487,7 +487,9 @@ func _show_trigger(event: Dictionary) -> void:
 	var color: Color = Emblem.COLORS.get(kind, Palette.GOLD)
 	if not _skipping:
 		Sound.play(TRIGGER_SOUNDS.get(kind, "magic"), -6.0)
-	var special := _special_name(source, event["effect"])
+	# Blessings, boss rules and burn jumps act through a figure; they are not
+	# its special attack (that would use up its one special scene per battle).
+	var special := _special_name(source, event["effect"]) if not event.get("passive", false) else ""
 	if special != "" and not _skipping and not _specials_shown.has(event["uid"]):
 		_specials_shown[event["uid"]] = true
 		_show_special_banner(special, ContentDb.display_name(source.definition),

@@ -9,9 +9,11 @@ func _init() -> void:
 	view._set_speed(4.0)
 	for i in 6:
 		view._new_battle()
+		await process_frame  # the previous summary is freed at the end of the frame
 		view._start_battle()
 		var waited := 0.0
-		while waited < 25.0 and view._banner.text != tr("UI_VICTORY") and view._banner.text != tr("UI_DEFEAT") and view._banner.text != tr("UI_DRAW"):
+		# The end shows the summary overlay (it also clears the result banner).
+		while waited < 25.0 and not is_instance_valid(view._summary):
 			await create_timer(0.5).timeout
 			waited += 0.5
 		print("battle %d finished=%s after %.1fs events=%d" % [i, waited < 25.0, waited, view._battle["events"].size()])
