@@ -25,21 +25,27 @@ var wins := 0
 
 ## Leftover souls -> Seelenglut: the first ones count fully, then half, then a
 ## quarter, with a cap per run (long runs must not pay endlessly).
-static func glut_for_souls(db: ContentDb, souls: int) -> int:
+## Glut cap of a run: 6 + 2 per reached ante (ante 3 = 12), at most 30.
+static func glut_cap(reached_ante: int) -> int:
+	return mini(6 + 2 * maxi(reached_ante, 1), 30)
+
+
+static func glut_for_souls(db: ContentDb, souls: int, reached_ante: int = -1) -> int:
 	var rules: Dictionary = db.meta["conversion"]
 	var full := int(rules["full"])
 	var half := int(rules["half"])
 	var value := float(mini(souls, full))
 	value += 0.5 * clampi(souls - full, 0, half)
 	value += float(rules["rest_share"]) * maxi(souls - full - half, 0)
-	return mini(int(floor(value)), int(rules["cap"]))
+	var cap := int(rules["cap"]) if reached_ante < 0 else glut_cap(reached_ante)
+	return mini(int(floor(value)), cap)
 
 
 ## Ends a run: converts souls, checks challenges, counts the run.
 ## Returns {"glut", "occultists": [newly unlocked]}.
 func finish_run(run: RunState) -> Dictionary:
 	discover_from_run(run)
-	var earned := glut_for_souls(run.db, run.souls)
+	var earned := glut_for_souls(run.db, run.souls, mini(run.act, RunState.ACTS + 99))
 	glut += earned
 	runs += 1
 	var won := run.stage == RunState.Stage.WON

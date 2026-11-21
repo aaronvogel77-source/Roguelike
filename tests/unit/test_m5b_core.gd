@@ -145,6 +145,8 @@ func test_boss_skip_sacrifices_a_figure_and_last_boss_is_mandatory() -> void:
 	assert_true(run.skip_boss(1))
 	assert_null(run.row[1])
 	assert_eq(run.act, 2)
+	run.act = RunState.ACTS  # jump to the last ante
+	run.fight = 0
 	while not run.is_boss_fight():
 		run.skip_fight()
 	assert_false(run.can_skip_boss(), "the final boss cannot be skipped")

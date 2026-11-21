@@ -252,6 +252,9 @@ func _show_stage() -> void:
 		var fusion := FusionView.create(_run, _db, _detail_panel)
 		fusion.finished.connect(_on_fusion_finished)
 		_screen.add_child(fusion)
+	# Crown choice (after the bosses of antes 4 and 6): team place or relic place.
+	elif _run.crown_offer and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
+		_build_crown_choice()
 	# After a boss (and its fusion): the treasury, choose one treasure.
 	elif not _run.treasure.is_empty() and _run.stage not in [RunState.Stage.WON, RunState.Stage.LOST]:
 		var treasury := TreasuryView.create(_run, _db, _detail_panel)
@@ -415,6 +418,52 @@ func _show_title_card() -> void:
 	tween.tween_interval(0.9)
 	tween.tween_property(panel, "modulate:a", 0.0, 0.3)
 	tween.tween_callback(panel.queue_free)
+
+
+## The crown: one of two lasting upgrades, as two big framed choices.
+func _build_crown_choice() -> void:
+	var overlay := ColorRect.new()
+	overlay.color = Color(0.02, 0.01, 0.03, 0.94)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_screen.add_child(overlay)
+	var column := VBoxContainer.new()
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 26)
+	overlay.add_child(column)
+	var title := _label(tr("UI_CROWN_TITLE"), 40, Palette.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+	var choices := HBoxContainer.new()
+	choices.alignment = BoxContainer.ALIGNMENT_CENTER
+	choices.add_theme_constant_override("separation", 40)
+	column.add_child(choices)
+	for option in [["slot", "level", "UI_CROWN_SLOT", "UI_CROWN_SLOT_DESC", _run.slot_count() < RunState.CROWN_MAX_SLOTS],
+			["relic", "relic", "UI_CROWN_RELIC", "UI_CROWN_RELIC_DESC", _run.relic_slots < RunState.CROWN_MAX_RELICS]]:
+		var panel := _elegant_panel(0.8)
+		panel.custom_minimum_size = Vector2(320, 300)
+		var box := VBoxContainer.new()
+		box.alignment = BoxContainer.ALIGNMENT_CENTER
+		box.add_theme_constant_override("separation", 14)
+		panel.add_child(box)
+		var symbol := Emblem.create(option[1], 80)
+		box.add_child(_centered(symbol))
+		var name := _label(tr(option[2]), 26, Palette.GOLD)
+		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		box.add_child(name)
+		var desc := _label(tr(option[3]), 18, Palette.PARCHMENT)
+		desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+		desc.custom_minimum_size = Vector2(280, 0)
+		box.add_child(desc)
+		var pick := _button(tr("UI_CHOOSE"), Vector2(200, 56), func() -> void:
+			if _run.take_crown(option[0]):
+				Sound.play("bell")
+				_show_stage())
+		pick.disabled = not option[4]
+		box.add_child(_centered(pick))
+		choices.add_child(panel)
 
 
 func _on_fusion_finished(title: String, text: String) -> void:
@@ -587,7 +636,7 @@ func _shop_counter() -> Control:
 			_add_rarity_effect(slot, _run.shop[i])
 			var merge_into := _run.reward_target(_run.shop[i])
 			if merge_into >= 0 and _run.row[merge_into] != null:
-				slot.add_child(_merge_badge())  # buying it levels up a figure in the row
+				slot.add_child(_merge_badge(_run.figure_level(_run.row[merge_into]) >= 3))  # buying it levels up a figure in the row
 		slot.accepts_drops = false
 		slot.tapped.connect(_on_slot_tapped)
 		if _run.shop[i] != "" and _run.price_of(_run.shop[i]) > _run.gold:
@@ -695,7 +744,7 @@ func _item_shelf() -> Control:
 	column.add_theme_constant_override("separation", 10)
 	panel.add_child(column)
 	var first := true
-	for group in [["relic", RunState.MAX_RELICS, _run.relics], ["tarot", RunState.MAX_TAROTS, _run.tarots],
+	for group in [["relic", _run.relic_slots, _run.relics], ["tarot", RunState.MAX_TAROTS, _run.tarots],
 			["pact", RunState.MAX_PACTS, _run.pacts], ["equipment", RunState.MAX_STASH, _run.stash]]:
 		if not first:
 			var line := ColorRect.new()
@@ -992,7 +1041,7 @@ func _card_row(entries: Array, enemy: bool, reverse: bool) -> HBoxContainer:
 	if reverse:
 		list.reverse()
 	for entry in list:
-		var definition: Dictionary = _db.enemies[entry["def_id"]] if enemy else _db.figures[entry["def_id"]]
+		var definition: Dictionary = EnemyGenerator.unit_def(_db, entry) if enemy else _db.figures[entry["def_id"]]
 		var card := UnitCard.for_definition(definition, entry["level"], enemy)
 		card.tapped.connect(_detail_panel.show_card)
 		row.add_child(card)
@@ -1832,7 +1881,7 @@ func _velvet() -> Control:
 
 
 ## Green "+1" with an arrow: this shop figure would level up one in the row.
-func _merge_badge() -> Control:
+func _merge_badge(imprint := false) -> Control:
 	var badge := PanelContainer.new()
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.1, 0.45, 0.18, 0.95)
@@ -1844,7 +1893,7 @@ func _merge_badge() -> Control:
 	badge.add_theme_stylebox_override("panel", style)
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	badge.set_meta("text_fixed", true)
-	var label := _label("+1 Stufe", 14, Color.WHITE)
+	var label := _label(tr("UI_IMPRINT") if imprint else "+1 Stufe", 14, Color.WHITE)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	badge.add_child(label)
 	badge.position = Vector2(UnitCard.CARD_SIZE.x / 2 - 28, 34)  # below the level seal, clear of the stats
@@ -2184,7 +2233,7 @@ func _pack_item_box(i: int) -> Control:
 	elif entry["kind"] == "pact" and _run.pacts.size() >= RunState.MAX_PACTS:
 		text = tr("UI_PACT_SLOTS_FULL")
 		enabled = false
-	elif entry["kind"] == "relic" and _run.relics.size() >= RunState.MAX_RELICS:
+	elif entry["kind"] == "relic" and _run.relics.size() >= _run.relic_slots:
 		text = tr("UI_RELIC_SLOTS_FULL")
 		enabled = false
 	elif entry["kind"] == "equipment" and _run.stash.size() >= RunState.MAX_STASH:
@@ -2477,7 +2526,7 @@ func _event_scene(id: String) -> Control:
 		var cards := HBoxContainer.new()
 		cards.add_theme_constant_override("separation", 6)
 		for unit in _run.event.get("team", []):
-			var card := UnitCard.for_definition(_db.enemies[unit["def_id"]], int(unit["level"]), true)
+			var card := UnitCard.for_definition(EnemyGenerator.unit_def(_db, unit), int(unit["level"]), true)
 			card.tapped.connect(_detail_panel.show_card)
 			cards.add_child(card)
 		champion.add_child(_scaled(cards, 0.75))
@@ -2865,7 +2914,7 @@ func _build_reward() -> void:
 		holder.add_child(reward_visual)
 		var target := _run.reward_target(def_id)
 		if target >= 0 and _run.row[target] != null:
-			var badge := _merge_badge()
+			var badge := _merge_badge(_run.figure_level(_run.row[target]) >= 3)
 			badge.position.y = UnitCard.CARD_SIZE.y + 2
 			holder.add_child(badge)
 		elif target < 0:

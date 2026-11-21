@@ -54,8 +54,11 @@ func play(db: ContentDb, seed_value: int, options: Dictionary = {}) -> RunState:
 	for id in options.get("start_pacts", []):
 		run.pacts.append(id)
 	var guard := 0
-	while run.stage != RunState.Stage.WON and run.stage != RunState.Stage.LOST and guard < 400:
+	while run.stage != RunState.Stage.WON and run.stage != RunState.Stage.LOST and guard < 3000:
 		guard += 1
+		if run.crown_offer:
+			run.take_crown("slot" if run.slot_count() < RunState.CROWN_MAX_SLOTS else "relic")
+			continue
 		if not run.fusion_offer.is_empty():
 			_handle_fusion()
 			continue
@@ -261,7 +264,7 @@ func _buy_pack() -> bool:
 			"equipment":
 				score = 2.5 if _strongest_with_room() >= 0 else 0.0
 			"relic":
-				score = 3.0 if run.relics.size() < RunState.MAX_RELICS else 0.0
+				score = 3.0 if run.relics.size() < run.relic_slots else 0.0
 			"arcana":
 				score = 2.0 if run.tarots.size() < RunState.MAX_TAROTS else 0.4
 		if pack.get("free", false):

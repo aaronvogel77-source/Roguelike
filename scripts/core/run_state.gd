@@ -8,11 +8,18 @@ extends RefCounted
 
 enum Stage { ENEMY_CHOICE, PLANNING, REWARD, WON, LOST, EVENT }
 
-const ACTS := 2  # vertical slice: one region, two acts
+const ACTS := 8  # antes (Balatro-like): small → big → boss each
+## Antes in a row per region (A A B B A A B B ...).
+const ANTES_PER_REGION := 2
 const FIGHTS_PER_ACT := 3
 const START_GOLD := 6
 const START_SLOTS := 3
 const MAX_SLOTS := 6
+## Team places reachable through a crown choice.
+const CROWN_MAX_SLOTS := 7
+const CROWN_MAX_RELICS := 4
+## Antes whose boss offers the crown choice.
+const CROWN_ANTES := [4, 6]
 ## Shop price by rank (page, knight, queen, king).
 const RANK_PRICES := {"page": 3, "knight": 4, "queen": 6, "king": 8, "legend": 10}
 const SHOP_FIGURE_SLOTS := 3
@@ -84,7 +91,12 @@ var packs: Array = []
 ## The pack being opened: {"pack", "items", "picks_left"} or {}.
 var open_pack: Dictionary = {}
 var relics: Array = []  # relic ids, max 3
-var stash: Array = []  # equipment items waiting for a figure, max MAX_STASH
+var stash: Array = []
+## Relic places (3; a crown choice can raise it to 4).
+var relic_slots := MAX_RELICS
+## Crown choice after the bosses of antes 4 and 6: +1 team place (up to 7)
+## or +1 relic place (up to 4). Open while true.
+var crown_offer := false  # equipment items waiting for a figure, max MAX_STASH
 var tarots: Array = []  # tarot ids, max 2
 var pacts: Array = []  # pact ids, max 3
 var souls := 0
@@ -137,26 +149,27 @@ static func new_run(content: ContentDb, seed_value: int, options: Dictionary = {
 	return run
 
 
-## One region per act, shuffled (regions repeat only when there are fewer
-## regions than acts).
+## One region per block of two antes; the regions take turns in a shuffled
+## order (A A B B A A B B with two regions).
 func _roll_region_order(coins_first: bool) -> Array:
 	var ids: Array = db.regions.keys()
 	ids.sort()
 	var stream := rng.stream("regions")
+	for i in range(ids.size() - 1, 0, -1):
+		var j := stream.randi_range(0, i)
+		var t = ids[i]
+		ids[i] = ids[j]
+		ids[j] = t
+	if coins_first and "coins" in ids:
+		ids.erase("coins")
+		ids.push_front("coins")
 	var order: Array = []
+	var block := 0
 	while order.size() < ACTS:
-		var bag := ids.duplicate()
-		for i in range(bag.size() - 1, 0, -1):
-			var j := stream.randi_range(0, i)
-			var t = bag[i]
-			bag[i] = bag[j]
-			bag[j] = t
-		order.append_array(bag)
+		for k in ANTES_PER_REGION:
+			order.append(ids[block % ids.size()])
+		block += 1
 	order.resize(ACTS)
-	if coins_first and "coins" in order:
-		order.erase("coins")
-		order.push_front("coins")
-		order.resize(ACTS)
 	return order
 
 
@@ -258,9 +271,13 @@ func figure_suits(figure: Dictionary) -> Array:
 
 
 ## Duplicates can merge only into plain figures below the maximum level.
+## Prägung: a duplicate on a level-III figure gives +1/+1 instead, at most this often.
+const MAX_IMPRINT := 3
+
+
 func can_merge_into(target: Dictionary, def_id: String) -> bool:
 	return target["def_id"] == def_id and not target.has("fusion") and not target.has("recipe_parts") \
-		and figure_level(target) < 3
+		and (figure_level(target) < 3 or int(target.get("imprint", 0)) < MAX_IMPRINT)
 
 
 func price_of(def_id: String) -> int:
@@ -320,7 +337,7 @@ func player_battle_team() -> Array:
 
 func enemy_battle_team() -> Array:
 	return chosen_enemy.get("team", []).map(func(u: Dictionary) -> Dictionary:
-		return {"def": db.enemies[u["def_id"]], "level": u["level"]})
+		return {"def": EnemyGenerator.unit_def(db, u), "level": u["level"]})
 
 
 # --- Actions (each returns true on success) ---------------------------------------
@@ -636,7 +653,7 @@ func event_option_block(option: String, targets: Array = []) -> String:
 		"sacrifice_two":
 			return "" if figures.size() == 2 and figures[0] != figures[1] and pacts.size() < MAX_PACTS else "target"
 		"buy_relic":
-			return "" if gold >= 4 and relics.size() < MAX_RELICS and event.get("relic", "") != "" else "cost"
+			return "" if gold >= 4 and relics.size() < relic_slots and event.get("relic", "") != "" else "cost"
 		"buy_pack":
 			return "" if gold >= 6 else "cost"
 		"buy_candle":
@@ -756,7 +773,7 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 			gold += 8
 			var pool: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
 				func(r: String) -> bool: return not r in relics)
-			if relics.size() < MAX_RELICS and not pool.is_empty():
+			if relics.size() < relic_slots and not pool.is_empty():
 				relics.append(pool[rng.stream("events").randi_range(0, pool.size() - 1)])
 			else:
 				gold += 4
@@ -834,7 +851,7 @@ func resolve_event(option: String, targets: Array = []) -> bool:
 ## Duel opponent team as battle entries.
 func duel_team() -> Array:
 	return event.get("team", []).map(func(u: Dictionary) -> Dictionary:
-		return {"def": db.enemies[u["def_id"]], "level": u["level"]})
+		return {"def": EnemyGenerator.unit_def(db, u), "level": u["level"]})
 
 
 ## Win: a relic (or gold) and 2 souls. Loss: the front figure is lost, not the run.
@@ -857,7 +874,7 @@ func apply_duel_result(result: Dictionary) -> void:
 		souls += 2
 		var pool: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
 			func(r: String) -> bool: return not r in relics)
-		if relics.size() < MAX_RELICS and not pool.is_empty():
+		if relics.size() < relic_slots and not pool.is_empty():
 			relics.append(pool[rng.stream("events").randi_range(0, pool.size() - 1)])
 			event["result"] = "duel_won_relic"
 		else:
@@ -918,7 +935,7 @@ func can_take_pack_item(item_index: int, target_index: int = -1) -> bool:
 		"tarot":
 			return tarots.size() < MAX_TAROTS
 		"relic":
-			return relics.size() < MAX_RELICS
+			return relics.size() < relic_slots
 		"pact":
 			return pacts.size() < MAX_PACTS
 		"figure":
@@ -1193,6 +1210,8 @@ func apply_battle_result(result: Dictionary) -> Stage:
 		if slot_count() < MAX_SLOTS:
 			row.append(null)
 			last_income["slot"] = true
+		elif act in CROWN_ANTES and (slot_count() < CROWN_MAX_SLOTS or relic_slots < CROWN_MAX_RELICS):
+			crown_offer = true
 		# After every act boss: one free fusion (can be skipped).
 		if row.filter(func(f: Variant) -> bool: return f != null).size() >= 2:
 			fusion_offer = {"source": "boss", "left": 1, "total": 1}
@@ -1228,7 +1247,7 @@ func _roll_treasure() -> void:
 		return  # the last boss ends the run
 	var pool: Array = db.items["relics"].map(func(r: Dictionary) -> String: return r["id"]).filter(
 		func(r: String) -> bool: return not r in relics)
-	if relics.size() < MAX_RELICS and not pool.is_empty():
+	if relics.size() < relic_slots and not pool.is_empty():
 		treasure.append({"kind": "relic", "id": pool[rng.stream("treasure").randi_range(0, pool.size() - 1)]})
 	else:
 		treasure.append({"kind": "souls", "amount": TREASURE_SOULS})
@@ -1286,12 +1305,17 @@ func skip_reward() -> bool:
 
 
 ## Row slot a reward would go to, or -1 if there is no room.
+## Where a free figure goes: a copy that can still level, else a free place,
+## else a level-III copy (imprint).
 func reward_target(def_id: String) -> int:
 	for i in row.size():
-		if row[i] != null and can_merge_into(row[i], def_id):
+		if row[i] != null and can_merge_into(row[i], def_id) and figure_level(row[i]) < 3:
 			return i
 	for i in row.size():
 		if row[i] == null:
+			return i
+	for i in row.size():
+		if row[i] != null and can_merge_into(row[i], def_id):
 			return i
 	return -1
 
@@ -1309,8 +1333,33 @@ func _finish_reward() -> void:
 func _place(def_id: String, row_index: int) -> void:
 	if row[row_index] == null:
 		row[row_index] = _new_figure(def_id)
+	elif figure_level(row[row_index]) >= 3:
+		_imprint(row[row_index])
 	else:
 		row[row_index]["xp"] = mini(int(row[row_index]["xp"]) + XP_PER_DUPLICATE, XP_FOR_LEVEL[2])
+
+
+## Takes the crown choice: "slot" (+1 team place) or "relic" (+1 relic place).
+func take_crown(choice: String) -> bool:
+	if not crown_offer:
+		return false
+	if choice == "slot" and slot_count() < CROWN_MAX_SLOTS:
+		row.append(null)
+	elif choice == "relic" and relic_slots < CROWN_MAX_RELICS:
+		relic_slots += 1
+	else:
+		return false
+	crown_offer = false
+	return true
+
+
+## Prägung: +1/+1 for good (shown like the Strength bonus).
+func _imprint(figure: Dictionary) -> void:
+	if int(figure.get("imprint", 0)) >= MAX_IMPRINT:
+		return
+	figure["imprint"] = int(figure.get("imprint", 0)) + 1
+	figure["bonus_attack"] = int(figure.get("bonus_attack", 0)) + 1
+	figure["bonus_health"] = int(figure.get("bonus_health", 0)) + 1
 
 
 func _new_figure(def_id: String) -> Dictionary:
@@ -1389,7 +1438,7 @@ func to_dict() -> Dictionary:
 	return {
 		"rng": rng.to_dict(), "stage": stage, "region": region, "region_order": region_order.duplicate(), "act": act, "fight": fight, "gold": gold,
 		"row": row.duplicate(true), "shop": shop.duplicate(), "packs": packs.duplicate(true),
-		"open_pack": open_pack.duplicate(true), "relics": relics.duplicate(), "stash": stash.duplicate(true), "tarots": tarots.duplicate(),
+		"open_pack": open_pack.duplicate(true), "relics": relics.duplicate(), "relic_slots": relic_slots, "crown_offer": crown_offer, "stash": stash.duplicate(true), "tarots": tarots.duplicate(),
 		"pacts": pacts.duplicate(), "souls": souls, "next_shop": next_shop.duplicate(), "flags": flags.duplicate(),
 		"event": event.duplicate(true), "fights_since_event": fights_since_event,
 		"reroll_count": reroll_count, "free_rerolls": free_rerolls, "enemy_options": enemy_options.duplicate(true), "choice_step": choice_step,
@@ -1414,6 +1463,8 @@ static func from_dict(content: ContentDb, data: Dictionary) -> RunState:
 	run.treasure = data.get("treasure", []).duplicate(true)
 	run.relics = data.get("relics", []).duplicate()
 	run.stash = data.get("stash", []).duplicate(true)
+	run.relic_slots = int(data.get("relic_slots", MAX_RELICS))
+	run.crown_offer = bool(data.get("crown_offer", false))
 	run.tarots = data.get("tarots", []).duplicate()
 	run.pacts = data.get("pacts", []).duplicate()
 	run.souls = int(data.get("souls", 0))

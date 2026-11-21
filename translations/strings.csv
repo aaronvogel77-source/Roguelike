@@ -89,7 +89,7 @@ RANK_KING,König,King
 UI_CONTINUE,Weiter,Continue
 UI_INTEREST,Zinsen +%d,Interest +%d
 UI_SLOTS,Plätze %d/%d,Slots %d/%d
-UI_ACT_FIGHT,Akt %d · Kampf %d/%d · %s,Act %d · Fight %d/%d · %s
+UI_ACT_FIGHT,Ante %d · Kampf %d/%d · %s,Ante %d · Fight %d/%d · %s
 UI_FIGHT_SMALL,Kleiner Kampf,Small fight
 UI_FIGHT_BIG,Großer Kampf,Big fight
 UI_FIGHT_BOSS,Boss,Boss
@@ -123,7 +123,7 @@ UI_NO_ROOM,Kein Platz,No room
 UI_SKIP_REWARD,Weiter (+%d Gold),Continue (+%d gold)
 UI_RUN_WON,Sieg! Der Run ist geschafft.,Victory! The run is complete.
 UI_RUN_LOST,Niederlage,Defeat
-UI_RUN_REACHED,Erreicht: Akt %d · %s,Reached: act %d · %s
+UI_RUN_REACHED,Erreicht: Ante %d · %s,Reached: ante %d · %s
 UI_RUN_WINS,Gewonnene Kämpfe: %d,Battles won: %d
 UI_NEW_RUN,Neuer Run,New run
 UI_SELL_ZONE,Hierher ziehen zum Verkaufen,Drag here to sell
@@ -676,7 +676,7 @@ ABIL_SHIELD_BREAKER,Kampfbeginn (zuletzt): Zerstört alle Schilde deiner Figuren
 ABIL_WOUND_SEALER,Zugbeginn: entfernt bis zu {v} Blutung je Verbündetem.,Turn start: removes up to {v} bleed from each ally.
 ABIL_VAULT_CARDINAL,Kampfbeginn: Alle Gegner erhalten Schild {v}.,Battle start: all of its allies gain {v} shield.
 ABIL_CLOCKWORK_WARDEN,Zugbeginn: +{v} Angriff (max. +6 / +8 / +10).,Turn start: +{v} attack (max. +6 / +8 / +10).
-UI_ELITE,Elite (ab Akt 2),Elite (act 2 on)
+UI_ELITE,Elite,Elite
 EVENT_TAX_RAID,Steuerrazzia,Tax Raid
 EVENT_TAX_RAID_DESC,Die Steuertruppe des Eintreibers stellt dich. Zahl oder wehr dich.,The collector's tax squad corners you. Pay up or fight back.
 EVENT_PLAGUE,Seuche,Plague
@@ -809,9 +809,9 @@ KW_HEALTH,Leben,Health
 KW_HEALTH_DESC,"Fällt es auf 0, scheidet die Figur aus. Nach dem Kampf ist alles wieder voll.",At 0 the figure falls. After the battle everything is full again.
 KW_GOLD,Gold,Gold
 KW_GOLD_DESC,Zum Kaufen. Manche Fähigkeiten werden mit mehr Gold stärker.,For buying. Some abilities grow stronger with more gold.
-UI_TITLE_ACT_FIGHT,Akt %d · Kampf %d von %d,Act %d · Fight %d of %d
+UI_TITLE_ACT_FIGHT,Ante %d · Kampf %d von %d,Ante %d · Fight %d of %d
 UI_TITLE_BOSS,Bosskampf,Boss fight
-UI_TITLE_ACT,Ende von Akt %d,End of act %d
+UI_TITLE_ACT,Ende von Ante %d,End of ante %d
 UI_TITLE_EVENT,Ereignis,Event
 UI_TITLE_DANGER,Gefahr,Danger
 UI_DRAG_TO_BUY,Zum Kaufen ins Team ziehen.,Drag into your team to buy.
@@ -877,3 +877,9 @@ ABIL_BOSS_PYRE_ABBOT,Treffer: Ziel Brennen {v}.,Hit: target {v} burn.
 ABIL_BOSS_ETERNAL_FORGE,Zugbeginn: +{v} Angriff (höchstens +8).,Turn start: +{v} attack (at most +8).
 SPECIAL_BOSS_PYRE_ABBOT,Scheiterhaufen,Pyre
 SPECIAL_BOSS_ETERNAL_FORGE,Glutschlag,Ember Strike
+UI_CROWN_TITLE,Die Krone,The Crown
+UI_CROWN_SLOT,Weiterer Teamplatz,Another team place
+UI_CROWN_SLOT_DESC,Dein Team bekommt einen 7. Platz.,Your team gains a 7th place.
+UI_CROWN_RELIC,Weiterer Reliktplatz,Another relic place
+UI_CROWN_RELIC_DESC,Du kannst ein 4. Relikt tragen.,You can carry a 4th relic.
+UI_IMPRINT,Prägung +1/+1,Imprint +1/+1

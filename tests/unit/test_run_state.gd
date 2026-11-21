@@ -164,9 +164,9 @@ func test_skip_reward_gives_two_gold() -> void:
 	assert_eq(run.gold, before + 2)
 
 
-func test_boss_win_adds_a_slot_and_two_acts_win_the_run() -> void:
+func test_boss_win_adds_a_slot_and_eight_antes_win_the_run() -> void:
 	var run := _run()
-	for i in 6:
+	for i in RunState.ACTS * RunState.FIGHTS_PER_ACT:
 		if run.is_boss_fight():
 			assert_eq(run.stage, RunState.Stage.PLANNING, "bosses skip the enemy choice")
 		else:
@@ -175,14 +175,20 @@ func test_boss_win_adds_a_slot_and_two_acts_win_the_run() -> void:
 		var slots_before := run.slot_count()
 		var was_boss := run.is_boss_fight()
 		run.apply_battle_result(_win())
-		if was_boss:
+		if was_boss and slots_before < RunState.MAX_SLOTS:
 			assert_eq(run.slot_count(), slots_before + 1)
 		if run.stage == RunState.Stage.REWARD:
 			run.skip_reward()
+		for option in ["leave", "small", "decline", "pay_tax", "plague_accept", "fog_accept", "flee"]:
+			if run.stage == RunState.Stage.EVENT:
+				run.resolve_event(option, [0])
+		if run.stage == RunState.Stage.EVENT and not run.event.get("resolved", false):
+			run.gold += 99  # a danger that wants payment
+			run.resolve_event("pay_tax")
 		if run.stage == RunState.Stage.EVENT:
 			run.resolve_event("leave")
 	assert_eq(run.stage, RunState.Stage.WON)
-	assert_eq(run.battles_won, 6)
+	assert_eq(run.battles_won, RunState.ACTS * RunState.FIGHTS_PER_ACT)
 
 
 func test_serialization_round_trip_keeps_rng_position() -> void:
@@ -228,13 +234,16 @@ func test_rank_odds_sum_to_one_hundred() -> void:
 		assert_eq(total, 100)
 
 
-func test_no_merging_beyond_max_level() -> void:
+func test_level_three_imprints_and_rewards_prefer_levelling() -> void:
 	var run := _planning_run()
 	run.gold = 100
 	run.row[0] = {"uid": 99, "def_id": "coin_squire", "xp": RunState.XP_FOR_LEVEL[2]}
 	run.shop[0] = "coin_squire"
-	assert_false(run.buy(0, 0), "level 3 cannot merge")
-	assert_true(run.buy(0, 1), "a second copy in a free slot is fine")
+	run.shop[1] = "coin_squire"
+	assert_true(run.buy(0, 0), "level III: a duplicate imprints +1/+1")
+	assert_eq(int(run.row[0]["bonus_attack"]), 1)
+	assert_eq(run.figure_level(run.row[0]), 3)
+	assert_true(run.buy(1, 1), "a second copy in a free slot is fine")
 	assert_eq(run.reward_target("coin_squire"), 1, "rewards merge into the copy that can still level")
 
 

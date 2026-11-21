@@ -12,11 +12,11 @@ extends RefCounted
 ## (static vars, not consts: tools/auto_tune.gd tries other values.)
 static var FIGHT_BUDGET := [2.8, 5.6, 2.0]
 ## Budget grows exponentially per act.
-static var ACT_GROWTH := 5.4
+static var ACT_GROWTH := 4.8
 ## Extra factor for the small fight from act 2 on (act 1 small fights stay as they are).
-static var LATE_SMALL_FACTOR := 1.26
+static var LATE_SMALL_FACTOR := 1.1
 ## Retinue budget of the boss fight per act (act 1 kept small: the boss itself is strong).
-static var BOSS_RETINUE := [2.0, 43.0]
+static var BOSS_RETINUE := [2.0, 28.0]
 ## Easy / medium / hard options in the enemy choice.
 static var DIFFICULTY_FACTOR := [0.75, 1.0, 1.35]
 ## Extra gold for winning against easy / medium / hard (and bosses).
@@ -39,7 +39,49 @@ const ACT1_MAX_TEAM := 3
 static var ACT1_FACTOR := 0.85
 
 
+## Antes 3+: the budget only grows a little (a full row of elites is the
+## ceiling); the strength comes from a stat factor per ante instead.
+static var LATE_BUDGET_STEP := 0.2
+static var LATE_BUDGET_MAX := 1.8
+static var ANTE_ATTACK := 1.26
+static var ANTE_HEALTH := 1.45
+## Act-1 boss types return "awakened" in later antes (odd antes from 3).
+static var AWAKENED := Vector2(1.2, 1.4)
+## Stat factor of the bosses (unit only) in antes 1 and 2 (the rising funnel:
+## the first bosses are no wall any more).
+static var EARLY_BOSS := [Vector2(0.7, 0.55), Vector2(0.65, 0.5)]
+
+
+## Stat factor of enemies in an ante (x attack, y health); 1 up to ante 2.
+static func ante_scale(ante: int) -> Vector2:
+	if ante <= 2:
+		return Vector2.ONE
+	return Vector2(pow(ANTE_ATTACK, ante - 2), pow(ANTE_HEALTH, ante - 2))
+
+
+## An enemy entry's definition with its ante factor applied ({"def_id",
+## "level", optional "scale": [attack, health]}).
+static func unit_def(db: ContentDb, unit: Dictionary) -> Dictionary:
+	var definition: Dictionary = db.enemies[unit["def_id"]]
+	var scale: Array = unit.get("scale", [])
+	if scale.is_empty():
+		return definition
+	var scaled := definition.duplicate(true)
+	scaled["attack"] = maxi(int(round(int(definition["attack"]) * float(scale[0]))), int(definition["attack"]))
+	scaled["health"] = maxi(int(round(int(definition["health"]) * float(scale[1]))), 1)
+	scaled["scaled"] = true
+	return scaled
+
+
+## Boss type of an ante: act-1 types in odd antes, act-2 types in even ones.
+static func boss_tier(ante: int) -> int:
+	return 1 if ante % 2 == 1 else 2
+
+
 static func budget(act: int, fight: int, difficulty: int) -> int:
+	if act > 2:
+		var late := minf(1.0 + LATE_BUDGET_STEP * (act - 2), LATE_BUDGET_MAX)
+		return maxi(int(round(budget(2, fight, difficulty) * late)), 1)
 	var value: float = FIGHT_BUDGET[fight] * pow(ACT_GROWTH, act - 1)
 	if fight == 0 and act >= 2:
 		value *= LATE_SMALL_FACTOR
@@ -55,7 +97,7 @@ static func budget(act: int, fight: int, difficulty: int) -> int:
 ## Enemy options for a fight: three difficulties for normal fights, one boss.
 static func options(db: ContentDb, region: String, act: int, fight: int, rng: RandomNumberGenerator) -> Array:
 	if fight == 2:
-		var boss := _pick_boss(db, region, act, rng)
+		var boss := _pick_boss(db, region, boss_tier(act), rng)
 		var capacity := 7 if boss.get("rule", "") == "seven_slots" else MAX_TEAM
 		var theme := _pick_theme(db, region, rng)
 		var team: Array = []
@@ -63,6 +105,7 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 			capacity -= int(boss["unit"].get("width", 1))
 			team.append({"def_id": boss["unit"]["id"], "level": 1})
 		team.append_array(generate(db, budget(act, fight, 2), rng, theme, capacity, [], false, act, region))
+		_apply_ante_scale(team, act, boss.get("unit", {}).get("id", ""), boss_tier(act) == 1 and act >= 3)
 		return [{"kind": "boss", "difficulty": 2, "bonus": BOSS_BONUS, "theme": theme,
 			"boss_id": boss.get("id", ""), "rule": boss.get("rule", ""), "team": team}]
 	var teams: Array = []
@@ -93,16 +136,31 @@ static func options(db: ContentDb, region: String, act: int, fight: int, rng: Ra
 		teams[difficulty]["power"] = power(db, team)
 	var result: Array = []
 	for difficulty in 3:
+		_apply_ante_scale(teams[difficulty]["team"], act)
 		result.append({"kind": "normal", "difficulty": difficulty, "theme": teams[difficulty]["theme"],
 			"bonus": DIFFICULTY_BONUS[difficulty], "team": teams[difficulty]["team"]})
 	return result
+
+
+## Stores the ante's stat factor on every unit (and the awakened boost on
+## the boss of a returning act-1 type).
+static func _apply_ante_scale(team: Array, ante: int, boss_id: String = "", awakened := false) -> void:
+	var factor := ante_scale(ante)
+	for unit in team:
+		var f := factor
+		if awakened and unit["def_id"] == boss_id:
+			f = Vector2(f.x * AWAKENED.x, f.y * AWAKENED.y)
+		if ante <= 2 and boss_id != "" and unit["def_id"] == boss_id:
+			f = Vector2(f.x * EARLY_BOSS[ante - 1].x, f.y * EARLY_BOSS[ante - 1].y)
+		if f != Vector2.ONE:
+			unit["scale"] = [f.x, f.y]
 
 
 ## Rough fighting strength of a team: sum of attack × health (with levels).
 static func power(db: ContentDb, team: Array) -> float:
 	var total := 0.0
 	for unit in team:
-		var definition: Dictionary = db.enemies[unit["def_id"]]
+		var definition: Dictionary = unit_def(db, unit)
 		var level := int(unit["level"])
 		total += (int(definition["attack"]) + level - 1) * (int(definition["health"]) + level - 1)
 	return total

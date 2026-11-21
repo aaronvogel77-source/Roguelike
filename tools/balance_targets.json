@@ -1,34 +1,106 @@
 {
-  "comment": "Target win rates (in %) of all bots per station; auto_tune.gd searches the enemy values until each station lies inside its corridor.",
+  "comment": "Target win rates (in %) of all bots per station for 8 antes (rising funnel, decided 2026-11-21); auto_tune.gd searches enemy values until each station lies inside its corridor.",
   "stations": {
     "A1 K1": [
-      82,
-      92
+      92,
+      98
     ],
     "A1 K2": [
-      72,
-      84
+      88,
+      95
     ],
     "A1 K3": [
-      20,
-      30
+      80,
+      90
     ],
     "A2 K1": [
-      70,
-      85
+      92,
+      98
     ],
     "A2 K2": [
-      60,
-      75
+      88,
+      95
     ],
     "A2 K3": [
-      45,
-      60
+      80,
+      90
+    ],
+    "A3 K1": [
+      93,
+      98
+    ],
+    "A3 K2": [
+      90,
+      96
+    ],
+    "A3 K3": [
+      85,
+      93
+    ],
+    "A4 K1": [
+      93,
+      98
+    ],
+    "A4 K2": [
+      90,
+      96
+    ],
+    "A4 K3": [
+      85,
+      93
+    ],
+    "A5 K1": [
+      93,
+      98
+    ],
+    "A5 K2": [
+      90,
+      96
+    ],
+    "A5 K3": [
+      85,
+      93
+    ],
+    "A6 K1": [
+      90,
+      96
+    ],
+    "A6 K2": [
+      85,
+      93
+    ],
+    "A6 K3": [
+      75,
+      85
+    ],
+    "A7 K1": [
+      90,
+      96
+    ],
+    "A7 K2": [
+      85,
+      93
+    ],
+    "A7 K3": [
+      75,
+      85
+    ],
+    "A8 K1": [
+      90,
+      96
+    ],
+    "A8 K2": [
+      85,
+      93
+    ],
+    "A8 K3": [
+      40,
+      50
     ]
   },
   "runs_won": [
-    8,
-    20
+    5,
+    15
   ],
   "hard_act1_min": 45
 }
